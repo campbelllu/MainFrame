@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+#from django.conf.urls import url
+
+from helloThere import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
+    #Note the use of RegEx above: where one could also use, path('/',...)
+    
 ]
