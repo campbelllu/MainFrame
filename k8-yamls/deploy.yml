@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: htmf
+  name: mf
 spec:
   replicas: 1
-  selector:
+  selector: 
     matchLabels:
-      app: htmf
+      app: mf
   template:
     metadata:
       labels:
-        app: htmf
+        app: mf
     spec:
       containers:
-      - name: htmf
+      - name: mf
         image: mainframe-v0
         imagePullPolicy: Never
         # resources:
@@ -22,3 +22,24 @@ spec:
         #     cpu: "500m"
         ports:
         - containerPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mf-jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mf-jenkins
+  template:
+    metadata:
+      labels:
+        app: mf-jenkins
+    spec:
+      containers:
+      - name: mf-jenkins
+        image: mf-jenkins-v0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080

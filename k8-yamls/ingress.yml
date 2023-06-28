@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mf-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
   labels:
     name: mf-ingress
 spec:
@@ -10,12 +12,36 @@ spec:
     http:
       paths:
       - pathType: Prefix
-        path: / #"/"
+        path: /
         backend:
           service:
-            name: htmf-service
+            name: mf-service
             port: 
               number: 8000
+      - pathType: Prefix
+        path: /jenkins
+        backend:
+          service:
+            name: mf-jenkins-service
+            port: 
+              number: 8080
+
+###
+#Try in this order:
+#minikube start
+#kubectl apply -f k8TAB
+#minikube tunnel -> check mf.io for connection
+#otherwise don't forget minikube addons list, for minikube addons enable ingress and ingress-dns
+#
+
+#minikube service htmf-service --url            <- this does the same as tunnel above, but through minikube when you follow the url link
+#kubectl get service NAME, to find podport
+#kubectl port-forward NAME-OF-POD localport:podport   <- this manually does what tunnel is doing above. 
+
+#need to check the hosts files. remove info from one of them, see if mf.io still connects. find out which, if not both, are actually allowing the p.forwarding
+#need to play with url's, either through k8's, or just in django. either k8's just facilitates mf.io being available and all url's are
+#handled in django, which seems likely, but I wonder if it can be handled in the ingress here. hmmm
+
 
 # #from official documentation: https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
 # apiVersion: networking.k8s.io/v1
