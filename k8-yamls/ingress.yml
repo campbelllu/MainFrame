@@ -3,28 +3,54 @@ kind: Ingress
 metadata:
   name: mf-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: / #$1 #this is regex, overly complicated in initial setup, priceless with more, later, complexity
+    kubernetes.io/ingress.class: nginx #quotes don't matter, possibly redundant with below ingressClassName
   labels:
     name: mf-ingress
 spec:
+  # ingressClassName: nginx
   rules:
   - host: mf.io
     http:
       paths:
-      - pathType: Prefix
-        path: /
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: mf-service
-            port: 
-              number: 8000
-      - pathType: Prefix
-        path: /jenkins
+            port:
+              number: 80
+  - host: jenkins.mf.io
+    http:
+      paths:            
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: mf-jenkins-service
             port: 
-              number: 8080
+              number: 80
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: mf-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$1
+#   labels:
+#     name: mf-jenkins-ingress
+# spec:
+#   rules:
+#   - host: mf.io #/jenkins #edited with below path
+#     http:
+#       paths:
+#       - pathType: Prefix
+#         path: /jenkins
+#         backend:
+#           service:
+#             name: mf-jenkins-service
+#             port: 
+#               number: 8080
 
 ###
 #Try in this order:

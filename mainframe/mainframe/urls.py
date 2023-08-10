@@ -22,4 +22,6 @@ from helloThere import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    #path('mf.io/jenkins', 'mf.io:8080', name='jenkins-reroute'),
+    #url(RedirectView.as_view(url='mf.io/jenkins')),
 ]

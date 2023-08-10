@@ -3,24 +3,25 @@ kind: Service
 metadata:
   name: mf-service
 spec:
-  #type: NodePort
+  type: NodePort
   selector:
     app: mf
   ports:
   - protocol: TCP
-    port: 8000
+    port: 80
     targetPort: 8000
-    #nodePort: 31000
+    nodePort: 30000
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mf-jenkins-service
 spec:
-  #type: NodePort
+  type: NodePort
   selector:
     app: mf-jenkins
   ports:
   - protocol: TCP
-    port: 8080
+    port: 80
     targetPort: 8080
+    nodePort: 32000

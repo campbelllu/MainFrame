@@ -41,5 +41,10 @@ spec:
       - name: mf-jenkins
         image: mf-jenkins-v0
         imagePullPolicy: Never
+        # environment:
+        #   JENKINS_ARGS='--prefix=/jenkins'
+        # args: ['--prefix=/jenkins'] #start with this one
         ports:
         - containerPort: 8080
+
+        #JENKINS_ARGS="--prefix=/jenkins"
