@@ -2,7 +2,8 @@ FROM jenkins/jenkins:lts AS builder
 USER root
 #EXPOSE 9000
 
-VOLUME /var/jenkins/mainframe:/var/jenkins
+# ENV JENKINS_HOME /var/jenkins/mainframe  #to test later
+VOLUME /var/jenkins/mainframe:/var/jenkins_home
 RUN apt update && \
     apt install -y --no-install-recommends gnupg curl ca-certificates apt-transport-https lsb-release
 # RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
@@ -13,7 +14,7 @@ RUN apt update && \
 #   $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 # RUN apt-get update && apt-get install -y docker-ce-cli
 # CMD ["docker run --prefix=/jenkins"]
-# USER jenkins
+# USER jenkins #uncomment in prod
 # RUN apt-get update && apt-get install -y docker-ce-cli
 #RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
 

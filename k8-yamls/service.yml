@@ -22,6 +22,7 @@ spec:
     app: mf-jenkins
   ports:
   - protocol: TCP
+    name: http
     port: 80
     targetPort: 8080
     nodePort: 32000

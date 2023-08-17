@@ -46,5 +46,12 @@ spec:
         # args: ['--prefix=/jenkins'] #start with this one
         ports:
         - containerPort: 8080
+        volumeMounts:
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+      volumes:
+      - name: jenkins-home
+        persistentVolumeClaim:
+          claimName: jenkins-pvc
 
         #JENKINS_ARGS="--prefix=/jenkins"
