@@ -1,4 +1,7 @@
-To-Do & Tracking for later journaling/blogs
+To-Do & Tracking for later documentation
+The following helps me to keep track of all this project needs/needed.
+Goal achieved: K8's up and running, better understood, moved onto cloud work where this project will move from local to cloud-based. Updates to come, late 2023, early 2024!
+
 1. Remember to have fun! :)
 2. Make a requirements.txt file for Dockerization - Easy. pip freeze > reqs.txt
 --2.a. In later stages, will need to understand if the venv must be entered each time before doing this. I think the venv can be avoided while adding functionality and testing backend code, but the freeze probably requires venv to avoid bloat in reqs.txt.
