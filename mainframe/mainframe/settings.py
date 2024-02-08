@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'helloThere',
+    'investor_center',
 ]
 
 MIDDLEWARE = [
