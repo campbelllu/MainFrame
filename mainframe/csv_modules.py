@@ -13,17 +13,18 @@ import yfinance as yf
 import json
 
 #save any data frame into a csv for later use. Param's: save location, df to be saved, name of csv as string
-def simple_saveDF_to_csv(folder, df, name:STRING):
+def simple_saveDF_to_csv(folder, df, name, index_flag):
     try:
-        df.to_csv(folder + name + '.csv')
+        df.to_csv(folder + name + '.csv', index = index_flag)
+        print("DF saved to CSV in location: " + folder + name + '.csv.')
     except Exception as err:
         print("Simple Save to CSV Error Message:")
         print(err)
 
 #load csv's into dataframe
-def simple_get_df_from_csv(folder, name:STRING):
+def simple_get_df_from_csv(folder, name):#, index_flag):
     try:
-        df = pd.read_csv(folder + name + '.csv')
+        df = pd.read_csv(folder + name + '.csv')#, index_col = index_flag)
     except FileNotFoundError as err:
         print("File Does Not Exist")
     else:
