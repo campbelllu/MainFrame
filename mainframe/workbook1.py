@@ -16,7 +16,6 @@ import pyarrow
 import requests
 import math
 
-
 import csv_modules as csv
 # import nasdaq_related.nasdaq_list_related as ndl #remove at discretion, how to import modules across project
 
@@ -69,6 +68,7 @@ def convert_CIKdict_to_df(dictionary):
 
 # ------------------------------------------
 # The above represents organizing ticker data, below is getting company data from API calls to SEC EDGAR.
+# ------------------------------------------
 
 #EDGAR API Endpoints
 #companyconcept: returns all filing data from specific company, specific accounting item. timeseries for 'assets from apple'?
@@ -76,14 +76,11 @@ def convert_CIKdict_to_df(dictionary):
 #frames: cross section of data from every company filed specific accnting item in specific period. quick company comparisons
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
-# #HERE BRO
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str,'Company Name': str,'CIK': str}
 full_cik_list = csv.get_df_from_csv_with_typeset('./sec_related/', 'full_tickers_and_ciks', type_converter)
 #csv.simple_get_df_from_csv('./sec_related/', 'full_tickers_and_ciks') #removes leading zeroes from csv tickers. need those for api call. above fixed it.
 
-#1st query function to be defined from         
-# https://fishtail.ai/blog-2-accessing-company-financials-using-the-sec-edgar-api#:~:text=tags%20for%20the%20given%20company%20(the%20full%20EDGAR%20download).
 # To retrieve the EDGAR data we’ll define the following function 
 # that can both pull down the entire EDGAR database (given enough time), 
 # or specific data from a list of tags. 
@@ -92,10 +89,11 @@ full_cik_list = csv.get_df_from_csv_with_typeset('./sec_related/', 'full_tickers
 # The function will take three arguments: a company CIK, a header dictionary, and a list of tags. 
 # If no tags are given, we’ll define the default to return all tags for the given company (the full EDGAR download).
 
-def EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
+def list_of_tags_EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
     url = ep["cf"] + 'CIK' + cik + '.json'
     response = requests.get(url, headers=header)
-    # print(response.json())
+    print("response: ")
+    print(response)
 
     if tag == None:
         tags = list(response.json()['facts']['us-gaap'].keys())
@@ -104,33 +102,156 @@ def EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
 
     company_data = pd.DataFrame()
 
-    for i in range(len(tags)): #in tags
+    for i in range(len(tags)): 
         try:
-            tag = tags[i] #i
-            # print("tag: " + tag) #accurrate
+            tag = tags[i]
             units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
-            # print("units: " + units) #USD
-            # print("printing .json()")
-            # time.sleep(3)
-            # print(response.json())
-            # time.sleep(2)
-            data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])##remove ['val'] and you get an actually pretty decent dataframe for values
-            # print("comp data before: ")
-            # time.sleep(1)
-            # print(type(data))
-            data['tag'] = tag
-            data['units'] = units
-            # print(company_data)
-            # print("data2" + data)
+            data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
+            data['Tag'] = tag
+            data['Units'] = units
             company_data = pd.concat([company_data, data], ignore_index = True)
-            # print("company_data after: " )
-            # time.sleep(2)
-            # print( company_data)
         except:
-            # print(tag + ' not found.')
-            print("womp womp")
+            print(tag + ' not found.')
+        finally:
+            time.sleep(0.1)
         
     return company_data
+
+def single_tag_EDGAR_query(cik, header, tag) -> pd.DataFrame:
+    url = ep["cf"] + 'CIK' + cik + '.json'
+    response = requests.get(url, headers=header)
+    # print("response: ")
+    # print(response)
+
+    company_data = pd.DataFrame()
+
+    try:
+        units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
+        data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
+        data['Tag'] = tag
+        data['Units'] = units
+        company_data = pd.concat([company_data, data], ignore_index = True)
+    except:
+        print(tag + ' not found.')
+    finally:
+        time.sleep(0.1)
+        
+    return company_data
+
+#organize data titles into variable lists
+revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet']
+netIncome = ['NetIncomeLoss']
+operatingIncome = ['OperatingIncomeLoss']
+taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
+altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
+shortTermDebt = ['LongTermDebtCurrent']
+longTermDebt1 = ['LongTermDebtNoncurrent']
+longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent']
+totalAssets = ['Assets']
+totalLiabilities = ['Liabilities']
+operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities']
+capEx = ['PaymentsToAcquirePropertyPlantAndEquipment']
+totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock']
+declaredCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared']
+paidCommonStockDivsPerShare = ['CommonStockDividendsPerShareCashPaid']
+cashOnHand = ['CashCashEquivalentsAndShortTermInvestments']
+eps = ['EarningsPerShareBasic']
+basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic']
+
+ultimateList = [revenue,netIncome, operatingIncome, taxRate, altVariables, shortTermDebt, longTermDebt1, 
+                longTermDebt2, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
+                declaredCommonStockDivsPerShare, paidCommonStockDivsPerShare, cashOnHand, eps, basicSharesOutstanding]
+
+#make a function that writes csv's based on variable data for each company
+### Deprecated with combined below function working for all data gathering, regardless of list size!
+# def write_single_stat_to_csv_from_EDGAR(ticker, cik, tag):
+#     for i in range(len(tag)):
+#         # print(tag[i])
+#         # print(i)
+#         try:
+#             tag_target = tag[i]
+#             # print(tag_target)
+#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#             company_data['Ticker'] = ticker #'ticker'
+#             company_data['CIK'] = cik #'cik' all in brackets
+#             csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+#             time.sleep(0.3)
+#         except:
+#             print('Could not access ' + tag[i] + ".")
+
+# write_single_stat_to_csv_from_EDGAR('MSFT', '0000789019', revenue) #IT WORKS!
+
+#tag must be a list!
+def write_to_csv_from_EDGAR(ticker, cik, tag):
+    if len(tag) > 1:
+        for y in tag:
+            if len(y) > 1:
+                for z in y:
+                    try:
+                        tag_target = z
+                        # print("try: " + tag_target)
+                        company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+                        company_data['Ticker'] = ticker #'ticker'
+                        company_data['CIK'] = cik #'cik' all in brackets
+                        csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+                        time.sleep(0.3)
+                    except:
+                        print('Could not access ' + tag_target + ".")
+            else:
+                try:
+
+                    tag_target = y[0]
+                    # print("try: " + tag_target)
+                    company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+                    company_data['Ticker'] = ticker #'ticker'
+                    company_data['CIK'] = cik #'cik' all in brackets
+                    csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+                    time.sleep(0.3)
+                except:
+                    print('Could not access ' + tag_target + ".")
+
+    else:
+        try:
+            tag_target = tag[0]
+            # print("else: " + tag_target)
+            company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+            company_data['Ticker'] = ticker #'ticker'
+            company_data['CIK'] = cik #'cik' all in brackets
+            csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+            time.sleep(0.3)
+        except:
+            print('Could not access ' + tag_target + ".")
+
+# write_to_csv_from_EDGAR('MSFT', '0000789019', ultimateList)
+# print(len(revenue))
+# tar = eps
+# def loopCheck(target):
+#     if len(target) > 1:
+#         for y in target:
+#             if len(y) > 1:
+#                 for z in y:
+#                     print(z)
+#             else:
+#                 print(y[0])
+#     else:
+#         print(target[0])
+
+# loopCheck(eps)
+# loopCheck(revenue)
+# loopCheck(ultimateList)
+
+# print(ultimateList) #aw lawdy
+# print(ultimateList[0]) #a list!
+# print(ultimateList[0][0]) #a list's content!
+
+#roic = nopat / invested capital
+#nopat = operating income * (1-tax rate)
+# invested capital = total equity + total debt + non operating cash
+#tequity = t assets - t liabilities
+#ocf - capex = free cash flow
+#fcf margin = fcf / revenue
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
 
 # To build the data frame, we’ll execute this function 
 # by looping over each company in the tickers_CIK dataframe we built above. 
@@ -140,42 +261,28 @@ def EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
 # booted from the API by respecting the rate limit of 1 request every 0.1 seconds. 
 # To preserve all our computer’s hard work, we’ll save the dataframe to a csv at the end.
 
-#2nd function my dude gogogo
-EDGAR_data = pd.DataFrame()
-
-# print(ep["cf"] + 'CIK' + '123' + '.json')
-
 #tickers_cik
-for i in range(math.floor(len(full_cik_list)/10531)):
-    cik = full_cik_list['CIK'][i] #tickers_cik['cik_str'][i]
-    ticker = full_cik_list['Ticker'][i] #tickers_cik['ticker'][i]
-    title = full_cik_list['Company Name'][i] #tickers_cik['title'][i]
+# for i in range(math.floor(len(full_cik_list)/10531)):
+#     cik = full_cik_list['CIK'][i] #tickers_cik['cik_str'][i]
+#     ticker = full_cik_list['Ticker'][i] #tickers_cik['ticker'][i]
+#     title = full_cik_list['Company Name'][i] #tickers_cik['title'][i]
 
-    # print(cik)
-    # print(ticker)
-    # print(title)
-
+#     company_data = EDGAR_query(cik, header,['EarningsPerShareBasic','CommonStockDividendsPerShareDeclared', 'CommonStockDividendsPerShareCashPaid']) #remember no tags is possible
     
-
-#     ##LUKE GONNA HAVE TO START HERE ME THINKS, print some stuff, see if you're accessing anything useful
-    company_data = EDGAR_query(cik, header,['AccountsPayableCurrent']) #remember we can do no tags
-    
-    # print(company_data)
-#     company_data['CIK'] = cik #'cik' all in brackets
 #     company_data['Ticker'] = ticker #'ticker'
 #     company_data['Company Name'] = title #'title'
+#     company_data['CIK'] = cik #'cik' all in brackets
 
-#     #Filter for quarterly data only
+# #    #Filter for annual data only
 #     try:
-#         company_data = company_data[company_data['frame'].str.contains('Q') == True] #Keep only quarterly data
+#         company_data = company_data[company_data['form'].str.contains('10-K') == True] #Keep only annual data
 #     except:
 #         print('frame not a column.')
     
 #     EDGAR_data = pd.concat([EDGAR_data, company_data], ignore_index = True)
-#     print(i)
 #     time.sleep(0.1)
 
-# csv.simple_saveDF_to_csv('./sec_related', EDGAR_data, 'EDGAR1', False)
+# csv.simple_saveDF_to_csv('./sec_related/', EDGAR_data, 'EDGAR1', False)
 
 ###
 
