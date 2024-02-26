@@ -11,9 +11,21 @@ import datetime as dt
 import time
 import yfinance as yf
 import json
+import os
 
 def mod_test():
     print("you loaded correctly!")
+
+#save any data frame into a csv for later use. Param's: save location, df to be saved, name of csv as string
+# #It appears that saving to csv with indicies set to false, doesn't create the index row multiplier effect.
+def simple_appendTo_csv(folder, df, name, index_flag):
+    try:
+        output_path = folder + name + '.csv'
+        df.to_csv(output_path, mode='a', header=not os.path.exists(output_path), index=index_flag)
+        print("DF appended to CSV in location: " + folder + name + '.csv')
+    except Exception as err:
+        print("Simple Append to CSV Error Message:")
+        print(err)
 
 #save any data frame into a csv for later use. Param's: save location, df to be saved, name of csv as string
 # #It appears that saving to csv with indicies set to false, doesn't create the index row multiplier effect.

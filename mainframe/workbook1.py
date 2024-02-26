@@ -15,6 +15,7 @@ import json
 import pyarrow
 import requests
 import math
+from itertools import chain
 
 import csv_modules as csv
 # import nasdaq_related.nasdaq_list_related as ndl #remove at discretion, how to import modules across project
@@ -89,11 +90,10 @@ full_cik_list = csv.get_df_from_csv_with_typeset('./sec_related/', 'full_tickers
 # The function will take three arguments: a company CIK, a header dictionary, and a list of tags. 
 # If no tags are given, we’ll define the default to return all tags for the given company (the full EDGAR download).
 
-def list_of_tags_EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
+#gives tags to get from SEC. returns dataframe filled with info!
+def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
     url = ep["cf"] + 'CIK' + cik + '.json'
     response = requests.get(url, headers=header)
-    print("response: ")
-    print(response)
 
     if tag == None:
         tags = list(response.json()['facts']['us-gaap'].keys())
@@ -102,127 +102,271 @@ def list_of_tags_EDGAR_query(cik, header, tag: list=None) -> pd.DataFrame:
 
     company_data = pd.DataFrame()
 
-    for i in range(len(tags)): 
+    for i in range(len(tags)):
         try:
-            tag = tags[i]
+            tag = tags[i] 
             units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
             data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
             data['Tag'] = tag
             data['Units'] = units
+            data['Ticker'] = ticker
+            data['CIK'] = cik
             company_data = pd.concat([company_data, data], ignore_index = True)
         except:
-            print(tag + ' not found.')
+            print(str(tags[i]) + ' not found for ' + ticker + '.')
         finally:
             time.sleep(0.1)
         
     return company_data
 
-def single_tag_EDGAR_query(cik, header, tag) -> pd.DataFrame:
-    url = ep["cf"] + 'CIK' + cik + '.json'
-    response = requests.get(url, headers=header)
-    # print("response: ")
-    # print(response)
-
-    company_data = pd.DataFrame()
-
-    try:
-        units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
-        data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
-        data['Tag'] = tag
-        data['Units'] = units
-        company_data = pd.concat([company_data, data], ignore_index = True)
-    except:
-        print(tag + ' not found.')
-    finally:
-        time.sleep(0.1)
-        
-    return company_data
-
-#organize data titles into variable lists
-revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet']
-netIncome = ['NetIncomeLoss']
+#organizing data titles into variable lists
+revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet']
+netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations']
 operatingIncome = ['OperatingIncomeLoss']
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
-altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
+interestPaid = ['InterestExpense'] #seems accurate for REITs, not for MSFT. hmmm
+# altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
 shortTermDebt = ['LongTermDebtCurrent']
 longTermDebt1 = ['LongTermDebtNoncurrent']
 longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent']
 totalAssets = ['Assets']
 totalLiabilities = ['Liabilities']
 operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities']
-capEx = ['PaymentsToAcquirePropertyPlantAndEquipment']
+capEx = ['PaymentsToAcquirePropertyPlantAndEquipment'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock']
-declaredCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared']
-paidCommonStockDivsPerShare = ['CommonStockDividendsPerShareCashPaid']
-cashOnHand = ['CashCashEquivalentsAndShortTermInvestments']
+declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid']
+# cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
+#                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
+#                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
+# netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
 eps = ['EarningsPerShareBasic']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic']
+gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
+deprecAndAmor = ['DepreciationDepletionAndAmortization']
 
-ultimateList = [revenue,netIncome, operatingIncome, taxRate, altVariables, shortTermDebt, longTermDebt1, 
+#roic = nopat / invested capital
+#nopat = operating income * (1-tax rate)
+# invested capital = total equity + total debt + non operating cash
+#tequity = t assets - t liabilities
+#ocf - capex = free cash flow
+#fcf margin = fcf / revenue
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# You almost end up with a bas****ized affo value because of the discrepancy tho!
+#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
+
+ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
-                declaredCommonStockDivsPerShare, paidCommonStockDivsPerShare, cashOnHand, eps, basicSharesOutstanding]
+                declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor ]
+# removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
-#make a function that writes csv's based on variable data for each company
-### Deprecated with combined below function working for all data gathering, regardless of list size!
-# def write_single_stat_to_csv_from_EDGAR(ticker, cik, tag):
-#     for i in range(len(tag)):
-#         # print(tag[i])
-#         # print(i)
-#         try:
-#             tag_target = tag[i]
-#             # print(tag_target)
-#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#             company_data['Ticker'] = ticker #'ticker'
-#             company_data['CIK'] = cik #'cik' all in brackets
-#             csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-#             time.sleep(0.3)
-#         except:
-#             print('Could not access ' + tag[i] + ".")
+ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
-# write_single_stat_to_csv_from_EDGAR('MSFT', '0000789019', revenue) #IT WORKS!
+#Good working version! grabs that data, saves it to csv
+def write_to_csv_from_EDGAR(ticker, cik, tagList, year, version):
+    try:
+        company_data = EDGAR_query(ticker, cik, header, tagList) #remember no tags is possible
+    except Exception as err:
+        print('write to csv has broken')
+        print(err)                
+    finally:
+        csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
 
-#tag must be a list!
-def write_to_csv_from_EDGAR(ticker, cik, tag):
-    if len(tag) > 1:
-        for y in tag:
-            if len(y) > 1:
-                for z in y:
-                    try:
-                        tag_target = z
-                        # print("try: " + tag_target)
-                        company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-                        company_data['Ticker'] = ticker #'ticker'
-                        company_data['CIK'] = cik #'cik' all in brackets
-                        csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-                        time.sleep(0.3)
-                    except:
-                        print('Could not access ' + tag_target + ".")
-            else:
-                try:
+# print(csv.simple_get_df_from_csv('./sec_related/stocks/','MSFT' + '_' + '2024' + '_V0'))
+# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\sec_related\stocks\MSFT_2024_V0.csv
 
-                    tag_target = y[0]
-                    # print("try: " + tag_target)
-                    company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-                    company_data['Ticker'] = ticker #'ticker'
-                    company_data['CIK'] = cik #'cik' all in brackets
-                    csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-                    time.sleep(0.3)
-                except:
-                    print('Could not access ' + tag_target + ".")
+def get_Only_10k_info(df):
+    try:
+        filtered_data = pd.DataFrame()
+        filtered_data = df[df['form'].str.contains('10-K') == True]
+    except Exception as err:
+        print("10k filter error")
+        print(err)
+    finally:
+        return filtered_data
 
-    else:
-        try:
-            tag_target = tag[0]
-            # print("else: " + tag_target)
-            company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-            company_data['Ticker'] = ticker #'ticker'
-            company_data['CIK'] = cik #'cik' all in brackets
-            csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-            time.sleep(0.3)
-        except:
-            print('Could not access ' + tag_target + ".")
+def orderAttributeDF(df):
+    try:
+        filtered_data = pd.DataFrame()
+        filtered_data = df.sort_values(by=['end','val'], ascending=True)
+    except Exception as err:
+        print("order attribute error")
+        print(err)
+    finally:
+        return filtered_data
 
-# write_to_csv_from_EDGAR('MSFT', '0000789019', ultimateList)
+def dropDuplicatesInDF(df):
+    try:
+        filtered_data = pd.DataFrame()
+        filtered_data = df.drop_duplicates(subset=['val'])
+    except Exception as err:
+        print("drop duplicates error")
+        print(err)
+    finally:
+        return filtered_data
+
+def dropDuplicatesInDF_property(df):
+    try:
+        filtered_data = pd.DataFrame()
+        filtered_data = df.drop_duplicates(subset=['val'])
+        filtered_data = df.drop_duplicates(subset=['end'], keep='last')
+    except Exception as err:
+        print("drop duplicates error")
+        print(err)
+    finally:
+        return filtered_data
+
+def dropAllExceptFYRecords(df):
+    try:
+        returned_data = pd.DataFrame()
+        for x in df:
+            if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
+                returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
+        return returned_data
+    except Exception as err:
+        print("drop all except FY data rows error")
+        print(err)
+
+#LUKE: let's try opening the msft csv, load column containing specific list data above into new df, print that df to see what we got. or save it to csv for perusal. see what kind of cleaning is needed for revenue to start!
+# simple_saveDF_to_csv(folder, df, name, index_flag)
+def consolidateAttribute(ticker, year, version, tagList, outputVersion):
+    try:
+        #get csv to df from params
+        filtered_data = csv.simple_get_df_from_csv('./sec_related/stocks/',ticker + '_' + year + '_V' + version)
+        held_data = pd.DataFrame()
+        returned_data = pd.DataFrame()
+    
+        for x in tagList:
+            # print(x)
+            held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+ 
+        returned_data = get_Only_10k_info(returned_data)
+        returned_data = orderAttributeDF(returned_data)
+        if tagList == gainSaleProperty:
+            returned_data = dropDuplicatesInDF_property(returned_data)
+        else:
+            returned_data = dropDuplicatesInDF(returned_data)
+        # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+    except Exception as err:
+        print(err)
+    finally:
+        #save new df in to csv
+        csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+
+#need to check: declaredORPaidCommonStockDivsPerShare,revenue,netIncome
+
+# consolidateAttribute('MSFT','2024','0',declaredORPaidCommonStockDivsPerShare, '1')
+
+# # write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
+# consolidateAttribute('O','2024','0',revenue, '1')
+
+# # write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
+# consolidateAttribute('STAG','2024','0',revenue, '1')
+
+# # write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
+# consolidateAttribute('TXN','2024','0',revenue, '1')
+
+##LUKE THIS WORKS I GOTCHU BRO TY TY NOW GO SLEEP <3
+
+dftesterlady = csv.simple_get_df_from_csv('./sec_related/stocks/','STAG_dataFilter_V1')
+# print(dftesterlady)
+rd = dftesterlady[(dftesterlady['start'].str.contains('01-01')==True) & (dftesterlady['end'].str.contains('12-31')==True)]
+# for x in dftesterlady:
+#     print(dftesterlady[x])
+#     if '01-01' in dftesterlady['start']: #dftesterlady[(dftesterlady['start'].str.contains('01-01',regex=False)==True)]:# & dftesterlady['end'].str.contains('12-31'):
+        
+#         rd = pd.concat([rd, df[x]], ignore_index = True)
+print(rd)
+
+
+# dftesterman = dropAllExceptFYRecords(dftesterlady)
+# csv.simple_saveDF_to_csv('.sec_related/stocks/', dftesterman,'MSFT_yr_drop',False)
+
+#held_data = filtered_data[filtered_data['form'].str.contains('10-K') == True]
+# testlist1 = [item for sublist in ultimateList for item in sublist]
+# print(testlist1)
+
+# print(EDGAR_query('MSFT', '0000789019',header,ultimateTagsList))
+# print(len(ultimateList))
+
+
+# write_to_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024', '0') #OMG IT WORKS #WIN!
+
+### Later when checking what data wasn't gathered:
+# csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+
+
+# print(ultimateList) #aw lawdy
+# print(ultimateList[0]) #a list!
+# print(ultimateList[0][0]) #a list's content!
+
+#roic = nopat / invested capital
+#nopat = operating income * (1-tax rate)
+# invested capital = total equity + total debt + non operating cash
+#tequity = t assets - t liabilities
+#ocf - capex = free cash flow
+#fcf margin = fcf / revenue
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# You almost end up with a bas****ized affo value because of the discrepancy tho!
+
+#tickers_cik
+# for i in range(math.floor(len(full_cik_list)/10531)):
+#     cik = full_cik_list['CIK'][i] #tickers_cik['cik_str'][i]
+#     ticker = full_cik_list['Ticker'][i] #tickers_cik['ticker'][i]
+#     title = full_cik_list['Company Name'][i] #tickers_cik['title'][i]
+# test
+#     company_data = EDGAR_query(cik, header,['EarningsPerShareBasic','CommonStockDividendsPerShareDeclared', 'CommonStockDividendsPerShareCashPaid']) #remember no tags is possible
+    
+#     company_data['Ticker'] = ticker #'ticker'
+#     company_data['Company Name'] = title #'title'
+#     company_data['CIK'] = cik #'cik' all in brackets
+
+# #    #Filter for annual data only
+#     try:
+#         company_data = company_data[company_data['form'].str.contains('10-K') == True] #Keep only annual data
+#     except:
+#         print('frame/form not a column.')
+    
+#     EDGAR_data = pd.concat([EDGAR_data, company_data], ignore_index = True)
+#     time.sleep(0.1)
+
+# csv.simple_saveDF_to_csv('./sec_related/', EDGAR_data, 'EDGAR1', False)
+
+###
+
+# Let’s quickly visualize some of the data we just downloaded. 
+# As an example we’ll look at quarterly revenues for one of the largest 
+# US-based global logistics companies, Expeditors International of Washington Inc. 
+# We’ll also clean up the data a bit to make a more readable figure.
+
+# EDGAR_data2 = pd.read_csv('./sec_related/' + 'EDGAR1' + '.csv')
+# EXPD_data = EDGAR_data2[EDGAR_data2['ticker'] == 'EXPD'].copy()
+# EXPD_data['frame'] = EXPD_data['frame'].str.replace('CY',"")
+# EXPD_data['val_billions'] = EXPD_data['val'] / 1000000000
+
+# sns.set_theme(style='darkgrid')
+# fig = sns.lineplot(data=EXPD_data, x='frame', y='val_billions')
+# fig.set(xlabel='Quarter', ylabel='Revenue(billions USD)', title='EXPD')
+# plt.show()
+
+
+
+# f = open('./demoData.txt', 'a')
+    # f.write(company_data)
+    # f.close()
+
+# f = open('./demoData.txt', 'r')
+# print(f.read())
+
+
+
+
+# -----------------------------------------------------------------SAVED until prod, or for notes, or or or---------------------
+#nifty loop checking
 # print(len(revenue))
 # tar = eps
 # def loopCheck(target):
@@ -240,79 +384,122 @@ def write_to_csv_from_EDGAR(ticker, cik, tag):
 # loopCheck(revenue)
 # loopCheck(ultimateList)
 
-# print(ultimateList) #aw lawdy
-# print(ultimateList[0]) #a list!
-# print(ultimateList[0][0]) #a list's content!
+### SAVED IN CASE IT BREAKS OVER NIGHT! again. guh.
+# #Good working version!
+# #tag must be a list! or a list of lists! but no deeper than those two levels!
+# def write_to_csv_from_EDGAR(ticker, cik, tag, year, version):
+#     if len(tag) > 1:
+#         for y in tag:
+#             if (str(type(y)) == "<class 'str'>"): 
+#                 try:
+#                     tag_target = y
+#                     company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#                     company_data['Ticker'] = ticker #'ticker'
+#                     company_data['CIK'] = cik #'cik' all in brackets
+#                     # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
+#                     time.sleep(0.1)
+#                 except:
+#                     print('Could not access ' + tag_target + ".")
+#                     df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
+#                     df_notFound['Ticker'] = ticker
+#                     df_notFound['CIK'] = cik
+#                     df_notFound['Tag'] = tag
+#                     csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#                 finally:
+#                     csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+                    
+#             else:
+#                 for z in y:
+#                     try:
+#                         tag_target = z
+#                         company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#                         company_data['Ticker'] = ticker #'ticker'
+#                         company_data['CIK'] = cik #'cik' all in brackets
+#                         # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
+#                         time.sleep(0.1)
+#                     except:
+#                         print('Could not access ' + tag_target + ".")
+#                         df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
+#                         df_notFound['Ticker'] = ticker
+#                         df_notFound['CIK'] = cik
+#                         df_notFound['Tag'] = tag
+#                         csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#                     finally:
+#                         csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
 
-#roic = nopat / invested capital
-#nopat = operating income * (1-tax rate)
-# invested capital = total equity + total debt + non operating cash
-#tequity = t assets - t liabilities
-#ocf - capex = free cash flow
-#fcf margin = fcf / revenue
-#payout ratio = divs paid / net income
-# modded payout ratio = divs paid / fcf
+#     else:
+#         try:
+#             tag_target = tag[0]
+#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#             company_data['Ticker'] = ticker #'ticker'
+#             company_data['CIK'] = cik #'cik' all in brackets
+#             # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+#             time.sleep(0.1)
+#         except:
+#             print('Could not access ' + tag_target + ".")
+#             csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#         finally:
+#             csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+#### bad version, but something to start with if it breaks again mysteriously.
+# def write_to_csv_from_EDGAR(ticker, cik, tag, year, version):
+#     if len(tag) > 1:
+#         # print("tag type: " + str(type(tag)))
+#         for y in tag:
+#             # print("y n type: " + y + ", " +  str(type(y)))
+#             if (str(type(y)) == "<class 'str'>"): #if y > 1:
+#                 # print("y: " + y)
+#                 for z in y:
+#                     print("z: " + z)
+#                     print("z n  type: " + z+ ", " +  str(type(z)))
+#                     try:
+#                         tag_target = z
+#                         # print("try: " + tag_target)
+#                         company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#                         company_data['Ticker'] = ticker #'ticker'
+#                         company_data['CIK'] = cik #'cik' all in brackets
+#                         # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
+#                         time.sleep(0.1)
+#                     except:
+#                         print('Could not access ' + tag_target + ".")
+#                         df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
+#                         df_notFound['Ticker'] = ticker
+#                         df_notFound['CIK'] = cik
+#                         df_notFound['Tag'] = tag
+#                         csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#                     finally:
+#                         exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+#             else:
+#                 try:
 
-# To build the data frame, we’ll execute this function 
-# by looping over each company in the tickers_CIK dataframe we built above. 
-# We added exception handling in the function above so the iterations 
-# complete even if a company doesn’t have data for the tag we’re interested in. 
-# By iterating through the companies we’ll also be able to ensure we don’t get 
-# booted from the API by respecting the rate limit of 1 request every 0.1 seconds. 
-# To preserve all our computer’s hard work, we’ll save the dataframe to a csv at the end.
+#                     tag_target = y[0]
+#                     # print("try: " + tag_target)
+#                     company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#                     company_data['Ticker'] = ticker #'ticker'
+#                     company_data['CIK'] = cik #'cik' all in brackets
+#                     # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
+#                     # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+#                     time.sleep(0.1)
+#                 except:
+#                     print('Could not access ' + tag_target + ".")
+#                     df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
+#                     df_notFound['Ticker'] = ticker
+#                     df_notFound['CIK'] = cik
+#                     df_notFound['Tag'] = tag
+#                     csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#                 finally:
+#                     exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
 
-#tickers_cik
-# for i in range(math.floor(len(full_cik_list)/10531)):
-#     cik = full_cik_list['CIK'][i] #tickers_cik['cik_str'][i]
-#     ticker = full_cik_list['Ticker'][i] #tickers_cik['ticker'][i]
-#     title = full_cik_list['Company Name'][i] #tickers_cik['title'][i]
-
-#     company_data = EDGAR_query(cik, header,['EarningsPerShareBasic','CommonStockDividendsPerShareDeclared', 'CommonStockDividendsPerShareCashPaid']) #remember no tags is possible
-    
-#     company_data['Ticker'] = ticker #'ticker'
-#     company_data['Company Name'] = title #'title'
-#     company_data['CIK'] = cik #'cik' all in brackets
-
-# #    #Filter for annual data only
-#     try:
-#         company_data = company_data[company_data['form'].str.contains('10-K') == True] #Keep only annual data
-#     except:
-#         print('frame not a column.')
-    
-#     EDGAR_data = pd.concat([EDGAR_data, company_data], ignore_index = True)
-#     time.sleep(0.1)
-
-# csv.simple_saveDF_to_csv('./sec_related/', EDGAR_data, 'EDGAR1', False)
-
-###
-
-# Let’s quickly visualize some of the data we just downloaded. 
-# As an example we’ll look at quarterly revenues for one of the largest 
-# US-based global logistics companies, Expeditors International of Washington Inc. 
-# We’ll also clean up the data a bit to make a more readable figure.
-
-# EDGAR_data2 = pd.read_csv('./sec_related/' + 'EDGAR_data' + '.csv')
-# EXPD_data = EDGAR_data2[EDGAR_data2['ticker'] == 'EXPD'].copy()
-# EXPD_data['frame'] = EXPD_data['frame'].str.replace('CY',"")
-# EXPD_data['val_billions'] = EXPD_data['val'] / 1000000000
-
-# sns.set_theme(style='darkgrid')
-# fig = sns.lineplot(data=EXPD_data, x='frame', y='val_billions')
-# fig.set(xlabel='Quarter', ylabel='Revenue(billions USD)', title='EXPD')
-# plt.show()
-
-
-# testlist = [1,2,3]
-# for i in testlist:
-#     print(i)
-# for i in range(len(testlist)):
-#     print(testlist[i])
-
-
-
-# f = open('./demoData.txt', 'a')
-    # f.write(company_data)
-    # f.close()
-
-# f = open('./demoData.txt', 'r')
-# print(f.read())
+#     else:
+#         try:
+#             tag_target = tag[0]
+#             # print("else: " + tag_target)
+#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
+#             company_data['Ticker'] = ticker #'ticker'
+#             company_data['CIK'] = cik #'cik' all in brackets
+#             # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
+#             time.sleep(0.1)
+#         except:
+#             print('Could not access ' + tag_target + ".")
+#             csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
+#         finally:
+#             exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
