@@ -82,14 +82,6 @@ type_converter = {'Ticker': str,'Company Name': str,'CIK': str}
 full_cik_list = csv.get_df_from_csv_with_typeset('./sec_related/', 'full_tickers_and_ciks', type_converter)
 #csv.simple_get_df_from_csv('./sec_related/', 'full_tickers_and_ciks') #removes leading zeroes from csv tickers. need those for api call. above fixed it.
 
-# To retrieve the EDGAR data we’ll define the following function 
-# that can both pull down the entire EDGAR database (given enough time), 
-# or specific data from a list of tags. 
-# We’ll build it around the companyfacts endpoint to give us flexibility 
-# in the tags we want returned and reduce the number of API calls. 
-# The function will take three arguments: a company CIK, a header dictionary, and a list of tags. 
-# If no tags are given, we’ll define the default to return all tags for the given company (the full EDGAR download).
-
 #gives tags to get from SEC. returns dataframe filled with info!
 def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
     url = ep["cf"] + 'CIK' + cik + '.json'
@@ -120,12 +112,16 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
     return company_data
 
 #organizing data titles into variable lists
+# altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
+# cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
+#                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
+#                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
+# netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet']
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations']
 operatingIncome = ['OperatingIncomeLoss'] #IDK if REITS even have this. Finding it from SEC is hard right now.
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense'] #seems accurate for REITs, not for MSFT. hmmm
-# altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
 shortTermDebt = ['LongTermDebtCurrent']
 longTermDebt1 = ['LongTermDebtNoncurrent']#,'LongTermDebt']
 longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent']
@@ -135,10 +131,6 @@ operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities']
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends']
 declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid']
-# cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
-#                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
-#                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
-# netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic']
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
@@ -172,9 +164,6 @@ def write_to_csv_from_EDGAR(ticker, cik, tagList, year, version):
         print(err)                
     finally:
         csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
-
-# print(csv.simple_get_df_from_csv('./sec_related/stocks/','MSFT' + '_' + '2024' + '_V0'))
-# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\sec_related\stocks\MSFT_2024_V0.csv
 
 def get_Only_10k_info(df):
     try:
@@ -214,7 +203,7 @@ def dropDuplicatesInDF_property(df):
         filtered_data = df.drop_duplicates(subset=['val'])
         filtered_data = df.drop_duplicates(subset=['end'], keep='last')
     except Exception as err:
-        print("drop duplicates error")
+        print("drop duplicates property error")
         print(err)
     finally:
         return filtered_data
@@ -229,27 +218,10 @@ def dropAllExceptFYRecords(df):
             return df
         else:
             return returned_data
-        # filtered_data = df.drop_duplicates(subset=['end'], keep='last')
-        # for x in df:
-        #     if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
-        #         returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
-        # return returned_data
     except Exception as err:
         print("drop all except FY data rows error")
         print(err)
 
-# def dropAllExceptFYRecords_July(df):
-#     try:
-#         returned_data = df[(df['start'].str.contains('07-01')==True) & (df['end'].str.contains('06-30')==True)]
-#         # for x in df:
-#         #     if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
-#         #         returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
-#         return returned_data
-#     except Exception as err:
-#         print("drop all except FY data rows error")
-#         print(err)
-
-#LUKE: let's try opening the msft csv, load column containing specific list data above into new df, print that df to see what we got. or save it to csv for perusal. see what kind of cleaning is needed for revenue to start!
 # simple_saveDF_to_csv(folder, df, name, index_flag)
 def consolidateAttribute(ticker, year, version, tagList, outputVersion):
     try:
@@ -259,92 +231,54 @@ def consolidateAttribute(ticker, year, version, tagList, outputVersion):
         returned_data = pd.DataFrame()
     
         for x in tagList:
-            # print(x)
             held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
  
         returned_data = get_Only_10k_info(returned_data)
         returned_data = orderAttributeDF(returned_data)
 
-        #LUKE might need this oonce we get to them
-        if tagList == gainSaleProperty:# or tagList == revenue:
-            returned_data = dropDuplicatesInDF_property(returned_data)
-        else:
-            returned_data = dropDuplicatesInDF(returned_data)
+        #LUKE might need to edit this, and the functions above, once we get to them en masse
+        # if tagList == gainSaleProperty:# or tagList == revenue:
+        #     returned_data = dropDuplicatesInDF_property(returned_data)
+        # else:
+        #     returned_data = dropDuplicatesInDF(returned_data)
+        #In the meantime: bon voyage!
+        returned_data = dropDuplicatesInDF(returned_data)
 
         held_data = dropAllExceptFYRecords(returned_data)
-        # if held_data.empty:
-        #     held_data = returned_data
-        #     print("fy records, held was empty and now they match")
-            # csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
-        # else:
-        #     break
-            # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
-
-        # held_data = dropAllExceptFYRecords_July(held_data)
-        # if held_data.empty:
-        #     # held_data = returned_data
-        #     print("held empty")
-        #     csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
-        # else:
-        #     # break
-        #     print("held data given")
+        
         csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
     except Exception as err:
         print(err)
-    # finally:
-    #     #save new df in to csv
-    #     csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
 
 #need to check: declaredORPaidCommonStockDivsPerShare,revenue,netIncome
 inputvar = netIncome
 namevar = 'netIncome1'
-#eps check for all with stag too woof
 
 consolidateAttribute('MSFT','2024','0',inputvar, namevar)
 
-# # write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
+# write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
 consolidateAttribute('O','2024','0',inputvar, namevar)
 
-# # write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
+# write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
 consolidateAttribute('STAG','2024','0',inputvar, namevar)
 
-# # write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
+# write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
 consolidateAttribute('TXN','2024','0',inputvar, namevar)
 
-##LUKE THIS WORKS I GOTCHU BRO TY TY NOW GO SLEEP <3ls
-
-# dftesterlady = csv.simple_get_df_from_csv('./sec_related/stocks/','STAG_dataFilter_V1')
-# # print(dftesterlady)
-# rd = dftesterlady[(dftesterlady['start'].str.contains('01-01')==True) & (dftesterlady['end'].str.contains('12-31')==True)]
-# for x in dftesterlady:
-#     print(dftesterlady[x])
-#     if '01-01' in dftesterlady['start']: #dftesterlady[(dftesterlady['start'].str.contains('01-01',regex=False)==True)]:# & dftesterlady['end'].str.contains('12-31'):
-        
-#         rd = pd.concat([rd, df[x]], ignore_index = True)
-# print(rd)
+##LUKE You did so great! Let's crunch some numbers now!
 
 
 # dftesterman = dropAllExceptFYRecords(dftesterlady)
 # csv.simple_saveDF_to_csv('.sec_related/stocks/', dftesterman,'MSFT_yr_drop',False)
 
-#held_data = filtered_data[filtered_data['form'].str.contains('10-K') == True]
-# testlist1 = [item for sublist in ultimateList for item in sublist]
-# print(testlist1)
-
 # print(EDGAR_query('MSFT', '0001479094',header,ultimateTagsList))
 # print(len(ultimateList))
-
 
 # write_to_csv_from_EDGAR('STAG', '0001479094', ultimateTagsList, '2024', '0') #OMG IT WORKS #WIN!
 
 ### Later when checking what data wasn't gathered:
 # csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-
-
-# print(ultimateList) #aw lawdy
-# print(ultimateList[0]) #a list!
-# print(ultimateList[0][0]) #a list's content!
 
 #roic = nopat / invested capital
 #nopat = operating income * (1-tax rate)
@@ -397,17 +331,12 @@ consolidateAttribute('TXN','2024','0',inputvar, namevar)
 # fig.set(xlabel='Quarter', ylabel='Revenue(billions USD)', title='EXPD')
 # plt.show()
 
-
-
 # f = open('./demoData.txt', 'a')
     # f.write(company_data)
     # f.close()
 
 # f = open('./demoData.txt', 'r')
 # print(f.read())
-
-
-
 
 # -----------------------------------------------------------------SAVED until prod, or for notes, or or or---------------------
 #nifty loop checking
