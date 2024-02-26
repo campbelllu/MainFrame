@@ -122,24 +122,24 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
 #organizing data titles into variable lists
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet']
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations']
-operatingIncome = ['OperatingIncomeLoss']
+operatingIncome = ['OperatingIncomeLoss'] #IDK if REITS even have this. Finding it from SEC is hard right now.
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense'] #seems accurate for REITs, not for MSFT. hmmm
 # altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
 shortTermDebt = ['LongTermDebtCurrent']
-longTermDebt1 = ['LongTermDebtNoncurrent']
+longTermDebt1 = ['LongTermDebtNoncurrent']#,'LongTermDebt']
 longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent']
 totalAssets = ['Assets']
 totalLiabilities = ['Liabilities']
 operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities']
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
-totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock']
+totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends']
 declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid']
 # cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
 #                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
 #                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
 # netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
-eps = ['EarningsPerShareBasic']
+eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic']
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
 deprecAndAmor = ['DepreciationDepletionAndAmortization']
@@ -200,12 +200,14 @@ def dropDuplicatesInDF(df):
     try:
         filtered_data = pd.DataFrame()
         filtered_data = df.drop_duplicates(subset=['val'])
+        filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #LUKE 'start' may be redundant, we'll see
     except Exception as err:
         print("drop duplicates error")
         print(err)
     finally:
         return filtered_data
 
+#might get deprecated!
 def dropDuplicatesInDF_property(df):
     try:
         filtered_data = pd.DataFrame()
@@ -219,14 +221,33 @@ def dropDuplicatesInDF_property(df):
 
 def dropAllExceptFYRecords(df):
     try:
-        returned_data = pd.DataFrame()
-        for x in df:
-            if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
-                returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
-        return returned_data
+        returned_data = df[(df['start'].str.contains('01-01')==True) & (df['end'].str.contains('12-31')==True)]
+        if returned_data.empty:
+            returned_data = df[(df['start'].str.contains('07-01')==True) & (df['end'].str.contains('06-30')==True)]
+
+        if returned_data.empty:
+            return df
+        else:
+            return returned_data
+        # filtered_data = df.drop_duplicates(subset=['end'], keep='last')
+        # for x in df:
+        #     if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
+        #         returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
+        # return returned_data
     except Exception as err:
         print("drop all except FY data rows error")
         print(err)
+
+# def dropAllExceptFYRecords_July(df):
+#     try:
+#         returned_data = df[(df['start'].str.contains('07-01')==True) & (df['end'].str.contains('06-30')==True)]
+#         # for x in df:
+#         #     if df['start'].str.contains('01-01') and df['end'].str.contains('12-31'):
+#         #         returned_data = pd.concat([returned_data, df[x]], ignore_index = True)
+#         return returned_data
+#     except Exception as err:
+#         print("drop all except FY data rows error")
+#         print(err)
 
 #LUKE: let's try opening the msft csv, load column containing specific list data above into new df, print that df to see what we got. or save it to csv for perusal. see what kind of cleaning is needed for revenue to start!
 # simple_saveDF_to_csv(folder, df, name, index_flag)
@@ -244,41 +265,64 @@ def consolidateAttribute(ticker, year, version, tagList, outputVersion):
  
         returned_data = get_Only_10k_info(returned_data)
         returned_data = orderAttributeDF(returned_data)
-        if tagList == gainSaleProperty:
+
+        #LUKE might need this oonce we get to them
+        if tagList == gainSaleProperty:# or tagList == revenue:
             returned_data = dropDuplicatesInDF_property(returned_data)
         else:
             returned_data = dropDuplicatesInDF(returned_data)
-        # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+
+        held_data = dropAllExceptFYRecords(returned_data)
+        # if held_data.empty:
+        #     held_data = returned_data
+        #     print("fy records, held was empty and now they match")
+            # csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+        # else:
+        #     break
+            # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+
+        # held_data = dropAllExceptFYRecords_July(held_data)
+        # if held_data.empty:
+        #     # held_data = returned_data
+        #     print("held empty")
+        #     csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+        # else:
+        #     # break
+        #     print("held data given")
+        csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
     except Exception as err:
         print(err)
-    finally:
-        #save new df in to csv
-        csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+    # finally:
+    #     #save new df in to csv
+    #     csv.simple_saveDF_to_csv('./sec_related/stocks/',returned_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
 
 #need to check: declaredORPaidCommonStockDivsPerShare,revenue,netIncome
+inputvar = netIncome
+namevar = 'netIncome1'
+#eps check for all with stag too woof
 
-# consolidateAttribute('MSFT','2024','0',declaredORPaidCommonStockDivsPerShare, '1')
+consolidateAttribute('MSFT','2024','0',inputvar, namevar)
 
 # # write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
-# consolidateAttribute('O','2024','0',revenue, '1')
+consolidateAttribute('O','2024','0',inputvar, namevar)
 
 # # write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
-# consolidateAttribute('STAG','2024','0',revenue, '1')
+consolidateAttribute('STAG','2024','0',inputvar, namevar)
 
 # # write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
-# consolidateAttribute('TXN','2024','0',revenue, '1')
+consolidateAttribute('TXN','2024','0',inputvar, namevar)
 
-##LUKE THIS WORKS I GOTCHU BRO TY TY NOW GO SLEEP <3
+##LUKE THIS WORKS I GOTCHU BRO TY TY NOW GO SLEEP <3ls
 
-dftesterlady = csv.simple_get_df_from_csv('./sec_related/stocks/','STAG_dataFilter_V1')
-# print(dftesterlady)
-rd = dftesterlady[(dftesterlady['start'].str.contains('01-01')==True) & (dftesterlady['end'].str.contains('12-31')==True)]
+# dftesterlady = csv.simple_get_df_from_csv('./sec_related/stocks/','STAG_dataFilter_V1')
+# # print(dftesterlady)
+# rd = dftesterlady[(dftesterlady['start'].str.contains('01-01')==True) & (dftesterlady['end'].str.contains('12-31')==True)]
 # for x in dftesterlady:
 #     print(dftesterlady[x])
 #     if '01-01' in dftesterlady['start']: #dftesterlady[(dftesterlady['start'].str.contains('01-01',regex=False)==True)]:# & dftesterlady['end'].str.contains('12-31'):
         
 #         rd = pd.concat([rd, df[x]], ignore_index = True)
-print(rd)
+# print(rd)
 
 
 # dftesterman = dropAllExceptFYRecords(dftesterlady)
@@ -288,11 +332,11 @@ print(rd)
 # testlist1 = [item for sublist in ultimateList for item in sublist]
 # print(testlist1)
 
-# print(EDGAR_query('MSFT', '0000789019',header,ultimateTagsList))
+# print(EDGAR_query('MSFT', '0001479094',header,ultimateTagsList))
 # print(len(ultimateList))
 
 
-# write_to_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024', '0') #OMG IT WORKS #WIN!
+# write_to_csv_from_EDGAR('STAG', '0001479094', ultimateTagsList, '2024', '0') #OMG IT WORKS #WIN!
 
 ### Later when checking what data wasn't gathered:
 # csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
