@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
-import pandas_datareader.data as web
+# import pandas_datareader.data as web
 #docu: https://pandas-datareader.readthedocs.io/en/latest/ 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-# %matplotlib inline
 import seaborn as sns
 import datetime as dt
 import mplfinance as mpf
@@ -15,10 +14,10 @@ import json
 import pyarrow
 import requests
 import math
-from itertools import chain
+# from itertools import chain
+from collections import Counter as counter
 
 import csv_modules as csv
-# import nasdaq_related.nasdaq_list_related as ndl #remove at discretion, how to import modules across project
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
@@ -27,6 +26,7 @@ header = {'User-Agent':'campbelllu3@gmail.com'}
 # tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
 # tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
 # tickers_cik['cik_str'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
+#Then you have to save said df to csv, done below manually.
 
 #We have to parse full SEC CIK list into a df
 def convert_CIKdict_to_df(dictionary):
@@ -77,10 +77,72 @@ def convert_CIKdict_to_df(dictionary):
 #frames: cross section of data from every company filed specific accnting item in specific period. quick company comparisons
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
+fr_iC_toSEC = '../sec_related/'
+fr_iC_toSEC_stocks = '../sec_related/stocks/' #Luke this is for the restructuring
+
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str,'Company Name': str,'CIK': str}
-full_cik_list = csv.get_df_from_csv_with_typeset('./sec_related/', 'full_tickers_and_ciks', type_converter)
-#csv.simple_get_df_from_csv('./sec_related/', 'full_tickers_and_ciks') #removes leading zeroes from csv tickers. need those for api call. above fixed it.
+full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
+full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter)
+
+#Take full cik list and append sector, industry, marketcap info onto it
+def updateTickersCiksSectors():
+    #'quoteType' might be useful later to verify equity=stock vs etf=etf, uncertain, currently not included
+    try:
+        df2save = pd.DataFrame(columns=['Ticker','Company Name','CIK','Sector', 'Industry', 'Market Cap'])
+        cikList = []
+        tickerList = []
+        titleList = []
+        sectorList = []
+        industryList = []
+        marketCapList = []
+        print_tracker = 0
+        errorTracker = []
+        for i in range(math.floor(len(full_cik_list))):
+            print_tracker += 1
+            cik = full_cik_list['CIK'][i] 
+            ticker = full_cik_list['Ticker'][i]
+            title = full_cik_list['Company Name'][i]
+            try:
+
+                stock = yf.Ticker(ticker)
+                dict1 = stock.info
+
+                sector = dict1['sector']
+                industry = dict1['industry']
+                marketCap = dict1['marketCap']
+
+                cikList.append(cik)
+                tickerList.append(ticker)
+                titleList.append(title)
+                sectorList.append(sector)
+                industryList.append(industry)
+                marketCapList.append(marketCap)
+
+                time.sleep(0.1) #As a courtesy to yahoo finance, IDK if they have rate limits and will kick me, also.
+            except Exception as err:
+                print('try update tickers append lists error: ')
+                print('ticker, sector, marketcap: ',ticker,sector,marketCap)
+                errorTracker.append(ticker)
+                print(err)
+
+            if print_tracker % 10 == 0:
+                print("Finished data pull for(ticker, mrktcap): " + ticker + ', ' + str(marketCap))
+            
+        df2save['Ticker'] = tickerList
+        df2save['Company Name'] = titleList
+        df2save['CIK'] = cikList
+        df2save['Sector'] = sectorList
+        df2save['Industry'] = industryList
+        df2save['Market Cap'] = marketCapList
+        # print(df2save)
+        df3 = pd.DataFrame(errorTracker)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC, df3, 'badtickers',False)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC, df2save, 'full_tickersCik_sectorsInd', False)
+    except Exception as err:
+        print('update tickerscikssectorsindustry error: ')
+        print(err)
+# updateTickersCiksSectors()
 
 #gives tags to get from SEC. returns dataframe filled with info!
 def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
@@ -116,7 +178,7 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
 # cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
 #                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
 #                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
-# netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
+netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect'] #operCF + InvestCF + FinancingCF
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet']
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations']
 operatingIncome = ['OperatingIncomeLoss'] #IDK if REITS even have this. Finding it from SEC is hard right now.
@@ -136,34 +198,25 @@ basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic']
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
 deprecAndAmor = ['DepreciationDepletionAndAmortization']
 
-#roic = nopat / invested capital
-#nopat = operating income * (1-tax rate)
-# invested capital = total equity + total debt + non operating cash
-#tequity = t assets - t liabilities
-#ocf - capex = free cash flow
-#fcf margin = fcf / revenue
-#payout ratio = divs paid / net income
-# modded payout ratio = divs paid / fcf
-# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
-# You almost end up with a bas****ized affo value because of the discrepancy tho!
-#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
-
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
-                declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor ]
+                declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow ]
+ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
+                'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
+                'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow' ]
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
 #Good working version! grabs that data, saves it to csv
-def write_to_csv_from_EDGAR(ticker, cik, tagList, year, version):
+def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
     try:
         company_data = EDGAR_query(ticker, cik, header, tagList) #remember no tags is possible
     except Exception as err:
         print('write to csv has broken')
         print(err)                
     finally:
-        csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+        csv.simple_appendTo_csv(fr_iC_toSEC_stocks, company_data, ticker + '_Master_' + year + '_V' + version, False)
 
 def get_Only_10k_info(df):
     try:
@@ -223,17 +276,18 @@ def dropAllExceptFYRecords(df):
         print(err)
 
 # simple_saveDF_to_csv(folder, df, name, index_flag)
-def consolidateAttribute(ticker, year, version, tagList, outputVersion):
+def consolidateSingleAttribute(ticker, year, version, tagList, outputName):
     try:
         #get csv to df from params
-        filtered_data = csv.simple_get_df_from_csv('./sec_related/stocks/',ticker + '_' + year + '_V' + version)
+        filtered_data = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_Master_' + year + '_V' + version)
         held_data = pd.DataFrame()
         returned_data = pd.DataFrame()
     
         for x in tagList:
+            
             held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
- 
+            
         returned_data = get_Only_10k_info(returned_data)
         returned_data = orderAttributeDF(returned_data)
 
@@ -245,28 +299,187 @@ def consolidateAttribute(ticker, year, version, tagList, outputVersion):
         #In the meantime: bon voyage!
         returned_data = dropDuplicatesInDF(returned_data)
 
-        held_data = dropAllExceptFYRecords(returned_data)
+        returned_data = dropAllExceptFYRecords(returned_data) #was held data
         
-        csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+        # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
+
     except Exception as err:
+        print("consolidate single attr error: ")
         print(err)
 
-#need to check: declaredORPaidCommonStockDivsPerShare,revenue,netIncome
-inputvar = netIncome
-namevar = 'netIncome1'
+def createAllAttributeFiles(ticker, year, version):
+    try:
+        consolidateSingleAttribute(ticker, year, version, revenue, 'revenue')
+        consolidateSingleAttribute(ticker, year, version, netIncome, 'netIncome')
+        consolidateSingleAttribute(ticker, year, version, operatingIncome,  'operatingIncome')
+        consolidateSingleAttribute(ticker, year, version, taxRate, 'taxRate')
+        consolidateSingleAttribute(ticker, year, version, interestPaid, 'interestPaid')
+        consolidateSingleAttribute(ticker, year, version, shortTermDebt, 'shortTermDebt')
+        consolidateSingleAttribute(ticker, year, version, longTermDebt1, 'longTermDebt1')
+        consolidateSingleAttribute(ticker, year, version, longTermDebt2, 'longTermDebt2')
+        consolidateSingleAttribute(ticker, year, version, totalAssets, 'totalAssets')
+        consolidateSingleAttribute(ticker, year, version, totalLiabilities, 'totalLiabilities')
+        consolidateSingleAttribute(ticker, year, version, operatingCashFlow, 'operatingCashFlow')
+        consolidateSingleAttribute(ticker, year, version, capEx, 'capEx')
+        consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, 'totalCommonStockDivsPaid')
+        consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, 'declaredORPaidCommonStockDivsPerShare')
+        consolidateSingleAttribute(ticker, year, version, eps, 'eps')
+        consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, 'basicSharesOutstanding')
+        consolidateSingleAttribute(ticker, year, version, gainSaleProperty, 'gainSaleProperty')
+        consolidateSingleAttribute(ticker, year, version, deprecAndAmor, 'deprecAndAmor')
+        consolidateSingleAttribute(ticker, year, version, netCashFlow, 'netCashFlow')
 
-consolidateAttribute('MSFT','2024','0',inputvar, namevar)
+        ### If anyone can explain to me why this only returns a series of CSV's, all named with the appropriate list-naming, but only containing revenue's values... 
+        # ##    There may or may not be a prize involved...
+        ###    This is when the function took in a list, the ultimateListNames above, iterated through it to generate csv's. They all contained the same values, however, 
+        ###     i would iterate through the appropriate names/titles. Stumped me. So I hard coded the above while crying.
+        # for i in tagList:
+        #     checker = i
+        #     consolidateSingleAttribute(ticker, year, version, checker, checker)
+                    
+    except Exception as err:
+        print("create all error: ")
+        print(err)
 
-# write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
-consolidateAttribute('O','2024','0',inputvar, namevar)
+# Consolidate debt into TotalDebt csv
+def consolidateDebt(ticker, year): 
+    #
+    try:
+        dfShortDebt = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_shortTermDebt')
+        dfLongDebt1 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt1')
+        dfLongDebt2 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt2')
+        shortDict = {}
+        longDict1 = {}
+        longDict2 = {}
+        for x in range(len(dfShortDebt['end'])):
+            shortDict[dfShortDebt['end'][x][:4]] = dfShortDebt['val'][x]
+        for y in range(len(dfLongDebt1['end'])):
+            longDict1[dfLongDebt1['end'][y][:4]] = dfLongDebt1['val'][y]
+        for z in range(len(dfLongDebt2['end'])):
+            longDict2[dfLongDebt2['end'][z][:4]] = dfLongDebt2['val'][z]
 
-# write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
-consolidateAttribute('STAG','2024','0',inputvar, namevar)
+        totalDebtdict = dict(counter(shortDict) + counter(longDict1) + counter(longDict2))
+        tdebtholder = list(totalDebtdict.keys())
+        tdebtholder.sort() #make sure the keys(years) are in proper order for easier iteration later
+        sortedTotalDebt = {i: totalDebtdict[i] for i in tdebtholder}
 
-# write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
-consolidateAttribute('TXN','2024','0',inputvar, namevar)
+        returned_data = pd.DataFrame(sortedTotalDebt.items(), columns=['Year', 'Val'])
+
+        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalDebt', False)
+
+    except Exception as err:
+        print("consolidate debt error: ")
+        print(err)
+
+#Consolidate TotalEquity csv
+def consolidateEquity(ticker, year):
+    #
+    try:
+        dfAssets = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalAssets')
+        dfLiabilities = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalLiabilities')
+        assetsDict = {}
+        liaDict = {}
+        for x in range(len(dfAssets['end'])):
+            assetsDict[dfAssets['end'][x][:4]] = dfAssets['val'][x]
+        for y in range(len(dfLiabilities['end'])):
+            liaDict[dfLiabilities['end'][y][:4]] = dfLiabilities['val'][y]
+
+        #If either assets or liabilities are missing each other's matching years, it'll throw off calculations later. Pop them outta' there!
+        noMatchingYear1 = []
+        noMatchingYear2 = []
+        for key in assetsDict:
+            if key not in liaDict:
+                noMatchingYear1.append(key)
+        for key2 in liaDict:
+            if key not in assetsDict:
+                noMatchingYear2.append(key2)
+        for x in noMatchingYear1:
+            assetsDict.pop(x,None)
+        for y in noMatchingYear2:
+            liaDict.pop(y,None)
+
+        totalEquitydict = dict(counter(assetsDict) - counter(liaDict))
+        teqholder = list(totalEquitydict.keys())
+        teqholder.sort() #make sure the keys(years) are in proper order for easier iteration later
+        sortedTotaEquity = {i: totalEquitydict[i] for i in teqholder}
+
+        returned_data = pd.DataFrame(sortedTotaEquity.items(), columns=['Year', 'Val'])
+
+        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalEquity', False)
+
+    except Exception as err:
+        print("consolidate debt error: ")
+        print(err)
+
+# Create df -> csv including: operating income, taxRate -> nopat, invested capital, roic 
+###
+#roic = nopat / invested capital
+#nopat = operating income * (1-tax rate)
+# invested capital = total equity + total debt + non operating cash
+####
+
+
+# consolidateEquity('MSFT','2024')
+# consolidateDebt('MSFT','2024')
+
+#LUKE YOU LEFT OFF HERE
+
+# inputvar = netIncome
+# namevar = 'sanityCheck_netIncome'
+
+
+
+
+# Create df -> csv including: operatingCashFlow - capEx -> free cash flow, fcf / rev = fcf margin
+# Create df -> csv including: total divs paid, tdp / net income = payout ratio, tdp / fcf = modded payout
+# Automate the process of getting cik/ticker list from SEC, via functions, as well as cleaning list and adding sectors in later functions
+# Determine Divs/Share 
+
+
+
+#ocf - capex = free cash flow
+#fcf margin = fcf / revenue
+
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# You almost end up with a bas****ized affo value because of the discrepancy tho!
+
+#roic = nopat / invested capital
+#nopat = operating income * (1-tax rate)
+# invested capital = total equity + total debt + non operating cash
+#tequity = t assets - t liabilities
+#ocf - capex = free cash flow
+#fcf margin = fcf / revenue
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# You almost end up with a bas****ized affo value because of the discrepancy tho!
+#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
+ 
+# consolidateSingleAttribute('MSFT','2024','0',inputvar, namevar)
+# consolidateSingleAttribute('MSFT', '2024','0',netCashFlow,'netCashFlow')
+# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','0')
+
+# # write_to_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
+# consolidateAttribute('O','2024','0',inputvar, namevar)
+
+# # write_to_csv_from_EDGAR('STAG','0001479094',ultimateTagsList, '2024','0')
+# consolidateAttribute('STAG','2024','0',inputvar, namevar)
+
+# # write_to_csv_from_EDGAR('TXN','0000097476',ultimateTagsList, '2024','0')
+# consolidateAttribute('TXN','2024','0',inputvar, namevar)
+
+# consolidateSingleAttribute('TXN','2024','0',inputvar, namevar)
 
 ##LUKE You did so great! Let's crunch some numbers now!
+
+# createAllAttributeFiles('MSFT','2024','0')
+
+
+#----------------------------------
+
 
 
 # dftesterman = dropAllExceptFYRecords(dftesterlady)
@@ -280,16 +493,7 @@ consolidateAttribute('TXN','2024','0',inputvar, namevar)
 ### Later when checking what data wasn't gathered:
 # csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
 
-#roic = nopat / invested capital
-#nopat = operating income * (1-tax rate)
-# invested capital = total equity + total debt + non operating cash
-#tequity = t assets - t liabilities
-#ocf - capex = free cash flow
-#fcf margin = fcf / revenue
-#payout ratio = divs paid / net income
-# modded payout ratio = divs paid / fcf
-# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
-# You almost end up with a bas****ized affo value because of the discrepancy tho!
+
 
 #tickers_cik
 # for i in range(math.floor(len(full_cik_list)/10531)):
