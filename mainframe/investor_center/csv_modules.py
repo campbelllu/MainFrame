@@ -38,9 +38,9 @@ def simple_saveDF_to_csv(folder, df, name, index_flag):
         print(err)
 
 #load csv's into dataframe
-def simple_get_df_from_csv(folder, name):#, index_flag):
+def simple_get_df_from_csv(folder, name, index_flag):
     try:
-        df = pd.read_csv(folder + name + '.csv')#, index_col = index_flag)
+        df = pd.read_csv(folder + name + '.csv', index_col = index_flag)
     except FileNotFoundError as err:
         print("File Does Not Exist")
     else:

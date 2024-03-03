@@ -16,6 +16,7 @@ import requests
 import math
 # from itertools import chain
 from collections import Counter as counter
+import sqlite3 as sql
 
 import csv_modules as csv
 
@@ -78,7 +79,11 @@ def convert_CIKdict_to_df(dictionary):
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
 fr_iC_toSEC = '../sec_related/'
-fr_iC_toSEC_stocks = '../sec_related/stocks/' #Luke this is for the restructuring
+fr_iC_toSEC_stocks = '../sec_related/stocks/' 
+
+db_path = '../stock_data.sqlite3'
+# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\stock_data.sqlite3
+# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\investor_center\workbook1.py
 
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str,'Company Name': str,'CIK': str}
@@ -166,8 +171,10 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
             data['Ticker'] = ticker
             data['CIK'] = cik
             company_data = pd.concat([company_data, data], ignore_index = True)
-        except:
-            print(str(tags[i]) + ' not found for ' + ticker + '.')
+        except Exception as err:
+            # print(str(tags[i]) + ' not found for ' + ticker + '.')
+            print("Edgar query error: ")
+            print(err)
         finally:
             time.sleep(0.1)
         
@@ -208,15 +215,17 @@ ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'inte
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
-#Good working version! grabs that data, saves it to csv
+#Saves two different CSV's: The MASTER will contain all company data. All of it! Truncated_Master saves what is most pertinent to current calculations.
 def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
     try:
-        company_data = EDGAR_query(ticker, cik, header, tagList) #remember no tags is possible
+        company_data_truncated = EDGAR_query(ticker, cik, header, tagList)
+        company_data_full = EDGAR_query(ticker, cik, header)
     except Exception as err:
-        print('write to csv has broken')
+        print('write to csv from edgar error:')
         print(err)                
     finally:
-        csv.simple_appendTo_csv(fr_iC_toSEC_stocks, company_data, ticker + '_Master_' + year + '_V' + version, False)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, company_data_full, ticker + '_Master_' + year + '_V' + version, False)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, company_data_truncated, ticker + '_Truncated_Master_' + year + '_V' + version, False)
 
 def get_Only_10k_info(df):
     try:
@@ -275,11 +284,13 @@ def dropAllExceptFYRecords(df):
         print("drop all except FY data rows error")
         print(err)
 
-# simple_saveDF_to_csv(folder, df, name, index_flag)
-def consolidateSingleAttribute(ticker, year, version, tagList, outputName):
+# trunc_master_target = '_Truncated_Master_'
+#LUKE: Here we need to refactor so that these don't save to csv, instead calculate values, put into DF, maybe, then return DF to be uploaded into sqlite DB!
+# Returns organized data pertaining to the tag(s) provided in form of DF
+def consolidateSingleAttribute(ticker, year, version, tagList, outputName, indexFlag):
     try:
         #get csv to df from params
-        filtered_data = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_Master_' + year + '_V' + version)
+        filtered_data = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_Truncated_Master_' + year + '_V' + version, indexFlag)
         held_data = pd.DataFrame()
         returned_data = pd.DataFrame()
     
@@ -302,13 +313,57 @@ def consolidateSingleAttribute(ticker, year, version, tagList, outputName):
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         
         # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
-        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
+        return returned_data
 
     except Exception as err:
         print("consolidate single attr error: ")
         print(err)
 
-def createAllAttributeFiles(ticker, year, version):
+
+#---------------------------------------------------------------------
+
+##LUKE OK THIS WORKS. need to add it to consolidation: remove useless columns, add an end year where appropriate, then add it all to DB tables. 
+conn = sql.connect(db_path)
+query = conn.cursor()
+
+df13 = consolidateSingleAttribute('MSFT', '2024', '0', revenue, 'yes', False)
+# print(df13)
+df13 = df13.drop(['accn','fy','fp','form','filed','frame','Tag','Units'],axis=1)
+# print("truncated df13: ")
+# print(df13)
+dfList = []
+# print(df13['end'])
+for x in df13['end']:
+    dfList.append(x[:4])
+#     print(df13['end'][x])
+    # print(x[:4])
+df13.insert(2, 'year', dfList)
+# df13.insert(2,'year',dfList)
+# print("updated df13")
+# print(df13)
+
+# df13.to_sql('Revenue',conn, if_exists='replace',index=False) # 'append' adds to DB, more useful for this app. 
+
+# thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
+# query.execute(thequery)
+# conn.commit()
+df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
+
+# print(conn)
+
+# df12 = pd.read_sql('SELECT * FROM Revenue;', conn)
+print(df12)
+
+# query.close()
+# conn.close()
+#----------------------------------------------------------------------------------------------
+
+# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','0')
+
+#This one is going to be long and arduous: Each tag needs to calculate the final values. longdebt1/2+shortdebt all calc'd, then added together, THEN uploaded to DB as TotalDebt, for example. 
+#See models.py for help with each part! you got this!
+def createAllAttributesInsertToDB(ticker, year, version):
     try:
         consolidateSingleAttribute(ticker, year, version, revenue, 'revenue')
         consolidateSingleAttribute(ticker, year, version, netIncome, 'netIncome')
@@ -344,7 +399,7 @@ def createAllAttributeFiles(ticker, year, version):
 
 # Consolidate debt into TotalDebt csv
 def consolidateDebt(ticker, year): 
-    #
+    #in DB we use 'year', 'val', ticker, cik, still grabbing that end date
     try:
         dfShortDebt = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_shortTermDebt')
         dfLongDebt1 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt1')
@@ -472,8 +527,6 @@ def consolidateEquity(ticker, year):
 # consolidateAttribute('TXN','2024','0',inputvar, namevar)
 
 # consolidateSingleAttribute('TXN','2024','0',inputvar, namevar)
-
-##LUKE You did so great! Let's crunch some numbers now!
 
 # createAllAttributeFiles('MSFT','2024','0')
 
