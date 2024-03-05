@@ -80,10 +80,9 @@ ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.
 
 fr_iC_toSEC = '../sec_related/'
 fr_iC_toSEC_stocks = '../sec_related/stocks/' 
+stock_data = './stockData/'
 
 db_path = '../stock_data.sqlite3'
-# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\stock_data.sqlite3
-# \\wsl.localhost\Ubuntu\home\user1\masterSword\MainFrame\mainframe\investor_center\workbook1.py
 
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str,'Company Name': str,'CIK': str}
@@ -172,9 +171,9 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
             data['CIK'] = cik
             company_data = pd.concat([company_data, data], ignore_index = True)
         except Exception as err:
-            # print(str(tags[i]) + ' not found for ' + ticker + '.')
-            print("Edgar query error: ")
-            print(err)
+            print(str(tags[i]) + ' not found for ' + ticker + '.')
+            # print("Edgar query error: ")
+            # print(err)
         finally:
             time.sleep(0.1)
         
@@ -215,17 +214,18 @@ ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'inte
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
-#Saves two different CSV's: The MASTER will contain all company data. All of it! Truncated_Master saves what is most pertinent to current calculations.
+#Saves (possibly)two different CSV's: The MASTER will contain all company data. All of it! Truncated_Master saves what is most pertinent to current calculations.
 def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
     try:
-        company_data_truncated = EDGAR_query(ticker, cik, header, tagList)
-        company_data_full = EDGAR_query(ticker, cik, header)
+        # company_data_truncated = EDGAR_query(ticker, cik, header, tagList)
+        # company_data_full = EDGAR_query(ticker, cik, header)
+        company_data = EDGAR_query(ticker, cik, header, tagList)
     except Exception as err:
         print('write to csv from edgar error:')
         print(err)                
     finally:
-        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, company_data_full, ticker + '_Master_' + year + '_V' + version, False)
-        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, company_data_truncated, ticker + '_Truncated_Master_' + year + '_V' + version, False)
+        csv.simple_saveDF_to_csv(stock_data, company_data, ticker + '_Master_' + year + '_V' + version, False)
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, company_data_truncated, ticker + '_Truncated_Master_' + year + '_V' + version, False)
 
 def get_Only_10k_info(df):
     try:
@@ -284,13 +284,23 @@ def dropAllExceptFYRecords(df):
         print("drop all except FY data rows error")
         print(err)
 
-# trunc_master_target = '_Truncated_Master_'
-#LUKE: Here we need to refactor so that these don't save to csv, instead calculate values, put into DF, maybe, then return DF to be uploaded into sqlite DB!
+def dropUselessColumns(df):
+    try:
+        returned_data = df.drop(['accn','fy','fp','form','filed','frame','Tag','Units'],axis=1)
+
+        if returned_data.empty:
+            return df
+        else:
+            return returned_data
+    except Exception as err:
+        print("drop uselss columns error")
+        print(err)
+
 # Returns organized data pertaining to the tag(s) provided in form of DF
-def consolidateSingleAttribute(ticker, year, version, tagList, outputName, indexFlag):
+def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
     try:
         #get csv to df from params
-        filtered_data = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_Truncated_Master_' + year + '_V' + version, indexFlag)
+        filtered_data = csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
         held_data = pd.DataFrame()
         returned_data = pd.DataFrame()
     
@@ -309,8 +319,8 @@ def consolidateSingleAttribute(ticker, year, version, tagList, outputName, index
         #     returned_data = dropDuplicatesInDF(returned_data)
         #In the meantime: bon voyage!
         returned_data = dropDuplicatesInDF(returned_data)
-
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
+        returned_data = dropUselessColumns(returned_data)
         
         # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
         # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
@@ -320,25 +330,268 @@ def consolidateSingleAttribute(ticker, year, version, tagList, outputName, index
         print("consolidate single attr error: ")
         print(err)
 
+# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','0')
+#---------------------------------------------------------------------
+def cleanRevenue(df):
+    try:
+        df_col_added = df.rename(columns={'val':'revenue'})
+        df_col_added['revGrowthRate'] = df_col_added['revenue'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("cleanRevenue error: ")
+        print(err)
+
+def cleanNetIncome(df):
+    try:
+        df_col_added = df.rename(columns={'val':'netIncome'})
+        df_col_added['netIncomeGrowthRate'] = df_col_added['netIncome'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("cleanNetIncome error: ")
+        print(err)
+
+def cleanOperatingCashFlow(df):
+    try:
+        df_col_added = df.rename(columns={'val':'operatingCashFlow'})
+        df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlow'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean oper cash flow error: ")
+        print(err)
+
+def cleanNetCashFlow(df):
+    try:
+        df_col_added = df.rename(columns={'val':'netCashFlow'})
+        df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean netCashFlow error: ")
+        print(err)
+
+def cleanCapEx(df):
+    try:
+        df_col_added = df.rename(columns={'val':'capEx'})
+        # df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean capEx error: ")
+        print(err)
+
+def cleanEPS(df):
+    try:
+        df_col_added = df.rename(columns={'val':'eps'})
+        df_col_added['epsGrowthRate'] = df_col_added['eps'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean interestPaid error: ")
+        print(err)
+
+#Requires a pre-built DF include OCF and CapEX!!!
+def cleanfcf(df):
+    try:
+        df_col_added = df
+        df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
+        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change(periods=1)*100
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean fcf error: ")
+        print(err)
+
+def cleanOperatingIncome(df):
+    try:
+        df_col_added = df.rename(columns={'val':'operatingIncome'})
+        df_col_added['operatingIncomeGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean operatingIncome error: ")
+        print(err)
+
+def cleanTaxRate(df):
+    try:
+        df_col_added = df.rename(columns={'val':'taxRate'})
+        # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean operatingIncome error: ")
+        print(err)
+
+def cleanDebt(short, long1, long2):
+    try:
+        #take short, long1, long2 debt, create year column, reproduce df with just year and debt column 
+        short['year'] = short.end.str[:4]
+        long1['year'] = long1.end.str[:4]
+        long2['year'] = long2.end.str[:4]
+
+        shortNlong1 = pd.merge(short, long1, on=['year','start','end','Ticker','CIK'], how='outer')
+        shortNlong1['val_x'] = shortNlong1['val_x'].fillna(0)
+        shortNlong1['val_y'] = shortNlong1['val_y'].fillna(0)
+        shortNlong1['subTotalDebt'] = shortNlong1['val_x'] + shortNlong1['val_y']
+        shortNlong1 = shortNlong1.drop(['val_x','val_y'],axis=1)
+        
+        plusLong2 = pd.merge(shortNlong1, long2, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusLong2['val'] = plusLong2['val'].fillna(0)
+        plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
+        plusLong2 = plusLong2.drop(['subTotalDebt','val'],axis=1)
+
+        return plusLong2
+
+    except Exception as err:
+        print("clean Debt error: ")
+        print(err)
+
+def cleanTotalEquity(assets, liabilities):
+    try:
+        #take assets and liabilities and get total equity from them
+        assets['year'] = assets.end.str[:4]
+        liabilities['year'] = liabilities.end.str[:4]
+
+        assAndLies = pd.merge(assets, liabilities, on=['year','start','end','Ticker','CIK'], how='outer')
+        assAndLies['assets'] = assAndLies['val_x']
+        assAndLies['assets'] = assAndLies['assets'].fillna(0)
+        assAndLies['liabilities'] = assAndLies['val_y']
+        assAndLies['liabilities'] = assAndLies['liabilities'].fillna(0)
+        assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
+        assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
+
+        return assAndLies
+
+    except Exception as err:
+        print("clean Debt error: ")
+        print(err)
+
+
+
+
+def cleanInterestPaid(df):
+    try:
+        df_col_added = df.rename(columns={'val':'interestPaid'})
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean interestPaid error: ")
+        print(err)
+
+#---------------------------------------------------------------------
+def makeIncomeTableEntry(ticker, year, version, index_flag):
+    try:
+        rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
+        netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
+        opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
+        netcf_df = cleanNetCashFlow(consolidateSingleAttribute(ticker, year, version, netCashFlow, False))
+        capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
+        eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
+
+        revNinc = pd.merge(rev_df, netInc_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusopcf = pd.merge(revNinc, opcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusnetcf = pd.merge(plusopcf, netcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        pluscapex = pd.merge(plusnetcf, capex_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        addfcf = cleanfcf(pluscapex)
+        pluseps = pd.merge(addfcf, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
+
+        return pluseps
+
+    except Exception as err:
+        print("makeIncomeTable error: ")
+        print(err)
+
+def makeROICtableEntry(ticker, year, version, index_flag):
+    try:
+        opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
+        taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
+        totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
+                                    consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False))
+        assetsAndliabilities_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
+                                    consolidateSingleAttribute(ticker, year, version, totalLiabilities, False))
+
+        #LUKE gotta calculate ROIC my dude! :) <3
+        # print(totalDebt_df)
+
+    except Exception as err:
+        print("makeROIC table error: ")
+        print(err)
+
+
+
+
+
+# makeROICtableEntry('MSFT', '2024', '0', False)
 
 #---------------------------------------------------------------------
 
 ##LUKE OK THIS WORKS. need to add it to consolidation: remove useless columns, add an end year where appropriate, then add it all to DB tables. 
-conn = sql.connect(db_path)
-query = conn.cursor()
+# conn = sql.connect(db_path)
+# query = conn.cursor()
 
-df13 = consolidateSingleAttribute('MSFT', '2024', '0', revenue, 'yes', False)
+# cleanTotalEquity(consolidateSingleAttribute('MSFT', '2024', '0', totalAssets, False), consolidateSingleAttribute('MSFT', '2024', '0', totalLiabilities, False))
+
+# df14 = consolidateSingleAttribute('MSFT', '2024', '0', shortTermDebt, False)
+# print(df14)
+
+# df13 = cleanTaxRate(consolidateSingleAttribute('MSFT', '2024', '0', taxRate, False))
 # print(df13)
-df13 = df13.drop(['accn','fy','fp','form','filed','frame','Tag','Units'],axis=1)
-# print("truncated df13: ")
-# print(df13)
-dfList = []
+# df14 = cleanNetIncome(consolidateSingleAttribute('MSFT', '2024', '0', netIncome, False))
+# # print(df14)
+# df15 = cleanOperatingCashFlow(consolidateSingleAttribute('MSFT', '2024', '0', operatingCashFlow, False))
+# # print(df15)
+# df16 = cleanNetCashFlow(consolidateSingleAttribute('MSFT', '2024', '0', netCashFlow, False))
+# # print(df16)
+# df17 = cleanCapEx(consolidateSingleAttribute('MSFT', '2024', '0', capEx, False))
+# # print(df17)
+# df18 = cleanEPS(consolidateSingleAttribute('MSFT', '2024', '0', eps, False))
+# print(df18)
+
+# print(makeIncomeTableEntry('MSFT', '2024', '0', False))
+
+# df18 = df17['capEx'].tolist()
+# print(df18)
+
+# result = pd.merge(df15,df17, on=['year','start','end','Ticker','CIK'], how='outer')
+# # result2 = pd.merge(df13,result, on=['year','start','end','Ticker','CIK'])
+# # result = pd.merge(df14,df15, on=['year'])
+# # result2 = pd.merge(df13,result, on=['year'])
+# print(result)
+# df18 = cleanfcf(result)
+# # result['fcf'] = result['operatingCashFlow']-result['capEx']
+# print(df18)
+# print(result2)
+
+# dfList = []
 # print(df13['end'])
-for x in df13['end']:
-    dfList.append(x[:4])
-#     print(df13['end'][x])
-    # print(x[:4])
-df13.insert(2, 'year', dfList)
+
+# for x in df13['end']:
+#     dfList.append(x[:4])
+# #     print(df13['end'][x])
+#     # print(x[:4])
+# df13.insert(2, 'year', dfList)
+
 # df13.insert(2,'year',dfList)
 # print("updated df13")
 # print(df13)
@@ -348,18 +601,18 @@ df13.insert(2, 'year', dfList)
 # thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
 # query.execute(thequery)
 # conn.commit()
-df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
+# df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
 
 # print(conn)
 
 # df12 = pd.read_sql('SELECT * FROM Revenue;', conn)
-print(df12)
+# print(df12)
 
 # query.close()
 # conn.close()
 #----------------------------------------------------------------------------------------------
 
-# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','0')
+
 
 #This one is going to be long and arduous: Each tag needs to calculate the final values. longdebt1/2+shortdebt all calc'd, then added together, THEN uploaded to DB as TotalDebt, for example. 
 #See models.py for help with each part! you got this!
@@ -471,30 +724,21 @@ def consolidateEquity(ticker, year):
 ###
 #roic = nopat / invested capital
 #nopat = operating income * (1-tax rate)
-# invested capital = total equity + total debt + non operating cash
+# invested capital = total equity + total debt 
 ####
 
 
 # consolidateEquity('MSFT','2024')
 # consolidateDebt('MSFT','2024')
 
-#LUKE YOU LEFT OFF HERE
-
 # inputvar = netIncome
 # namevar = 'sanityCheck_netIncome'
-
-
 
 
 # Create df -> csv including: operatingCashFlow - capEx -> free cash flow, fcf / rev = fcf margin
 # Create df -> csv including: total divs paid, tdp / net income = payout ratio, tdp / fcf = modded payout
 # Automate the process of getting cik/ticker list from SEC, via functions, as well as cleaning list and adding sectors in later functions
 # Determine Divs/Share 
-
-
-
-#ocf - capex = free cash flow
-#fcf margin = fcf / revenue
 
 #payout ratio = divs paid / net income
 # modded payout ratio = divs paid / fcf
