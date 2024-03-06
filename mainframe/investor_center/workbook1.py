@@ -288,10 +288,10 @@ def dropUselessColumns(df):
     try:
         returned_data = df.drop(['accn','fy','fp','form','filed','frame','Tag','Units'],axis=1)
 
-        if returned_data.empty:
-            return df
-        else:
-            return returned_data
+        # if returned_data.empty:
+        #     return df
+        # else:
+        return returned_data
     except Exception as err:
         print("drop uselss columns error")
         print(err)
@@ -335,7 +335,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
 def cleanRevenue(df):
     try:
         df_col_added = df.rename(columns={'val':'revenue'})
-        df_col_added['revGrowthRate'] = df_col_added['revenue'].pct_change(periods=1)*100
+        df_col_added['revGrowthRate'] = df_col_added['revenue'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -347,7 +347,7 @@ def cleanRevenue(df):
 def cleanNetIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'netIncome'})
-        df_col_added['netIncomeGrowthRate'] = df_col_added['netIncome'].pct_change(periods=1)*100
+        df_col_added['netIncomeGrowthRate'] = df_col_added['netIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -359,7 +359,7 @@ def cleanNetIncome(df):
 def cleanOperatingCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'operatingCashFlow'})
-        df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlow'].pct_change(periods=1)*100
+        df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -371,7 +371,7 @@ def cleanOperatingCashFlow(df):
 def cleanNetCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'netCashFlow'})
-        df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change(periods=1)*100
+        df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -395,7 +395,7 @@ def cleanCapEx(df):
 def cleanEPS(df):
     try:
         df_col_added = df.rename(columns={'val':'eps'})
-        df_col_added['epsGrowthRate'] = df_col_added['eps'].pct_change(periods=1)*100
+        df_col_added['epsGrowthRate'] = df_col_added['eps'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -409,7 +409,7 @@ def cleanfcf(df):
     try:
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
-        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change(periods=1)*100
+        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change()*100
 
         return df_col_added
 
@@ -417,10 +417,23 @@ def cleanfcf(df):
         print("clean fcf error: ")
         print(err)
 
+#Requires a pre-built DF including fcf!!!
+def cleanfcfMargin(df):
+    try:
+        df_col_added = df
+        df_col_added['fcfMargin'] = df_col_added['fcf'] / df_col_added['revenue'] * 100
+        df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change()*100
+
+        return df_col_added
+
+    except Exception as err:
+        print("clean fcfMargin error: ")
+        print(err)
+
 def cleanOperatingIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'operatingIncome'})
-        df_col_added['operatingIncomeGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
+        df_col_added['operatingIncomeGrowthRate'] = df_col_added['operatingIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -470,23 +483,32 @@ def cleanTotalEquity(assets, liabilities):
         #take assets and liabilities and get total equity from them
         assets['year'] = assets.end.str[:4]
         liabilities['year'] = liabilities.end.str[:4]
-
+        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the man of all liabilities over time.
         assAndLies = pd.merge(assets, liabilities, on=['year','start','end','Ticker','CIK'], how='outer')
         assAndLies['assets'] = assAndLies['val_x']
-        assAndLies['assets'] = assAndLies['assets'].fillna(0)
+        assetsMean = assAndLies['assets'].mean() / len(assAndLies['assets'])
+        assAndLies['assets'] = assAndLies['assets'].fillna(assetsMean)
         assAndLies['liabilities'] = assAndLies['val_y']
-        assAndLies['liabilities'] = assAndLies['liabilities'].fillna(0)
+        liaMean = assAndLies['liabilities'].mean() / len(assAndLies['liabilities'])
+        assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
         assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
         assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
 
         return assAndLies
 
     except Exception as err:
-        print("clean Debt error: ")
+        print("clean totalEquity error: ")
         print(err)
 
+def cleanDeprNAmor(df):
+    try:
+        df_col_added = df.rename(columns={'val':'depreNAmor'})
+        df_col_added['year'] = df_col_added.end.str[:4]
 
-
+        return df_col_added
+    except Exception as err:
+        print("clean deprNAmor error: ")
+        print(err)
 
 def cleanInterestPaid(df):
     try:
@@ -508,15 +530,20 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         netcf_df = cleanNetCashFlow(consolidateSingleAttribute(ticker, year, version, netCashFlow, False))
         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
         eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
+        depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
 
         revNinc = pd.merge(rev_df, netInc_df, on=['year','start','end','Ticker','CIK'], how='outer')
         plusopcf = pd.merge(revNinc, opcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
         plusnetcf = pd.merge(plusopcf, netcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
         pluscapex = pd.merge(plusnetcf, capex_df, on=['year','start','end','Ticker','CIK'], how='outer')
         addfcf = cleanfcf(pluscapex)
-        pluseps = pd.merge(addfcf, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        addfcfMargin = cleanfcfMargin(addfcf)
+        pluseps = pd.merge(addfcfMargin, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusDepAmor = pd.merge(pluseps , depAmor_df, on=['year','start','end','Ticker','CIK'], how='outer')
 
-        return pluseps
+
+        # ffo = netincomeloss + depr&amor - gainloss sale of property
+        return eps_df
 
     except Exception as err:
         print("makeIncomeTable error: ")
@@ -528,21 +555,42 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
                                     consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False))
-        assetsAndliabilities_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
+        totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
                                     consolidateSingleAttribute(ticker, year, version, totalLiabilities, False))
 
-        #LUKE gotta calculate ROIC my dude! :) <3
-        # print(totalDebt_df)
+        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','end','Ticker','CIK'], how='outer')
+        plustDebt = plustDebt.rename(columns={'start_x': 'start'})
+        plustDebt = plustDebt.drop(['start_y'],axis=1)
+        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year', 'end','Ticker','CIK'], how='outer')
+        plustEquity = plustEquity.rename(columns={'start_x': 'start'})
+        plustEquity = plustEquity.drop(['start_y'],axis=1)
+        plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
+        plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
+        plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
+
+        return plustEquity
 
     except Exception as err:
         print("makeROIC table error: ")
         print(err)
 
 
+#payout ratio = divs paid / net income
+# modded payout ratio = divs paid / fcf
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# You almost end up with a bas****ized affo value because of the discrepancy tho!
+#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
 
-
-
-# makeROICtableEntry('MSFT', '2024', '0', False)
+### LUKE
+# Need to go through all the filters: look for 'if df is empty' and deprecate it if unnecessary. you got this.
+# Fill in NAN values in final income and roic tables. 
+# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
+# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
+###
+# print(makeROICtableEntry('MSFT', '2024', '0', False).shape)
+print(makeIncomeTableEntry('O', '2024', '0', False))
+# print(cleanDeprNAmor(consolidateSingleAttribute('O', '2024', '0', deprecAndAmor, False)))
 
 #---------------------------------------------------------------------
 
@@ -555,7 +603,9 @@ def makeROICtableEntry(ticker, year, version, index_flag):
 # df14 = consolidateSingleAttribute('MSFT', '2024', '0', shortTermDebt, False)
 # print(df14)
 
-# df13 = cleanTaxRate(consolidateSingleAttribute('MSFT', '2024', '0', taxRate, False))
+# write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
+
+# df13 = cleanDeprNAmor(consolidateSingleAttribute('O', '2024', '0', deprecAndAmor, False))
 # print(df13)
 # df14 = cleanNetIncome(consolidateSingleAttribute('MSFT', '2024', '0', netIncome, False))
 # # print(df14)
@@ -739,11 +789,6 @@ def consolidateEquity(ticker, year):
 # Create df -> csv including: total divs paid, tdp / net income = payout ratio, tdp / fcf = modded payout
 # Automate the process of getting cik/ticker list from SEC, via functions, as well as cleaning list and adding sectors in later functions
 # Determine Divs/Share 
-
-#payout ratio = divs paid / net income
-# modded payout ratio = divs paid / fcf
-# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
-# You almost end up with a bas****ized affo value because of the discrepancy tho!
 
 #roic = nopat / invested capital
 #nopat = operating income * (1-tax rate)
