@@ -59,8 +59,6 @@ class Dividends(models.Model):
     class Meta:
         db_table = 'Dividends'
 
-
-
 class ROIC(models.Model):
     start = models.CharField(max_length=12)
     end = models.CharField(max_length=12)
@@ -96,8 +94,15 @@ class Income(models.Model):
     capEx = models.IntegerField()
     fcf = models.IntegerField()
     fcfGrowthRate = models.FloatField()
+    fcfMargin = models.FloatField()
+    fcfMarginGrowthRate = models.FloatField()
     eps = models.IntegerField()
     epsGrowthRate = models.FloatField()
+    depreNAmor = models.IntegerField()
+    gainSaleProp = models.IntegerField()
+    ffo = models.IntegerField()
+    ffoGrowthRate = models.FloatField()
+    
     ticker = models.CharField(max_length=10)
     cik = models.CharField(max_length=10)
 

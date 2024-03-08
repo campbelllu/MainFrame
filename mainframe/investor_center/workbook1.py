@@ -259,17 +259,18 @@ def dropDuplicatesInDF(df):
         return filtered_data
 
 #might get deprecated!
-def dropDuplicatesInDF_property(df):
-    try:
-        filtered_data = pd.DataFrame()
-        filtered_data = df.drop_duplicates(subset=['val'])
-        filtered_data = df.drop_duplicates(subset=['end'], keep='last')
-    except Exception as err:
-        print("drop duplicates property error")
-        print(err)
-    finally:
-        return filtered_data
+# def dropDuplicatesInDF_property(df):
+#     try:
+#         filtered_data = pd.DataFrame()
+#         filtered_data = df.drop_duplicates(subset=['val'])
+#         filtered_data = df.drop_duplicates(subset=['end'], keep='last')
+#     except Exception as err:
+#         print("drop duplicates property error")
+#         print(err)
+#     finally:
+#         return filtered_data
 
+#LUKE CHECK HERE FOR EMPTY FIXES IF NECESSARY
 def dropAllExceptFYRecords(df):
     try:
         returned_data = df[(df['start'].str.contains('01-01')==True) & (df['end'].str.contains('12-31')==True)]
@@ -284,6 +285,7 @@ def dropAllExceptFYRecords(df):
         print("drop all except FY data rows error")
         print(err)
 
+#LUKE EMPTY REMOVED TEST TEST TEST
 def dropUselessColumns(df):
     try:
         returned_data = df.drop(['accn','fy','fp','form','filed','frame','Tag','Units'],axis=1)
@@ -383,7 +385,6 @@ def cleanNetCashFlow(df):
 def cleanCapEx(df):
     try:
         df_col_added = df.rename(columns={'val':'capEx'})
-        # df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change(periods=1)*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         return df_col_added
@@ -405,6 +406,7 @@ def cleanEPS(df):
         print(err)
 
 #Requires a pre-built DF include OCF and CapEX!!!
+#Gives error warning of deprecation if there are null values. Filled values produce no warning. LUKE Edit later if necessary due to deprecation.
 def cleanfcf(df):
     try:
         df_col_added = df
@@ -416,6 +418,11 @@ def cleanfcf(df):
     except Exception as err:
         print("clean fcf error: ")
         print(err)
+### When empty we get this error. see: O ;; 413, 431
+#         /home/user1/masterSword/MainFrame/mainframe/investor_center/workbook1.py:414: FutureWarning: The default fill_method='pad' in Series.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
+#   df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change()*100
+# /home/user1/masterSword/MainFrame/mainframe/investor_center/workbook1.py:427: FutureWarning: The default fill_method='pad' in Series.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
+#   df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change()*100
 
 #Requires a pre-built DF including fcf!!!
 def cleanfcfMargin(df):
@@ -510,6 +517,16 @@ def cleanDeprNAmor(df):
         print("clean deprNAmor error: ")
         print(err)
 
+def cleanGainSaleProp(df):
+    try:
+        df_col_added = df.rename(columns={'val':'gainSaleProp'})
+        df_col_added['year'] = df_col_added.end.str[:4]
+
+        return df_col_added
+    except Exception as err:
+        print("clean gainSaleProp error: ")
+        print(err)
+
 def cleanInterestPaid(df):
     try:
         df_col_added = df.rename(columns={'val':'interestPaid'})
@@ -519,6 +536,99 @@ def cleanInterestPaid(df):
 
     except Exception as err:
         print("clean interestPaid error: ")
+        print(err)
+
+#deprecated
+# def cleanShares(df):
+#     try:
+#         df_col_added = df.rename(columns={'val':'shares'})
+#         df_col_added['year'] = df_col_added.end.str[:4]
+
+#         return df_col_added
+
+#     except Exception as err:
+#         print("clean shares error: ")
+#         print(err)
+
+def cleanDividends(total,perShare, shares):
+    try:
+        shares['year'] = shares.end.str[:4]
+        shares = shares.rename(columns={'val':'shares'})       
+        total['year'] = total.end.str[:4]
+        total = total.rename(columns={'val':'totalDivsPaid'})
+        perShare['year'] = perShare.end.str[:4]
+        perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
+
+        sharesNperShare = pd.merge(shares, perShare, on=['year','start','end','Ticker','CIK'], how='outer')
+        df_col_added = pd.merge(total, sharesNperShare, on=['year','start','end','Ticker','CIK'], how='outer')
+        df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill() #any missing shares values?
+        df_col_added['sharesGrowthRate'] = df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+        df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
+
+
+        df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change()*100
+        df_col_added['divGrowthRate'] = df_col_added['divGrowthRate'].replace(np.nan,0)
+
+        # print('df before any filling: ')
+        # print(df_col_added)
+
+        integrity_flag = 'Good'
+
+
+        #first we check for nans
+        nanList = []
+        for x in df_col_added:
+            
+            if df_col_added[x].isnull().any():
+                integrity_flag = 'Acceptable'
+                nanList.append(x)
+        #How to handle those empty values in each column
+        divsPerShareList = df_col_added['totalDivsPaid'] / df_col_added['shares']
+        totalDivsList = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+        
+        for x in nanList:
+            if x == 'divsPaidPerShare':
+                df_col_added['divsPaidPerShare'] = divsPerShareList
+                # df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].replace(np.nan, (df_col_added['totalDivsPaid'] / df_col_added['shares']))
+            elif x == 'totalDivsPaid':
+                df_col_added['totalDivsPaid'] = totalDivsList
+                # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].replace(np.nan, (df_col_added['divsPaidPerShare'] * df_col_added['shares']))
+        
+        #then we calculate growth rates per share
+        df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change()*100
+        df_col_added['divGrowthRate'] = df_col_added['divGrowthRate'].replace(np.nan,0)
+
+        #Now add a flag to let user know if data is worth looking at
+        
+        for x in df_col_added:
+            if df_col_added[x].isnull().any():
+                integrity_flag = 'Bad'
+
+        df_col_added['integrityFlag'] = integrity_flag
+
+        # df_col_added['year'] = df_col_added.end.str[:4]
+        #ways to check that total values is full
+        # print(total)
+        # print(perShare)
+        
+       
+        # print('df after changes:')
+        # print(df_col_added)
+      
+        # assAndLies['assets'] = assAndLies['val_x']
+        # assetsMean = assAndLies['assets'].mean() / len(assAndLies['assets'])
+        # assAndLies['assets'] = assAndLies['assets'].fillna(assetsMean)
+        # assAndLies['liabilities'] = assAndLies['val_y']
+        # liaMean = assAndLies['liabilities'].mean() / len(assAndLies['liabilities'])
+        # assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
+        # assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
+        # assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
+        # print(total.isnull().any())
+        # print(perShare.isnull().any())
+        # print(df_col_added.isnull().any())
+        return df_col_added
+    except Exception as err:
+        print("clean dividends error: ")
         print(err)
 
 #---------------------------------------------------------------------
@@ -531,19 +641,59 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
         eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
+        gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
 
         revNinc = pd.merge(rev_df, netInc_df, on=['year','start','end','Ticker','CIK'], how='outer')
         plusopcf = pd.merge(revNinc, opcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
+
+        integrity_flag = 'Good'
+
+        if plusopcf['operatingCashFlow'].isnull().any():
+                integrity_flag = 'Acceptable'
+                plusopcf['operatingCashFlow'].ffill()
+        #plusopcf['operatingCashFlow'].ffill()  #LUKE May need attention later.
+
         plusnetcf = pd.merge(plusopcf, netcf_df, on=['year','start','end','Ticker','CIK'], how='outer')
         pluscapex = pd.merge(plusnetcf, capex_df, on=['year','start','end','Ticker','CIK'], how='outer')
+
+        if pluscapex['capEx'].isnull().any():
+                integrity_flag = 'Acceptable'
+                pluscapex['capEx'] = pluscapex['capEx'].replace("", None).ffill()
+        # pluscapex['capEx'] = pluscapex['capEx'].replace("", None).ffill()#.replace(np.nan,method='pad')#.ffill()
+
+
+        #Cleaning gaps in data due to variable equity filings data seen as .fillna(), above and below
         addfcf = cleanfcf(pluscapex)
         addfcfMargin = cleanfcfMargin(addfcf)
         pluseps = pd.merge(addfcfMargin, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
+
+        if pluseps['eps'].isnull().any():
+                integrity_flag = 'Acceptable'
+                pluseps['eps'] = pluseps['eps'].replace("", None).ffill()
+        # pluseps['eps'] = pluseps['eps'].replace("", None).ffill()#.replace(np.nan,method='pad')#.ffill()#fillna(method='pad', inplace=True)
+
+
+        # if pluseps['epsGrowthRate'].isnull().any():
+        #         integrity_flag = 'Acceptable'
+        #         pluseps['epsGrowthRate']=pluseps['epsGrowthRate'].replace(np.nan,0)
+        pluseps['epsGrowthRate']=pluseps['epsGrowthRate'].replace(np.nan,0)#.method(0)#fillna(0, inplace=True)
+
         plusDepAmor = pd.merge(pluseps , depAmor_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusSaleProp = pd.merge(plusDepAmor , gainSaleProp_df, on=['year','start','end','Ticker','CIK'], how='outer')
 
+        # if plusSaleProp['gainSaleProp'].isnull().any():
+        #         integrity_flag = 'Acceptable'
+        #         plusSaleProp['gainSaleProp']=plusSaleProp['gainSaleProp'].replace(np.nan,0)
+        #It's possible that the scraping is just missing sales records, but it's also possible that those years simply had no sales. Keep an eye on analyses later.
+        plusSaleProp['gainSaleProp']=plusSaleProp['gainSaleProp'].replace(np.nan,0)#.method(0)#.fillna(0, inplace=True)
 
-        # ffo = netincomeloss + depr&amor - gainloss sale of property
-        return eps_df
+        plusSaleProp['ffo'] = plusSaleProp['netIncome'] + plusSaleProp['depreNAmor'] - plusSaleProp['gainSaleProp']
+        plusSaleProp['ffoGrowthRate'] = plusSaleProp['ffo'].pct_change()*100
+        plusSaleProp['ffoGrowthRate'] = plusSaleProp['ffoGrowthRate'].replace(np.nan,0)
+
+        plusSaleProp['integrityFlag'] = integrity_flag
+
+        return plusSaleProp
 
     except Exception as err:
         print("makeIncomeTable error: ")
@@ -575,21 +725,52 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         print("makeROIC table error: ")
         print(err)
 
+def makeDividendTableEntry(ticker, year, version, index_flag): #LUKE clean up div cleaner to make it useful. expand htis function. get money, get paid.
+    try:
+        intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
+        divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
+                                    consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
+                                    consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
+        
+
+
+        # intNshares = pd.merge(intPaid_df, shares_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        intNdivs = pd.merge(intPaid_df, divs_df, on=['year','start', 'end','Ticker','CIK'], how='outer')
+
+        return intNdivs
+    
+    except Exception as err:
+        print("makeDividend table error: ")
+        print(err)
+    
+    # print('you got this!')
 
 #payout ratio = divs paid / net income
-# modded payout ratio = divs paid / fcf
-# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
-# You almost end up with a bas****ized affo value because of the discrepancy tho!
 #ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
 
 ### LUKE
-# Need to go through all the filters: look for 'if df is empty' and deprecate it if unnecessary. you got this.
-# Fill in NAN values in final income and roic tables. 
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
+
+# Gotta: clean above functions, they work! 
+#update models to match function output
+# debate how to calculate metrics and ratios
+#debate how to output it all, or to save it as DF over the years. we'll see. 
+#Good work!
 ###
-# print(makeROICtableEntry('MSFT', '2024', '0', False).shape)
+
+# print(consolidateSingleAttribute('O', '2024', '0', tota, False))
+
+print('O income: ')
 print(makeIncomeTableEntry('O', '2024', '0', False))
+print('O divs: ')
+print(makeDividendTableEntry('O', '2024', '0', False))
+# print(makeROICtableEntry('O', '2024', '0', False))
+print('MSFT income: ')
+print(makeIncomeTableEntry('MSFT', '2024', '0', False))
+print('msft divs: ')
+print(makeDividendTableEntry('MSFT', '2024', '0', False))
+# print(makeROICtableEntry('MSFT', '2024', '0', False))
 # print(cleanDeprNAmor(consolidateSingleAttribute('O', '2024', '0', deprecAndAmor, False)))
 
 #---------------------------------------------------------------------
@@ -605,24 +786,6 @@ print(makeIncomeTableEntry('O', '2024', '0', False))
 
 # write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
 
-# df13 = cleanDeprNAmor(consolidateSingleAttribute('O', '2024', '0', deprecAndAmor, False))
-# print(df13)
-# df14 = cleanNetIncome(consolidateSingleAttribute('MSFT', '2024', '0', netIncome, False))
-# # print(df14)
-# df15 = cleanOperatingCashFlow(consolidateSingleAttribute('MSFT', '2024', '0', operatingCashFlow, False))
-# # print(df15)
-# df16 = cleanNetCashFlow(consolidateSingleAttribute('MSFT', '2024', '0', netCashFlow, False))
-# # print(df16)
-# df17 = cleanCapEx(consolidateSingleAttribute('MSFT', '2024', '0', capEx, False))
-# # print(df17)
-# df18 = cleanEPS(consolidateSingleAttribute('MSFT', '2024', '0', eps, False))
-# print(df18)
-
-# print(makeIncomeTableEntry('MSFT', '2024', '0', False))
-
-# df18 = df17['capEx'].tolist()
-# print(df18)
-
 # result = pd.merge(df15,df17, on=['year','start','end','Ticker','CIK'], how='outer')
 # # result2 = pd.merge(df13,result, on=['year','start','end','Ticker','CIK'])
 # # result = pd.merge(df14,df15, on=['year'])
@@ -635,12 +798,6 @@ print(makeIncomeTableEntry('O', '2024', '0', False))
 
 # dfList = []
 # print(df13['end'])
-
-# for x in df13['end']:
-#     dfList.append(x[:4])
-# #     print(df13['end'][x])
-#     # print(x[:4])
-# df13.insert(2, 'year', dfList)
 
 # df13.insert(2,'year',dfList)
 # print("updated df13")
@@ -700,76 +857,6 @@ def createAllAttributesInsertToDB(ticker, year, version):
         print("create all error: ")
         print(err)
 
-# Consolidate debt into TotalDebt csv
-def consolidateDebt(ticker, year): 
-    #in DB we use 'year', 'val', ticker, cik, still grabbing that end date
-    try:
-        dfShortDebt = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_shortTermDebt')
-        dfLongDebt1 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt1')
-        dfLongDebt2 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt2')
-        shortDict = {}
-        longDict1 = {}
-        longDict2 = {}
-        for x in range(len(dfShortDebt['end'])):
-            shortDict[dfShortDebt['end'][x][:4]] = dfShortDebt['val'][x]
-        for y in range(len(dfLongDebt1['end'])):
-            longDict1[dfLongDebt1['end'][y][:4]] = dfLongDebt1['val'][y]
-        for z in range(len(dfLongDebt2['end'])):
-            longDict2[dfLongDebt2['end'][z][:4]] = dfLongDebt2['val'][z]
-
-        totalDebtdict = dict(counter(shortDict) + counter(longDict1) + counter(longDict2))
-        tdebtholder = list(totalDebtdict.keys())
-        tdebtholder.sort() #make sure the keys(years) are in proper order for easier iteration later
-        sortedTotalDebt = {i: totalDebtdict[i] for i in tdebtholder}
-
-        returned_data = pd.DataFrame(sortedTotalDebt.items(), columns=['Year', 'Val'])
-
-        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalDebt', False)
-
-    except Exception as err:
-        print("consolidate debt error: ")
-        print(err)
-
-#Consolidate TotalEquity csv
-def consolidateEquity(ticker, year):
-    #
-    try:
-        dfAssets = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalAssets')
-        dfLiabilities = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalLiabilities')
-        assetsDict = {}
-        liaDict = {}
-        for x in range(len(dfAssets['end'])):
-            assetsDict[dfAssets['end'][x][:4]] = dfAssets['val'][x]
-        for y in range(len(dfLiabilities['end'])):
-            liaDict[dfLiabilities['end'][y][:4]] = dfLiabilities['val'][y]
-
-        #If either assets or liabilities are missing each other's matching years, it'll throw off calculations later. Pop them outta' there!
-        noMatchingYear1 = []
-        noMatchingYear2 = []
-        for key in assetsDict:
-            if key not in liaDict:
-                noMatchingYear1.append(key)
-        for key2 in liaDict:
-            if key not in assetsDict:
-                noMatchingYear2.append(key2)
-        for x in noMatchingYear1:
-            assetsDict.pop(x,None)
-        for y in noMatchingYear2:
-            liaDict.pop(y,None)
-
-        totalEquitydict = dict(counter(assetsDict) - counter(liaDict))
-        teqholder = list(totalEquitydict.keys())
-        teqholder.sort() #make sure the keys(years) are in proper order for easier iteration later
-        sortedTotaEquity = {i: totalEquitydict[i] for i in teqholder}
-
-        returned_data = pd.DataFrame(sortedTotaEquity.items(), columns=['Year', 'Val'])
-
-        csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalEquity', False)
-
-    except Exception as err:
-        print("consolidate debt error: ")
-        print(err)
-
 # Create df -> csv including: operating income, taxRate -> nopat, invested capital, roic 
 ###
 #roic = nopat / invested capital
@@ -796,6 +883,7 @@ def consolidateEquity(ticker, year):
 #tequity = t assets - t liabilities
 #ocf - capex = free cash flow
 #fcf margin = fcf / revenue
+#-----------------------------------------------
 #payout ratio = divs paid / net income
 # modded payout ratio = divs paid / fcf
 # ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
@@ -819,10 +907,7 @@ def consolidateEquity(ticker, year):
 
 # createAllAttributeFiles('MSFT','2024','0')
 
-
 #----------------------------------
-
-
 
 # dftesterman = dropAllExceptFYRecords(dftesterlady)
 # csv.simple_saveDF_to_csv('.sec_related/stocks/', dftesterman,'MSFT_yr_drop',False)
@@ -903,122 +988,74 @@ def consolidateEquity(ticker, year):
 # loopCheck(revenue)
 # loopCheck(ultimateList)
 
-### SAVED IN CASE IT BREAKS OVER NIGHT! again. guh.
-# #Good working version!
-# #tag must be a list! or a list of lists! but no deeper than those two levels!
-# def write_to_csv_from_EDGAR(ticker, cik, tag, year, version):
-#     if len(tag) > 1:
-#         for y in tag:
-#             if (str(type(y)) == "<class 'str'>"): 
-#                 try:
-#                     tag_target = y
-#                     company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#                     company_data['Ticker'] = ticker #'ticker'
-#                     company_data['CIK'] = cik #'cik' all in brackets
-#                     # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
-#                     time.sleep(0.1)
-#                 except:
-#                     print('Could not access ' + tag_target + ".")
-#                     df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
-#                     df_notFound['Ticker'] = ticker
-#                     df_notFound['CIK'] = cik
-#                     df_notFound['Tag'] = tag
-#                     csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#                 finally:
-#                     csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
-                    
-#             else:
-#                 for z in y:
-#                     try:
-#                         tag_target = z
-#                         company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#                         company_data['Ticker'] = ticker #'ticker'
-#                         company_data['CIK'] = cik #'cik' all in brackets
-#                         # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
-#                         time.sleep(0.1)
-#                     except:
-#                         print('Could not access ' + tag_target + ".")
-#                         df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
-#                         df_notFound['Ticker'] = ticker
-#                         df_notFound['CIK'] = cik
-#                         df_notFound['Tag'] = tag
-#                         csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#                     finally:
-#                         csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+### Deprecated, being done elsewhere
+# # Consolidate debt into TotalDebt csv
+# def consolidateDebt(ticker, year): 
+#     #in DB we use 'year', 'val', ticker, cik, still grabbing that end date
+#     try:
+#         dfShortDebt = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_shortTermDebt')
+#         dfLongDebt1 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt1')
+#         dfLongDebt2 = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_longTermDebt2')
+#         shortDict = {}
+#         longDict1 = {}
+#         longDict2 = {}
+#         for x in range(len(dfShortDebt['end'])):
+#             shortDict[dfShortDebt['end'][x][:4]] = dfShortDebt['val'][x]
+#         for y in range(len(dfLongDebt1['end'])):
+#             longDict1[dfLongDebt1['end'][y][:4]] = dfLongDebt1['val'][y]
+#         for z in range(len(dfLongDebt2['end'])):
+#             longDict2[dfLongDebt2['end'][z][:4]] = dfLongDebt2['val'][z]
 
-#     else:
-#         try:
-#             tag_target = tag[0]
-#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#             company_data['Ticker'] = ticker #'ticker'
-#             company_data['CIK'] = cik #'cik' all in brackets
-#             # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-#             time.sleep(0.1)
-#         except:
-#             print('Could not access ' + tag_target + ".")
-#             csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#         finally:
-#             csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
-#### bad version, but something to start with if it breaks again mysteriously.
-# def write_to_csv_from_EDGAR(ticker, cik, tag, year, version):
-#     if len(tag) > 1:
-#         # print("tag type: " + str(type(tag)))
-#         for y in tag:
-#             # print("y n type: " + y + ", " +  str(type(y)))
-#             if (str(type(y)) == "<class 'str'>"): #if y > 1:
-#                 # print("y: " + y)
-#                 for z in y:
-#                     print("z: " + z)
-#                     print("z n  type: " + z+ ", " +  str(type(z)))
-#                     try:
-#                         tag_target = z
-#                         # print("try: " + tag_target)
-#                         company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#                         company_data['Ticker'] = ticker #'ticker'
-#                         company_data['CIK'] = cik #'cik' all in brackets
-#                         # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
-#                         time.sleep(0.1)
-#                     except:
-#                         print('Could not access ' + tag_target + ".")
-#                         df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
-#                         df_notFound['Ticker'] = ticker
-#                         df_notFound['CIK'] = cik
-#                         df_notFound['Tag'] = tag
-#                         csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#                     finally:
-#                         exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
-#             else:
-#                 try:
+#         totalDebtdict = dict(counter(shortDict) + counter(longDict1) + counter(longDict2))
+#         tdebtholder = list(totalDebtdict.keys())
+#         tdebtholder.sort() #make sure the keys(years) are in proper order for easier iteration later
+#         sortedTotalDebt = {i: totalDebtdict[i] for i in tdebtholder}
 
-#                     tag_target = y[0]
-#                     # print("try: " + tag_target)
-#                     company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#                     company_data['Ticker'] = ticker #'ticker'
-#                     company_data['CIK'] = cik #'cik' all in brackets
-#                     # csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_' + version, False)
-#                     # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-#                     time.sleep(0.1)
-#                 except:
-#                     print('Could not access ' + tag_target + ".")
-#                     df_notFound = pd.DataFrame(columns=['Ticker','CIK','Tag'])
-#                     df_notFound['Ticker'] = ticker
-#                     df_notFound['CIK'] = cik
-#                     df_notFound['Tag'] = tag
-#                     csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#                 finally:
-#                     exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+#         returned_data = pd.DataFrame(sortedTotalDebt.items(), columns=['Year', 'Val'])
 
-#     else:
-#         try:
-#             tag_target = tag[0]
-#             # print("else: " + tag_target)
-#             company_data = single_tag_EDGAR_query(cik, header, tag_target) #remember no tags is possible
-#             company_data['Ticker'] = ticker #'ticker'
-#             company_data['CIK'] = cik #'cik' all in brackets
-#             # csv.simple_saveDF_to_csv('./sec_related/stocks/', company_data, ticker + '_' + tag_target, False)
-#             time.sleep(0.1)
-#         except:
-#             print('Could not access ' + tag_target + ".")
-#             csv.simple_appendTo_csv('./sec_related/stocks/',df_notFound,ticker+'_NotFoundTags'+'_'+year+'_V'+version,False)
-#         finally:
-#             exe = csv.simple_appendTo_csv('./sec_related/stocks/', company_data, ticker + '_' + year + '_V' + version, False)
+#         csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalDebt', False)
+
+#     except Exception as err:
+#         print("consolidate debt error: ")
+#         print(err)
+
+###SAME, DEPRECATED, SEE ABOVE
+#Consolidate TotalEquity csv
+# def consolidateEquity(ticker, year):
+#     #
+#     try:
+#         dfAssets = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalAssets')
+#         dfLiabilities = csv.simple_get_df_from_csv(fr_iC_toSEC_stocks, ticker + '_' + year + '_totalLiabilities')
+#         assetsDict = {}
+#         liaDict = {}
+#         for x in range(len(dfAssets['end'])):
+#             assetsDict[dfAssets['end'][x][:4]] = dfAssets['val'][x]
+#         for y in range(len(dfLiabilities['end'])):
+#             liaDict[dfLiabilities['end'][y][:4]] = dfLiabilities['val'][y]
+
+#         #If either assets or liabilities are missing each other's matching years, it'll throw off calculations later. Pop them outta' there!
+#         noMatchingYear1 = []
+#         noMatchingYear2 = []
+#         for key in assetsDict:
+#             if key not in liaDict:
+#                 noMatchingYear1.append(key)
+#         for key2 in liaDict:
+#             if key not in assetsDict:
+#                 noMatchingYear2.append(key2)
+#         for x in noMatchingYear1:
+#             assetsDict.pop(x,None)
+#         for y in noMatchingYear2:
+#             liaDict.pop(y,None)
+
+#         totalEquitydict = dict(counter(assetsDict) - counter(liaDict))
+#         teqholder = list(totalEquitydict.keys())
+#         teqholder.sort() #make sure the keys(years) are in proper order for easier iteration later
+#         sortedTotaEquity = {i: totalEquitydict[i] for i in teqholder}
+
+#         returned_data = pd.DataFrame(sortedTotaEquity.items(), columns=['Year', 'Val'])
+
+#         csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_TotalEquity', False)
+
+#     except Exception as err:
+#         print("consolidate debt error: ")
+#         print(err)
