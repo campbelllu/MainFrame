@@ -52,6 +52,7 @@ def get_df_from_csv_with_typeset(folder, name, dict1):#, index_flag):
         df = pd.read_csv(folder + name + '.csv', converters = dict1)#, index_col = index_flag)
     except FileNotFoundError as err:
         print("File Does Not Exist")
+        print(err)
     else:
         return df
 
