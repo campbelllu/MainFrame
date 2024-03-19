@@ -1,2 +1,6 @@
 # created by virtualenv automatically
 mfvenv/
+.vscode
+./mainframe/investor_center/stockData/
+./mainframe/sec_related/stocks/old
+
