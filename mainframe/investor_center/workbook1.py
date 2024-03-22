@@ -232,7 +232,7 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
                 data['CIK'] = cik
                 company_data = pd.concat([company_data, data], ignore_index = True)
             except Exception as err:
-                print(str(tags[i]) + ' not found for ' + ticker + 'in ifrs-full.')
+                print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
                 # print("Edgar query error: ")
                 # print(err)
             finally:
@@ -245,38 +245,49 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
 # cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
 #                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
 #                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
-netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect', 'IncreaseDecreaseInCashAndCashEquivalents'] #operCF + InvestCF + FinancingCF
-operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities']
-investingCashFlow = ['CashFlowsFromUsedInInvestingActivities']
-financingCashFlow = ['CashFlowsFromUsedInFinancingActivities']
-revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 'Revenue']
-netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 'ProfitLossAttributableToOwnersOfParent']
+netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect', 
+                'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect', 'IncreaseDecreaseInCashAndCashEquivalents',
+                'CashAndCashEquivalentsPeriodIncreaseDecrease','IncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChanges'] #operCF + InvestCF + FinancingCF
+operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities','NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
+                    'NetCashProvidedByUsedInContinuingOperations', 'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital']
+investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
+financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
+revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
+            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings']
+netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
+                'ProfitLossAttributableToOwnersOfParent','ProfitLoss']
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense','FinanceCosts'] #seems accurate for REITs, not for MSFT. hmmm
+incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations']
 shortTermDebt = ['LongTermDebtCurrent','ShorttermBorrowings']
-longTermDebt1 = ['LongTermDebtNoncurrent']#,'LongTermDebt']
-longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent']
+longTermDebt1 = ['LongTermDebtNoncurrent','NoncurrentPortionOfNoncurrentBondsIssued']#,'LongTermDebt']
+longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent','NoncurrentPortionOfNoncurrentLoansReceived']
+longTermDebt3 = ['NoncurrentLeaseLiabilities']
+longTermDebt4 = ['LongtermBorrowings']
 totalAssets = ['Assets']
 totalLiabilities = ['Liabilities']
+
 exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually
 
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
-totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash'] #DividendsPaid could be useful later
+totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
+                            'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid'] #DividendsPaid could be useful later
 declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid']
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
-basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding']#'WeightedAverageShares']
+basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
+                            'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted']#'WeightedAverageShares']
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
 deprecAndAmor = ['DepreciationDepletionAndAmortization']
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
-                longTermDebt2, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
+                longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
-                investingCashFlow, financingCashFlow, exchangeRate ]
+                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
-                'investingCashFlow', 'financingCashFlow', 'exchangeRate' ]
+                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -295,16 +306,33 @@ def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
 def get_Only_10k_info(df):
     try:
         filtered_data = pd.DataFrame()
-        filtered_data = df[df['form'].str.contains('10-K') == True]
-        filtered_data1 = df[df['form'].str.contains('20-F') == True] #ADDED FOR ex-US stocks
+        # returned_data = pd.concat([returned_data, held_data], ignore_index = True) #loop thru the options and just add it all together!
+        formList = ['10-K','20-F','40-F','6-K'] #
+
+        # filtered_data = df[df['form'].str.contains('10-K') == True]
+        filtered_data = df[df['form'].isin(formList) == True] #.str.contains
+        # filtered_data = pd.concat([filtered_data, filtered_data1], ignore_index = True)
+
+        # for x in formList:
+        #     filtered_data1 = df[df['form'].isin(formList) == True] #.str.contains
+        #     filtered_data = pd.concat([filtered_data, filtered_data1], ignore_index = True)
+            # print('filtered data')
+            # print(filtered_data)
+        # filtered_data1 = df[df['form'].str.contains('20-F') == True] #ADDED FOR ex-US stocks
+        # # print(filtered_data1)
+        # filtered_data2 = df[df['form'].str.contains('6-K') == True] #ADDED FOR ex-US stocks
     except Exception as err:
         print("10k filter error")
         print(err)
     finally:
-        if str(type(filtered_data)) == "<class 'NoneType'>" or filtered_data.empty:
-            return filtered_data1
-        else:
-            return filtered_data
+        # if str(type(filtered_data)) == "<class 'NoneType'>" or filtered_data.empty:
+        #     if str(type(filtered_data1)) == "<class 'NoneType'>" or filtered_data1.empty:
+        #         return filtered_data2
+        #     else:
+        #         return filtered_data1
+        # else:
+        #     return filtered_data
+        return filtered_data
 
 def orderAttributeDF(df):
     try:
@@ -316,11 +344,24 @@ def orderAttributeDF(df):
     finally:
         return filtered_data
 
-def dropDuplicatesInDF(df):
+def dropDuplicatesInDF(df): #LUKE HERE
     try:
         filtered_data = pd.DataFrame()
-        filtered_data = df.drop_duplicates(subset=['val'])
-        filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #LUKE 'start' may be redundant, we'll see
+        # print('pre drop dupes')
+        # print(df)
+        filtered_data = df.drop_duplicates(subset=['end'],keep='last')#val
+        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') 
+
+        # print('pre drop dupes')
+        # print(df)
+        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #start, end
+        # print('post drop dupes')
+        # print(filtered_data)
+        # print(filtered_data.shape)
+        # filtered_data = df.drop_duplicates(subset=['val'], keep='last') #val, no keep last
+        
+        # filtered_data = df.drop_duplicates(subset=['start'], keep='last') #new
+
     except Exception as err:
         print("drop duplicates error")
         print(err)
@@ -362,9 +403,14 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
             
             held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-            
+            # print(x)
+            # if 'Share' in x:
+            #     print('in consolidate')
+            #     print(returned_data)
         returned_data = get_Only_10k_info(returned_data)
+        # print(returned_data)
         returned_data = orderAttributeDF(returned_data)
+        # print(returned_data)
 
         #LUKE might need to edit this, and the functions above, once we get to them en masse
         # if tagList == gainSaleProperty:# or tagList == revenue:
@@ -372,10 +418,19 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # else:
         #     returned_data = dropDuplicatesInDF(returned_data)
         #In the meantime: bon voyage!
+        # print('pre drop dupes')
+        # print(returned_data)
         returned_data = dropDuplicatesInDF(returned_data)
+        print(returned_data) #LUKE YOU're here finding out why shares data for amazon is being dropped
+        # print('post drop dupes')
+        # print(returned_data)
+        # print(returned_data.shape)
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         returned_data = dropUselessColumns(returned_data)
         
+        # print('consolidate all drops done')
+        # print(returned_data)
+
         # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
         # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
         return returned_data
@@ -387,20 +442,43 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
 def cleanRevenue(df):
     try:
         df_col_added = df.rename(columns={'val':'revenue'})
-        df_col_added['revGrowthRate'] = df_col_added['revenue'].pct_change()*100
+        # if df_col_added['revenue'].empty:
+        #     df_col_added['revenueGrowthRate'] = np.NaN
+        # else:
+        df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end']) 
+    # try:#I like coding this part. It felt clean. Leaving it for future reference, but it's best handled elsewhere/in other ways.
+    #     df_col_added = pd.DataFrame()
+    #     if df.empty:
+    #         df_col_added['revenue'] = np.NaN
+    #         df_col_added['revenueGrowthRate'] = np.NaN
+    #         df_col_added['year'] = np.NaN
+    #         df_col_added['start'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
+    #         df_col_added['end'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
+    #         df_col_added['Ticker'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
+    #         df_col_added['CIK'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
+    #         df_col_added['Units'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
+    #     else:
+    #         df_col_added = df.rename(columns={'val':'revenue'})
+    #         df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
+    #         df_col_added['year'] = df_col_added.end.str[:4]
+       
         return df_col_added
 
     except Exception as err:
         print("cleanRevenue error: ")
         print(err)
+        # print(df_col_added)
 
 def cleanNetIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'netIncome'})
         df_col_added['netIncomeGrowthRate'] = df_col_added['netIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -411,8 +489,13 @@ def cleanNetIncome(df):
 def cleanOperatingCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'operatingCashFlow'})
+        # if df_col_added['operatingCashFlow'].isnull().any():
+        #     df_col_added['operatingCashFlow'] = df_col_added['operatingCashFlow'].ffill()
         df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlow'].pct_change()*100
+        # df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlowGrowthRate'].replace(np.nan,0) #Replace NaN with zero? Uncertain.
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -423,8 +506,12 @@ def cleanOperatingCashFlow(df):
 def cleanInvestingCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'investingCashFlow'})
+        # if df_col_added['investingCashFlow'].isnull().any():
+        #     df_col_added['investingCashFlow'] = df_col_added['investingCashFlow'].ffill()
         df_col_added['investingCashFlowGrowthRate'] = df_col_added['investingCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -435,8 +522,12 @@ def cleanInvestingCashFlow(df):
 def cleanFinancingCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'financingCashFlow'})
+        # if df_col_added['financingCashFlow'].isnull().any():
+        #     df_col_added['financingCashFlow'] = df_col_added['financingCashFlow'].ffill()
         df_col_added['financingCashFlowGrowthRate'] = df_col_added['financingCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -447,8 +538,13 @@ def cleanFinancingCashFlow(df):
 def cleanNetCashFlow(df):
     try:
         df_col_added = df.rename(columns={'val':'netCashFlow'})
+        # if df_col_added['netCashFlowe'].empty:
+        #     df_col_added['netCashFlowGrowthRate'] = np.NaN
+        # else:
         df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -460,6 +556,8 @@ def cleanCapEx(df):
     try:
         df_col_added = df.rename(columns={'val':'capEx'})
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end']) 
 
         return df_col_added
 
@@ -473,6 +571,8 @@ def cleanEPS(df):
         df_col_added['epsGrowthRate'] = df_col_added['eps'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end']) 
+
         return df_col_added
 
     except Exception as err:
@@ -484,7 +584,7 @@ def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
     try:
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
-        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change()*100
+        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change(fill_method=None)*100
 
         return df_col_added
 
@@ -503,7 +603,7 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
     try:
         df_col_added = df
         df_col_added['fcfMargin'] = df_col_added['fcf'] / df_col_added['revenue'] * 100
-        df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change()*100
+        df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change(fill_method=None)*100
 
         return df_col_added
 
@@ -517,6 +617,8 @@ def cleanOperatingIncome(df):
         df_col_added['operatingIncomeGrowthRate'] = df_col_added['operatingIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end']) 
+
         return df_col_added
 
     except Exception as err:
@@ -529,26 +631,32 @@ def cleanTaxRate(df):
         # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end']) 
+
         return df_col_added
 
     except Exception as err:
         print("clean operatingIncome error: ")
         print(err)
 
-def cleanDebt(short, long1, long2):
+def cleanDebt(short, long1, long2): #LUKE gotta add long3 and long 4!
     try:
         #take short, long1, long2 debt, create year column, reproduce df with just year and debt column 
         short['year'] = short.end.str[:4]
         long1['year'] = long1.end.str[:4]
         long2['year'] = long2.end.str[:4]
 
-        shortNlong1 = pd.merge(short, long1, on=['year','start','end','Ticker','CIK'], how='outer')
+        short = short.drop(columns=['start','end']) 
+        long1 = long1.drop(columns=['start','end']) 
+        long2 = long2.drop(columns=['start','end']) 
+
+        shortNlong1 = pd.merge(short, long1, on=['year','Ticker','CIK'], how='outer')#'start','end',
         shortNlong1['val_x'] = shortNlong1['val_x'].fillna(0)
         shortNlong1['val_y'] = shortNlong1['val_y'].fillna(0)
         shortNlong1['subTotalDebt'] = shortNlong1['val_x'] + shortNlong1['val_y']
         shortNlong1 = shortNlong1.drop(['val_x','val_y'],axis=1)
         
-        plusLong2 = pd.merge(shortNlong1, long2, on=['year','start','end','Ticker','CIK'], how='outer')
+        plusLong2 = pd.merge(shortNlong1, long2, on=['year','Ticker','CIK'], how='outer')#'start','end',
         plusLong2['val'] = plusLong2['val'].fillna(0)
         plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
         plusLong2 = plusLong2.drop(['subTotalDebt','val'],axis=1)
@@ -564,8 +672,12 @@ def cleanTotalEquity(assets, liabilities):
         #take assets and liabilities and get total equity from them
         assets['year'] = assets.end.str[:4]
         liabilities['year'] = liabilities.end.str[:4]
+
+        assets = assets.drop(columns=['start','end'])
+        liabilities = liabilities.drop(columns=['start','end'])
+
         #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the man of all liabilities over time.
-        assAndLies = pd.merge(assets, liabilities, on=['year','start','end','Ticker','CIK'], how='outer')
+        assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK'], how='outer')#'start','end',
         assAndLies['assets'] = assAndLies['val_x']
         assetsMean = assAndLies['assets'].mean() / len(assAndLies['assets'])
         assAndLies['assets'] = assAndLies['assets'].fillna(assetsMean)
@@ -586,6 +698,8 @@ def cleanDeprNAmor(df):
         df_col_added = df.rename(columns={'val':'depreNAmor'})
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end'])
+
         return df_col_added
     except Exception as err:
         print("clean deprNAmor error: ")
@@ -596,6 +710,8 @@ def cleanGainSaleProp(df):
         df_col_added = df.rename(columns={'val':'gainSaleProp'})
         df_col_added['year'] = df_col_added.end.str[:4]
 
+        df_col_added = df_col_added.drop(columns=['start','end'])
+
         return df_col_added
     except Exception as err:
         print("clean gainSaleProp error: ")
@@ -605,6 +721,8 @@ def cleanInterestPaid(df):
     try:
         df_col_added = df.rename(columns={'val':'interestPaid'})
         df_col_added['year'] = df_col_added.end.str[:4]
+
+        df_col_added = df_col_added.drop(columns=['start','end'])
 
         return df_col_added
 
@@ -617,77 +735,158 @@ def cleanDividends(total, perShare, shares):
 
     try:
         shares['year'] = shares.end.str[:4]
-        shares = shares.rename(columns={'val':'shares'})       
+        shares = shares.rename(columns={'val':'shares'})
+        shares = shares.drop(columns=['Units'])
         total['year'] = total.end.str[:4]
         total = total.rename(columns={'val':'totalDivsPaid'})
         perShare['year'] = perShare.end.str[:4]
         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
+        perShare = perShare.drop(columns=['Units'])
 
-        sharesNperShare = pd.merge(shares, perShare, on=['year','start','end','Ticker','CIK'], how='outer')
-        df_col_added = pd.merge(total, sharesNperShare, on=['year','start','end','Ticker','CIK'], how='outer')
-        df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill() #any missing shares values?
-        df_col_added['sharesGrowthRate'] = df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
-        df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
+        shares = shares.drop(columns=['start','end'])
+        total = total.drop(columns=['start','end'])
+        perShare = perShare.drop(columns=['start','end'])
 
-        df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change()*100 #This needs to be added after all nan editing
-        df_col_added['divGrowthRate'] = df_col_added['divGrowthRate'].replace(np.nan,0)
+        # print('shares, total, pershare: ')
+        # print('shares')
+        # print(shares)
+        # print(total)
+        # print(perShare)
+        
+        if shares.empty:# and total.empty and perShare.empty:
+            cols = {  'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
+                     'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
+            # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+            df_col_added = pd.DataFrame(cols, index=[0])
+            return df_col_added
+        else:
+            sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+            # print('sharesNperShare: ')
+            # print(sharesNperShare)
+            df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+            # print('df_col_added: ')
+            # print(df_col_added)
+            df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill() #any missing shares values?
+            # if df_col_added['shares'].empty:
+            #     df_col_added['sharesGrowthRate'] = np.NaN
+            # else:
+            df_col_added['sharesGrowthRate'] = df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+            # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
 
-        integrity_flag = 'Good'
+            #first we check for nans, keep them in mind for later
+            nanList = []
+            for x in df_col_added:
+                if df_col_added[x].isnull().any():
+                    # integrity_flag = 'Acceptable'
+                    nanList.append(x)
+                    # print('nans found: ' + x)
+            #How to handle those empty values in each column
+            df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
+            df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
 
-        #first we check for nans
-        nanList = []
-        for x in df_col_added:
+            for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
+                if x == 'divsPaidPerShare':
+                    df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+                elif x == 'totalDivsPaid':
+                    df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+            df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
             
-            if df_col_added[x].isnull().any():
-                integrity_flag = 'Acceptable'
-                nanList.append(x)
-        #How to handle those empty values in each column
-        df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
-        df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+            # if df_col_added['divsPaidPerShares'].empty:
+            #     df_col_added['divGrowthRate'] = np.NaN
+            # else:
+            df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change(fill_method=None)*100 #LUKE THINK ABOUT PUTTING AN IF STATEMENT AROUND THESE. if it's empty? don't do it
+            # print('average growth rate: ')
+            # print(df_col_added['divGrowthRate'].mean())
 
-        for x in nanList:
-            if x == 'divsPaidPerShare':
-                df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])#, inplace=True)
-                # df_col_added['divsPaidPerShare'] = divsPerShareList
-                # df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].replace(np.nan, (df_col_added['totalDivsPaid'] / df_col_added['shares']))
-            elif x == 'totalDivsPaid':
-                df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])#, inplace=True)
-                # df_col_added['totalDivsPaid'] = totalDivsList
-                # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].replace(np.nan, (df_col_added['divsPaidPerShare'] * df_col_added['shares']))
-        df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
-
-        # divsPerShareList = df_col_added['totalDivsPaid'] / df_col_added['shares']
-        # totalDivsList = df_col_added['divsPaidPerShare'] * df_col_added['shares']
-        
-        # for x in nanList: 
-        #     if x == 'divsPaidPerShare':
-        #         df_col_added['divsPaidPerShare'] = divsPerShareList
-        #         # df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].replace(np.nan, (df_col_added['totalDivsPaid'] / df_col_added['shares']))
-        #     elif x == 'totalDivsPaid':
-        #         df_col_added['totalDivsPaid'] = totalDivsList
-        #         # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].replace(np.nan, (df_col_added['divsPaidPerShare'] * df_col_added['shares']))
-        
-        #try filling null values before the following: 
-        #then we calculate growth rates per share
-        df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change()*100
-        df_col_added['divGrowthRate'] = df_col_added['divGrowthRate'].replace(np.nan,0)
-
-        #Now add a flag to let user know if data is worth looking at
-        for x in df_col_added:
-            if df_col_added[x].isnull().any():
-                integrity_flag = 'Bad'
-
-        df_col_added['integrityFlag'] = integrity_flag
-
-        return df_col_added
+            return df_col_added
     except Exception as err:
         print("clean dividends error: ")
         print(err)
 
-#Making tables for DB insertion
-def makeIncomeTableEntry(ticker, year, version, index_flag): #LUKE. this one is working for tsm, broken because microsoft can't find cash flow's. all other table entry functions need work. you got this!
+def fillEmptyIncomeGrowthRates(df):
     try:
-        integrity_flag = 'Good'
+        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx', 'depreNAmor']
+        df_filled = df
+        fixTracker = 0
+        for x in tarList:
+            tarGrowthRate = x + 'GrowthRate'
+            meanReplacement = df_filled[x].mean()
+            savedCol = df_filled[x]
+            df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+            df_filled[tarGrowthRate] = df_filled[x].pct_change(fill_method=None)*100
+            if savedCol.equals(df_filled[x]):
+                continue
+            else:
+                fixTracker += 1
+        if fixTracker > 4:
+            df_filled['integrityFlag'] = 'NeedsWork'
+        elif fixTracker == 0: 
+            df_filled['integrityFlag'] = 'Good'
+        else:
+            df_filled['integrityFlag'] = 'Acceptable'
+        return df_filled
+    except Exception as err:
+        print("fill empty inc GR error: ")
+        print(err)
+
+def fillEmptyDivsGrowthRates(df):
+    try:
+        # print('we gr now')
+        # print(df)
+        df_filled = df
+        fixTracker = 0
+        if df_filled['interestPaid'].isnull().any():
+            fixTracker += 1
+            # print('it was int paid')
+            df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
+        if df_filled['totalDivsPaid'].isnull().any():
+            fixTracker += 1    
+            # print('it was total divs paid')
+            df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
+        if df_filled['divsPaidPerShare'].isnull().any():
+            fixTracker += 1   
+            # print('it was per share divs paid')
+            df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
+        if df_filled['shares'].isnull().all():
+            print('all shares null')
+        elif df_filled['shares'].isnull().any():
+            fixTracker += 1  
+            # print('it was shares')
+            # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
+            # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
+            # df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
+            # df_filled['shares'] = df_filled['shares'].bfill() 
+        if df_filled['sharesGrowthRate'].isnull().any():
+            # fixTracker += 1  
+            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled['shares'].pct_change()*100)
+        if df_filled['divGrowthRate'].isnull().any():
+            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled['divsPaidPerShare'].pct_change()*100)
+        # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+        # for x in tarList:
+        #     tarGrowthRate = x + 'GrowthRate'
+        #     meanReplacement = df_filled[x].mean()
+        #     savedCol = df_filled[x]
+        #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+        #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
+            # if savedCol.equals(df_filled[x]):
+            #     continue
+            # else:
+            #     fixTracker += 1
+        if fixTracker == 4:
+            df_filled['integrityFlag'] = 'NeedsWork'
+        elif fixTracker == 0: 
+            df_filled['integrityFlag'] = 'Good'
+        else:
+            df_filled['integrityFlag'] = 'Acceptable'
+        return df_filled
+    except Exception as err:
+        print("fill empty divs GR error: ")
+        print(err)
+
+#Making tables for DB insertion
+def makeIncomeTableEntry(ticker, year, version, index_flag): 
+    try:
+        # integrity_flag = 'Good'
         rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
         # print('rev df: ')
         # print(rev_df)
@@ -703,116 +902,92 @@ def makeIncomeTableEntry(ticker, year, version, index_flag): #LUKE. this one is 
         fincf_df = cleanFinancingCashFlow(consolidateSingleAttribute(ticker, year, version, financingCashFlow, False))
         # print('fincf_df df: ')
         # print(fincf_df)
-        
         netcf_df = cleanNetCashFlow(consolidateSingleAttribute(ticker, year, version, netCashFlow, False))
         # print('netcf_df df: ')
         # print(netcf_df)
         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
         # print('capex_df df: ')
         # print(capex_df)
-        eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
-        # print('eps_df df: ')
-        # print(eps_df)
+        
         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
         # print('depAmor_df df: ')
         # print(depAmor_df)
         gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
         # print('gainSaleProp_df: ')
         # print(gainSaleProp_df)
+        #Merge all these DF's!
+        # if rev_df['start'].isnull().any():
+        #     print('in the if')
+        #     rev_df = rev_df.drop(columns=['start'])
+        #     revNinc = pd.merge(rev_df, netInc_df, on=['year','end','Ticker','CIK','Units'], how='outer')
+        # else:
+        #     print('in the else')
+        #     # rev_df = rev_df.drop(columns=['start','end']) 
+        #     # netInc_df = netInc_df.drop(columns=['start','end']) 
 
-        revNinc = pd.merge(rev_df, netInc_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        ## this nested in else
+        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # revNinc['units'] = revNinc['Units_x']
         # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
         # print('revNinc: ')
         # print(revNinc)
-        plusopcf = pd.merge(revNinc, opcf_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        plusopcf = pd.merge(revNinc, opcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # plusopcf = plusopcf.drop(columns=['units'])
         # print('plusopcf: ')
         # print(plusopcf)
-        plusinvcf = pd.merge(plusopcf, invcf_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        plusinvcf = pd.merge(plusopcf, invcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # plusinvcf['units'] = plusinvcf['Units_x']
         # plusinvcf = plusinvcf.drop(columns=['Units_x', 'Units_y'])
         # print('plusinvcf: ')
         # print(plusinvcf)
-        plusfincf = pd.merge(plusinvcf, fincf_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        plusfincf = pd.merge(plusinvcf, fincf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # plusfincf = plusfincf.drop(columns=['units'])
         # print('plusfincf: ')
         # print(plusfincf)
 
-        #fill all the cf's here
-        #going to need to fill netcash flow by adding all cf's, similar to how done to fill dividend table!
-        if plusopcf['operatingCashFlow'].isnull().any():
-                integrity_flag = 'Acceptable'
-                plusopcf['operatingCashFlow'].ffill()
-        if plusinvcf['investingCashFlow'].isnull().any():
-                integrity_flag = 'Acceptable'
-                plusinvcf['investingCashFlow'].ffill()
-        if plusfincf['financingCashFlow'].isnull().any():
-                integrity_flag = 'Acceptable'
-                plusfincf['financingCashFlow'].ffill()
-
-        plusnetcf = pd.merge(plusfincf, netcf_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        plusnetcf = pd.merge(plusfincf, netcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # plusnetcf['units'] = plusnetcf['Units_x']
         # plusnetcf = plusnetcf.drop(columns=['Units_x', 'Units_y'])
         # print('plusnetcf: ')
         # print(plusnetcf)
-        #going to need to fill netcash flow by adding all cf's, similar to how done to fill dividend table!
 
-        pluscapex = pd.merge(plusnetcf, capex_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        pluscapex = pd.merge(plusnetcf, capex_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # pluscapex = pluscapex.drop(columns=['units'])
         # print('pluscapex: ')
         # print(pluscapex)
 
-        if pluscapex['capEx'].isnull().any():
-                integrity_flag = 'Acceptable'
-                pluscapex['capEx'] = pluscapex['capEx'].replace("", None).ffill()
-        # pluscapex['capEx'] = pluscapex['capEx'].replace("", None).ffill()#.replace(np.nan,method='pad')#.ffill()
-
-        #Cleaning gaps in data due to variable equity filings data seen as .fillna(), above and below
-        addfcf = cleanfcf(pluscapex)
-        
-        addfcfMargin = cleanfcfMargin(addfcf)
-        
-        pluseps = pd.merge(addfcfMargin, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
-        pluseps['Units'] = pluseps['Units_x']
-        pluseps = pluseps.drop(columns=['Units_x', 'Units_y'])
-        
-
-        #come back and fill eps with net income / shares for better values-fill
-        if pluseps['eps'].isnull().any():
-                integrity_flag = 'Acceptable'
-                pluseps['eps'] = pluseps['eps'].replace("", None).ffill()
-
-        # if pluseps['epsGrowthRate'].isnull().any():
-        #         integrity_flag = 'Acceptable'
-        #         pluseps['epsGrowthRate']=pluseps['epsGrowthRate'].replace(np.nan,0)
-        pluseps['epsGrowthRate']=pluseps['epsGrowthRate'].replace(np.nan,0)#.method(0)#fillna(0, inplace=True)
-
-        plusDepAmor = pd.merge(pluseps , depAmor_df, on=['year','start','end','Ticker','CIK','Units'], how='outer') #Testing joining on Units
+        plusDepAmor = pd.merge(pluscapex, depAmor_df, on=['year','Ticker','CIK','Units'], how='outer') #Testing joining on Units 'start','end',
+        # print('plusDepAmor: ')
+        # print(plusDepAmor)
         # plusDepAmor = pluseps.drop(columns=['Units_x', 'Units_y'])
         
-        plusSaleProp = pd.merge(plusDepAmor , gainSaleProp_df, on=['year','start','end','Ticker','CIK','Units'], how='outer')
+        plusSaleProp = pd.merge(plusDepAmor, gainSaleProp_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # print('plusSaleProp: ')
-        # print(plusSaleProp)
+        # print(plusSaleProp['investingCashFlow'])
+        # print(plusSaleProp['investingCashFlowGrowthRate'])
 
-        # if plusSaleProp['gainSaleProp'].isnull().any():
-        #         integrity_flag = 'Acceptable'
-        #         plusSaleProp['gainSaleProp']=plusSaleProp['gainSaleProp'].replace(np.nan,0)
-        #It's possible that the scraping is just missing sales records, but it's also possible that those years simply had no sales. Keep an eye on analyses later.
-        plusSaleProp['gainSaleProp']=plusSaleProp['gainSaleProp'].replace(np.nan,0)#.method(0)#.fillna(0, inplace=True)
+        #CLEAN column empty values here before adding FFO calculations
+        plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
+        plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
+        
+        addfcf = cleanfcf(plusSaleProp)
+        # print('addfcf: ')
+        # print(addfcf)
+        
+        addfcfMargin = cleanfcfMargin(addfcf)
+        #Clean sales of property
+        addfcfMargin['gainSaleProp']=addfcfMargin['gainSaleProp'].replace(np.nan,0)
+        # print('addfcfMargin: ')
+        # print(addfcfMargin)
 
-        plusSaleProp['ffo'] = plusSaleProp['netIncome'] + plusSaleProp['depreNAmor'] - plusSaleProp['gainSaleProp']
-        plusSaleProp['ffoGrowthRate'] = plusSaleProp['ffo'].pct_change()*100
-        plusSaleProp['ffoGrowthRate'] = plusSaleProp['ffoGrowthRate'].replace(np.nan,0)
+        addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
+        addfcfMargin['ffoGrowthRate'] = addfcfMargin['ffo'].pct_change(fill_method=None)*100
 
-        #To implement this, need to fill leading NaN's for calculated columns
-        # for x in plusSaleProp:
-        #     if plusSaleProp[x].isnull().any():
-        #         integrity_flag = 'Bad'
+        # for x in addfcfMargin:
+        #     print(x)
+        #     print(addfcfMargin[x])
 
-        plusSaleProp['integrityFlag'] = integrity_flag
-
-        return plusSaleProp
+        return addfcfMargin
 
     except Exception as err:
         print("makeIncomeTable error: ")
@@ -827,13 +1002,13 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
                                     consolidateSingleAttribute(ticker, year, version, totalLiabilities, False))
 
-        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','start','end','Ticker','CIK'], how='outer')
-        plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','end','Ticker','CIK'], how='outer')
-        plustDebt = plustDebt.rename(columns={'start_x': 'start'})
-        plustDebt = plustDebt.drop(['start_y'],axis=1)
-        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year', 'end','Ticker','CIK'], how='outer')
-        plustEquity = plustEquity.rename(columns={'start_x': 'start'})
-        plustEquity = plustEquity.drop(['start_y'],axis=1)
+        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')#'start','end',
+        plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK'], how='outer')#'end',
+        # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
+        # plustDebt = plustDebt.drop(['start_y'],axis=1)
+        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK'], how='outer')#'end',
+        # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
+        # plustEquity = plustEquity.drop(['start_y'],axis=1)
         plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
@@ -853,14 +1028,45 @@ def makeROICtableEntry(ticker, year, version, index_flag):
 def makeDividendTableEntry(ticker, year, version, index_flag): 
     try:
         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
+        # print('intpaid: ')
+        # print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
+        # print('divsdf: ')
+        # print(divs_df)
+        if divs_df['year'][0] == -1:
+            df_dunce = pd.DataFrame(columns=['Ticker'])
+            df_dunce.loc[0, 'Ticker'] = ticker
+            csv.simple_appendTo_csv(fr_iC_toSEC, df_dunce,'z-divDataReallyNotFound', False)
+            return 'No Good Dividend Data'
+        else:
+            # intNshares = pd.merge(intPaid_df, shares_df, on=['year','start','end','Ticker','CIK'], how='outer')
+            if divs_df['Units'].isnull().any():
+                divs_df = divs_df.drop(columns=['Units'])
+                # print('did divsdf drop units?!?!: ')
+                # print(divs_df)
+                # if divs_df['start'].isnull().any():
+                #     divs_df = divs_df.drop(columns=['start'])
+                #     intNdivs = pd.merge(intPaid_df, divs_df, on=['year', 'end','Ticker','CIK'], how='outer')
+                # else:
+                intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')#Was nested in else on row 'start', 'end',
+                # print('if intNdivs: ')
+                # print(intNdivs)
+            else:
+                intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer') #'start', 'end',
+            #     print('else intNdivs: ')
+            #     print(intNdivs)
+            # print('post ifelse merge intdivs')
+            # print(intNdivs)
+            # print('pre fill intndivs: ')
+            # print(intNdivs)
 
-        # intNshares = pd.merge(intPaid_df, shares_df, on=['year','start','end','Ticker','CIK'], how='outer')
-        intNdivs = pd.merge(intPaid_df, divs_df, on=['year','start', 'end','Ticker','CIK'], how='outer')
+            inNdivs = fillEmptyDivsGrowthRates(intNdivs)
+            # print('post fill intndivs: ')
+            # print(intNdivs)
 
-        return intNdivs
+            return intNdivs
     
     except Exception as err:
         print("makeDividend table error: ")
@@ -868,18 +1074,16 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
     
     # print('you got this!')
 
-def makeStockAnalysisTableEntry():
-    return null
-    #not sure if this should have yearly values, cumulative values, averaged values and given years of average. huh
 
-def harvestMasterCSVs(sectorTarget):
+
+def harvestMasterCSVs(sectorTarget): #edit version as necessary!
     try:
         df_full = sectorTarget
         tickerList = df_full['Ticker']
         cikList = df_full['CIK']
     
         for i in range(len(tickerList)):
-            write_Master_csv_from_EDGAR(tickerList[i], cikList[i], ultimateTagsList, '2024', '0')
+            write_Master_csv_from_EDGAR(tickerList[i], cikList[i], ultimateTagsList, '2024', '2')
         
         #full_cik_sectInd_list
         # return null
@@ -888,110 +1092,208 @@ def harvestMasterCSVs(sectorTarget):
         print("harvestMasters error: ")
         print(err)
 
-# harvestMasterCSVs(tech)
+# harvestMasterCSVs(realEstate)
 
-def checkTechYears():
+def checkTechIncYears():
     try:
-        incomeNoYears = pd.DataFrame(columns=['Ticker'])
-        divsNoYears = pd.DataFrame(columns=['Ticker'])
+        incomeBadYears = pd.DataFrame(columns=['Ticker', 'Column'])
+        noIncData = pd.DataFrame(columns=['Ticker', 'Column'])
+        nameCheckList = tech['Ticker']
+        nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
+        incYearTracker = []
+        incomeNullTracker = []
+        toRecapture = []
+        yearsList = ['2022','2023','2024']
+        version123 = '2'
+        for x in nameCheckList:
+            try:
+                # if nameCheckList.index(x) % len(nameCheckList) == 0:
+                #     print('LUKE THE NAME IS: ')
+                #     print(x)
+                incTable = makeIncomeTableEntry(x, '2024', version123, False)
+                #Checking if returned tables are just empty
+                if str(type(incTable)) == "<class 'NoneType'>" or incTable.empty:
+                    incomeNullTracker.append(x)
+                    continue
+                #checking latest data from the pull             
+                if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                    # print(str(x) + ' incYears are good!')
+                    incYearTracker.append(x)     
+            except Exception as err:
+                print("nested check tech years error: ")
+                print(err)
+                toRecapture.append(x)
+                continue                
+
+    except Exception as err:
+        print("check tech years error: ")
+        print(err)
+        # toRecapture.append(x)
+        # continue
+    finally:
+        print('recap list: ')
+        print(toRecapture)
+        print('full nulls:')
+        print(incomeNullTracker)
+        print('years off')
+        print(incYearTracker)
+    # finally:
+    #     if len(incYearTracker) > 0:
+    #         incomeBadYears['Ticker'] = incYearTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
+
+    #     if len(divTracker) > 0:
+    #         divsBadYears['Ticker']=divTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
+
+    #     if len(incomeNullTracker) > 0:
+    #         noIncData['Ticker']=incomeNullTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
+
+    #     if len(DivNullTracker) > 0:
+    #         noDivData['Ticker']=DivNullTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
+
+    #     # for x in toRecapture:
+    #     #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+    #     print(toRecapture) 
+
+def checkTechDivYears():
+    try:
+        incomeBadYears = pd.DataFrame(columns=['Ticker'])
+        divsBadYears = pd.DataFrame(columns=['Ticker'])
         noIncData = pd.DataFrame(columns=['Ticker'])
         noDivData = pd.DataFrame(columns=['Ticker'])
 
         nameCheckList = tech['Ticker']
-        incTracker = []
+        nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
+        incYearTracker = []
         divTracker = []
-        IncomeNullTracker = []
+        toRecapture = []
+        incomeNullTracker = []
         DivNullTracker = []
+        yearsList = ['2022','2023','2024']
+        version123 = '2'
         for x in nameCheckList:
-            incTable = makeIncomeTableEntry(x, '2024', '0', False)
-            if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
-                IncomeNullTracker.append(x)
-                continue
+            try:
+                # if nameCheckList.index(x) % len(nameCheckList) == 0:
+                #     print('LUKE THE NAME IS: ')
+                #     print(x)
+                incTable = makeIncomeTableEntry(x, '2024', version123, False)
+                divsTable = makeDividendTableEntry(x, '2024', version123, False)
+                
+                #Checking if returned tables are just empty
+                if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
+                    incomeNullTracker.append(x)
+                    if str(type(divsTable)) == "<class 'NoneType'>":#.empty:
+                        DivNullTracker.append(x)
+                        continue
+                #checking latest data from the pull
+                if (divsTable['year'].max() not in yearsList) or (divsTable['year'].empty):
+                    # print(str(x) + ' divYears are good!')
+                    divTracker.append(x)                
 
-            divsTable = makeDividendTableEntry(x, '2024', '0', False)
-            if str(type(divsTable)) == "<class 'NoneType'>":#.empty:
-                DivNullTracker.append(x)
-                continue
+                if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                    # print(str(x) + ' incYears are good!')
+                    incYearTracker.append(x)     
+            except Exception as err:
+                print("nested check tech years error: ")
+                print(err)
+                toRecapture.append(x)
+                continue                
 
-            yearsList = ['2022','2023','2024']
-
-            if (divsTable['year'].max() not in yearsList) or (divsTable['year'].empty):
-                # print(str(x) + ' divYears are good!')
-                divTracker.append(x)                
-
-            if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
-                # print(str(x) + ' incYears are good!')
-                incTracker.append(x)      
-
-        if len(incTracker) > 0:
-            incomeNoYears['Ticker']=incTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeNoYears, 'techBadYearsIncome', False)
+       
+    except Exception as err:
+        print("check tech years error: ")
+        print(err)
+        # toRecapture.append(x)
+        # continue
+    finally:
+        if len(incYearTracker) > 0:
+            incomeBadYears['Ticker'] = incYearTracker
+            csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
 
         if len(divTracker) > 0:
-            divsNoYears['Ticker']=divTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, divsNoYears, 'techBadYearsDivs', False)
+            divsBadYears['Ticker']=divTracker
+            csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
 
-        if len(IncomeNullTracker) > 0:
-            noIncData['Ticker']=IncomeNullTracker
+        if len(incomeNullTracker) > 0:
+            noIncData['Ticker']=incomeNullTracker
             csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
 
         if len(DivNullTracker) > 0:
             noDivData['Ticker']=DivNullTracker
             csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
 
-        
-        
-    except Exception as err:
-        print("check tech years error: ")
-        print(err)
+        # for x in toRecapture:
+        #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+        print(toRecapture) 
 
-# checkTechYears()
-ticker123 = 'TSM'
-year123 = '2024'
-version123 = '0'
+# checkTechIncYears()
+fullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'NATL', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'BTQQF', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PKKFF', 'CAUD', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'MJDS', 'SANP', 'SDVI', 'RONN']
+yearsOff = ['SONY', 'LRCX', 'WDAY', 'ATEYY', 'PCRFY', 'FN', 'KD', 'SYNA', 'AVT', 'WOLF', 'LPL', 'LITE', 'WNS', 'VIAV', 'TTMI', 'INFN', 'FORTY', 'HIMX', 'WALD', 'SPWR', 'MGIC', 'TGAN', 'MAXN', 'QUIK', 'LTCH', 'RAASY', 'KTCC', 'RCAT', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'TMNA', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'EXEO', 'WSTL', 'EVOL', 'GSPT', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO', 'MAXD', 'DIGAF']
+#There's no overlap! Yay!
+# print(set(fullNulls).difference(yearsOff))
+# print(set(fullNulls).difference(fullNulls2))
+# print(set(fullNulls).intersection(yearsOff))
+# print(len(fullNulls))
+
 # write_Master_csv_from_EDGAR(ticker123,'0001046179',ultimateTagsList,year123,version123)
 # write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','1')
-print('income:')
-print(makeIncomeTableEntry(ticker123,'2024','0',False))
+# write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
+# write_Master_csv_from_EDGAR('ASTS', '0001780312', ultimateTagsList, '2024','2')
+
+ticker235 = 'AMZN'
+year235 = '2024'
+version235 = '0'
+# print('Target income:')
+# print(makeIncomeTableEntry(ticker235,year235,version235,False))
 print('divs:')
-print(makeDividendTableEntry(ticker123,'2024','0',False))
-print('roic: ')
-print(makeROICtableEntry(ticker123,'2024','0',False))
+print(makeDividendTableEntry(ticker235,year235,version235,False))
+# print('roic: ')
+# print(makeROICtableEntry(ticker235,year235,version235,False))
 
 ticker234 = 'MSFT'
 year234 = '2024'
-version234 = '0'
-# print('income:')
+version234 = '2'
+# print('MSFT income:')
 # print(makeIncomeTableEntry(ticker234,year234,version234,False))
 # print('divs:')
 # print(makeDividendTableEntry(ticker234,year234,version234,False))
 # print('roic: ')
 # print(makeROICtableEntry(ticker234,year234,version234,False))
 
-ticker235 = 'MSFT'
-year235 = '2024'
-version235 = '1'
+ticker123 = 'AMZN' #TSM #AMZN
+year123 = '2024'
+version123 = '0'
 # print('income:')
-# print(makeIncomeTableEntry(ticker235,year235,version235,False))
+# print(makeIncomeTableEntry(ticker123,'2024',version123,False))
 # print('divs:')
-# print(makeDividendTableEntry(ticker235,year235,version235,False))
+# print(makeDividendTableEntry(ticker123,'2024',version123,False))
 # print('roic: ')
-# print(makeROICtableEntry(ticker235,year235,version235,False))
+# print(makeROICtableEntry(ticker123,'2024','0',False))
 
-# print('total div returns: ')
-# print(cleanDividends(consolidateSingleAttribute(ticker123, year123, version123, totalCommonStockDivsPaid, False), 
-#                                     consolidateSingleAttribute(ticker123, year123, version123, declaredORPaidCommonStockDivsPerShare, False),
-#                                     consolidateSingleAttribute(ticker123, year123, version123, basicSharesOutstanding, False)))
-# print('total paid')
-# print(consolidateSingleAttribute(ticker123, year123, version123, totalCommonStockDivsPaid, False))
-# print('pershare')
-# print(consolidateSingleAttribute(ticker123, year123, version123, declaredORPaidCommonStockDivsPerShare, False))
-# print('shares')
-# print(consolidateSingleAttribute(ticker123, year123, version123, basicSharesOutstanding, False))
 
-#deep dive to find them data's: ONTO, TSM, ASML, CRM, SAP, ARM, SONY, WIX, shop, infy, uctt, ttmi
-#newer company: ZI
-#dead company: GAHC
+
+
+#THROW THIS INTO ANALYSIS/METRICS TABLE
+        # eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
+        # print('eps_df df: ')
+        # print(eps_df)
+        # pluseps = pd.merge(addfcfMargin, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        # pluseps['Units'] = pluseps['Units_x']
+        # pluseps = pluseps.drop(columns=['Units_x', 'Units_y'])
+        # print('pluseps: ')
+        # print(pluseps)
+        
+        #LUKE TEST EPS FILLING PRINT EITHER SIDE
+        #Put this at the end with a filling function!
+        # if pluseps['eps'].isnull().any():
+        #         integrity_flag = 'Acceptable'
+        #         pluseps['eps'] = pluseps['eps'].replace("", None).ffill()
+def makeStockAnalysisTableEntry():
+    return null
+    #not sure if this should have yearly values, cumulative values, averaged values and given years of average. huh
 
 
 def uploadToDB(table, df):
