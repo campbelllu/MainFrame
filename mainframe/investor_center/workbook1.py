@@ -188,57 +188,118 @@ def makeSectorCSVs():
 # makeSectorCSVs()
 
 #gives tags to get from SEC. returns dataframe filled with info!
+# def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
+#     url = ep["cf"] + 'CIK' + cik + '.json'
+#     response = requests.get(url, headers=header)
+
+#     if tag == None:
+#         tags = list(response.json()['facts']['us-gaap'].keys())
+#         # print('in query tags: ')
+#         # print(tags)
+#         if tags.empty or (len(tags) <= 0):
+#             tags = list(response.json()['facts']['ifrs-full'].keys())
+#     else:
+#         tags = tag
+
+#     company_data = pd.DataFrame()
+
+#     for i in range(len(tags)):
+#         try:
+#             tag = tags[i] 
+#             units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
+#             data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
+#             data['Tag'] = tag
+#             data['Units'] = units
+#             data['Ticker'] = ticker
+#             data['CIK'] = cik
+#             company_data = pd.concat([company_data, data], ignore_index = True)
+#         except Exception as err:
+#             print(str(tags[i]) + ' not found for ' + ticker + ' in US-Gaap.')
+#             # print("Edgar query error: ")
+#             # print(err)
+#         finally:
+#             time.sleep(0.1)
+
+#     if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
+#         for i in range(len(tags)):
+#             try:
+#                 tag = tags[i] 
+#                 units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
+#                 data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
+#                 data['Tag'] = tag
+#                 data['Units'] = units
+#                 data['Ticker'] = ticker
+#                 data['CIK'] = cik
+#                 company_data = pd.concat([company_data, data], ignore_index = True)
+#             except Exception as err:
+#                 print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
+#                 # print("Edgar query error: ")
+#                 # print(err)
+#             finally:
+#                 time.sleep(0.1)
+
+#     return company_data
+
 def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
-    url = ep["cf"] + 'CIK' + cik + '.json'
-    response = requests.get(url, headers=header)
-
-    if tag == None:
-        tags = list(response.json()['facts']['us-gaap'].keys())
-        # print('in query tags: ')
-        # print(tags)
-        if tags.empty or (len(tags) <= 0):
-            tags = list(response.json()['facts']['ifrs-full'].keys())
-    else:
+    try:
+        url = ep["cf"] + 'CIK' + cik + '.json'
+        response = requests.get(url, headers=header)
+        filingList = ['us-gaap','ifrs-full']
+        company_data = pd.DataFrame()
         tags = tag
+        if len(tags) == 0:
+            print('change it to len()')
+            tags = list(response.json()['facts']['us-gaap'].keys())
 
-    company_data = pd.DataFrame()
+        for x in filingList:
+            # if tag == None:
+            #     tags = list(response.json()['facts'][x].keys())
+            #     # print('in query tags: ')
+            #     # print(tags)
+            #     # if tags.empty or (len(tags) <= 0):
+            #     #     tags = list(response.json()['facts']['ifrs-full'].keys())
+            # else:
+            #     tags = tag
 
-    for i in range(len(tags)):
-        try:
-            tag = tags[i] 
-            units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
-            data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
-            data['Tag'] = tag
-            data['Units'] = units
-            data['Ticker'] = ticker
-            data['CIK'] = cik
-            company_data = pd.concat([company_data, data], ignore_index = True)
-        except Exception as err:
-            print(str(tags[i]) + ' not found for ' + ticker + ' in US-Gaap.')
-            # print("Edgar query error: ")
-            # print(err)
-        finally:
-            time.sleep(0.1)
+            for i in range(len(tags)):
+                try:
+                    tag = tags[i] 
+                    units = list(response.json()['facts'][x][tag]['units'].keys())[0]
+                    data = pd.json_normalize(response.json()['facts'][x][tag]['units'][units])
+                    data['Tag'] = tag
+                    data['Units'] = units
+                    data['Ticker'] = ticker
+                    data['CIK'] = cik
+                    company_data = pd.concat([company_data, data], ignore_index = True)
+                except Exception as err:
+                    print(str(tags[i]) + ' not found for ' + ticker + ' in ' + x)
+                    # print("Edgar query error: ")
+                    # print(err)
+                finally:
+                    time.sleep(0.1)
 
-    if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
-        for i in range(len(tags)):
-            try:
-                tag = tags[i] 
-                units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
-                data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
-                data['Tag'] = tag
-                data['Units'] = units
-                data['Ticker'] = ticker
-                data['CIK'] = cik
-                company_data = pd.concat([company_data, data], ignore_index = True)
-            except Exception as err:
-                print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
-                # print("Edgar query error: ")
-                # print(err)
-            finally:
-                time.sleep(0.1)
+            # if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
+            #     for i in range(len(tags)):
+            #         try:
+            #             tag = tags[i] 
+            #             units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
+            #             data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
+            #             data['Tag'] = tag
+            #             data['Units'] = units
+            #             data['Ticker'] = ticker
+            #             data['CIK'] = cik
+            #             company_data = pd.concat([company_data, data], ignore_index = True)
+            #         except Exception as err:
+            #             print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
+            #             # print("Edgar query error: ")
+            #             # print(err)
+            #         finally:
+            #             time.sleep(0.1)
 
-    return company_data
+        return company_data
+    except Exception as err:
+        print('edgar query super error')
+        print(err)
 
 #organizing data titles into variable lists
 # altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
@@ -370,14 +431,178 @@ def dropDuplicatesInDF(df): #LUKE HERE
 
 def dropAllExceptFYRecords(df):
     try:
-        returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)] #LUKE Edited dates to include some weird day-files
-        if returned_data.empty:
-            returned_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
+        returned_data = pd.DataFrame()
+        returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
+        oneEnds = ['-01-','-02-']
+        twoEnds = ['-01-','-02-','-03-']
+        threeEnds = ['-02-','-03-','-04-']
+        fourEnds = ['-03-','-04-','-05-']
+        fiveEnds = ['-04-','-05-','-06-']
+        sixEnds = ['-05-','-06-','-07-']
+        sevenEnds = ['-06-','-07-','-08-']
+        eightEnds = ['-07-','-08-','-09-']
+        nineEnds = ['-08-','-09-','-10-']
+        tenEnds = ['-09-','-10-','-11-']
+        elevenEnds = ['-10-','-11-','-12-']
+        twelveEnds = ['-11-','-12-','-01-']
+        for x in oneEnds:
+            held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True) 
+       
+        for x in twoEnds:
+            held_data = df[(df['start'].str.contains('-02-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in threeEnds:
+            held_data = df[(df['start'].str.contains('-03-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+       
+        for x in fourEnds:
+            held_data = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in fiveEnds:
+            held_data = df[(df['start'].str.contains('-05-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in sixEnds:
+            held_data = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+       
+        for x in sevenEnds:
+            held_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in eightEnds:
+            held_data = df[(df['start'].str.contains('-08-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in nineEnds:
+            held_data = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in tenEnds:
+            held_data = df[(df['start'].str.contains('-10-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        
+        for x in elevenEnds:
+            held_data = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
 
-        if returned_data.empty:
-            return df
-        else:
-            return returned_data
+        for x in twelveEnds:
+            held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True)]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+
+        
+        # returned_data2 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-01-')==True)]
+        # returned_data3 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-02-')==True)]
+
+        
+
+        #V1
+        # returned_data2 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
+        # returned_data3 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-06-')==True)]
+        # returned_data4 = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains('-03-')==True)]
+        # returned_data5 = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains('-09-')==True)]
+
+        #V2
+        # oneEnds = ['-12-','-01-','-02-']
+        # twoEnds = ['-01-','-02-','-03-']
+        # threeEnds = ['-02-','-03-','-04-']
+        # fourEnds = ['-03-','-04-','-05-']
+        # fiveEnds = ['-04-','-05-','-06-']
+        # sixEnds = ['-05-','-06-','-07-']
+        # sevenEnds = ['-06-','-07-','-08-']
+        # eightEnds = ['-07-','-08-','-09-']
+        # nineEnds = ['-08-','-09-','-10-']
+        # tenEnds = ['-09-','-10-','-11-']
+        # elevenEnds = ['-10-','-11-','-12-']
+        # twelveEnds = ['-11-','-12-','-01-']
+        # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].isin(oneEnds) == True)]#df['end'].str.contains('-12-')==True)]
+        # print('returned data in fy recs 01')
+        # print(returned_data)
+        # returned_data1 = df[(df['start'].str.contains('-02-')==True) & (df['end'].isin(twoEnds) == True)]
+        # print('returned data in fy recs 02')
+        # print(returned_data)
+        # returned_data2 = df[(df['start'].str.contains('-03-')==True) & (df['end'].isin(threeEnds) == True)]
+        # print('returned data in fy recs 03')
+        # print(returned_data)
+        # returned_data3 = df[(df['start'].str.contains('-04-')==True) & (df['end'].isin(fourEnds) == True)]
+        # print('returned data in fy recs 04')
+        # print(returned_data)
+        # returned_data4 = df[(df['start'].str.contains('-05-')==True) & (df['end'].isin(fiveEnds) == True)]
+        # print('returned data in fy recs 05')
+        # print(returned_data)
+        # returned_data5 = df[(df['start'].str.contains('-06-')==True) & (df['end'].isin(sixEnds) == True)]
+        # print('returned data in fy recs 06')
+        # print(returned_data)
+        # returned_data6 = df[(df['start'].str.contains('-07-')==True) & (df['end'].isin(sevenEnds) == True)]
+        # print('returned data in fy recs 07')
+        # print(returned_data)
+        # returned_data7 = df[(df['start'].str.contains('-08-')==True) & (df['end'].isin(eightEnds) == True)]
+        # print('returned data in fy recs 08')
+        # print(returned_data)
+        # returned_data8 = df[(df['start'].str.contains('-09-')==True) & (df['end'].isin(nineEnds) == True)]
+        # print('returned data in fy recs 09')
+        # print(returned_data)
+        # returned_data9 = df[(df['start'].str.contains('-10-')==True) & (df['end'].isin(tenEnds) == True)]
+        # print('returned data in fy recs 10')
+        # print(returned_data)
+        # returned_data10 = df[(df['start'].str.contains('-11-')==True) & (df['end'].isin(elevenEnds) == True)]
+        # print('returned data in fy recs 11')
+        # print(returned_data)
+        # returned_data11 = df[(df['start'].str.contains('-12-')==True) & (df['end'].isin(twelveEnds) == True)]
+        # print('returned data in fy recs 12')
+        # print(returned_data)
+
+        #V2
+        # returned_data = pd.concat([returned_data, returned_data1], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data2], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data3], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data4], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data5], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data6], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data7], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data8], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data9], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data10], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data11], ignore_index = True) 
+
+        return returned_data
+
+        ### There's a better, programmatic way of doing this, but I couldn't immediately get it. Refactor later, hardcode the dates in for now, get it working. Improve later!
+        # startList = ['-07-','-04-','-06-'] #
+        # endList = ['-06-','-03-']
+        #Throw this into the ...empty-if: filtering if whole year's records are selected
+        # if np.where(int(df.end.str[:4]) - int(df.start.str[:4]) == 1): 
+        # print(float(df.end.str[:4]))
+            # df_col_added['year'] = df_col_added.end.str[:4]
+        # returned_data = df[(df['start'].isin(startList) == True) & (df['end'].isin(endList) == True)]
+
+        
+
+        # if returned_data.empty:
+        #     returned_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
+        #     print('returned data in fy recs 07-06')
+        #     print(returned_data)
+        # if returned_data.empty:
+        #     returned_data = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-06-')==True)]
+        #     print('returned data in fy recs 06-06')
+        #     print(returned_data)
+        # if returned_data.empty:
+        #     returned_data = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains('-03-')==True)]
+        #     print('returned data in fy recs 04-03')
+        #     print(returned_data)
+        # if returned_data.empty: #We really never want this to happen.
+        #     print('returned data in fy recs empty')
+        #     print(df)
+        #     return df
+
+        
+        # else:
+        #     # print('returned data in fy recs else')
+        #     # print(returned_data)
+        #     return returned_data
     except Exception as err:
         print("drop all except FY data rows error")
         print(err)
@@ -404,12 +629,12 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
             held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
             # print(x)
-            # if 'Share' in x:
+            # if 'Rev' in x:
             #     print('in consolidate')
             #     print(returned_data)
         returned_data = get_Only_10k_info(returned_data)
         # print(returned_data)
-        returned_data = orderAttributeDF(returned_data)
+        
         # print(returned_data)
 
         #LUKE might need to edit this, and the functions above, once we get to them en masse
@@ -420,12 +645,21 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         #In the meantime: bon voyage!
         # print('pre drop dupes')
         # print(returned_data)
-        returned_data = dropDuplicatesInDF(returned_data)
-        print(returned_data) #LUKE YOU're here finding out why shares data for amazon is being dropped
-        # print('post drop dupes')
+        # returned_data = dropDuplicatesInDF(returned_data) #original my dude LUKE
+        # print(returned_data) #LUKE YOU're here finding out why shares data for amazon is being dropped
+        # print('pre drop fy records')
         # print(returned_data)
         # print(returned_data.shape)
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
+        # print('post drop fy records pre drop dupes')
+        # print(returned_data)
+        # print(returned_data.shape)
+        returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
+
+        returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
+        # print('post drop  dupes')
+        # print(returned_data)
+        # print(returned_data.shape)
         returned_data = dropUselessColumns(returned_data)
         
         # print('consolidate all drops done')
@@ -439,16 +673,66 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         print("consolidate single attr error: ")
         print(err)
 
+def grManualCalc(df_col):
+    try:
+        # origList = []
+        origList = df_col.tolist()
+        # print(origList)
+        # print(len(origList))
+        growthList = []
+        growthList.append(np.NaN)
+        for x in range(len(origList)-1):
+            diff = abs((origList[x+1])-origList[x])
+            if origList[x] > origList[x+1]:
+                diff = diff * -1
+            # print('x+1')
+            # print(origList[x+1])
+            # print('x')
+            # print(origList[x])
+            if abs(origList[x]) == 0:# and abs(origList[x+1]) == 0:
+                change = np.NaN
+            # elif abs(origList[x]) == 0 and abs(origList[x+1]) != 0:
+            #     placeHolder = 0.001
+            #     diff = abs((origList[x+1])-placeHolder)
+            #     change = diff / abs(placeHolder) * 100
+            else:
+                change = diff / abs(origList[x]) * 100
+            # if change == 'inf':
+            #     print('inf tripped')
+            #     change = np.NaN
+            # print(change)
+            # print(type(change))
+            growthList.append(change)
+            # print(change)
+            # print('x')
+            # print(origList[x])
+            # print('x-1')
+            # print(origList[x-1])
+
+        # print(growthList)
+        # print(len(growthList))
+        # print(growthList)
+        return growthList
+
+    except Exception as err:
+        print("grManualCalc error: ")
+        print(err)
+
 def cleanRevenue(df):
     try:
+        # print('df')
+        # print(df)
         df_col_added = df.rename(columns={'val':'revenue'})
         # if df_col_added['revenue'].empty:
         #     df_col_added['revenueGrowthRate'] = np.NaN
         # else:
-        df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['revenue'])
+        df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
+        # print('df col added')
+        # print(df_col_added)
     # try:#I like coding this part. It felt clean. Leaving it for future reference, but it's best handled elsewhere/in other ways.
     #     df_col_added = pd.DataFrame()
     #     if df.empty:
@@ -475,7 +759,8 @@ def cleanRevenue(df):
 def cleanNetIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'netIncome'})
-        df_col_added['netIncomeGrowthRate'] = df_col_added['netIncome'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['netIncome'])
+        df_col_added['netIncomeGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -491,7 +776,8 @@ def cleanOperatingCashFlow(df):
         df_col_added = df.rename(columns={'val':'operatingCashFlow'})
         # if df_col_added['operatingCashFlow'].isnull().any():
         #     df_col_added['operatingCashFlow'] = df_col_added['operatingCashFlow'].ffill()
-        df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlow'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['operatingCashFlow'])
+        df_col_added['operatingCashFlowGrowthRate'] = growthCol#df_col_added['operatingCashFlow'].pct_change()*100
         # df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlowGrowthRate'].replace(np.nan,0) #Replace NaN with zero? Uncertain.
         df_col_added['year'] = df_col_added.end.str[:4]
 
@@ -508,7 +794,8 @@ def cleanInvestingCashFlow(df):
         df_col_added = df.rename(columns={'val':'investingCashFlow'})
         # if df_col_added['investingCashFlow'].isnull().any():
         #     df_col_added['investingCashFlow'] = df_col_added['investingCashFlow'].ffill()
-        df_col_added['investingCashFlowGrowthRate'] = df_col_added['investingCashFlow'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['investingCashFlow'])
+        df_col_added['investingCashFlowGrowthRate'] = growthCol#df_col_added['investingCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -524,7 +811,8 @@ def cleanFinancingCashFlow(df):
         df_col_added = df.rename(columns={'val':'financingCashFlow'})
         # if df_col_added['financingCashFlow'].isnull().any():
         #     df_col_added['financingCashFlow'] = df_col_added['financingCashFlow'].ffill()
-        df_col_added['financingCashFlowGrowthRate'] = df_col_added['financingCashFlow'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['financingCashFlow'])
+        df_col_added['financingCashFlowGrowthRate'] = growthCol#df_col_added['financingCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -541,7 +829,8 @@ def cleanNetCashFlow(df):
         # if df_col_added['netCashFlowe'].empty:
         #     df_col_added['netCashFlowGrowthRate'] = np.NaN
         # else:
-        df_col_added['netCashFlowGrowthRate'] = df_col_added['netCashFlow'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['netCashFlow'])
+        df_col_added['netCashFlowGrowthRate'] = growthCol#df_col_added['netCashFlow'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -568,7 +857,8 @@ def cleanCapEx(df):
 def cleanEPS(df):
     try:
         df_col_added = df.rename(columns={'val':'eps'})
-        df_col_added['epsGrowthRate'] = df_col_added['eps'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['eps'])
+        df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -584,7 +874,8 @@ def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
     try:
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
-        df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change(fill_method=None)*100
+        growthCol = grManualCalc(df_col_added['fcf'])
+        df_col_added['fcfGrowthRate'] = growthCol#df_col_added['fcf'].pct_change(fill_method=None)*100
 
         return df_col_added
 
@@ -603,7 +894,8 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
     try:
         df_col_added = df
         df_col_added['fcfMargin'] = df_col_added['fcf'] / df_col_added['revenue'] * 100
-        df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change(fill_method=None)*100
+        growthCol = grManualCalc(df_col_added['fcfMargin'])
+        df_col_added['fcfMarginGrowthRate'] = growthCol#df_col_added['fcfMargin'].pct_change(fill_method=None)*100
 
         return df_col_added
 
@@ -614,7 +906,8 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
 def cleanOperatingIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'operatingIncome'})
-        df_col_added['operatingIncomeGrowthRate'] = df_col_added['operatingIncome'].pct_change()*100
+        growthCol = grManualCalc(df_col_added['operatingIncome'])
+        df_col_added['operatingIncomeGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
         df_col_added = df_col_added.drop(columns=['start','end']) 
@@ -754,7 +1047,7 @@ def cleanDividends(total, perShare, shares):
         # print(perShare)
         
         if shares.empty:# and total.empty and perShare.empty:
-            cols = {  'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
+            cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
                      'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
             # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
             df_col_added = pd.DataFrame(cols, index=[0])
@@ -766,11 +1059,12 @@ def cleanDividends(total, perShare, shares):
             df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
             # print('df_col_added: ')
             # print(df_col_added)
-            df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill() #any missing shares values?
+            df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill().bfill() #any missing shares values?
             # if df_col_added['shares'].empty:
             #     df_col_added['sharesGrowthRate'] = np.NaN
             # else:
-            df_col_added['sharesGrowthRate'] = df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+            growthCol = grManualCalc(df_col_added['shares'])
+            df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
             # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
 
             #first we check for nans, keep them in mind for later
@@ -794,7 +1088,8 @@ def cleanDividends(total, perShare, shares):
             # if df_col_added['divsPaidPerShares'].empty:
             #     df_col_added['divGrowthRate'] = np.NaN
             # else:
-            df_col_added['divGrowthRate'] = df_col_added['divsPaidPerShare'].pct_change(fill_method=None)*100 #LUKE THINK ABOUT PUTTING AN IF STATEMENT AROUND THESE. if it's empty? don't do it
+            growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+            df_col_added['divGrowthRate'] = growthCol1 #df_col_added['divsPaidPerShare'].pct_change(fill_method=None)*100 #LUKE THINK ABOUT PUTTING AN IF STATEMENT AROUND THESE. if it's empty? don't do it
             # print('average growth rate: ')
             # print(df_col_added['divGrowthRate'].mean())
 
@@ -813,7 +1108,10 @@ def fillEmptyIncomeGrowthRates(df):
             meanReplacement = df_filled[x].mean()
             savedCol = df_filled[x]
             df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
-            df_filled[tarGrowthRate] = df_filled[x].pct_change(fill_method=None)*100
+
+            growthCol = grManualCalc(df_filled[x])
+            df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
+
             if savedCol.equals(df_filled[x]):
                 continue
             else:
@@ -831,36 +1129,64 @@ def fillEmptyIncomeGrowthRates(df):
 
 def fillEmptyDivsGrowthRates(df):
     try:
-        # print('we gr now')
-        # print(df)
+        # tarList = ['interestPaid','totalDivsPaid','shares','divsPaidPerShare']
         df_filled = df
         fixTracker = 0
+
+        # for x in tarList:
+        #     tarGrowthRate = x + 'GrowthRate'
+        #     meanReplacement = df_filled[x].mean()
+        #     savedCol = df_filled[x]
+        #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+
+        #     growthCol = grManualCalc(df_filled[x])
+        #     df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
+
+        #     if savedCol.equals(df_filled[x]):
+        #         continue
+        #     else:
+        #         fixTracker += 1
+
         if df_filled['interestPaid'].isnull().any():
-            fixTracker += 1
+            percentNull = df_filled['interestPaid'].isnull().sum() / len(df_filled['interestPaid'])
+            if percentNull > 0.4:
+                fixTracker += 1
             # print('it was int paid')
-            df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
+            df_filled['interestPaid'] = df_filled['interestPaid'].ffill().bfill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
         if df_filled['totalDivsPaid'].isnull().any():
-            fixTracker += 1    
+            percentNull = df_filled['totalDivsPaid'].isnull().sum() / len(df_filled['totalDivsPaid'])
+            if percentNull > 0.4:
+                fixTracker += 1
+            # fixTracker += 1    
             # print('it was total divs paid')
             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
         if df_filled['divsPaidPerShare'].isnull().any():
-            fixTracker += 1   
+            percentNull = df_filled['divsPaidPerShare'].isnull().sum() / len(df_filled['divsPaidPerShare'])
+            if percentNull > 0.4:
+                fixTracker += 1
+            # fixTracker += 1   
             # print('it was per share divs paid')
             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
         if df_filled['shares'].isnull().all():
             print('all shares null')
         elif df_filled['shares'].isnull().any():
-            fixTracker += 1  
+            percentNull = df_filled['shares'].isnull().sum() / len(df_filled['shares'])
+            if percentNull > 0.4:
+                fixTracker += 1
+            # fixTracker += 1  
             # print('it was shares')
             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
-            # df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
+            df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
             # df_filled['shares'] = df_filled['shares'].bfill() 
         if df_filled['sharesGrowthRate'].isnull().any():
             # fixTracker += 1  
-            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled['shares'].pct_change()*100)
+            growthCol = grManualCalc(df_filled['shares'])
+            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(growthCol)#df_filled['shares'].pct_change()*100)
         if df_filled['divGrowthRate'].isnull().any():
-            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled['divsPaidPerShare'].pct_change()*100)
+            growthCol = grManualCalc(df_filled['divsPaidPerShare'])
+            #LUKE MAKE A NEW TEMP COLUMN. FILL WITH LIST. DO BELOW LINE. DROP TEMP COLUMN
+            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(growthCol)#df_filled['divsPaidPerShare'].pct_change()*100)
         # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
         # for x in tarList:
         #     tarGrowthRate = x + 'GrowthRate'
@@ -872,6 +1198,14 @@ def fillEmptyDivsGrowthRates(df):
             #     continue
             # else:
             #     fixTracker += 1
+
+        # if fixTracker > 4:
+        #     df_filled['integrityFlag'] = 'NeedsWork'
+        # elif fixTracker == 0: 
+        #     df_filled['integrityFlag'] = 'Good'
+        # else:
+        #     df_filled['integrityFlag'] = 'Acceptable'
+        # return df_filled
         if fixTracker == 4:
             df_filled['integrityFlag'] = 'NeedsWork'
         elif fixTracker == 0: 
@@ -882,6 +1216,61 @@ def fillEmptyDivsGrowthRates(df):
     except Exception as err:
         print("fill empty divs GR error: ")
         print(err)
+
+#Just saved while editing
+# def fillEmptyDivsGrowthRates(df):
+#     try:
+#         # print('we gr now')
+#         # print(df)
+#         df_filled = df
+#         fixTracker = 0
+#         if df_filled['interestPaid'].isnull().any():
+#             fixTracker += 1
+#             # print('it was int paid')
+#             df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
+#         if df_filled['totalDivsPaid'].isnull().any():
+#             fixTracker += 1    
+#             # print('it was total divs paid')
+#             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
+#         if df_filled['divsPaidPerShare'].isnull().any():
+#             fixTracker += 1   
+#             # print('it was per share divs paid')
+#             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
+#         if df_filled['shares'].isnull().all():
+#             print('all shares null')
+#         elif df_filled['shares'].isnull().any():
+#             fixTracker += 1  
+#             # print('it was shares')
+#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
+#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
+#             # df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
+#             # df_filled['shares'] = df_filled['shares'].bfill() 
+#         if df_filled['sharesGrowthRate'].isnull().any():
+#             # fixTracker += 1  
+#             df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled['shares'].pct_change()*100)
+#         if df_filled['divGrowthRate'].isnull().any():
+#             df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled['divsPaidPerShare'].pct_change()*100)
+#         # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+#         # for x in tarList:
+#         #     tarGrowthRate = x + 'GrowthRate'
+#         #     meanReplacement = df_filled[x].mean()
+#         #     savedCol = df_filled[x]
+#         #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+#         #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
+#             # if savedCol.equals(df_filled[x]):
+#             #     continue
+#             # else:
+#             #     fixTracker += 1
+#         if fixTracker == 4:
+#             df_filled['integrityFlag'] = 'NeedsWork'
+#         elif fixTracker == 0: 
+#             df_filled['integrityFlag'] = 'Good'
+#         else:
+#             df_filled['integrityFlag'] = 'Acceptable'
+#         return df_filled
+#     except Exception as err:
+#         print("fill empty divs GR error: ")
+#         print(err)
 
 #Making tables for DB insertion
 def makeIncomeTableEntry(ticker, year, version, index_flag): 
@@ -908,7 +1297,6 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
         # print('capex_df df: ')
         # print(capex_df)
-        
         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
         # print('depAmor_df df: ')
         # print(depAmor_df)
@@ -966,7 +1354,7 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         # print(plusSaleProp['investingCashFlow'])
         # print(plusSaleProp['investingCashFlowGrowthRate'])
 
-        #CLEAN column empty values here before adding FFO calculations
+        #CLEAN column empty values here before adding FFO calculations 
         plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
         plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
         
@@ -981,7 +1369,8 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         # print(addfcfMargin)
 
         addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
-        addfcfMargin['ffoGrowthRate'] = addfcfMargin['ffo'].pct_change(fill_method=None)*100
+        growthCol = grManualCalc(addfcfMargin['ffo'])
+        addfcfMargin['ffoGrowthRate'] = growthCol#addfcfMargin['ffo'].pct_change(fill_method=None)*100
 
         # for x in addfcfMargin:
         #     print(x)
@@ -1074,8 +1463,6 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
     
     # print('you got this!')
 
-
-
 def harvestMasterCSVs(sectorTarget): #edit version as necessary!
     try:
         df_full = sectorTarget
@@ -1103,9 +1490,10 @@ def checkTechIncYears():
         incYearTracker = []
         incomeNullTracker = []
         toRecapture = []
-        yearsList = ['2022','2023','2024']
+        yearsList = ['2023','2024'] #2022
         version123 = '2'
         for x in nameCheckList:
+            print(x)
             try:
                 # if nameCheckList.index(x) % len(nameCheckList) == 0:
                 #     print('LUKE THE NAME IS: ')
@@ -1229,49 +1617,72 @@ def checkTechDivYears():
         #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
         print(toRecapture) 
 
-# checkTechIncYears()
-fullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'NATL', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'BTQQF', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PKKFF', 'CAUD', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'MJDS', 'SANP', 'SDVI', 'RONN']
-yearsOff = ['SONY', 'LRCX', 'WDAY', 'ATEYY', 'PCRFY', 'FN', 'KD', 'SYNA', 'AVT', 'WOLF', 'LPL', 'LITE', 'WNS', 'VIAV', 'TTMI', 'INFN', 'FORTY', 'HIMX', 'WALD', 'SPWR', 'MGIC', 'TGAN', 'MAXN', 'QUIK', 'LTCH', 'RAASY', 'KTCC', 'RCAT', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'TMNA', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'EXEO', 'WSTL', 'EVOL', 'GSPT', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO', 'MAXD', 'DIGAF']
-#There's no overlap! Yay!
-# print(set(fullNulls).difference(yearsOff))
-# print(set(fullNulls).difference(fullNulls2))
-# print(set(fullNulls).intersection(yearsOff))
-# print(len(fullNulls))
 
-# write_Master_csv_from_EDGAR(ticker123,'0001046179',ultimateTagsList,year123,version123)
-# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','1')
-# write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
-# write_Master_csv_from_EDGAR('ASTS', '0001780312', ultimateTagsList, '2024','2')
-
-ticker235 = 'AMZN'
+ticker235 = 'AAPL'
 year235 = '2024'
-version235 = '0'
+version235 = '2'
 # print('Target income:')
 # print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print('divs:')
+print('target divs:')
 print(makeDividendTableEntry(ticker235,year235,version235,False))
-# print('roic: ')
+# print('target roic: ')
 # print(makeROICtableEntry(ticker235,year235,version235,False))
+
+# write_Master_csv_from_EDGAR(ticker235,'0000313838',ultimateTagsList,year235,version235)
 
 ticker234 = 'MSFT'
 year234 = '2024'
 version234 = '2'
 # print('MSFT income:')
 # print(makeIncomeTableEntry(ticker234,year234,version234,False))
-# print('divs:')
+# print('MSFT divs:')
 # print(makeDividendTableEntry(ticker234,year234,version234,False))
-# print('roic: ')
+# print('MSFT roic: ')
 # print(makeROICtableEntry(ticker234,year234,version234,False))
+
+# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','2')
 
 ticker123 = 'AMZN' #TSM #AMZN
 year123 = '2024'
 version123 = '0'
-# print('income:')
+# print('AMZN income:')
 # print(makeIncomeTableEntry(ticker123,'2024',version123,False))
-# print('divs:')
+# print('AMZN divs:')
 # print(makeDividendTableEntry(ticker123,'2024',version123,False))
-# print('roic: ')
+# print('AMZN roic: ')
 # print(makeROICtableEntry(ticker123,'2024','0',False))
+
+# write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
+
+
+# checkTechIncYears()
+### Income check results
+fullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
+yearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO']
+defClosed = ['MAXD']
+exUS = ['PCRFY','WALD']
+# for x in yearsOff2:
+#     nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
+#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+#There's no overlap! Yay!
+# print(set(fullNulls).difference(yearsOff))
+# print(set(fullNulls).difference(fullNulls))
+# print(set(fullNulls).intersection(yearsOff))
+# print(set(yearsOff).difference(yearsOff))
+# print(len(fullNulls))
+
+# write_Master_csv_from_EDGAR('ASTS', '0001780312', ultimateTagsList, '2024','2')
+
+# neg = -5.999
+# pos = 3.999
+# diffpos = abs(pos-neg)
+# diffneg = abs(neg-pos)
+# print(diffpos)
+# print(diffneg)
+
+
+
+
 
 
 
@@ -1504,6 +1915,78 @@ def createAllAttributesInsertToDB(ticker, year, version):
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+
+### replaced above with better code
+# def checkTechDivYears():
+#     try:
+#         incomeBadYears = pd.DataFrame(columns=['Ticker'])
+#         divsBadYears = pd.DataFrame(columns=['Ticker'])
+#         noIncData = pd.DataFrame(columns=['Ticker'])
+#         noDivData = pd.DataFrame(columns=['Ticker'])
+
+#         nameCheckList = tech['Ticker']
+#         nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
+#         incYearTracker = []
+#         divTracker = []
+#         toRecapture = []
+#         incomeNullTracker = []
+#         DivNullTracker = []
+#         yearsList = ['2022','2023','2024']
+#         version123 = '2'
+#         for x in nameCheckList:
+#             try:
+#                 # if nameCheckList.index(x) % len(nameCheckList) == 0:
+#                 #     print('LUKE THE NAME IS: ')
+#                 #     print(x)
+#                 incTable = makeIncomeTableEntry(x, '2024', version123, False)
+#                 divsTable = makeDividendTableEntry(x, '2024', version123, False)
+                
+#                 #Checking if returned tables are just empty
+#                 if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
+#                     incomeNullTracker.append(x)
+#                     if str(type(divsTable)) == "<class 'NoneType'>":#.empty:
+#                         DivNullTracker.append(x)
+#                         continue
+#                 #checking latest data from the pull
+#                 if (divsTable['year'].max() not in yearsList) or (divsTable['year'].empty):
+#                     # print(str(x) + ' divYears are good!')
+#                     divTracker.append(x)                
+
+#                 if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+#                     # print(str(x) + ' incYears are good!')
+#                     incYearTracker.append(x)     
+#             except Exception as err:
+#                 print("nested check tech years error: ")
+#                 print(err)
+#                 toRecapture.append(x)
+#                 continue                
+
+       
+#     except Exception as err:
+#         print("check tech years error: ")
+#         print(err)
+#         # toRecapture.append(x)
+#         # continue
+#     finally:
+#         if len(incYearTracker) > 0:
+#             incomeBadYears['Ticker'] = incYearTracker
+#             csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
+
+#         if len(divTracker) > 0:
+#             divsBadYears['Ticker']=divTracker
+#             csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
+
+#         if len(incomeNullTracker) > 0:
+#             noIncData['Ticker']=incomeNullTracker
+#             csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
+
+#         if len(DivNullTracker) > 0:
+#             noDivData['Ticker']=DivNullTracker
+#             csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
+
+#         # for x in toRecapture:
+#         #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+#         print(toRecapture) 
 
 #might get deprecated!
 # def dropDuplicatesInDF_property(df):
