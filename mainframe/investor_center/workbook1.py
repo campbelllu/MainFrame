@@ -328,6 +328,8 @@ longTermDebt3 = ['NoncurrentLeaseLiabilities']
 longTermDebt4 = ['LongtermBorrowings']
 totalAssets = ['Assets']
 totalLiabilities = ['Liabilities']
+currentLiabilities = ['LiabilitiesCurrent']
+nonCurrentLiabilities = ['LiabilitiesNoncurrent']
 
 exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually
 
@@ -344,11 +346,11 @@ deprecAndAmor = ['DepreciationDepletionAndAmortization']
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
-                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid ]
+                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
-                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid']
+                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -431,6 +433,9 @@ def dropDuplicatesInDF(df): #LUKE HERE
 
 def dropAllExceptFYRecords(df):
     try:
+        # print('tag then df')
+        # print(df['Tag'])
+        # print(df)
         returned_data = pd.DataFrame()
         returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
         oneEnds = ['-01-','-02-']
@@ -493,6 +498,17 @@ def dropAllExceptFYRecords(df):
             held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True)]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
 
+        # print('tag then df')
+        # print(returned_data['Tag'])
+        # print(returned_data)
+        if returned_data.empty:
+            listMax = df.end.str[5:7]
+            tarMax = str(listMax.max())
+            # print('listmax')
+            # print(listMax.max())
+            returned_data = df[df['end'].str.contains(tarMax)==True] #held_data
+            # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+            # print(returned_data)
         
         # returned_data2 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-01-')==True)]
         # returned_data3 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-02-')==True)]
@@ -924,7 +940,7 @@ def cleanTaxRate(df):
         # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
         df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+        df_col_added = df_col_added.drop(columns=['start','end','Units']) 
 
         return df_col_added
 
@@ -932,35 +948,85 @@ def cleanTaxRate(df):
         print("clean operatingIncome error: ")
         print(err)
 
-def cleanDebt(short, long1, long2): #LUKE gotta add long3 and long 4!
+def cleanDebt(short, long1, long2, long3, long4): #LUKE gotta add long3 and long 4!
     try:
         #take short, long1, long2 debt, create year column, reproduce df with just year and debt column 
         short['year'] = short.end.str[:4]
         long1['year'] = long1.end.str[:4]
         long2['year'] = long2.end.str[:4]
+        long3['year'] = long3.end.str[:4]
+        long4['year'] = long4.end.str[:4]
 
         short = short.drop(columns=['start','end']) 
         long1 = long1.drop(columns=['start','end']) 
         long2 = long2.drop(columns=['start','end']) 
+        long3 = long3.drop(columns=['start','end']) 
+        long4 = long4.drop(columns=['start','end']) 
+        # print('printing debts')
+        # print(long1)
+        # print(long2)
+        # print(long3)
+        # print(long4)
 
-        shortNlong1 = pd.merge(short, long1, on=['year','Ticker','CIK'], how='outer')#'start','end',
+        shortNlong1 = pd.merge(short, long1, on=['year','Ticker','CIK','Units'], how='outer')
         shortNlong1['val_x'] = shortNlong1['val_x'].fillna(0)
         shortNlong1['val_y'] = shortNlong1['val_y'].fillna(0)
         shortNlong1['subTotalDebt'] = shortNlong1['val_x'] + shortNlong1['val_y']
         shortNlong1 = shortNlong1.drop(['val_x','val_y'],axis=1)
+
+        # print('shortnlong')
+        # print(shortNlong1)
         
-        plusLong2 = pd.merge(shortNlong1, long2, on=['year','Ticker','CIK'], how='outer')#'start','end',
+        plusLong2 = pd.merge(shortNlong1, long2, on=['year','Ticker','CIK','Units'], how='outer')
         plusLong2['val'] = plusLong2['val'].fillna(0)
         plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
         plusLong2 = plusLong2.drop(['subTotalDebt','val'],axis=1)
 
-        return plusLong2
+        # print('pluslong2')
+        # print(plusLong2)
+
+        plusLong3 = pd.merge(plusLong2, long3, on=['year','Ticker','CIK','Units'], how='outer')
+        plusLong3['val'] = plusLong3['val'].fillna(0)
+        plusLong3['TotalDebt'] = plusLong3['TotalDebt'].fillna(0)
+        plusLong3['TotalDebt'] = plusLong3['TotalDebt'] + plusLong3['val']
+        plusLong3 = plusLong3.drop(['val'],axis=1)
+
+        # print('pluslong3')
+        # print(plusLong3)
+
+        plusLong4 = pd.merge(plusLong3, long4, on=['year','Ticker','CIK','Units'], how='outer')
+        plusLong4['val'] = plusLong4['val'].fillna(0)
+        plusLong4['TotalDebt'] = plusLong4['TotalDebt'].fillna(0)
+        plusLong4['TotalDebt'] = plusLong4['TotalDebt'] + plusLong4['val']
+        plusLong4 = plusLong4.drop(['val'],axis=1)
+
+        # print('pluslong4')
+        # print(plusLong4)
+
+        return plusLong4
 
     except Exception as err:
         print("clean Debt error: ")
         print(err)
 
-def cleanTotalEquity(assets, liabilities):
+def cleanLiabilities(nonCurrent, current):
+    try:
+        nonCurrent['year'] = nonCurrent.end.str[:4]
+        current['year'] = current.end.str[:4]
+
+        nonCurrent = nonCurrent.drop(columns=['start','end'])
+        current = current.drop(columns=['start','end'])
+
+        anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
+        anl['liabilities'] = anl['val_x'] + anl['val_y']
+        anl = anl.drop(['val_x','val_y'],axis=1)
+        return anl
+
+    except Exception as err:
+        print("clean Liabilities error: ")
+        print(err)
+
+def cleanTotalEquity(assets, liabilities, nc, cu):
     try:
         #take assets and liabilities and get total equity from them
         assets['year'] = assets.end.str[:4]
@@ -969,13 +1035,16 @@ def cleanTotalEquity(assets, liabilities):
         assets = assets.drop(columns=['start','end'])
         liabilities = liabilities.drop(columns=['start','end'])
 
-        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the man of all liabilities over time.
-        assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK'], how='outer')#'start','end',
+        if liabilities.empty:
+            liabilities = cleanLiabilities(nc, cu)
+
+        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time. LUKE RETHINK THIS
+        assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK','Units'], how='outer')
         assAndLies['assets'] = assAndLies['val_x']
-        assetsMean = assAndLies['assets'].mean() / len(assAndLies['assets'])
+        assetsMean = assAndLies['assets'].mean() #/ ((len(assAndLies['assets'])/2)+1)
         assAndLies['assets'] = assAndLies['assets'].fillna(assetsMean)
         assAndLies['liabilities'] = assAndLies['val_y']
-        liaMean = assAndLies['liabilities'].mean() / len(assAndLies['liabilities'])
+        liaMean = assAndLies['liabilities'].mean() #/ ((len(assAndLies['liabilities'])/2)+1)
         assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
         assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
         assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
@@ -1129,23 +1198,8 @@ def fillEmptyIncomeGrowthRates(df):
 
 def fillEmptyDivsGrowthRates(df):
     try:
-        # tarList = ['interestPaid','totalDivsPaid','shares','divsPaidPerShare']
         df_filled = df
         fixTracker = 0
-
-        # for x in tarList:
-        #     tarGrowthRate = x + 'GrowthRate'
-        #     meanReplacement = df_filled[x].mean()
-        #     savedCol = df_filled[x]
-        #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
-
-        #     growthCol = grManualCalc(df_filled[x])
-        #     df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
-
-        #     if savedCol.equals(df_filled[x]):
-        #         continue
-        #     else:
-        #         fixTracker += 1
 
         if df_filled['interestPaid'].isnull().any():
             percentNull = df_filled['interestPaid'].isnull().sum() / len(df_filled['interestPaid'])
@@ -1175,47 +1229,54 @@ def fillEmptyDivsGrowthRates(df):
                 fixTracker += 1
             # fixTracker += 1  
             # print('it was shares')
-            # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
-            # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
-            df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
-            # df_filled['shares'] = df_filled['shares'].bfill() 
+            df_filled['shares'] = df_filled['shares'].ffill().bfill() 
+
+
+
+        # print('pre shares and div GR')
+        # print(df_filled)
         if df_filled['sharesGrowthRate'].isnull().any():
             # fixTracker += 1  
             growthCol = grManualCalc(df_filled['shares'])
-            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(growthCol)#df_filled['shares'].pct_change()*100)
+            df_filled['temp1'] = growthCol
+            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled.pop('temp1'))#['temp1'])
+            # df_filled = df_filled.drop(columns=['temp1'])
+            # print('shares  GR')
+            # print(df_filled)
+            
         if df_filled['divGrowthRate'].isnull().any():
             growthCol = grManualCalc(df_filled['divsPaidPerShare'])
-            #LUKE MAKE A NEW TEMP COLUMN. FILL WITH LIST. DO BELOW LINE. DROP TEMP COLUMN
-            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(growthCol)#df_filled['divsPaidPerShare'].pct_change()*100)
-        # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
-        # for x in tarList:
-        #     tarGrowthRate = x + 'GrowthRate'
-        #     meanReplacement = df_filled[x].mean()
-        #     savedCol = df_filled[x]
-        #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
-        #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
-            # if savedCol.equals(df_filled[x]):
-            #     continue
-            # else:
-            #     fixTracker += 1
+            df_filled['temp2'] = growthCol
+        #     #LUKE MAKE A NEW TEMP COLUMN. FILL WITH LIST. DO BELOW LINE. DROP TEMP COLUMN
+            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled.pop('temp2'))#['temp2'])
+        #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
+            # print('div GR')
+            # print(df_filled)
 
-        # if fixTracker > 4:
-        #     df_filled['integrityFlag'] = 'NeedsWork'
-        # elif fixTracker == 0: 
-        #     df_filled['integrityFlag'] = 'Good'
-        # else:
-        #     df_filled['integrityFlag'] = 'Acceptable'
-        # return df_filled
+
+        # df_filled = df_filled.drop(columns=['temp1'])
+        
+        # print('ppost drop shares and div GR')
+        # print(df_filled)
+
         if fixTracker == 4:
             df_filled['integrityFlag'] = 'NeedsWork'
         elif fixTracker == 0: 
             df_filled['integrityFlag'] = 'Good'
         else:
             df_filled['integrityFlag'] = 'Acceptable'
-        return df_filled
+        # print('ppost int flag added')
+        # print(df_filled)
+        # df_filled2 = df_filled
+        
     except Exception as err:
         print("fill empty divs GR error: ")
         print(err)
+
+    finally:
+        # print('in finally df filled')
+        # print(df_filled)
+        return df_filled
 
 #Just saved while editing
 # def fillEmptyDivsGrowthRates(df):
@@ -1385,28 +1446,41 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
 def makeROICtableEntry(ticker, year, version, index_flag):
     try:
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
+        # print('opinc df')
+        # print(opIncome_df)
         taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
+        # print('taxrate df')
+        # print(taxRate_df)
+        netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
-                                    consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False))
+                                    consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False),
+                                    consolidateSingleAttribute(ticker, year, version, longTermDebt3, False), consolidateSingleAttribute(ticker, year, version, longTermDebt4, False))
+        # print('TDebt df')
+        # print(totalDebt_df)
         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
-                                    consolidateSingleAttribute(ticker, year, version, totalLiabilities, False))
+                                    consolidateSingleAttribute(ticker, year, version, totalLiabilities, False),consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
+                                    consolidateSingleAttribute(ticker, year, version, currentLiabilities, False))
+        # print('TEquity df')
+        # print(totalEquity_df)
 
-        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')#'start','end',
-        plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK'], how='outer')#'end',
+        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
+        opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
+        # print('opincntax df')
+        # print(opIncNtax)
+        plustDebt = pd.merge(opIncNtaxNinc, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('plusdebt df')
+        # print(plustDebt)
         # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
         # plustDebt = plustDebt.drop(['start_y'],axis=1)
-        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK'], how='outer')#'end',
+        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
         plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
+        plustEquity['roce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
 
-        #To implement this, need to fill leading NaN's for calculated columns
-        #ROIC section nearly impossible to setup Integrity flags for. How do you backfill debt/equity levels? You can just use what you find, honestly.
-        # for x in plustEquity:
-        #     if plustEquity[x].isnull().any():
-        #         integrity_flag = 'Bad'
 
         return plustEquity
 
@@ -1621,36 +1695,36 @@ def checkTechDivYears():
 ticker235 = 'AAPL'
 year235 = '2024'
 version235 = '2'
-# print('Target income:')
-# print(makeIncomeTableEntry(ticker235,year235,version235,False))
+print('Target income:')
+print(makeIncomeTableEntry(ticker235,year235,version235,False))
 print('target divs:')
 print(makeDividendTableEntry(ticker235,year235,version235,False))
-# print('target roic: ')
-# print(makeROICtableEntry(ticker235,year235,version235,False))
+print('target roic: ')
+print(makeROICtableEntry(ticker235,year235,version235,False))
 
 # write_Master_csv_from_EDGAR(ticker235,'0000313838',ultimateTagsList,year235,version235)
 
 ticker234 = 'MSFT'
 year234 = '2024'
 version234 = '2'
-# print('MSFT income:')
-# print(makeIncomeTableEntry(ticker234,year234,version234,False))
-# print('MSFT divs:')
-# print(makeDividendTableEntry(ticker234,year234,version234,False))
-# print('MSFT roic: ')
-# print(makeROICtableEntry(ticker234,year234,version234,False))
+print('MSFT income:')
+print(makeIncomeTableEntry(ticker234,year234,version234,False))
+print('MSFT divs:')
+print(makeDividendTableEntry(ticker234,year234,version234,False))
+print('MSFT roic: ')
+print(makeROICtableEntry(ticker234,year234,version234,False))
 
 # write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','2')
 
 ticker123 = 'AMZN' #TSM #AMZN
 year123 = '2024'
 version123 = '0'
-# print('AMZN income:')
-# print(makeIncomeTableEntry(ticker123,'2024',version123,False))
-# print('AMZN divs:')
-# print(makeDividendTableEntry(ticker123,'2024',version123,False))
-# print('AMZN roic: ')
-# print(makeROICtableEntry(ticker123,'2024','0',False))
+print('AMZN income:')
+print(makeIncomeTableEntry(ticker123,'2024',version123,False))
+print('AMZN divs:')
+print(makeDividendTableEntry(ticker123,'2024',version123,False))
+print('AMZN roic: ')
+print(makeROICtableEntry(ticker123,'2024','0',False))
 
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
 

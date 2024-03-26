@@ -1,8 +1,8 @@
 from django.db import models
 
 class Dividends(models.Model):
-    start = models.CharField(max_length=12)
-    end = models.CharField(max_length=12)
+    # start = models.CharField(max_length=12)
+    # end = models.CharField(max_length=12)
     year = models.CharField(max_length=4)
     interestPaid = models.IntegerField()
     divsPaidPerShare = models.FloatField()
@@ -20,11 +20,12 @@ class Dividends(models.Model):
         db_table = 'Dividends'
 
 class ROIC(models.Model):
-    start = models.CharField(max_length=12)
-    end = models.CharField(max_length=12)
+    # start = models.CharField(max_length=12)
+    # end = models.CharField(max_length=12)
     year = models.CharField(max_length=4)
     operatingIncome = models.IntegerField()
     operatingIncomeGrowthRate = models.FloatField()
+    netIncome = models.IntegerField()
     taxRate = models.FloatField()
     TotalDebt = models.IntegerField()
     assets = models.IntegerField()
@@ -33,6 +34,7 @@ class ROIC(models.Model):
     nopat = models.IntegerField()
     investedCapital = models.IntegerField()
     roic = models.FloatField()
+    roce = models.FloatField()
 
     ticker = models.CharField(max_length=10)
     cik = models.CharField(max_length=10)
@@ -42,8 +44,8 @@ class ROIC(models.Model):
         db_table = 'ROIC'
 
 class Income(models.Model):
-    start = models.CharField(max_length=12)
-    end = models.CharField(max_length=12)
+    # start = models.CharField(max_length=12)
+    # end = models.CharField(max_length=12)
     year = models.CharField(max_length=4)
     revenue = models.IntegerField()
     revenueGrowthRate = models.FloatField()
