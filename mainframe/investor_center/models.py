@@ -34,6 +34,7 @@ class ROIC(models.Model):
     nopat = models.IntegerField()
     investedCapital = models.IntegerField()
     roic = models.FloatField()
+    adjRoic = models.FloatField()
     roce = models.FloatField()
 
     ticker = models.CharField(max_length=10)

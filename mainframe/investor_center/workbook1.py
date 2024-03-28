@@ -272,11 +272,12 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
                     data['CIK'] = cik
                     company_data = pd.concat([company_data, data], ignore_index = True)
                 except Exception as err:
-                    print(str(tags[i]) + ' not found for ' + ticker + ' in ' + x)
+                    # print(str(tags[i]) + ' not found for ' + ticker + ' in ' + x)
+                    pass
                     # print("Edgar query error: ")
                     # print(err)
-                finally:
-                    time.sleep(0.1)
+                # finally:
+                #     time.sleep(0.1)
 
             # if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
             #     for i in range(len(tags)):
@@ -297,6 +298,7 @@ def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
             #             time.sleep(0.1)
 
         return company_data
+        # time.sleep(0.1)
     except Exception as err:
         print('edgar query super error')
         print(err)
@@ -340,17 +342,20 @@ declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared',
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
                             'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted']#'WeightedAverageShares']
-gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes']
-deprecAndAmor = ['DepreciationDepletionAndAmortization']
+gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes','GainsLossesOnSalesOfInvestmentRealEstate']
+deprecAndAmor = ['DepreciationDepletionAndAmortization'] 
+deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
+deprecAndAmor3 = ['DepreciationAndAmortization']
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
-                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities ]
+                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, deprecAndAmor3 ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
-                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities']
+                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
+                'deprecAndAmor2', 'deprecAndAmor3']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -359,11 +364,30 @@ ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
     try:
         company_data = EDGAR_query(ticker, cik, header, tagList)
+        time.sleep(0.1)
     except Exception as err:
         print('write to csv from edgar error:')
         print(err)                
     finally:
         csv.simple_saveDF_to_csv(stock_data, company_data, ticker + '_Master_' + year + '_V' + version, False)
+
+def harvestMasterCSVs(sectorTarget): #edit version as necessary!
+    try:
+        df_full = sectorTarget
+        tickerList = df_full['Ticker']
+        cikList = df_full['CIK']
+    
+        for i in range(len(tickerList)):
+            write_Master_csv_from_EDGAR(tickerList[i], cikList[i], ultimateTagsList, '2024', '2')
+        
+        #full_cik_sectInd_list
+        # return null
+
+    except Exception as err:
+        print("harvestMasters error: ")
+        print(err)
+
+# harvestMasterCSVs(realEstate)
 
 #Begin data cleaning process
 def get_Only_10k_info(df):
@@ -397,40 +421,6 @@ def get_Only_10k_info(df):
         #     return filtered_data
         return filtered_data
 
-def orderAttributeDF(df):
-    try:
-        filtered_data = pd.DataFrame()
-        filtered_data = df.sort_values(by=['end','val'], ascending=True)
-    except Exception as err:
-        print("order attribute error")
-        print(err)
-    finally:
-        return filtered_data
-
-def dropDuplicatesInDF(df): #LUKE HERE
-    try:
-        filtered_data = pd.DataFrame()
-        # print('pre drop dupes')
-        # print(df)
-        filtered_data = df.drop_duplicates(subset=['end'],keep='last')#val
-        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') 
-
-        # print('pre drop dupes')
-        # print(df)
-        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #start, end
-        # print('post drop dupes')
-        # print(filtered_data)
-        # print(filtered_data.shape)
-        # filtered_data = df.drop_duplicates(subset=['val'], keep='last') #val, no keep last
-        
-        # filtered_data = df.drop_duplicates(subset=['start'], keep='last') #new
-
-    except Exception as err:
-        print("drop duplicates error")
-        print(err)
-    finally:
-        return filtered_data
-
 def dropAllExceptFYRecords(df):
     try:
         # print('tag then df')
@@ -451,51 +441,58 @@ def dropAllExceptFYRecords(df):
         elevenEnds = ['-10-','-11-','-12-']
         twelveEnds = ['-11-','-12-','-01-']
         for x in oneEnds:
-            held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True)]
+            
+                
+            held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True) 
        
         for x in twoEnds:
-            held_data = df[(df['start'].str.contains('-02-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-02-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in threeEnds:
-            held_data = df[(df['start'].str.contains('-03-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-03-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
        
         for x in fourEnds:
-            held_data = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in fiveEnds:
-            held_data = df[(df['start'].str.contains('-05-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-05-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in sixEnds:
-            held_data = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
        
         for x in sevenEnds:
-            held_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in eightEnds:
-            held_data = df[(df['start'].str.contains('-08-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-08-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in nineEnds:
-            held_data = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in tenEnds:
-            held_data = df[(df['start'].str.contains('-10-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-10-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         
         for x in elevenEnds:
-            held_data = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
 
         for x in twelveEnds:
-            held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True)]
+            held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
+            # held_data['startYear'] = df.start.str[:4]#.astype(int)
+            # held_data['endYear'] = df.end.str[:4]#.astype(int)
+            # print('held data')
+            # print(held_data)
+            # if (int(df.end.str[:4]) - int(df.start.str[:4]) == 1):
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
 
         # print('tag then df')
@@ -623,9 +620,47 @@ def dropAllExceptFYRecords(df):
         print("drop all except FY data rows error")
         print(err)
 
+def orderAttributeDF(df):
+    try:
+        filtered_data = pd.DataFrame()
+        filtered_data = df.sort_values(by=['end','val'], ascending=True)
+    except Exception as err:
+        print("order attribute error")
+        print(err)
+    finally:
+        return filtered_data
+
+def dropDuplicatesInDF(df):
+    try:
+        # filtered_data = pd.DataFrame()
+        # print('pre drop dupes')
+        # print(df)
+        filtered_data = df
+        filtered_data['year'] = filtered_data.end.str[:4]
+        # print(filtered_data)
+        filtered_data = df.drop_duplicates(subset=['year'],keep='last')#val #end
+        # filtered_data = filtered_data.drop_duplicates(subset=[filtered_data.end.str[:4]],keep='last')
+        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') 
+
+        # print('pre drop dupes')
+        # print(df)
+        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #start, end
+        # print('post drop dupes')
+        # print(filtered_data)
+        # print(filtered_data.shape)
+        # filtered_data = df.drop_duplicates(subset=['val'], keep='last') #val, no keep last
+        
+        # filtered_data = df.drop_duplicates(subset=['start'], keep='last') #new
+
+    except Exception as err:
+        print("drop duplicates error")
+        print(err)
+    finally:
+        return filtered_data
+
 def dropUselessColumns(df):
     try:
-        returned_data = df.drop(['accn','fy','fp','form','filed','frame','Tag'],axis=1)
+        returned_data = df.drop(['start','end','accn','fy','fp','form','filed','frame','Tag'],axis=1) #start, end added
 
         return returned_data
     except Exception as err:
@@ -645,32 +680,22 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
             held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
             # print(x)
-            # if 'Rev' in x:
+            # if 'PerShare' in x:
             #     print('in consolidate')
             #     print(returned_data)
         returned_data = get_Only_10k_info(returned_data)
         # print(returned_data)
         
-        # print(returned_data)
-
-        #LUKE might need to edit this, and the functions above, once we get to them en masse
-        # if tagList == gainSaleProperty:# or tagList == revenue:
-        #     returned_data = dropDuplicatesInDF_property(returned_data)
-        # else:
-        #     returned_data = dropDuplicatesInDF(returned_data)
-        #In the meantime: bon voyage!
-        # print('pre drop dupes')
-        # print(returned_data)
-        # returned_data = dropDuplicatesInDF(returned_data) #original my dude LUKE
-        # print(returned_data) #LUKE YOU're here finding out why shares data for amazon is being dropped
         # print('pre drop fy records')
-        # print(returned_data)
+        # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         # print('post drop fy records pre drop dupes')
-        # print(returned_data)
+        # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
+        # print(returned_data.to_string())
+        # print(returned_data.shape)
 
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
         # print('post drop  dupes')
@@ -739,14 +764,17 @@ def cleanRevenue(df):
         # print('df')
         # print(df)
         df_col_added = df.rename(columns={'val':'revenue'})
-        # if df_col_added['revenue'].empty:
-        #     df_col_added['revenueGrowthRate'] = np.NaN
-        # else:
-        growthCol = grManualCalc(df_col_added['revenue'])
-        df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            # if df_col_added['revenue'].empty:
+            #     df_col_added['revenueGrowthRate'] = np.NaN
+            # else:
+            growthCol = grManualCalc(df_col_added['revenue'])
+            df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+        # df_col_added = df_col_added.drop(columns=['start','end'])
         # print('df col added')
         # print(df_col_added)
     # try:#I like coding this part. It felt clean. Leaving it for future reference, but it's best handled elsewhere/in other ways.
@@ -765,7 +793,7 @@ def cleanRevenue(df):
     #         df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
     #         df_col_added['year'] = df_col_added.end.str[:4]
        
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("cleanRevenue error: ")
@@ -775,13 +803,16 @@ def cleanRevenue(df):
 def cleanNetIncome(df):
     try:
         df_col_added = df.rename(columns={'val':'netIncome'})
-        growthCol = grManualCalc(df_col_added['netIncome'])
-        df_col_added['netIncomeGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['netIncome'])
+            df_col_added['netIncomeGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("cleanNetIncome error: ")
@@ -792,14 +823,17 @@ def cleanOperatingCashFlow(df):
         df_col_added = df.rename(columns={'val':'operatingCashFlow'})
         # if df_col_added['operatingCashFlow'].isnull().any():
         #     df_col_added['operatingCashFlow'] = df_col_added['operatingCashFlow'].ffill()
-        growthCol = grManualCalc(df_col_added['operatingCashFlow'])
-        df_col_added['operatingCashFlowGrowthRate'] = growthCol#df_col_added['operatingCashFlow'].pct_change()*100
-        # df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlowGrowthRate'].replace(np.nan,0) #Replace NaN with zero? Uncertain.
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['operatingCashFlow'])
+            df_col_added['operatingCashFlowGrowthRate'] = growthCol#df_col_added['operatingCashFlow'].pct_change()*100
+            # df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlowGrowthRate'].replace(np.nan,0) #Replace NaN with zero? Uncertain.
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean oper cash flow error: ")
@@ -810,13 +844,16 @@ def cleanInvestingCashFlow(df):
         df_col_added = df.rename(columns={'val':'investingCashFlow'})
         # if df_col_added['investingCashFlow'].isnull().any():
         #     df_col_added['investingCashFlow'] = df_col_added['investingCashFlow'].ffill()
-        growthCol = grManualCalc(df_col_added['investingCashFlow'])
-        df_col_added['investingCashFlowGrowthRate'] = growthCol#df_col_added['investingCashFlow'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['investingCashFlow'])
+            df_col_added['investingCashFlowGrowthRate'] = growthCol#df_col_added['investingCashFlow'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean investing cash flow error: ")
@@ -827,13 +864,16 @@ def cleanFinancingCashFlow(df):
         df_col_added = df.rename(columns={'val':'financingCashFlow'})
         # if df_col_added['financingCashFlow'].isnull().any():
         #     df_col_added['financingCashFlow'] = df_col_added['financingCashFlow'].ffill()
-        growthCol = grManualCalc(df_col_added['financingCashFlow'])
-        df_col_added['financingCashFlowGrowthRate'] = growthCol#df_col_added['financingCashFlow'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['financingCashFlow'])
+            df_col_added['financingCashFlowGrowthRate'] = growthCol#df_col_added['financingCashFlow'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean financingCashFlow error: ")
@@ -845,13 +885,16 @@ def cleanNetCashFlow(df):
         # if df_col_added['netCashFlowe'].empty:
         #     df_col_added['netCashFlowGrowthRate'] = np.NaN
         # else:
-        growthCol = grManualCalc(df_col_added['netCashFlow'])
-        df_col_added['netCashFlowGrowthRate'] = growthCol#df_col_added['netCashFlow'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['netCashFlow'])
+            df_col_added['netCashFlowGrowthRate'] = growthCol#df_col_added['netCashFlow'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean netCashFlow error: ")
@@ -860,11 +903,16 @@ def cleanNetCashFlow(df):
 def cleanCapEx(df):
     try:
         df_col_added = df.rename(columns={'val':'capEx'})
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['capEx'])
+            df_col_added['capExGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+        # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean capEx error: ")
@@ -873,20 +921,23 @@ def cleanCapEx(df):
 def cleanEPS(df):
     try:
         df_col_added = df.rename(columns={'val':'eps'})
-        growthCol = grManualCalc(df_col_added['eps'])
-        df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['eps'])
+            df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-        return df_col_added
+            return df_col_added
 
     except Exception as err:
         print("clean eps error: ")
         print(err)
 
 def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
-    #Gives error warning of deprecation if there are null values. Filled values produce no warning. LUKE Edit later if necessary due to deprecation.
+    #Gives error warning of deprecation if there are null values. Filled values produce no warning. LUKE Edit later if necessary due to deprecation error code.
     try:
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
@@ -921,14 +972,24 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
 
 def cleanOperatingIncome(df):
     try:
+        # print('df')
+        # print(df)
         df_col_added = df.rename(columns={'val':'operatingIncome'})
-        growthCol = grManualCalc(df_col_added['operatingIncome'])
-        df_col_added['operatingIncomeGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        # print('renamed df')
+        # print(df_col_added)
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['operatingIncome'])
+            df_col_added['operatingIncomeGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
+            # print('growth col added df')
+            # print(df_col_added)
 
-        df_col_added = df_col_added.drop(columns=['start','end']) 
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        return df_col_added
+        # df_col_added = df_col_added.drop(columns=['start','end']) 
+
+            return df_col_added
 
     except Exception as err:
         print("clean operatingIncome error: ")
@@ -938,9 +999,9 @@ def cleanTaxRate(df):
     try:
         df_col_added = df.rename(columns={'val':'taxRate'})
         # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
-        df_col_added['year'] = df_col_added.end.str[:4]
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end','Units']) 
+        df_col_added = df_col_added.drop(columns=['Units']) #'start','end',
 
         return df_col_added
 
@@ -948,20 +1009,20 @@ def cleanTaxRate(df):
         print("clean operatingIncome error: ")
         print(err)
 
-def cleanDebt(short, long1, long2, long3, long4): #LUKE gotta add long3 and long 4!
+def cleanDebt(short, long1, long2, long3, long4): 
     try:
         #take short, long1, long2 debt, create year column, reproduce df with just year and debt column 
-        short['year'] = short.end.str[:4]
-        long1['year'] = long1.end.str[:4]
-        long2['year'] = long2.end.str[:4]
-        long3['year'] = long3.end.str[:4]
-        long4['year'] = long4.end.str[:4]
+        # short['year'] = short.end.str[:4]
+        # long1['year'] = long1.end.str[:4]
+        # long2['year'] = long2.end.str[:4]
+        # long3['year'] = long3.end.str[:4]
+        # long4['year'] = long4.end.str[:4]
 
-        short = short.drop(columns=['start','end']) 
-        long1 = long1.drop(columns=['start','end']) 
-        long2 = long2.drop(columns=['start','end']) 
-        long3 = long3.drop(columns=['start','end']) 
-        long4 = long4.drop(columns=['start','end']) 
+        # short = short.drop(columns=['start','end']) 
+        # long1 = long1.drop(columns=['start','end']) 
+        # long2 = long2.drop(columns=['start','end']) 
+        # long3 = long3.drop(columns=['start','end']) 
+        # long4 = long4.drop(columns=['start','end']) 
         # print('printing debts')
         # print(long1)
         # print(long2)
@@ -1011,11 +1072,11 @@ def cleanDebt(short, long1, long2, long3, long4): #LUKE gotta add long3 and long
 
 def cleanLiabilities(nonCurrent, current):
     try:
-        nonCurrent['year'] = nonCurrent.end.str[:4]
-        current['year'] = current.end.str[:4]
+        # nonCurrent['year'] = nonCurrent.end.str[:4]
+        # current['year'] = current.end.str[:4]
 
-        nonCurrent = nonCurrent.drop(columns=['start','end'])
-        current = current.drop(columns=['start','end'])
+        # nonCurrent = nonCurrent.drop(columns=['start','end'])
+        # current = current.drop(columns=['start','end'])
 
         anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
         anl['liabilities'] = anl['val_x'] + anl['val_y']
@@ -1029,11 +1090,11 @@ def cleanLiabilities(nonCurrent, current):
 def cleanTotalEquity(assets, liabilities, nc, cu):
     try:
         #take assets and liabilities and get total equity from them
-        assets['year'] = assets.end.str[:4]
-        liabilities['year'] = liabilities.end.str[:4]
+        # assets['year'] = assets.end.str[:4]
+        # liabilities['year'] = liabilities.end.str[:4]
 
-        assets = assets.drop(columns=['start','end'])
-        liabilities = liabilities.drop(columns=['start','end'])
+        # assets = assets.drop(columns=['start','end'])
+        # liabilities = liabilities.drop(columns=['start','end'])
 
         if liabilities.empty:
             liabilities = cleanLiabilities(nc, cu)
@@ -1058,21 +1119,42 @@ def cleanTotalEquity(assets, liabilities, nc, cu):
 def cleanDeprNAmor(df):
     try:
         df_col_added = df.rename(columns={'val':'depreNAmor'})
-        df_col_added['year'] = df_col_added.end.str[:4]
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end'])
+        # df_col_added = df_col_added.drop(columns=['start','end'])
 
         return df_col_added
     except Exception as err:
         print("clean deprNAmor error: ")
         print(err)
 
+def cleanDeprNAmor2(df1,df2):
+    try:
+        df_col_added = df1.rename(columns={'val':'depreNAmor1'})
+        # df_col_added['year'] = df_col_added.end.str[:4]
+        # df_col_added = df_col_added.drop(columns=['start','end'])
+
+        df2 = df2.rename(columns={'val':'depreNAmor2'})
+        # df2['year'] = df2.end.str[:4]
+        # df2 = df2.drop(columns=['start','end'])
+
+
+        df_col_added2 = pd.merge(df_col_added, df2, on=['year','Ticker','CIK','Units'], how='outer')
+        df_col_added2['depreNAmor'] = df_col_added2['depreNAmor1'].replace(np.NaN, 0) + df_col_added2['depreNAmor2'].replace(np.NaN, 0)
+        df_col_added2 = df_col_added2.drop(columns=['depreNAmor1','depreNAmor2'])
+        # print(df_col_added2)
+
+        return df_col_added2 
+    except Exception as err:
+        print("clean deprNAmor2 error: ")
+        print(err)
+
 def cleanGainSaleProp(df):
     try:
         df_col_added = df.rename(columns={'val':'gainSaleProp'})
-        df_col_added['year'] = df_col_added.end.str[:4]
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end'])
+        # df_col_added = df_col_added.drop(columns=['start','end'])
 
         return df_col_added
     except Exception as err:
@@ -1082,9 +1164,9 @@ def cleanGainSaleProp(df):
 def cleanInterestPaid(df):
     try:
         df_col_added = df.rename(columns={'val':'interestPaid'})
-        df_col_added['year'] = df_col_added.end.str[:4]
+        # df_col_added['year'] = df_col_added.end.str[:4]
 
-        df_col_added = df_col_added.drop(columns=['start','end'])
+        # df_col_added = df_col_added.drop(columns=['start','end'])
 
         return df_col_added
 
@@ -1096,21 +1178,20 @@ def cleanInterestPaid(df):
 def cleanDividends(total, perShare, shares): 
 
     try:
-        shares['year'] = shares.end.str[:4]
+        # shares['year'] = shares.end.str[:4]
         shares = shares.rename(columns={'val':'shares'})
         shares = shares.drop(columns=['Units'])
-        total['year'] = total.end.str[:4]
+        # total['year'] = total.end.str[:4]
         total = total.rename(columns={'val':'totalDivsPaid'})
-        perShare['year'] = perShare.end.str[:4]
+        # perShare['year'] = perShare.end.str[:4]
         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
         perShare = perShare.drop(columns=['Units'])
 
-        shares = shares.drop(columns=['start','end'])
-        total = total.drop(columns=['start','end'])
-        perShare = perShare.drop(columns=['start','end'])
+        # shares = shares.drop(columns=['start','end'])
+        # total = total.drop(columns=['start','end'])
+        # perShare = perShare.drop(columns=['start','end'])
 
         # print('shares, total, pershare: ')
-        # print('shares')
         # print(shares)
         # print(total)
         # print(perShare)
@@ -1126,7 +1207,7 @@ def cleanDividends(total, perShare, shares):
             # print('sharesNperShare: ')
             # print(sharesNperShare)
             df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
-            # print('df_col_added: ')
+            # print('total + shares + per share: ')
             # print(df_col_added)
             df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill().bfill() #any missing shares values?
             # if df_col_added['shares'].empty:
@@ -1147,18 +1228,26 @@ def cleanDividends(total, perShare, shares):
             df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
             df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
 
+            # df42 = pd.DataFrame()
+            # df42['temp'] = df_col_added['tempPerShare']
+            # df42['actual'] = df_col_added['divsPaidPerShare']
+            # print(df42)
+
             for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
                 if x == 'divsPaidPerShare':
                     df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+                    growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+                    df_col_added['divGrowthRate'] = growthCol1 
                 elif x == 'totalDivsPaid':
                     df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+                    growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+                    df_col_added['divGrowthRate'] = growthCol1 
             df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
             
             # if df_col_added['divsPaidPerShares'].empty:
             #     df_col_added['divGrowthRate'] = np.NaN
             # else:
-            growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
-            df_col_added['divGrowthRate'] = growthCol1 #df_col_added['divsPaidPerShare'].pct_change(fill_method=None)*100 #LUKE THINK ABOUT PUTTING AN IF STATEMENT AROUND THESE. if it's empty? don't do it
+            
             # print('average growth rate: ')
             # print(df_col_added['divGrowthRate'].mean())
 
@@ -1169,7 +1258,7 @@ def cleanDividends(total, perShare, shares):
 
 def fillEmptyIncomeGrowthRates(df):
     try:
-        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx', 'depreNAmor']
+        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx']
         df_filled = df
         fixTracker = 0
         for x in tarList:
@@ -1185,6 +1274,17 @@ def fillEmptyIncomeGrowthRates(df):
                 continue
             else:
                 fixTracker += 1
+
+        
+        if df_filled['depreNAmor'].isnull().any():
+            percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
+            if percentNull > 0.4:
+                fixTracker += 1
+            # fixTracker += 1  
+            # print('it was shares')
+            df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
+
+
         if fixTracker > 4:
             df_filled['integrityFlag'] = 'NeedsWork'
         elif fixTracker == 0: 
@@ -1206,7 +1306,7 @@ def fillEmptyDivsGrowthRates(df):
             if percentNull > 0.4:
                 fixTracker += 1
             # print('it was int paid')
-            df_filled['interestPaid'] = df_filled['interestPaid'].ffill().bfill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
+            df_filled['interestPaid'] = df_filled['interestPaid'].ffill().bfill()
         if df_filled['totalDivsPaid'].isnull().any():
             percentNull = df_filled['totalDivsPaid'].isnull().sum() / len(df_filled['totalDivsPaid'])
             if percentNull > 0.4:
@@ -1247,7 +1347,7 @@ def fillEmptyDivsGrowthRates(df):
         if df_filled['divGrowthRate'].isnull().any():
             growthCol = grManualCalc(df_filled['divsPaidPerShare'])
             df_filled['temp2'] = growthCol
-        #     #LUKE MAKE A NEW TEMP COLUMN. FILL WITH LIST. DO BELOW LINE. DROP TEMP COLUMN
+        #     #LUKE MAKE sure this isn't messing up final table once presented
             df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled.pop('temp2'))#['temp2'])
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
@@ -1278,60 +1378,74 @@ def fillEmptyDivsGrowthRates(df):
         # print(df_filled)
         return df_filled
 
-#Just saved while editing
-# def fillEmptyDivsGrowthRates(df):
-#     try:
-#         # print('we gr now')
-#         # print(df)
-#         df_filled = df
-#         fixTracker = 0
-#         if df_filled['interestPaid'].isnull().any():
-#             fixTracker += 1
-#             # print('it was int paid')
-#             df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() #LUKE back up to replace if necessary.
-#         if df_filled['totalDivsPaid'].isnull().any():
-#             fixTracker += 1    
-#             # print('it was total divs paid')
-#             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
-#         if df_filled['divsPaidPerShare'].isnull().any():
-#             fixTracker += 1   
-#             # print('it was per share divs paid')
-#             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
-#         if df_filled['shares'].isnull().all():
-#             print('all shares null')
-#         elif df_filled['shares'].isnull().any():
-#             fixTracker += 1  
-#             # print('it was shares')
-#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
-#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
-#             # df_filled['shares'] = df_filled['shares'].ffill().bfill() #LUKE REACTIVATE THIS BRO
-#             # df_filled['shares'] = df_filled['shares'].bfill() 
-#         if df_filled['sharesGrowthRate'].isnull().any():
-#             # fixTracker += 1  
-#             df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled['shares'].pct_change()*100)
-#         if df_filled['divGrowthRate'].isnull().any():
-#             df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled['divsPaidPerShare'].pct_change()*100)
-#         # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
-#         # for x in tarList:
-#         #     tarGrowthRate = x + 'GrowthRate'
-#         #     meanReplacement = df_filled[x].mean()
-#         #     savedCol = df_filled[x]
-#         #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
-#         #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
-#             # if savedCol.equals(df_filled[x]):
-#             #     continue
-#             # else:
-#             #     fixTracker += 1
-#         if fixTracker == 4:
-#             df_filled['integrityFlag'] = 'NeedsWork'
-#         elif fixTracker == 0: 
-#             df_filled['integrityFlag'] = 'Good'
-#         else:
-#             df_filled['integrityFlag'] = 'Acceptable'
-#         return df_filled
-#     except Exception as err:
-#         print("fill empty divs GR error: ")
-#         print(err)
+def fillEmptyROICGrowthRates(df):
+    try:
+        df_filled = df
+        fixTracker = 0
+        tarList = ['operatingIncome','netIncome']
+        tDebt = 'TotalDebt'
+        equityParts = ['assets','liabilities']
+        equityFlag = 0
+
+        for x in tarList:
+            tarGrowthRate = x + 'GrowthRate'
+            # meanReplacement = df_filled[x].mean()
+            savedCol = df_filled[x]
+            df_filled[x] = df_filled[x].ffill().bfill()
+
+            growthCol = grManualCalc(df_filled[x])
+            df_filled[tarGrowthRate] = growthCol
+
+            if savedCol.equals(df_filled[x]):
+                continue
+            else:
+                fixTracker += 1
+        df_filled = df_filled.drop(columns=['netIncomeGrowthRate'])
+
+        if df_filled['TotalDebt'].isnull().any():
+            percentNull = df_filled['TotalDebt'].isnull().sum() / len(df_filled['TotalDebt'])
+            if percentNull > 0.4:
+                fixTracker += 1
+            # print('it was int paid')
+            df_filled['TotalDebt'] = df_filled['TotalDebt'].replace(np.NaN, 0)
+        if df_filled['assets'].isnull().any():
+            percentNull = df_filled['assets'].isnull().sum() / len(df_filled['assets'])
+            if df_filled['assets'].isnull().sum() > 1:
+                equityFlag = 1
+            if percentNull > 0.4:
+                fixTracker += 1
+            # print('it was int paid')
+            df_filled['assets'] = df_filled['assets'].ffill().bfill()
+        if df_filled['liabilities'].isnull().any():
+            percentNull = df_filled['liabilities'].isnull().sum() / len(df_filled['liabilities'])
+            if df_filled['liabilities'].isnull().sum() > 1:
+                equityFlag = 1
+            if percentNull > 0.4:
+                fixTracker += 1
+            # print('it was int paid')
+            df_filled['liabilities'] = df_filled['liabilities'].ffill().bfill()
+        if equityFlag == 1:
+            df_filled['TotalEquity'] = df_filled['assets']-df_filled['liabilities']
+
+        
+        if fixTracker > 4:
+            df_filled['integrityFlag'] = 'NeedsWork'
+        elif fixTracker == 0: 
+            df_filled['integrityFlag'] = 'Good'
+        else:
+            df_filled['integrityFlag'] = 'Acceptable'
+
+        # print('ppost int flag added')
+        # print(df_filled)
+
+    except Exception as err:
+        print("fill empty ROIC GR error: ")
+        print(err)
+
+    finally:
+        # print('in finally df filled')
+        # print(df_filled)
+        return df_filled
 
 #Making tables for DB insertion
 def makeIncomeTableEntry(ticker, year, version, index_flag): 
@@ -1359,6 +1473,8 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         # print('capex_df df: ')
         # print(capex_df)
         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
+        if depAmor_df.empty:
+            depAmor_df = cleanDeprNAmor2(consolidateSingleAttribute(ticker, year, version, deprecAndAmor2, False),consolidateSingleAttribute(ticker, year, version, deprecAndAmor3, False))
         # print('depAmor_df df: ')
         # print(depAmor_df)
         gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
@@ -1417,7 +1533,9 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
 
         #CLEAN column empty values here before adding FFO calculations 
         plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
-        plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
+
+
+        # plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
         
         addfcf = cleanfcf(plusSaleProp)
         # print('addfcf: ')
@@ -1458,7 +1576,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         # print('TDebt df')
         # print(totalDebt_df)
         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
-                                    consolidateSingleAttribute(ticker, year, version, totalLiabilities, False),consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
+                                    consolidateSingleAttribute(ticker, year, version, totalLiabilities, False), consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
                                     consolidateSingleAttribute(ticker, year, version, currentLiabilities, False))
         # print('TEquity df')
         # print(totalEquity_df)
@@ -1476,9 +1594,13 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
+        plustEquity = fillEmptyROICGrowthRates(plustEquity)
+
+
         plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
+        plustEquity['adjRoic'] = plustEquity['netIncome'] / plustEquity['investedCapital'] * 100
         plustEquity['roce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
 
 
@@ -1526,6 +1648,7 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
             # print(intNdivs)
 
             inNdivs = fillEmptyDivsGrowthRates(intNdivs)
+
             # print('post fill intndivs: ')
             # print(intNdivs)
 
@@ -1537,28 +1660,12 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
     
     # print('you got this!')
 
-def harvestMasterCSVs(sectorTarget): #edit version as necessary!
-    try:
-        df_full = sectorTarget
-        tickerList = df_full['Ticker']
-        cikList = df_full['CIK']
-    
-        for i in range(len(tickerList)):
-            write_Master_csv_from_EDGAR(tickerList[i], cikList[i], ultimateTagsList, '2024', '2')
-        
-        #full_cik_sectInd_list
-        # return null
 
-    except Exception as err:
-        print("harvestMasters error: ")
-        print(err)
-
-# harvestMasterCSVs(realEstate)
 
 def checkTechIncYears():
     try:
-        incomeBadYears = pd.DataFrame(columns=['Ticker', 'Column'])
-        noIncData = pd.DataFrame(columns=['Ticker', 'Column'])
+        # incomeBadYears = pd.DataFrame(columns=['Ticker', 'Column'])
+        # noIncData = pd.DataFrame(columns=['Ticker', 'Column'])
         nameCheckList = tech['Ticker']
         nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
         incYearTracker = []
@@ -1569,9 +1676,6 @@ def checkTechIncYears():
         for x in nameCheckList:
             print(x)
             try:
-                # if nameCheckList.index(x) % len(nameCheckList) == 0:
-                #     print('LUKE THE NAME IS: ')
-                #     print(x)
                 incTable = makeIncomeTableEntry(x, '2024', version123, False)
                 #Checking if returned tables are just empty
                 if str(type(incTable)) == "<class 'NoneType'>" or incTable.empty:
@@ -1622,44 +1726,37 @@ def checkTechIncYears():
 
 def checkTechDivYears():
     try:
-        incomeBadYears = pd.DataFrame(columns=['Ticker'])
-        divsBadYears = pd.DataFrame(columns=['Ticker'])
-        noIncData = pd.DataFrame(columns=['Ticker'])
-        noDivData = pd.DataFrame(columns=['Ticker'])
-
         nameCheckList = tech['Ticker']
         nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
-        incYearTracker = []
-        divTracker = []
+    
+        divYearTracker = []
+        divNullTracker = []
         toRecapture = []
-        incomeNullTracker = []
-        DivNullTracker = []
-        yearsList = ['2022','2023','2024']
+        yearsList = ['2023','2024'] #2022
         version123 = '2'
+
         for x in nameCheckList:
+            print(x)
             try:
-                # if nameCheckList.index(x) % len(nameCheckList) == 0:
-                #     print('LUKE THE NAME IS: ')
-                #     print(x)
-                incTable = makeIncomeTableEntry(x, '2024', version123, False)
+              
                 divsTable = makeDividendTableEntry(x, '2024', version123, False)
                 
                 #Checking if returned tables are just empty
-                if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
-                    incomeNullTracker.append(x)
-                    if str(type(divsTable)) == "<class 'NoneType'>":#.empty:
-                        DivNullTracker.append(x)
-                        continue
+                # if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
+                #     incomeNullTracker.append(x)
+                if str(type(divsTable)) == "<class 'NoneType'>" or divsTable.empty:#.empty:
+                    divNullTracker.append(x)
+                    continue
                 #checking latest data from the pull
                 if (divsTable['year'].max() not in yearsList) or (divsTable['year'].empty):
                     # print(str(x) + ' divYears are good!')
-                    divTracker.append(x)                
+                    divYearTracker.append(x)                
 
-                if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
-                    # print(str(x) + ' incYears are good!')
-                    incYearTracker.append(x)     
+                # if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                #     # print(str(x) + ' incYears are good!')
+                #     incYearTracker.append(x)     
             except Exception as err:
-                print("nested check tech years error: ")
+                print("nested check tech div years error: ")
                 print(err)
                 toRecapture.append(x)
                 continue                
@@ -1671,68 +1768,278 @@ def checkTechDivYears():
         # toRecapture.append(x)
         # continue
     finally:
-        if len(incYearTracker) > 0:
-            incomeBadYears['Ticker'] = incYearTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
+        # if len(incYearTracker) > 0:
+        #     incomeBadYears['Ticker'] = incYearTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
 
-        if len(divTracker) > 0:
-            divsBadYears['Ticker']=divTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
+        # if len(divTracker) > 0:
+        #     divsBadYears['Ticker']=divTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
 
-        if len(incomeNullTracker) > 0:
-            noIncData['Ticker']=incomeNullTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
+        # if len(incomeNullTracker) > 0:
+        #     noIncData['Ticker']=incomeNullTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
 
-        if len(DivNullTracker) > 0:
-            noDivData['Ticker']=DivNullTracker
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
+        # if len(DivNullTracker) > 0:
+        #     noDivData['Ticker']=DivNullTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
 
         # for x in toRecapture:
         #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
-        print(toRecapture) 
+        print('recap list: ')
+        print(toRecapture)
+        print('full nulls:')
+        print(divNullTracker)
+        print('years off')
+        print(divYearTracker)
+
+# def checkTechROICYears():
+#     try:
+
+#     except Exception as err:
+#         print("check tech roic years error: ")
+#         print(err)
+#         # toRecapture.append(x)
+#         # continue
+#     finally:
+#         print('recap list: ')
+#         print(toRecapture)
+#         print('full nulls:')
+#         print(incomeNullTracker)
+#         print('years off')
+#         print(incYearTracker)
+
+def checkREIncYears():
+    try:
+        # incomeBadYears = pd.DataFrame(columns=['Ticker', 'Column'])
+        # noIncData = pd.DataFrame(columns=['Ticker', 'Column'])
+        nameCheckList = realEstate['Ticker']
+        nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+        incYearTracker = []
+        incomeNullTracker = []
+        toRecapture = []
+        yearsList = ['2023','2024'] #2022
+        version123 = '2'
+        for x in nameCheckList:
+            print(x)
+            try:
+               
+                incTable = makeIncomeTableEntry(x, '2024', version123, False)
+                #Checking if returned tables are just empty
+                if str(type(incTable)) == "<class 'NoneType'>" or incTable.empty:
+                    incomeNullTracker.append(x)
+                    continue
+                #checking latest data from the pull             
+                if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                    # print(str(x) + ' incYears are good!')
+                    incYearTracker.append(x)     
+            except Exception as err:
+                print("nested check realEstate years error: ")
+                print(err)
+                toRecapture.append(x)
+                continue                
+
+    except Exception as err:
+        print("check realEstate years error: ")
+        print(err)
+        # toRecapture.append(x)
+        # continue
+    finally:
+        print('recap list: ')
+        print(toRecapture)
+        print('full nulls:')
+        print(incomeNullTracker)
+        print('years off')
+        print(incYearTracker)
+    # finally:
+    #     if len(incYearTracker) > 0:
+    #         incomeBadYears['Ticker'] = incYearTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
+
+    #     if len(divTracker) > 0:
+    #         divsBadYears['Ticker']=divTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
+
+    #     if len(incomeNullTracker) > 0:
+    #         noIncData['Ticker']=incomeNullTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
+
+    #     if len(DivNullTracker) > 0:
+    #         noDivData['Ticker']=DivNullTracker
+    #         csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
+
+    #     # for x in toRecapture:
+    #     #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+    #     print(toRecapture) 
+
+def checkREDivYears():
+    try:
+        nameCheckList = realEstate['Ticker']
+        nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+    
+        divYearTracker = []
+        divNullTracker = []
+        toRecapture = []
+        yearsList = ['2023','2024'] #2022
+        version123 = '2'
+
+        for x in nameCheckList:
+            print(x)
+            try:
+               
+                divsTable = makeDividendTableEntry(x, '2024', version123, False)
+                
+                #Checking if returned tables are just empty
+                # if str(type(incTable)) == "<class 'NoneType'>" :#.empty:
+                #     incomeNullTracker.append(x)
+                if str(type(divsTable)) == "<class 'NoneType'>" or divsTable.empty:#.empty:
+                    divNullTracker.append(x)
+                    continue
+                #checking latest data from the pull
+                if (divsTable['year'].max() not in yearsList) or (divsTable['year'].empty):
+                    # print(str(x) + ' divYears are good!')
+                    divYearTracker.append(x)                
+
+                # if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                #     # print(str(x) + ' incYears are good!')
+                #     incYearTracker.append(x)     
+            except Exception as err:
+                print("nested check realEstate div years error: ")
+                print(err)
+                toRecapture.append(x)
+                continue                
+
+       
+    except Exception as err:
+        print("check realEstate years error: ")
+        print(err)
+        # toRecapture.append(x)
+        # continue
+    finally:
+        # if len(incYearTracker) > 0:
+        #     incomeBadYears['Ticker'] = incYearTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, incomeBadYears, 'techBadYearsIncome', False)
+
+        # if len(divTracker) > 0:
+        #     divsBadYears['Ticker']=divTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, divsBadYears, 'techBadYearsDivs', False)
+
+        # if len(incomeNullTracker) > 0:
+        #     noIncData['Ticker']=incomeNullTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, noIncData, 'techNoIncomeData', False)
+
+        # if len(DivNullTracker) > 0:
+        #     noDivData['Ticker']=DivNullTracker
+        #     csv.simple_saveDF_to_csv(fr_iC_toSEC, noDivData, 'techNoDivData', False)
+
+        # for x in toRecapture:
+        #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+        print('recap list: ')
+        print(toRecapture)
+        print('full nulls:')
+        print(divNullTracker)
+        print('years off')
+        print(divYearTracker)
+
+# print('re inc checks')
+# checkREIncYears()
+# print('re div checks')
+# checkREDivYears()
+
+# write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','2')
+# write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
+# write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
+
+# for x in incRERecap:
+#     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+# 
+
+# print(consolidateSingleAttribute('STAG', '2024', '2', declaredORPaidCommonStockDivsPerShare, False))
+
+ticker12 = 'O' #ABR
+year12 = '2024'
+version12 = '2'
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024','0',False))
+
+ticker13 = 'STAG' #EGP
+year13 = '2024'
+version13 = '2'
+# print(ticker13 + ' income:')
+# print(makeIncomeTableEntry(ticker13,'2024',version13,False))
+print(ticker13 + ' divs:')
+print(makeDividendTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + '  roic: ')
+# print(makeROICtableEntry(ticker13,'2024','0',False))
+
+###RE probs
+incRERecap = ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 'MTPP', 'ABCP', 'MSPC', 'SFRT']
+incREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
+incREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
+
+# recap list:
+# ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 'MTPP', 'ABCP', 'MSPC', 'SFRT']
+# full nulls:
+# ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
+# years off
+# ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
+
+divsRERecap = ['BPYPP', 'SKT', 'FPH', 'NEN', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'SFRT']
+divsREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
+divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'MDJH', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'MSPC']
 
 
 ticker235 = 'AAPL'
 year235 = '2024'
 version235 = '2'
-print('Target income:')
-print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print('target divs:')
-print(makeDividendTableEntry(ticker235,year235,version235,False))
-print('target roic: ')
-print(makeROICtableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' income:')
+# print(makeIncomeTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' divs:')
+# print(makeDividendTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + '  roic: ')
+# print(makeROICtableEntry(ticker235,year235,version235,False))
 
 # write_Master_csv_from_EDGAR(ticker235,'0000313838',ultimateTagsList,year235,version235)
 
 ticker234 = 'MSFT'
 year234 = '2024'
 version234 = '2'
-print('MSFT income:')
-print(makeIncomeTableEntry(ticker234,year234,version234,False))
-print('MSFT divs:')
-print(makeDividendTableEntry(ticker234,year234,version234,False))
-print('MSFT roic: ')
-print(makeROICtableEntry(ticker234,year234,version234,False))
+# print('MSFT income:')
+# print(makeIncomeTableEntry(ticker234,year234,version234,False))
+# print('MSFT divs:')
+# print(makeDividendTableEntry(ticker234,year234,version234,False))
+# print('MSFT roic: ')
+# print(makeROICtableEntry(ticker234,year234,version234,False))
 
 # write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','2')
 
-ticker123 = 'AMZN' #TSM #AMZN
+ticker123 = 'AMZN' #AMZN
 year123 = '2024'
 version123 = '0'
-print('AMZN income:')
-print(makeIncomeTableEntry(ticker123,'2024',version123,False))
-print('AMZN divs:')
-print(makeDividendTableEntry(ticker123,'2024',version123,False))
-print('AMZN roic: ')
-print(makeROICtableEntry(ticker123,'2024','0',False))
+# print('AMZN income:')
+# print(makeIncomeTableEntry(ticker123,'2024',version123,False))
+# print('AMZN divs:')
+# print(makeDividendTableEntry(ticker123,'2024',version123,False))
+# print('AMZN roic: ')
+# print(makeROICtableEntry(ticker123,'2024','0',False))
 
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
+
+# checkTechDivYears()
+divsRecap = ['VERX', 'SRAD', 'ODD', 'NATL', 'BELFA', 'GB', 'RDZN', 'WBX', 'OPTX', 'ALAR', 'GRRR', 'XBP', 'CSLR', 'DGHI', 'MOGO', 'MRT', 'ULY', 'LAES', 'CXAI', 'MCLDF', 'JNVR', 'SGN', 'SGE', 'AWIN', 'VS', 'IMTE', 'SYTA', 'MTMV', 'RBT']
+divsFullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 'MHUBF', 'PKKFF', 'SSCC', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'GBUX', 'CMCZ', 'ZICX', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'SWISF', 'DCSX', 'RONN']
+divsYearsOff = ['TSM', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'DIDIY', 'NICE', 'GRAB', 'DUOL', 'WIX', 'YMM', 'STNE', 'PAGS', 'CAMT', 'LPL', 'AI', 'RUM', 'SIMO', 'SPNS', 'CSIQ', 'JKS', 'DQ', 'GCT', 'INFN', 'DBD', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'ASTS', 'YALA', 'DDD', 'KC', 'MTWO', 'NNDM', 'CINT', 'MGIC', 'ITRN', 'TSAT', 'AUDC', 'VNET', 'GILT', 'CAN', 'QIWI', 'BLZE', 'MTLS', 'MTC', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'TCX', 'CRNT', 'OUST', 'BKSY', 'REKR', 'RPMT', 'WRAP', 'TROO', 'SQNS', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'HOLO', 'PWFL', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'MPTI', 'SOL', 'AUID', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'ALLT', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'HSTA', 'CPTN', 'AISP', 'INVU', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'SEAV', 'BNZI', 'RVYL', 'JG', 'AMPG', 'TAIT', 'SPI', 'SCND', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'BOSC', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'AIAD', 'LKCO', 'OLB', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'TNLX', 'CRTG', 'BLBX', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'SUIC', 'NXTP', 'EZFL', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'FRGT', 'SMTK', 'CIIT', 'AUUD', 'WDLF', 'WAVD', 'GVP', 'AVOI', 'SUNW', 'LGIQ', 'VEII', 'ASNS', 'MWRK', 'IPSI', 'DATS', 'VERB', 'WISA', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'VBIX', 'MYSZ', 'UCLE', 'BRQSF', 'ATDS', 'PRSO', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'TWOH', 'PEGY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'GIGA', 'SATT', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'CATG', 'WBSR', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'HMELF']
 
 
 # checkTechIncYears()
 ### Income check results
-fullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
-yearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO']
+incFullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
+incYearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO']
 defClosed = ['MAXD']
 exUS = ['PCRFY','WALD']
 # for x in yearsOff2:
@@ -1741,9 +2048,19 @@ exUS = ['PCRFY','WALD']
 #There's no overlap! Yay!
 # print(set(fullNulls).difference(yearsOff))
 # print(set(fullNulls).difference(fullNulls))
-# print(set(fullNulls).intersection(yearsOff))
-# print(set(yearsOff).difference(yearsOff))
-# print(len(fullNulls))
+
+# print(set(divsYearsOff).intersection(incYearsOff))
+# fullNullOverlap = set(incFullNulls).intersection(divsFullNulls)
+# yearsOffOverlap = set(divsYearsOff).intersection(incYearsOff)
+# print(fullNullOverlap)
+# print(yearsOffOverlap)
+# print(set(fullNullOverlap).intersection(yearsOffOverlap))
+
+
+# print(len(incFullNulls))
+# print(len(divsFullNulls))
+# print(len(incYearsOff))
+# print(len(divsYearsOff))
 
 # write_Master_csv_from_EDGAR('ASTS', '0001780312', ultimateTagsList, '2024','2')
 
@@ -1771,7 +2088,7 @@ exUS = ['PCRFY','WALD']
         # print('pluseps: ')
         # print(pluseps)
         
-        #LUKE TEST EPS FILLING PRINT EITHER SIDE
+        #TEST EPS FILLING PRINT EITHER SIDE
         #Put this at the end with a filling function!
         # if pluseps['eps'].isnull().any():
         #         integrity_flag = 'Acceptable'
@@ -1990,6 +2307,62 @@ def createAllAttributesInsertToDB(ticker, year, version):
 # loopCheck(revenue)
 # loopCheck(ultimateList)
 
+#Just saved while editing
+# def fillEmptyDivsGrowthRates(df):
+#     try:
+#         # print('we gr now')
+#         # print(df)
+#         df_filled = df
+#         fixTracker = 0
+#         if df_filled['interestPaid'].isnull().any():
+#             fixTracker += 1
+#             # print('it was int paid')
+#             df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() 
+#         if df_filled['totalDivsPaid'].isnull().any():
+#             fixTracker += 1    
+#             # print('it was total divs paid')
+#             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
+#         if df_filled['divsPaidPerShare'].isnull().any():
+#             fixTracker += 1   
+#             # print('it was per share divs paid')
+#             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
+#         if df_filled['shares'].isnull().all():
+#             print('all shares null')
+#         elif df_filled['shares'].isnull().any():
+#             fixTracker += 1  
+#             # print('it was shares')
+#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
+#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
+#             # df_filled['shares'] = df_filled['shares'].ffill().bfill() 
+#             # df_filled['shares'] = df_filled['shares'].bfill() 
+#         if df_filled['sharesGrowthRate'].isnull().any():
+#             # fixTracker += 1  
+#             df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled['shares'].pct_change()*100)
+#         if df_filled['divGrowthRate'].isnull().any():
+#             df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled['divsPaidPerShare'].pct_change()*100)
+#         # df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+#         # for x in tarList:
+#         #     tarGrowthRate = x + 'GrowthRate'
+#         #     meanReplacement = df_filled[x].mean()
+#         #     savedCol = df_filled[x]
+#         #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+#         #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
+#             # if savedCol.equals(df_filled[x]):
+#             #     continue
+#             # else:
+#             #     fixTracker += 1
+#         if fixTracker == 4:
+#             df_filled['integrityFlag'] = 'NeedsWork'
+#         elif fixTracker == 0: 
+#             df_filled['integrityFlag'] = 'Good'
+#         else:
+#             df_filled['integrityFlag'] = 'Acceptable'
+#         return df_filled
+#     except Exception as err:
+#         print("fill empty divs GR error: ")
+#         print(err)
+
+
 ### replaced above with better code
 # def checkTechDivYears():
 #     try:
@@ -2009,9 +2382,7 @@ def createAllAttributesInsertToDB(ticker, year, version):
 #         version123 = '2'
 #         for x in nameCheckList:
 #             try:
-#                 # if nameCheckList.index(x) % len(nameCheckList) == 0:
-#                 #     print('LUKE THE NAME IS: ')
-#                 #     print(x)
+#                
 #                 incTable = makeIncomeTableEntry(x, '2024', version123, False)
 #                 divsTable = makeDividendTableEntry(x, '2024', version123, False)
                 
