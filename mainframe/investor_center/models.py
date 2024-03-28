@@ -9,7 +9,8 @@ class Dividends(models.Model):
     totalDivsPaid = models.IntegerField()
     shares = models.IntegerField()
     sharesGrowthRate = models.FloatField()
-    divGrowthRate = models.FloatField()
+    divGrowthRateBOT = models.FloatField()
+    divGrowthRateBOPS = models.FloatField()
     integrityFlag = models.CharField(max_length=10)
 
     ticker = models.CharField(max_length=10)
@@ -36,6 +37,7 @@ class ROIC(models.Model):
     roic = models.FloatField()
     adjRoic = models.FloatField()
     roce = models.FloatField()
+    integrityFlag = models.CharField(max_length=10)
 
     ticker = models.CharField(max_length=10)
     cik = models.CharField(max_length=10)

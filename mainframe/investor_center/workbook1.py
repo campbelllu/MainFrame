@@ -426,7 +426,7 @@ def dropAllExceptFYRecords(df):
         # print('tag then df')
         # print(df['Tag'])
         # print(df)
-        returned_data = pd.DataFrame()
+        # returned_data = pd.DataFrame()
         returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
         oneEnds = ['-01-','-02-']
         twoEnds = ['-01-','-02-','-03-']
@@ -440,9 +440,9 @@ def dropAllExceptFYRecords(df):
         tenEnds = ['-09-','-10-','-11-']
         elevenEnds = ['-10-','-11-','-12-']
         twelveEnds = ['-11-','-12-','-01-']
+        # halfStarts = ['-01-','-06-','-07-']
+        # halfEnds = ['-06-','-07-','-12-']
         for x in oneEnds:
-            
-                
             held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True) 
        
@@ -488,134 +488,54 @@ def dropAllExceptFYRecords(df):
 
         for x in twelveEnds:
             held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
-            # held_data['startYear'] = df.start.str[:4]#.astype(int)
-            # held_data['endYear'] = df.end.str[:4]#.astype(int)
-            # print('held data')
-            # print(held_data)
-            # if (int(df.end.str[:4]) - int(df.start.str[:4]) == 1):
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        #Now checking for those halfies because some companies just file things weirdly.
+        #LUKE PROGRAMMATICALLY GO THRU THIS. combine the three steps into some for loops so it's much less copy paste. you got this!
+        #1-6,7,11
+        held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
+        held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
+        held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
 
-        # print('tag then df')
-        # print(returned_data['Tag'])
-        # print(returned_data)
+        held_data6212 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-12-')==True)]
+        held_data7212 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-12-')==True)]
+        held_data11212 = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains('-12-')==True)]
+
+        # if held_data126.empty:
+        held7 = pd.merge(held_data127, held_data7212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        held7['val'] = held7['val_x'] + held7['val_y']
+        held7['start'] = held7['start_x']
+        held7['end'] = held7['end_y']
+        held7 = held7.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        held7 = held7.dropna(subset=['val'])#,'start'])
+        returned_data = pd.concat([returned_data, held7], ignore_index = True)
+        # else:
+        held6 = pd.merge(held_data126, held_data6212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        held6['val'] = held6['val_x'] + held6['val_y']
+        held6['start'] = held6['start_x']
+        held6['end'] = held6['end_y']
+        held6 = held6.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        held6 = held6.dropna(subset=['val'])#,'start'])
+        returned_data = pd.concat([returned_data, held6], ignore_index = True)
+
+        held11 = pd.merge(held_data1211, held_data11212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        held11['val'] = held11['val_x'] + held11['val_y']
+        held11['start'] = held11['start_x']
+        held11['end'] = held11['end_y']
+        held11 = held11.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        held11 = held11.dropna(subset=['val'])#,'start'])
+        returned_data = pd.concat([returned_data, held11], ignore_index = True)
+
+        
+
+        #Monthly reporting sometimes also throws things off.
         if returned_data.empty:
             listMax = df.end.str[5:7]
             tarMax = str(listMax.max())
-            # print('listmax')
-            # print(listMax.max())
-            returned_data = df[df['end'].str.contains(tarMax)==True] #held_data
-            # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-            # print(returned_data)
-        
-        # returned_data2 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-01-')==True)]
-        # returned_data3 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-02-')==True)]
-
-        
-
-        #V1
-        # returned_data2 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
-        # returned_data3 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-06-')==True)]
-        # returned_data4 = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains('-03-')==True)]
-        # returned_data5 = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains('-09-')==True)]
-
-        #V2
-        # oneEnds = ['-12-','-01-','-02-']
-        # twoEnds = ['-01-','-02-','-03-']
-        # threeEnds = ['-02-','-03-','-04-']
-        # fourEnds = ['-03-','-04-','-05-']
-        # fiveEnds = ['-04-','-05-','-06-']
-        # sixEnds = ['-05-','-06-','-07-']
-        # sevenEnds = ['-06-','-07-','-08-']
-        # eightEnds = ['-07-','-08-','-09-']
-        # nineEnds = ['-08-','-09-','-10-']
-        # tenEnds = ['-09-','-10-','-11-']
-        # elevenEnds = ['-10-','-11-','-12-']
-        # twelveEnds = ['-11-','-12-','-01-']
-        # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].isin(oneEnds) == True)]#df['end'].str.contains('-12-')==True)]
-        # print('returned data in fy recs 01')
+            held_data = df[df['end'].str.contains(tarMax)==True] #held_data
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+           
         # print(returned_data)
-        # returned_data1 = df[(df['start'].str.contains('-02-')==True) & (df['end'].isin(twoEnds) == True)]
-        # print('returned data in fy recs 02')
-        # print(returned_data)
-        # returned_data2 = df[(df['start'].str.contains('-03-')==True) & (df['end'].isin(threeEnds) == True)]
-        # print('returned data in fy recs 03')
-        # print(returned_data)
-        # returned_data3 = df[(df['start'].str.contains('-04-')==True) & (df['end'].isin(fourEnds) == True)]
-        # print('returned data in fy recs 04')
-        # print(returned_data)
-        # returned_data4 = df[(df['start'].str.contains('-05-')==True) & (df['end'].isin(fiveEnds) == True)]
-        # print('returned data in fy recs 05')
-        # print(returned_data)
-        # returned_data5 = df[(df['start'].str.contains('-06-')==True) & (df['end'].isin(sixEnds) == True)]
-        # print('returned data in fy recs 06')
-        # print(returned_data)
-        # returned_data6 = df[(df['start'].str.contains('-07-')==True) & (df['end'].isin(sevenEnds) == True)]
-        # print('returned data in fy recs 07')
-        # print(returned_data)
-        # returned_data7 = df[(df['start'].str.contains('-08-')==True) & (df['end'].isin(eightEnds) == True)]
-        # print('returned data in fy recs 08')
-        # print(returned_data)
-        # returned_data8 = df[(df['start'].str.contains('-09-')==True) & (df['end'].isin(nineEnds) == True)]
-        # print('returned data in fy recs 09')
-        # print(returned_data)
-        # returned_data9 = df[(df['start'].str.contains('-10-')==True) & (df['end'].isin(tenEnds) == True)]
-        # print('returned data in fy recs 10')
-        # print(returned_data)
-        # returned_data10 = df[(df['start'].str.contains('-11-')==True) & (df['end'].isin(elevenEnds) == True)]
-        # print('returned data in fy recs 11')
-        # print(returned_data)
-        # returned_data11 = df[(df['start'].str.contains('-12-')==True) & (df['end'].isin(twelveEnds) == True)]
-        # print('returned data in fy recs 12')
-        # print(returned_data)
-
-        #V2
-        # returned_data = pd.concat([returned_data, returned_data1], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data2], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data3], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data4], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data5], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data6], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data7], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data8], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data9], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data10], ignore_index = True) 
-        # returned_data = pd.concat([returned_data, returned_data11], ignore_index = True) 
-
         return returned_data
-
-        ### There's a better, programmatic way of doing this, but I couldn't immediately get it. Refactor later, hardcode the dates in for now, get it working. Improve later!
-        # startList = ['-07-','-04-','-06-'] #
-        # endList = ['-06-','-03-']
-        #Throw this into the ...empty-if: filtering if whole year's records are selected
-        # if np.where(int(df.end.str[:4]) - int(df.start.str[:4]) == 1): 
-        # print(float(df.end.str[:4]))
-            # df_col_added['year'] = df_col_added.end.str[:4]
-        # returned_data = df[(df['start'].isin(startList) == True) & (df['end'].isin(endList) == True)]
-
-        
-
-        # if returned_data.empty:
-        #     returned_data = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
-        #     print('returned data in fy recs 07-06')
-        #     print(returned_data)
-        # if returned_data.empty:
-        #     returned_data = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-06-')==True)]
-        #     print('returned data in fy recs 06-06')
-        #     print(returned_data)
-        # if returned_data.empty:
-        #     returned_data = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains('-03-')==True)]
-        #     print('returned data in fy recs 04-03')
-        #     print(returned_data)
-        # if returned_data.empty: #We really never want this to happen.
-        #     print('returned data in fy recs empty')
-        #     print(df)
-        #     return df
-
-        
-        # else:
-        #     # print('returned data in fy recs else')
-        #     # print(returned_data)
-        #     return returned_data
     except Exception as err:
         print("drop all except FY data rows error")
         print(err)
@@ -1236,13 +1156,18 @@ def cleanDividends(total, perShare, shares):
             for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
                 if x == 'divsPaidPerShare':
                     df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
-                    growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
-                    df_col_added['divGrowthRate'] = growthCol1 
+                    # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+                    # df_col_added['divGrowthRate'] = growthCol1 
                 elif x == 'totalDivsPaid':
                     df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
-                    growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
-                    df_col_added['divGrowthRate'] = growthCol1 
+                    # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+                    # df_col_added['divGrowthRate'] = growthCol1 
             df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
+
+            growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+            df_col_added['divGrowthRateBOT'] = growthCol1 
+            growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
+            df_col_added['divGrowthRateBOPS'] = growthCol2
             
             # if df_col_added['divsPaidPerShares'].empty:
             #     df_col_added['divGrowthRate'] = np.NaN
@@ -1258,31 +1183,36 @@ def cleanDividends(total, perShare, shares):
 
 def fillEmptyIncomeGrowthRates(df):
     try:
-        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx']
+        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
         df_filled = df
         fixTracker = 0
         for x in tarList:
             tarGrowthRate = x + 'GrowthRate'
             meanReplacement = df_filled[x].mean()
             savedCol = df_filled[x]
-            df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill() LUKE we trying backfilling instead
+            df_filled[x] = df_filled[x].ffill().bfill()
 
             growthCol = grManualCalc(df_filled[x])
             df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
 
-            if savedCol.equals(df_filled[x]):
-                continue
-            else:
-                fixTracker += 1
+            if savedCol.isnull().any():
+                percentNull = savedCol.isnull().sum() / len(savedCol)
+                if percentNull > 0.4:
+                    fixTracker += 1
+            # if savedCol.equals(df_filled[x]):
+            #     continue
+            # else:
+            #     fixTracker += 1
 
         
-        if df_filled['depreNAmor'].isnull().any():
-            percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
-            if percentNull > 0.4:
-                fixTracker += 1
-            # fixTracker += 1  
-            # print('it was shares')
-            df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
+        # if df_filled['depreNAmor'].isnull().any():
+        #     percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
+        #     if percentNull > 0.4:
+        #         fixTracker += 1
+        #     # fixTracker += 1  
+        #     # print('it was shares')
+        #     df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
 
 
         if fixTracker > 4:
@@ -1344,11 +1274,20 @@ def fillEmptyDivsGrowthRates(df):
             # print('shares  GR')
             # print(df_filled)
             
-        if df_filled['divGrowthRate'].isnull().any():
-            growthCol = grManualCalc(df_filled['divsPaidPerShare'])
+        if df_filled['divGrowthRateBOT'].isnull().any():
+            growthCol = grManualCalc(df_filled['totalDivsPaid'])
             df_filled['temp2'] = growthCol
         #     #LUKE MAKE sure this isn't messing up final table once presented
-            df_filled['divGrowthRate'] = df_filled['divGrowthRate'].fillna(df_filled.pop('temp2'))#['temp2'])
+            df_filled['divGrowthRateBOT'] = df_filled['divGrowthRateBOT'].fillna(df_filled.pop('temp2'))#['temp2'])
+        #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
+            # print('div GR')
+            # print(df_filled)
+
+        if df_filled['divGrowthRateBOPS'].isnull().any():
+            growthCol = grManualCalc(df_filled['divsPaidPerShare'])
+            df_filled['temp3'] = growthCol
+        #     #LUKE MAKE sure this isn't messing up final table once presented
+            df_filled['divGrowthRateBOPS'] = df_filled['divGrowthRateBOPS'].fillna(df_filled.pop('temp3'))#['temp2'])
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
             # print(df_filled)
@@ -1533,9 +1472,7 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
 
         #CLEAN column empty values here before adding FFO calculations 
         plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
-
-
-        # plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
+        plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
         
         addfcf = cleanfcf(plusSaleProp)
         # print('addfcf: ')
@@ -1660,7 +1597,75 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
     
     # print('you got this!')
 
+def checkYearsIntegrity(sector):
+    try:
+        nameCheckList = sector['Ticker']
+        nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
+        incMissingYearTracker = []
+        incomeEndYearTracker = []
+        divYearTracker = []
+        divomeNullTracker = []
+        roicYearTracker = []
+        roicNullTracker = []
+        toRecapture = []
+        yearsList = ['2023','2024'] #2022
+        version123 = '2'
 
+        for x in nameCheckList:
+            print(x)
+            try:
+                incTable = makeIncomeTableEntry(x, '2024', version123, False)
+                # divsTable = makeDividendTableEntry(x,'2024',version123,False)
+                # roicTable = makeROICtableEntry(x,'2024', version123, False)
+                #make lists of years columns, use to track years
+                iyears = list(incTable['year'])
+                iyearsint = []
+                for y in iyears:
+                    iyearsint.append(int(y))
+                istart, iend = iyearsint[0], iyearsint[-1]
+                iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+                if len(iMissingYears) > 0:
+                    incMissingYearTracker.append(x)
+                if iend != 2023:
+                    incomeEndYearTracker.append(x)
+                
+                # print('iyear, beg year, end year:')
+                # print(iyears)
+                # print(iyearsint)
+                # print(istart)
+                # print(iend)
+                # print('missing years:')
+                # print(iMissingYears)
+                #set start and end values, compare with outputsss
+
+
+
+                # #Checking if returned tables are just empty
+                # if str(type(incTable)) == "<class 'NoneType'>" or incTable.empty:
+                #     incomeNullTracker.append(x)
+                #     continue
+                # #checking latest data from the pull             
+                # if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
+                #     # print(str(x) + ' incYears are good!')
+                #     incYearTracker.append(x)     
+            except Exception as err:
+                print("nested check years integrity error: ")
+                print(err)
+                toRecapture.append(x)
+                continue             
+
+
+    except Exception as err:
+        print("check years integrity error: ")
+        print(err)
+
+    finally:
+        print('recap list: ')
+        print(toRecapture)
+        print('missing years:')
+        print(incMissingYearTracker)
+        print('wrong end year')
+        print(incomeEndYearTracker)
 
 def checkTechIncYears():
     try:
@@ -1793,21 +1798,7 @@ def checkTechDivYears():
         print('years off')
         print(divYearTracker)
 
-# def checkTechROICYears():
-#     try:
 
-#     except Exception as err:
-#         print("check tech roic years error: ")
-#         print(err)
-#         # toRecapture.append(x)
-#         # continue
-#     finally:
-#         print('recap list: ')
-#         print(toRecapture)
-#         print('full nulls:')
-#         print(incomeNullTracker)
-#         print('years off')
-#         print(incYearTracker)
 
 def checkREIncYears():
     try:
@@ -1941,23 +1932,19 @@ def checkREDivYears():
         print('years off')
         print(divYearTracker)
 
-# print('re inc checks')
-# checkREIncYears()
-# print('re div checks')
-# checkREDivYears()
+checkYearsIntegrity(tech)
 
 # write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','2')
 # write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
 # write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
-
 # for x in incRERecap:
 #     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
 #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
 # 
 
-# print(consolidateSingleAttribute('STAG', '2024', '2', declaredORPaidCommonStockDivsPerShare, False))
+# print(consolidateSingleAttribute('REXR', '2024', '2', netIncome, False))
 
-ticker12 = 'O' #ABR
+ticker12 = 'PINE' #ABR
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
@@ -1967,32 +1954,56 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024','0',False))
 
-ticker13 = 'STAG' #EGP
+ticker13 = 'REXR' #EGP
 year13 = '2024'
 version13 = '2'
 # print(ticker13 + ' income:')
 # print(makeIncomeTableEntry(ticker13,'2024',version13,False))
-print(ticker13 + ' divs:')
-print(makeDividendTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + ' divs:')
+# print(makeDividendTableEntry(ticker13,'2024',version13,False))
 # print(ticker13 + '  roic: ')
 # print(makeROICtableEntry(ticker13,'2024','0',False))
 
-###RE probs
-incRERecap = ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 'MTPP', 'ABCP', 'MSPC', 'SFRT']
-incREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
-incREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
 
-# recap list:
-# ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 'MTPP', 'ABCP', 'MSPC', 'SFRT']
-# full nulls:
-# ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
-# years off
-# ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
+#refined screener results:
+#income
+REincrecap = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'MSTO', 'PVOZ']
+REincmissingyears = ['GRP-UN', 'ESBA', 'FOR', 'CBL', 'GMRE', 'NXDT', 'AWCA', 'MHPC', 'TPHS', 'ZDPY', 'ACAN', 'MAA']
+REincwrongendyear = ['BEKE', 'SKT', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 
+                    'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 
+                    'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'MSPC', 'SFRT']
 
-divsRERecap = ['BPYPP', 'SKT', 'FPH', 'NEN', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'SFRT']
-divsREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
-divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'MDJH', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'MSPC']
+TECHincrecap = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'NATL', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 
+                'ULY', 'LAES', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'MHUBF', 'PKKFF', 'SGN', 'SSCC', 'SGE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 
+                'GBUX', 'CMCZ', 'ZICX', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'SWISF', 'DCSX', 'RONN']
+TECHincmissingyears = ['CDNS', 'WDAY', 'TDY', 'LDOS', 'TRMB', 'LSCC', 'ONTO', 'LFUS', 'KD', 'SLAB', 'INST', 'LPL', 'WNS', 'TTMI', 'HCKT', 'SPWR', 'NLST', 
+                        'TGAN', 'BBAI', 'MAXN', 'QUIK', 'ARAT', 'ZFOX', 'LINK', 'BKKT', 'AKTS', 'DPSI', 'CPTN', 'ALMU', 'SODI', 'AITX', 'CYCA', 'MTBL', 'APYP', 
+                        'SLNH', 'FWFW', 'NUGN', 'VEII', 'RKFL', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'ONCI', 'PTOS', 'CRCW', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
+TECHincwrongendyear = ['NVDA', 'TSM', 'CRM', 'WDAY', 'CRWD', 'MRVL', 'MDB', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'ZM', 'CHKP', 'DIDIY', 'OKTA', 'NICE', 
+                        'GRAB', 'WIX', 'DSGX', 'YMM', 'STNE', 'PAGS', 'ASAN', 'BOX', 'CAMT', 'LPL', 'RUM', 'SIMO', 'PD', 'SPNS', 'TTMI', 'CSIQ', 'JKS', 'DQ', 'GCT', 
+                        'INFN', 'DBD', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'HKD', 'ASTS', 'YALA', 'YEXT', 'DDD', 'KC', 'MTWO', 
+                        'NNDM', 'CINT', 'MGIC', 'ITRN', 'TSAT', 'RDZN', 'AUDC', 'VNET', 'GILT', 'CAN', 'QIWI', 'BLZE', 'MTLS', 'MTC', 'NUKK', 'FRGE', 'API', 'PERF', 
+                        'SSTI', 'LUNA', 'TCX', 'CRNT', 'OUST', 'BKSY', 'REKR', 'RPMT', 'WRAP', 'TROO', 'SQNS', 'PAYS', 'TIO', 'OPTX', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 
+                        'INTT', 'ARBE', 'ARAT', 'ZFOX', 'MYNA', 'PWFL', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'MPTI', 'SOL', 'AUID', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 
+                        'ALAR', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'GRRR', 'XBP', 'ALLT', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 
+                        'CSLR', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'QUBT', 'DGHI', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'OSS', 'USIO', 'BTCM', 
+                        'AGMH', 'APCX', 'CPTN', 'MOGO', 'AISP', 'MRT', 'INVU', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 
+                        'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'SEAV', 'BNZI', 'RVYL', 'JG', 'AMPG', 'TAIT', 
+                        'CXAI', 'SPI', 'SCND', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 
+                        'XELA', 'KLDI', 'HUBC', 'SOBR', 'MCLDF', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'AIAD', 'LKCO', 'OLB', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'VJET', 
+                        'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'TNLX', 'CRTG', 'BLBX', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 
+                        'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'SUIC', 'NXTP', 'EZFL', 'AWIN', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'VS', 'IMTE', 'FRGT', 'SMTK', 'AUUD', 'WDLF', 'WAVD', 
+                        'GVP', 'AVOI', 'SUNW', 'LGIQ', 'VEII', 'ASNS', 'MWRK', 'IPSI', 'DATS', 'VERB', 'WISA', 'SASI', 'DUSYF', 'LZGI', 'ASFT', 'SING', 'XALL', 'VBIX', 'MYSZ', 
+                        'UCLE', 'BRQSF', 'ATDS', 'PRSO', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'TWOH', 'PEGY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 
+                        'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'GIGA', 'SATT', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 
+                        'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'RBT', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 
+                        'CATG', 'WBSR', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 
+                        'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'HMELF']
 
+#divs
+
+
+#roic
 
 ticker235 = 'AAPL'
 year235 = '2024'
@@ -2031,17 +2042,53 @@ version123 = '0'
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
 
 # checkTechDivYears()
-divsRecap = ['VERX', 'SRAD', 'ODD', 'NATL', 'BELFA', 'GB', 'RDZN', 'WBX', 'OPTX', 'ALAR', 'GRRR', 'XBP', 'CSLR', 'DGHI', 'MOGO', 'MRT', 'ULY', 'LAES', 'CXAI', 'MCLDF', 'JNVR', 'SGN', 'SGE', 'AWIN', 'VS', 'IMTE', 'SYTA', 'MTMV', 'RBT']
-divsFullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 'MHUBF', 'PKKFF', 'SSCC', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'GBUX', 'CMCZ', 'ZICX', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'SWISF', 'DCSX', 'RONN']
-divsYearsOff = ['TSM', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'DIDIY', 'NICE', 'GRAB', 'DUOL', 'WIX', 'YMM', 'STNE', 'PAGS', 'CAMT', 'LPL', 'AI', 'RUM', 'SIMO', 'SPNS', 'CSIQ', 'JKS', 'DQ', 'GCT', 'INFN', 'DBD', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'ASTS', 'YALA', 'DDD', 'KC', 'MTWO', 'NNDM', 'CINT', 'MGIC', 'ITRN', 'TSAT', 'AUDC', 'VNET', 'GILT', 'CAN', 'QIWI', 'BLZE', 'MTLS', 'MTC', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'TCX', 'CRNT', 'OUST', 'BKSY', 'REKR', 'RPMT', 'WRAP', 'TROO', 'SQNS', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'HOLO', 'PWFL', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'MPTI', 'SOL', 'AUID', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'ALLT', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'HSTA', 'CPTN', 'AISP', 'INVU', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'SEAV', 'BNZI', 'RVYL', 'JG', 'AMPG', 'TAIT', 'SPI', 'SCND', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'BOSC', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'AIAD', 'LKCO', 'OLB', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'TNLX', 'CRTG', 'BLBX', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'SUIC', 'NXTP', 'EZFL', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'FRGT', 'SMTK', 'CIIT', 'AUUD', 'WDLF', 'WAVD', 'GVP', 'AVOI', 'SUNW', 'LGIQ', 'VEII', 'ASNS', 'MWRK', 'IPSI', 'DATS', 'VERB', 'WISA', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'VBIX', 'MYSZ', 'UCLE', 'BRQSF', 'ATDS', 'PRSO', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'TWOH', 'PEGY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'GIGA', 'SATT', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'CATG', 'WBSR', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'HMELF']
-
+divsRecap = ['VERX', 'SRAD', 'ODD', 'NATL', 'BELFA', 'GB', 'RDZN', 'WBX', 'OPTX', 'ALAR', 'GRRR', 'XBP', 'CSLR', 'DGHI', 'MOGO', 'MRT', 'ULY', 'LAES', 'CXAI', 'MCLDF', 'JNVR', 
+            'SGN', 'SGE', 'AWIN', 'VS', 'IMTE', 'SYTA', 'MTMV', 'RBT']
+divsFullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 
+                'MHUBF', 'PKKFF', 'SSCC', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'GBUX', 'CMCZ', 'ZICX', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'SWISF', 'DCSX', 'RONN']
+divsYearsOff = ['TSM', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'DIDIY', 'NICE', 'GRAB', 'DUOL', 'WIX', 'YMM', 'STNE', 'PAGS', 'CAMT', 'LPL', 'AI', 'RUM', 'SIMO', 
+                'SPNS', 'CSIQ', 'JKS', 'DQ', 'GCT', 'INFN', 'DBD', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'ASTS', 'YALA', 'DDD', 'KC', 'MTWO', 'NNDM', 
+                'CINT', 'MGIC', 'ITRN', 'TSAT', 'AUDC', 'VNET', 'GILT', 'CAN', 'QIWI', 'BLZE', 'MTLS', 'MTC', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'TCX', 'CRNT', 'OUST', 'BKSY', 
+                'REKR', 'RPMT', 'WRAP', 'TROO', 'SQNS', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'HOLO', 'PWFL', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'MPTI', 
+                'SOL', 'AUID', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'ALLT', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 
+                'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'HSTA', 'CPTN', 'AISP', 
+                'INVU', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 
+                'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'SEAV', 'BNZI', 'RVYL', 'JG', 'AMPG', 'TAIT', 'SPI', 'SCND', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CISO', 'CLOQ', 'MARK', 
+                'PRKR', 'MMAT', 'BOSC', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'AIAD', 'LKCO', 'OLB', 'APYP', 'SVRE', 
+                'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'TNLX', 'CRTG', 'BLBX', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 
+                'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'SUIC', 'NXTP', 'EZFL', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'FRGT', 'SMTK', 'CIIT', 'AUUD', 'WDLF', 'WAVD', 'GVP', 'AVOI', 
+                'SUNW', 'LGIQ', 'VEII', 'ASNS', 'MWRK', 'IPSI', 'DATS', 'VERB', 'WISA', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'VBIX', 'MYSZ', 'UCLE', 'BRQSF', 'ATDS', 
+                'PRSO', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'TWOH', 'PEGY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'GIGA', 
+                'SATT', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 
+                'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'CATG', 'WBSR', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 
+                'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'HMELF']
 
 # checkTechIncYears()
 ### Income check results
-incFullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
-incYearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 'XDSL', 'ADGO']
+incFullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 
+                'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 
+                'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 
+                'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 
+                'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
+incYearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 
+                'XDSL', 'ADGO']
 defClosed = ['MAXD']
 exUS = ['PCRFY','WALD']
+
+###RE probs orig
+incRERecap = ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 
+                'MTPP', 'ABCP', 'MSPC', 'SFRT']
+incREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
+incREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 
+                'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 
+                'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
+divsRERecap = ['BPYPP', 'SKT', 'FPH', 'NEN', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'SFRT']
+divsREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
+divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 
+                'MDJH', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'NIHK', 'HCDIQ', 'DPWW', 
+                'SRC', 'SGIC', 'MSPC']
+
+
 # for x in yearsOff2:
 #     nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
 #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
@@ -2061,22 +2108,6 @@ exUS = ['PCRFY','WALD']
 # print(len(divsFullNulls))
 # print(len(incYearsOff))
 # print(len(divsYearsOff))
-
-# write_Master_csv_from_EDGAR('ASTS', '0001780312', ultimateTagsList, '2024','2')
-
-# neg = -5.999
-# pos = 3.999
-# diffpos = abs(pos-neg)
-# diffneg = abs(neg-pos)
-# print(diffpos)
-# print(diffneg)
-
-
-
-
-
-
-
 
 #THROW THIS INTO ANALYSIS/METRICS TABLE
         # eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
@@ -2129,6 +2160,7 @@ def uploadToDB(table, df):
 #---------------------------------------------------------------------
 #payout ratio = divs paid / net income
 #ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
+#leverage ratio used by credit rating agencies: Debt / FFO
 #---------------------------------------------------------------------
 
 ### LUKE
@@ -2306,6 +2338,76 @@ def createAllAttributesInsertToDB(ticker, year, version):
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+
+##remove fy records notes
+ #V1
+        # returned_data2 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-06-')==True)]
+        # returned_data3 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-06-')==True)]
+        # returned_data4 = df[(df['start'].str.contains('-04-')==True) & (df['end'].str.contains('-03-')==True)]
+        # returned_data5 = df[(df['start'].str.contains('-09-')==True) & (df['end'].str.contains('-09-')==True)]
+
+        #V2
+        # oneEnds = ['-12-','-01-','-02-']
+        # twoEnds = ['-01-','-02-','-03-']
+        # threeEnds = ['-02-','-03-','-04-']
+        # fourEnds = ['-03-','-04-','-05-']
+        # fiveEnds = ['-04-','-05-','-06-']
+        # sixEnds = ['-05-','-06-','-07-']
+        # sevenEnds = ['-06-','-07-','-08-']
+        # eightEnds = ['-07-','-08-','-09-']
+        # nineEnds = ['-08-','-09-','-10-']
+        # tenEnds = ['-09-','-10-','-11-']
+        # elevenEnds = ['-10-','-11-','-12-']
+        # twelveEnds = ['-11-','-12-','-01-']
+        # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].isin(oneEnds) == True)]#df['end'].str.contains('-12-')==True)]
+        # print('returned data in fy recs 01')
+        # print(returned_data)
+        # returned_data1 = df[(df['start'].str.contains('-02-')==True) & (df['end'].isin(twoEnds) == True)]
+        # print('returned data in fy recs 02')
+        # print(returned_data)
+        # returned_data2 = df[(df['start'].str.contains('-03-')==True) & (df['end'].isin(threeEnds) == True)]
+        # print('returned data in fy recs 03')
+        # print(returned_data)
+        # returned_data3 = df[(df['start'].str.contains('-04-')==True) & (df['end'].isin(fourEnds) == True)]
+        # print('returned data in fy recs 04')
+        # print(returned_data)
+        # returned_data4 = df[(df['start'].str.contains('-05-')==True) & (df['end'].isin(fiveEnds) == True)]
+        # print('returned data in fy recs 05')
+        # print(returned_data)
+        # returned_data5 = df[(df['start'].str.contains('-06-')==True) & (df['end'].isin(sixEnds) == True)]
+        # print('returned data in fy recs 06')
+        # print(returned_data)
+        # returned_data6 = df[(df['start'].str.contains('-07-')==True) & (df['end'].isin(sevenEnds) == True)]
+        # print('returned data in fy recs 07')
+        # print(returned_data)
+        # returned_data7 = df[(df['start'].str.contains('-08-')==True) & (df['end'].isin(eightEnds) == True)]
+        # print('returned data in fy recs 08')
+        # print(returned_data)
+        # returned_data8 = df[(df['start'].str.contains('-09-')==True) & (df['end'].isin(nineEnds) == True)]
+        # print('returned data in fy recs 09')
+        # print(returned_data)
+        # returned_data9 = df[(df['start'].str.contains('-10-')==True) & (df['end'].isin(tenEnds) == True)]
+        # print('returned data in fy recs 10')
+        # print(returned_data)
+        # returned_data10 = df[(df['start'].str.contains('-11-')==True) & (df['end'].isin(elevenEnds) == True)]
+        # print('returned data in fy recs 11')
+        # print(returned_data)
+        # returned_data11 = df[(df['start'].str.contains('-12-')==True) & (df['end'].isin(twelveEnds) == True)]
+        # print('returned data in fy recs 12')
+        # print(returned_data)
+
+        #V2
+        # returned_data = pd.concat([returned_data, returned_data1], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data2], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data3], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data4], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data5], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data6], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data7], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data8], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data9], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data10], ignore_index = True) 
+        # returned_data = pd.concat([returned_data, returned_data11], ignore_index = True) 
 
 #Just saved while editing
 # def fillEmptyDivsGrowthRates(df):
