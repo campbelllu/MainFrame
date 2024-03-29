@@ -149,9 +149,12 @@ db_path = '../stock_data.sqlite3'
 type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
 type_converter_full = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str, 'Market Cap': str}
 type_converter_full2 = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str}#, 'Market Cap': str}
+
 full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
 full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
 clean_stockList = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_stockList_clean', type_converter_full2)
+nameCikDict = clean_stockList.set_index('Ticker')['CIK'].to_dict()
+
 materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
 comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
 consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
@@ -187,61 +190,9 @@ def makeSectorCSVs():
         print(err)
 # makeSectorCSVs()
 
-#gives tags to get from SEC. returns dataframe filled with info!
-# def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
-#     url = ep["cf"] + 'CIK' + cik + '.json'
-#     response = requests.get(url, headers=header)
-
-#     if tag == None:
-#         tags = list(response.json()['facts']['us-gaap'].keys())
-#         # print('in query tags: ')
-#         # print(tags)
-#         if tags.empty or (len(tags) <= 0):
-#             tags = list(response.json()['facts']['ifrs-full'].keys())
-#     else:
-#         tags = tag
-
-#     company_data = pd.DataFrame()
-
-#     for i in range(len(tags)):
-#         try:
-#             tag = tags[i] 
-#             units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
-#             data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
-#             data['Tag'] = tag
-#             data['Units'] = units
-#             data['Ticker'] = ticker
-#             data['CIK'] = cik
-#             company_data = pd.concat([company_data, data], ignore_index = True)
-#         except Exception as err:
-#             print(str(tags[i]) + ' not found for ' + ticker + ' in US-Gaap.')
-#             # print("Edgar query error: ")
-#             # print(err)
-#         finally:
-#             time.sleep(0.1)
-
-#     if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
-#         for i in range(len(tags)):
-#             try:
-#                 tag = tags[i] 
-#                 units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
-#                 data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
-#                 data['Tag'] = tag
-#                 data['Units'] = units
-#                 data['Ticker'] = ticker
-#                 data['CIK'] = cik
-#                 company_data = pd.concat([company_data, data], ignore_index = True)
-#             except Exception as err:
-#                 print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
-#                 # print("Edgar query error: ")
-#                 # print(err)
-#             finally:
-#                 time.sleep(0.1)
-
-#     return company_data
-
-def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
+def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
     try:
+        cik = nameCikDict[ticker]
         url = ep["cf"] + 'CIK' + cik + '.json'
         response = requests.get(url, headers=header)
         filingList = ['us-gaap','ifrs-full']
@@ -361,9 +312,9 @@ ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'inte
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
 #Saves MASTER CSV containing data most pertinent to calculations.
-def write_Master_csv_from_EDGAR(ticker, cik, tagList, year, version):
+def write_Master_csv_from_EDGAR(ticker, tagList, year, version): # cik,
     try:
-        company_data = EDGAR_query(ticker, cik, header, tagList)
+        company_data = EDGAR_query(ticker, header, tagList)#cik,
         time.sleep(0.1)
     except Exception as err:
         print('write to csv from edgar error:')
@@ -423,12 +374,15 @@ def get_Only_10k_info(df):
 
 def dropAllExceptFYRecords(df):
     try:
+        testdf = df
+        # print('testdf')
+        # print(testdf)
         # print('tag then df')
         # print(df['Tag'])
         # print(df)
         # returned_data = pd.DataFrame()
         returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
-        oneEnds = ['-01-','-02-']
+        oneEnds = ['-01-','-02-']#'-12',
         twoEnds = ['-01-','-02-','-03-']
         threeEnds = ['-02-','-03-','-04-']
         fourEnds = ['-03-','-04-','-05-']
@@ -440,9 +394,20 @@ def dropAllExceptFYRecords(df):
         tenEnds = ['-09-','-10-','-11-']
         elevenEnds = ['-10-','-11-','-12-']
         twelveEnds = ['-11-','-12-','-01-']
+        countdown = ['-01-','-02-','-03-','-04-','-05-','-06-','-07-','-08-','-09-','-10-','-11-']
+        revCD = reversed(countdown)
+        # print('reversed')
+        # for x in revCD:
+        #     print(x)
+        # print('forward')
+        # for x in countdown:
+        #     print(x)
+        # print(revCD)
         # halfStarts = ['-01-','-06-','-07-']
         # halfEnds = ['-06-','-07-','-12-']
+        #First we check for the full year reportings
         for x in oneEnds:
+            # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
             held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True) 
        
@@ -492,47 +457,85 @@ def dropAllExceptFYRecords(df):
         #Now checking for those halfies because some companies just file things weirdly.
         #LUKE PROGRAMMATICALLY GO THRU THIS. combine the three steps into some for loops so it's much less copy paste. you got this!
         #1-6,7,11
-        held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
-        held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
-        held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
+        #now we have to iterate through monthly reportings because of some strange reporting practices
+        # print('df outside of the if????')
+        # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
+        # if returned_data.empty:
+            # print('df in if????')
+            # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
+            #iterate thru revCD to find latest they report, log that number, use it as start to check to the 12th.
+        for x in revCD:
+            # print('x')
+            # print(x)
+            # print('df within the damn for????')
+            # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
+            held_data1 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True)]
+            # print('held at beg of for')
+            # print(held_data1)
+            if held_data1.empty:
+                # print('held empty')
+                continue
+            else:
+                lastKnownLog = x
+                held_data2 = df[(df['start'].str.contains(lastKnownLog)==True) & (df['end'].str.contains('-12-')==True)]
+                # print('held2 in else')
+                # print(held_data2)
+        # print('pine be empty')
+                held3 = pd.merge(held_data1, held_data2, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+                held3['val'] = held3['val_x'] + held3['val_y']
+                held3['start'] = held3['start_x']
+                held3['end'] = held3['end_y']
+                held3 = held3.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+                held3 = held3.dropna(subset=['val'])#,'start'])
+                # print('held3')
+                # print(held3)
+                returned_data = pd.concat([returned_data, held3], ignore_index = True)
 
-        held_data6212 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-12-')==True)]
-        held_data7212 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-12-')==True)]
-        held_data11212 = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains('-12-')==True)]
 
-        # if held_data126.empty:
-        held7 = pd.merge(held_data127, held_data7212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        held7['val'] = held7['val_x'] + held7['val_y']
-        held7['start'] = held7['start_x']
-        held7['end'] = held7['end_y']
-        held7 = held7.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        held7 = held7.dropna(subset=['val'])#,'start'])
-        returned_data = pd.concat([returned_data, held7], ignore_index = True)
-        # else:
-        held6 = pd.merge(held_data126, held_data6212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        held6['val'] = held6['val_x'] + held6['val_y']
-        held6['start'] = held6['start_x']
-        held6['end'] = held6['end_y']
-        held6 = held6.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        held6 = held6.dropna(subset=['val'])#,'start'])
-        returned_data = pd.concat([returned_data, held6], ignore_index = True)
+        ###luke this worked, trying to automate above
+        # held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
+        # held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
+        # held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
+        # print('held1211')
+        # print(held_data1211)
 
-        held11 = pd.merge(held_data1211, held_data11212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        held11['val'] = held11['val_x'] + held11['val_y']
-        held11['start'] = held11['start_x']
-        held11['end'] = held11['end_y']
-        held11 = held11.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        held11 = held11.dropna(subset=['val'])#,'start'])
-        returned_data = pd.concat([returned_data, held11], ignore_index = True)
+        # held_data6212 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-12-')==True)]
+        # held_data7212 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-12-')==True)]
+        # held_data11212 = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains('-12-')==True)]
+
+        # # if held_data126.empty:
+        # held7 = pd.merge(held_data127, held_data7212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held7['val'] = held7['val_x'] + held7['val_y']
+        # held7['start'] = held7['start_x']
+        # held7['end'] = held7['end_y']
+        # held7 = held7.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held7 = held7.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held7], ignore_index = True)
+        # # else:
+        # held6 = pd.merge(held_data126, held_data6212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held6['val'] = held6['val_x'] + held6['val_y']
+        # held6['start'] = held6['start_x']
+        # held6['end'] = held6['end_y']
+        # held6 = held6.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held6 = held6.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held6], ignore_index = True)
+
+        # held11 = pd.merge(held_data1211, held_data11212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held11['val'] = held11['val_x'] + held11['val_y']
+        # held11['start'] = held11['start_x']
+        # held11['end'] = held11['end_y']
+        # held11 = held11.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held11 = held11.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held11], ignore_index = True)
 
         
 
-        #Monthly reporting sometimes also throws things off.
-        if returned_data.empty:
-            listMax = df.end.str[5:7]
-            tarMax = str(listMax.max())
-            held_data = df[df['end'].str.contains(tarMax)==True] #held_data
-            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        #Monthly reporting sometimes also throws things off. #luke uncomment
+        # if returned_data.empty:
+        #     listMax = df.end.str[5:7]
+        #     tarMax = str(listMax.max())
+        #     held_data = df[df['end'].str.contains(tarMax)==True] #held_data
+        #     returned_data = pd.concat([returned_data, held_data], ignore_index = True)
            
         # print(returned_data)
         return returned_data
@@ -551,26 +554,53 @@ def orderAttributeDF(df):
         return filtered_data
 
 def dropDuplicatesInDF(df):
+    #LUKE
+    ### look at onto and compare against working ones below: nvda, crm, msft, o
+    ### let's make cases of sorts. if statements. whatever. but sort it as such:
+    ### years: same year? diff years by 1? dif years by 2?
+    ### months: 1-12, maybe multiple cases, but depends on the years
+    ### days? useless?
+    ### determine year label via those 'cases'
     try:
         # filtered_data = pd.DataFrame()
         # print('pre drop dupes')
         # print(df)
         filtered_data = df
-        filtered_data['year'] = filtered_data.end.str[:4]
-        # print(filtered_data)
-        filtered_data = df.drop_duplicates(subset=['year'],keep='last')#val #end
-        # filtered_data = filtered_data.drop_duplicates(subset=[filtered_data.end.str[:4]],keep='last')
-        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') 
+        # filtered_data2 = df.drop_duplicates(subset=['val'])#,keep='last')#val #end) #This just does not work because of weird dupe numbers. gotta use full data!
+        # print('filtered_data2')
+        print(filtered_data2)
 
-        # print('pre drop dupes')
-        # print(df)
-        # filtered_data = df.drop_duplicates(subset=['start','end'], keep='last') #start, end
-        # print('post drop dupes')
-        # print(filtered_data)
-        # print(filtered_data.shape)
-        # filtered_data = df.drop_duplicates(subset=['val'], keep='last') #val, no keep last
+        if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all():
+            filtered_data['year'] = filtered_data.start.str[:4]
+        else:
+
+
+            filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7])
+            # print(filtered_data['compare'])
+
+            #2022-07 -> 2023-06 == end is year
+            #2022-01 -> 2022-12 == start or end is year
+            #2022-01 -> 2023-01 == start year is year
+            filtered_data['year'] = filtered_data.start.str[:4].where(filtered_data['compare'] == True, other=filtered_data.end.str[:4])
+
+
+
+            # filtered_data['intstart'] = filtered_data.start.str[5:7].astype(int)
+            # filtered_data['intend'] = filtered_data.end.str[5:7].astype(int)
+            # print(filtered_data['intstart'])
+
+
+            # if abs(filtered_data.start.str[5:7].astype(int)-filtered_data.end.str[5:7].astype(int)) == 1:
+            #     if abs(filtered_data.start.str[:4].astype(int)-filtered_data.end.str[:4].astype(int)) == 1:
+            #         if filtered_data.start.str[5:7].astype(int) < 3:
+            #             filtered_data['year'] = filtered_data.start.str[:4]
+
+            # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
+            filtered_data = filtered_data.pop('compare')
+            
+            # print(filtered_data)
+        filtered_data = df.drop_duplicates(subset=['year'],keep='last')#val #end
         
-        # filtered_data = df.drop_duplicates(subset=['start'], keep='last') #new
 
     except Exception as err:
         print("drop duplicates error")
@@ -580,7 +610,7 @@ def dropDuplicatesInDF(df):
 
 def dropUselessColumns(df):
     try:
-        returned_data = df.drop(['start','end','accn','fy','fp','form','filed','frame','Tag'],axis=1) #start, end added
+        returned_data = df.drop(['start','end','accn','fy','fp','form','filed','frame','Tag'],axis=1) #start, end added  ,'compare'
 
         return returned_data
     except Exception as err:
@@ -614,8 +644,9 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
-        # print(returned_data.to_string())
-        # print(returned_data.shape)
+        print('post order pre drop  dupes')
+        print(returned_data)
+        print(returned_data.shape)
 
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
         # print('post drop  dupes')
@@ -1628,26 +1659,7 @@ def checkYearsIntegrity(sector):
                     incMissingYearTracker.append(x)
                 if iend != 2023:
                     incomeEndYearTracker.append(x)
-                
-                # print('iyear, beg year, end year:')
-                # print(iyears)
-                # print(iyearsint)
-                # print(istart)
-                # print(iend)
-                # print('missing years:')
-                # print(iMissingYears)
-                #set start and end values, compare with outputsss
-
-
-
-                # #Checking if returned tables are just empty
-                # if str(type(incTable)) == "<class 'NoneType'>" or incTable.empty:
-                #     incomeNullTracker.append(x)
-                #     continue
-                # #checking latest data from the pull             
-                # if (incTable['year'].max() not in yearsList) or (incTable['year'].empty):
-                #     # print(str(x) + ' incYears are good!')
-                #     incYearTracker.append(x)     
+                 
             except Exception as err:
                 print("nested check years integrity error: ")
                 print(err)
@@ -1932,19 +1944,46 @@ def checkREDivYears():
         print('years off')
         print(divYearTracker)
 
-checkYearsIntegrity(tech)
+# checkYearsIntegrity(tech)
 
-# write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','2')
+# write_Master_csv_from_EDGAR('O',ultimateTagsList,'2024','2') #'0000726728'
 # write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
 # write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
 # for x in incRERecap:
 #     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
 #     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
 # 
+# nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+# print(nameCikDict)
 
-# print(consolidateSingleAttribute('REXR', '2024', '2', netIncome, False))
+print(consolidateSingleAttribute('ONTO', '2024', '2', netIncome, False))
 
-ticker12 = 'PINE' #ABR
+#end year
+#  'WDAY', 'CRWD', 'MRVL', 'MDB', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'ZM', 'CHKP', 'DIDIY', 'OKTA', 'NICE'
+#missing
+# 'CDNS', 'WDAY', 'TDY', 'LDOS', 'TRMB', 'LSCC', 'ONTO',
+
+ticker12 = 'ONTO' #ABR
+year12 = '2024'
+version12 = '2'
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024',version12,False))
+
+ticker13 = 'MSFT' #EGP
+year13 = '2024'
+version13 = '2'
+# print(ticker13 + ' income:')
+# print(makeIncomeTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + ' divs:')
+# print(makeDividendTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + '  roic: ')
+# print(makeROICtableEntry(ticker13,'2024',version13,False))
+
+ticker12 = 'CRM' #ABR
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
@@ -1954,24 +1993,26 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024','0',False))
 
-ticker13 = 'REXR' #EGP
-year13 = '2024'
-version13 = '2'
-# print(ticker13 + ' income:')
-# print(makeIncomeTableEntry(ticker13,'2024',version13,False))
-# print(ticker13 + ' divs:')
-# print(makeDividendTableEntry(ticker13,'2024',version13,False))
-# print(ticker13 + '  roic: ')
-# print(makeROICtableEntry(ticker13,'2024','0',False))
+ticker14 = 'O' #EGP
+year14 = '2024'
+version14 = '2'
+# print(ticker14 + ' income:')
+# print(makeIncomeTableEntry(ticker14,year14,version14,False))
+# print(ticker14 + ' divs:')
+# print(makeDividendTableEntry(ticker14,'2024',version14,False))
+# print(ticker14 + '  roic: ')
+# print(makeROICtableEntry(ticker14,'2024',version14,False))
 
 
 #refined screener results:
 #income
 REincrecap = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'MSTO', 'PVOZ']
-REincmissingyears = ['GRP-UN', 'ESBA', 'FOR', 'CBL', 'GMRE', 'NXDT', 'AWCA', 'MHPC', 'TPHS', 'ZDPY', 'ACAN', 'MAA']
+REincmissingyears = ['GRP-UN', 'FOR', 'CBL', 'GMRE', 'NXDT', 'AWCA', 'MHPC', 'TPHS', 'ZDPY', 'ACAN', 'MAA']
 REincwrongendyear = ['BEKE', 'SKT', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 
                     'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 
                     'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'MSPC', 'SFRT']
+
+# print(set(wrong).difference(REincwrongendyear))
 
 TECHincrecap = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'NATL', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 
                 'ULY', 'LAES', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'MHUBF', 'PKKFF', 'SGN', 'SSCC', 'SGE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 
@@ -2037,7 +2078,7 @@ version123 = '0'
 # print('AMZN divs:')
 # print(makeDividendTableEntry(ticker123,'2024',version123,False))
 # print('AMZN roic: ')
-# print(makeROICtableEntry(ticker123,'2024','0',False))
+# print(makeROICtableEntry(ticker123,'2024',version123,False))
 
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
 
@@ -2091,7 +2132,7 @@ divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', '
 
 # for x in yearsOff2:
 #     nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
-#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2') #nameCikDict[x],
 #There's no overlap! Yay!
 # print(set(fullNulls).difference(yearsOff))
 # print(set(fullNulls).difference(fullNulls))
@@ -2338,6 +2379,59 @@ def createAllAttributesInsertToDB(ticker, year, version):
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+
+#gives tags to get from SEC. returns dataframe filled with info!
+# def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
+#     url = ep["cf"] + 'CIK' + cik + '.json'
+#     response = requests.get(url, headers=header)
+
+#     if tag == None:
+#         tags = list(response.json()['facts']['us-gaap'].keys())
+#         # print('in query tags: ')
+#         # print(tags)
+#         if tags.empty or (len(tags) <= 0):
+#             tags = list(response.json()['facts']['ifrs-full'].keys())
+#     else:
+#         tags = tag
+
+#     company_data = pd.DataFrame()
+
+#     for i in range(len(tags)):
+#         try:
+#             tag = tags[i] 
+#             units = list(response.json()['facts']['us-gaap'][tag]['units'].keys())[0]
+#             data = pd.json_normalize(response.json()['facts']['us-gaap'][tag]['units'][units])
+#             data['Tag'] = tag
+#             data['Units'] = units
+#             data['Ticker'] = ticker
+#             data['CIK'] = cik
+#             company_data = pd.concat([company_data, data], ignore_index = True)
+#         except Exception as err:
+#             print(str(tags[i]) + ' not found for ' + ticker + ' in US-Gaap.')
+#             # print("Edgar query error: ")
+#             # print(err)
+#         finally:
+#             time.sleep(0.1)
+
+#     if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
+#         for i in range(len(tags)):
+#             try:
+#                 tag = tags[i] 
+#                 units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
+#                 data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
+#                 data['Tag'] = tag
+#                 data['Units'] = units
+#                 data['Ticker'] = ticker
+#                 data['CIK'] = cik
+#                 company_data = pd.concat([company_data, data], ignore_index = True)
+#             except Exception as err:
+#                 print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
+#                 # print("Edgar query error: ")
+#                 # print(err)
+#             finally:
+#                 time.sleep(0.1)
+
+#     return company_data
 
 ##remove fy records notes
  #V1
