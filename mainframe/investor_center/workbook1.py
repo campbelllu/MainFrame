@@ -478,6 +478,9 @@ def dropAllExceptFYRecords(df):
             else:
                 lastKnownLog = x
                 held_data2 = df[(df['start'].str.contains(lastKnownLog)==True) & (df['end'].str.contains('-12-')==True)]
+                ### LUKE. one major thing here is if the only records are montly reported. 
+                ### 1-12 nothing? cool, caught it for 1-x, x-12. what about 1-2, 2-3, 3-4... ?
+                ### SEe below. this might actually not be an issue. you may just be rusty
                 # print('held2 in else')
                 # print(held_data2)
         # print('pine be empty')
@@ -491,6 +494,14 @@ def dropAllExceptFYRecords(df):
                 # print(held3)
                 returned_data = pd.concat([returned_data, held3], ignore_index = True)
 
+        #So you've gone x-y all numbers, and 1-x, x-12 and still nervous?
+        #1-2, 2-3, 3-4...
+        #for x in 1-11, mask for x-(x+1)
+        # held_data123 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-02-')==True)]
+        #dummy df['columnONE'] = that
+        #dumm df['columnTWO'] = mask for (x+1)-(x+2)
+        #held4['val'] = dummy1 + dumm2
+        #concat to returned data
 
         ###luke this worked, trying to automate above
         # held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
@@ -531,11 +542,11 @@ def dropAllExceptFYRecords(df):
         
 
         #Monthly reporting sometimes also throws things off. #luke uncomment
-        # if returned_data.empty:
-        #     listMax = df.end.str[5:7]
-        #     tarMax = str(listMax.max())
-        #     held_data = df[df['end'].str.contains(tarMax)==True] #held_data
-        #     returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+        if returned_data.empty:
+            listMax = df.end.str[5:7]
+            tarMax = str(listMax.max())
+            held_data = df[df['end'].str.contains(tarMax)==True] #held_data
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
            
         # print(returned_data)
         return returned_data
@@ -554,52 +565,85 @@ def orderAttributeDF(df):
         return filtered_data
 
 def dropDuplicatesInDF(df):
-    #LUKE
-    ### look at onto and compare against working ones below: nvda, crm, msft, o
-    ### let's make cases of sorts. if statements. whatever. but sort it as such:
-    ### years: same year? diff years by 1? dif years by 2?
-    ### months: 1-12, maybe multiple cases, but depends on the years
-    ### days? useless?
-    ### determine year label via those 'cases'
+    #LUKE drop down to the years columns. hit a run. see the years are kinda weird. figure it out. you got this!
     try:
         # filtered_data = pd.DataFrame()
         # print('pre drop dupes')
         # print(df)
-        filtered_data = df
-        # filtered_data2 = df.drop_duplicates(subset=['val'])#,keep='last')#val #end) #This just does not work because of weird dupe numbers. gotta use full data!
-        # print('filtered_data2')
-        print(filtered_data2)
-
-        if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all():
-            filtered_data['year'] = filtered_data.start.str[:4]
-        else:
-
-
-            filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7])
-            # print(filtered_data['compare'])
-
-            #2022-07 -> 2023-06 == end is year
-            #2022-01 -> 2022-12 == start or end is year
-            #2022-01 -> 2023-01 == start year is year
-            filtered_data['year'] = filtered_data.start.str[:4].where(filtered_data['compare'] == True, other=filtered_data.end.str[:4])
-
-
-
-            # filtered_data['intstart'] = filtered_data.start.str[5:7].astype(int)
-            # filtered_data['intend'] = filtered_data.end.str[5:7].astype(int)
-            # print(filtered_data['intstart'])
-
-
-            # if abs(filtered_data.start.str[5:7].astype(int)-filtered_data.end.str[5:7].astype(int)) == 1:
-            #     if abs(filtered_data.start.str[:4].astype(int)-filtered_data.end.str[:4].astype(int)) == 1:
-            #         if filtered_data.start.str[5:7].astype(int) < 3:
-            #             filtered_data['year'] = filtered_data.start.str[:4]
-
-            # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
-            filtered_data = filtered_data.pop('compare')
-            
+        filtered_data = df#.drop_duplicates(subset=['start','end','val']) #god
+        endYear = []
+        endMonth = []
+        startYear = []
+        for x in filtered_data['end']:
+            #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
+            endYear.append(int(x[:4]))
+            endMonth.append(int(x[5:7]))
             # print(filtered_data)
-        filtered_data = df.drop_duplicates(subset=['year'],keep='last')#val #end
+        # print('with start years')
+        for x in filtered_data['start']:
+            #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
+            startYear.append(int(x[:4]))
+            # print(filtered_data)
+
+        filtered_data['startYear'] = startYear
+        filtered_data['endYear'] = endYear
+        filtered_data['yearDiff'] = filtered_data['endYear'] - filtered_data['startYear']
+        # print(filtered_data)
+        filtered_data['endMonth'] = endMonth
+        # print(filtered_data)
+
+        
+        ###yearDiff == 2: year = end-1
+        yearMinusOne = list(filtered_data['endYear'] - 1)
+        yearMinusOne = [str(x) for x in yearMinusOne]
+        filtered_data['yearMinusOne'] = yearMinusOne
+        filtered_data['year1'] = filtered_data['yearMinusOne'].where(filtered_data['yearDiff'] == 2)
+        # print('just 2s')
+        # print(filtered_data)
+
+        ### yearDiff == 0: start=year
+        startYearStrings = list(filtered_data['startYear'])
+        startYearStrings = [str(x) for x in startYearStrings]
+        filtered_data['startYear'] = startYearStrings
+        filtered_data['year2'] = filtered_data['startYear'].where(filtered_data['yearDiff'] == 0)
+        # print('just 2s and 0s')
+        # print(filtered_data)
+
+        ### year diff == 1: end month >= 6, year=end; else year = start
+        endYearStrings = list(filtered_data['endYear'])
+        endYearStrings = [str(x) for x in endYearStrings]
+        filtered_data['endYear'] = endYearStrings
+        filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 6), other=filtered_data['startYear'])
+        # print('all three applied')
+        # print(filtered_data)
+        filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
+        # filtered_data = filtered_data.drop(['endYear','startYear','yearDiff','endMonth','yearMinusOne'],axis=1)
+        print('pre pops')
+        print(filtered_data)
+        filtered_data = filtered_data.drop('endYear',axis=1)
+        # print('post end drops')
+        # print(filtered_data)
+        filtered_data = filtered_data.drop('startYear',axis=1)
+        # print('post start drops')
+        # print(filtered_data)
+        filtered_data = filtered_data.drop('yearDiff',axis=1)
+        # print('post yeardiff drops')
+        # print(filtered_data)
+        filtered_data = filtered_data.drop('endMonth',axis=1)
+        # print('post endmonth drops')
+        # print(filtered_data)
+        filtered_data = filtered_data.drop('yearMinusOne',axis=1)
+        filtered_data = filtered_data.drop('year1',axis=1)
+        filtered_data = filtered_data.drop('year2',axis=1)
+        filtered_data = filtered_data.drop('year3',axis=1)
+        # filtered_data['year3']
+        # print('post year minus one drops')
+        # print('good results?')
+        # print(filtered_data)
+
+        filtered_data = filtered_data.drop_duplicates(subset=['year'],keep='last')#val #end
+        # print('seper')
+        # print(filtered_data)
         
 
     except Exception as err:
@@ -607,6 +651,90 @@ def dropDuplicatesInDF(df):
         print(err)
     finally:
         return filtered_data
+        # #####
+        # if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all(): #starts feb, ends jan, hopefully one year later
+        #     filtered_data['year'] = filtered_data.start.str[:4]
+        # else:
+
+
+        #     filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7]) #Where the months are the same
+        #     # print(filtered_data['compare'])
+
+        #     #2022-07 -> 2023-06 == end is year
+        #     #2022-01 -> 2022-12 == start or end is year
+        #     #2022-01 -> 2023-01 == start year is year
+        #     filtered_data['year'] = filtered_data.start.str[:4].where(filtered_data['compare'] == True, other=filtered_data.end.str[:4])
+
+
+
+        #     # filtered_data['intstart'] = filtered_data.start.str[5:7].astype(int)
+        #     # filtered_data['intend'] = filtered_data.end.str[5:7].astype(int)
+        #     # print(filtered_data['intstart'])
+
+
+        #     # if abs(filtered_data.start.str[5:7].astype(int)-filtered_data.end.str[5:7].astype(int)) == 1:
+        #     #     if abs(filtered_data.start.str[:4].astype(int)-filtered_data.end.str[:4].astype(int)) == 1:
+        #     #         if filtered_data.start.str[5:7].astype(int) < 3:
+        #     #             filtered_data['year'] = filtered_data.start.str[:4]
+
+        #     # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
+        #     filtered_data = filtered_data.pop('compare')
+        #     #####
+
+# def dropDuplicatesInDF(df):
+#     #LUKE
+#     ### look at onto and compare against working ones below: nvda, crm, msft, o
+#     ### let's make cases of sorts. if statements. whatever. but sort it as such:
+#     ### years: same year? diff years by 1? dif years by 2?
+#     ### months: 1-12, maybe multiple cases, but depends on the years
+#     ### days? useless?
+#     ### determine year label via those 'cases'
+#     try:
+#         # filtered_data = pd.DataFrame()
+#         # print('pre drop dupes')
+#         # print(df)
+#         filtered_data = df
+#         # filtered_data2 = df.drop_duplicates(subset=['val'])#,keep='last')#val #end) #This just does not work because of weird dupe numbers. gotta use full data!
+#         # print('filtered_data2')
+#         # print(filtered_data2)
+
+#         if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all(): #starts feb, ends jan, hopefully one year later
+#             filtered_data['year'] = filtered_data.start.str[:4]
+#         else:
+
+
+#             filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7]) #Where the months are the same
+#             # print(filtered_data['compare'])
+
+#             #2022-07 -> 2023-06 == end is year
+#             #2022-01 -> 2022-12 == start or end is year
+#             #2022-01 -> 2023-01 == start year is year
+#             filtered_data['year'] = filtered_data.start.str[:4].where(filtered_data['compare'] == True, other=filtered_data.end.str[:4])
+
+
+
+#             # filtered_data['intstart'] = filtered_data.start.str[5:7].astype(int)
+#             # filtered_data['intend'] = filtered_data.end.str[5:7].astype(int)
+#             # print(filtered_data['intstart'])
+
+
+#             # if abs(filtered_data.start.str[5:7].astype(int)-filtered_data.end.str[5:7].astype(int)) == 1:
+#             #     if abs(filtered_data.start.str[:4].astype(int)-filtered_data.end.str[:4].astype(int)) == 1:
+#             #         if filtered_data.start.str[5:7].astype(int) < 3:
+#             #             filtered_data['year'] = filtered_data.start.str[:4]
+
+#             # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
+#             filtered_data = filtered_data.pop('compare')
+            
+#             # print(filtered_data)
+#         filtered_data = df.drop_duplicates(subset=['year'],keep='last')#val #end
+        
+
+#     except Exception as err:
+#         print("drop duplicates error")
+#         print(err)
+#     finally:
+#         return filtered_data
 
 def dropUselessColumns(df):
     try:
@@ -644,9 +772,9 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
-        print('post order pre drop  dupes')
-        print(returned_data)
-        print(returned_data.shape)
+        # print('post order pre drop  dupes')
+        # print(returned_data)
+        # print(returned_data.shape)
 
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
         # print('post drop  dupes')
@@ -1956,14 +2084,15 @@ def checkREDivYears():
 # nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
 # print(nameCikDict)
 
-print(consolidateSingleAttribute('ONTO', '2024', '2', netIncome, False))
+print(consolidateSingleAttribute('ONTO', '2024', '2', netIncome, False)) #netIncome totalCommonStockDivsPaid
+# print(consolidateSingleAttribute('MSFT', '2024', '2', netIncome, False)) #netIncome totalCommonStockDivsPaid
 
 #end year
 #  'WDAY', 'CRWD', 'MRVL', 'MDB', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'ZM', 'CHKP', 'DIDIY', 'OKTA', 'NICE'
 #missing
 # 'CDNS', 'WDAY', 'TDY', 'LDOS', 'TRMB', 'LSCC', 'ONTO',
 
-ticker12 = 'ONTO' #ABR
+ticker12 = 'NVDA' #ABR
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
