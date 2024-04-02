@@ -570,11 +570,16 @@ def dropDuplicatesInDF(df):
         # filtered_data = pd.DataFrame()
         # print('pre drop dupes')
         # print(df)
-        filtered_data = df#.drop_duplicates(subset=['start','end','val']) #god
+        filtered_data = df
         endYear = []
         endMonth = []
         startYear = []
+        # for x in filtered_data: ###LUKE: val in debt and such are floats. they need to be int's or str or other. check which things may need to be floats. deal with them accordingly.
+        #     print(x)
+        #     print(type(x))
+        #     print(type(filtered_data[x].loc[0])) 
         for x in filtered_data['end']:
+            # print(type(filtered_data['end']))
             #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
             endYear.append(int(x[:4]))
             endMonth.append(int(x[5:7]))
@@ -613,13 +618,22 @@ def dropDuplicatesInDF(df):
         endYearStrings = list(filtered_data['endYear'])
         endYearStrings = [str(x) for x in endYearStrings]
         filtered_data['endYear'] = endYearStrings
-        filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 6), other=filtered_data['startYear'])
+        filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 6))
+        filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 6))#, other=filtered_data['startYear'])
         # print('all three applied')
         # print(filtered_data)
-        filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
+        # filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
+        filtered_data['year'] = filtered_data['year1'].fillna(filtered_data['year2'])
+        filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year3'])
+        filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year4'])
+        #.replace(np.NaN,filtered_data['year4'])
+
+
+
+
         # filtered_data = filtered_data.drop(['endYear','startYear','yearDiff','endMonth','yearMinusOne'],axis=1)
-        print('pre pops')
-        print(filtered_data)
+        # print('pre pops')
+        # print(filtered_data)
         filtered_data = filtered_data.drop('endYear',axis=1)
         # print('post end drops')
         # print(filtered_data)
@@ -633,9 +647,11 @@ def dropDuplicatesInDF(df):
         # print('post endmonth drops')
         # print(filtered_data)
         filtered_data = filtered_data.drop('yearMinusOne',axis=1)
+
         filtered_data = filtered_data.drop('year1',axis=1)
         filtered_data = filtered_data.drop('year2',axis=1)
         filtered_data = filtered_data.drop('year3',axis=1)
+        filtered_data = filtered_data.drop('year4',axis=1)
         # filtered_data['year3']
         # print('post year minus one drops')
         # print('good results?')
@@ -772,14 +788,14 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
-        # print('post order pre drop  dupes')
-        # print(returned_data)
-        # print(returned_data.shape)
+        print('post order pre drop  dupes')
+        print(returned_data)
+        print(returned_data.shape)
 
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
-        # print('post drop  dupes')
-        # print(returned_data)
-        # print(returned_data.shape)
+        print('post drop  dupes')
+        print(returned_data)
+        print(returned_data.shape)
         returned_data = dropUselessColumns(returned_data)
         
         # print('consolidate all drops done')
@@ -1939,7 +1955,6 @@ def checkTechDivYears():
         print(divYearTracker)
 
 
-
 def checkREIncYears():
     try:
         # incomeBadYears = pd.DataFrame(columns=['Ticker', 'Column'])
@@ -2084,7 +2099,7 @@ def checkREDivYears():
 # nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
 # print(nameCikDict)
 
-print(consolidateSingleAttribute('ONTO', '2024', '2', netIncome, False)) #netIncome totalCommonStockDivsPaid
+print(consolidateSingleAttribute('ONTO', '2024', '2', shortTermDebt, False)) #netIncome totalCommonStockDivsPaid
 # print(consolidateSingleAttribute('MSFT', '2024', '2', netIncome, False)) #netIncome totalCommonStockDivsPaid
 
 #end year
@@ -2092,7 +2107,7 @@ print(consolidateSingleAttribute('ONTO', '2024', '2', netIncome, False)) #netInc
 #missing
 # 'CDNS', 'WDAY', 'TDY', 'LDOS', 'TRMB', 'LSCC', 'ONTO',
 
-ticker12 = 'NVDA' #ABR
+ticker12 = 'ONTO' #ABR
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
