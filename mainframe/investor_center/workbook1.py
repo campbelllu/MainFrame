@@ -17,6 +17,8 @@ import math
 # from itertools import chain
 from collections import Counter as counter
 import sqlite3 as sql
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
 
 import csv_modules as csv
 
@@ -578,53 +580,85 @@ def dropDuplicatesInDF(df):
         #     print(x)
         #     print(type(x))
         #     print(type(filtered_data[x].loc[0])) 
-        if filtered_data['end'].isnull().all(): #LUKE just delete these if's
-            filtered_data['end'] = filtered_data['end'].fillna(0)
-            filtered_data['endYear'] = filtered_data['end']#0#'0000-00-00'
-        else:
-            for x in filtered_data['end']:
-                # print(type(filtered_data['end']))
-                #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
-                endYear.append(int(x[:4]))
-                endMonth.append(int(x[5:7]))
-                # print(filtered_data)
-            filtered_data['endYear'] = endYear
+        # if filtered_data['end'].isnull().all(): #LUKE just delete these if's ### Why would end ever be empty? 
+        #     filtered_data['end'] = filtered_data['end'].fillna(0)
+        #     filtered_data['endYear'] = filtered_data['end']#0#'0000-00-00'
+        # else:
+        for x in filtered_data['end']: #Prep endyear-related for year calc's
+            # print(type(filtered_data['end']))
+            #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
+            endYear.append(int(x[:4]))
+            endMonth.append(int(x[5:7]))
+            # print(filtered_data)
+        filtered_data['endYear'] = endYear
+        filtered_data['endMonth'] = endMonth
+        yearMinusOne = list(filtered_data['endYear'] - 1)
+        yearMinusOne = [str(x) for x in yearMinusOne]
+        filtered_data['yearMinusOne'] = yearMinusOne
         # print('end problem?')
         # print(endYear)
-        if filtered_data['start'].isnull().all(): #LUKE just delete these if's
-            filtered_data['start'] = filtered_data['start'].fillna(0)
-            # print('start')
-            # print(filtered_data['start'])
-            filtered_data['startYear'] = filtered_data['start']#'0000-00-00'
-        else:
+        # print(endMonth)
+        # print('pre start processing')
+        # print(filtered_data)
+        if filtered_data['start'].isnull().all(): #Did we get a dataset that doesn't include starts?
+            # print(type(filtered_data['start'].loc[0]))
+            # print(filtered_data['start'].loc[0])
+            # filtered_data['start'] = filtered_data['start'].infer_objects(copy=False).fillna(0) #.replace(np.NaN,0) #this one
+            
+            filtered_data['startYear'] = 0#filtered_data['start']#'0000-00-00' #this one
+            filtered_data['year'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 12, other=filtered_data['yearMinusOne'])
+            # print('start null')
+            # print(filtered_data)
+
+        else: #Otherwise fill necessary columns for year calc's
+            # print('start filled')
             for x in filtered_data['start']:
                 #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
                 startYear.append(int(x[:4]))
                 # print(filtered_data)
-        # print('start problem?')
-        # print(startYear)
-
             filtered_data['startYear'] = startYear
-        if filtered_data['start'].mean() == 0: #filtered_data['end'].mean() == 0 or #LUKE just delete these if's
-            filtered_data['year'] = filtered_data.end.str[:4]
+            # print('start problem?')
+            # print(startYear)
+            # print(filtered_data['startYear'])
+            ###LUKE TRY LEAVING START EMPTY. EASIER TO CHEKC. LESS ERRORS. MUCH CODE. WOW
+        # if filtered_data['start'].loc[0] == 0: #In the case of those null start datasets this one
+            # filtered_data['year'] = filtered_data.end.str[:4] #this one
             # print('wtf start is zero')
             # print(filtered_data['year'])
-        else:
-            filtered_data['yearDiff'] = filtered_data['endYear'] - filtered_data['startYear']
+        # else: #otherwise proceed as normal
+            # print('mean was not zero tyvm')
+            filtered_data['yearDiff'] = (filtered_data['endYear'] - filtered_data['startYear']).where((filtered_data['endYear'] > filtered_data['startYear']))
+            filtered_data['yearDiff2'] = (filtered_data['endYear'] - filtered_data['startYear']).where((filtered_data['endYear'] == filtered_data['startYear']))
+            # wrongOrder = pd.Series([3.0])
+            # filtered_data['yearDiff3'] = (wrongOrder).where((filtered_data['endYear'] < filtered_data['startYear']))
+            filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(filtered_data['yearDiff2'])
+            # filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(filtered_data['yearDiff3'])
+            filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(3.0)
+            filtered_data = filtered_data.drop('yearDiff2',axis=1)
+            # filtered_data = filtered_data.drop('yearDiff3',axis=1)
             # print(filtered_data)
-            filtered_data['endMonth'] = endMonth
+            # filtered_data['endMonth'] = endMonth
+            # print('pre fitler')
             # print(filtered_data)
+            # print(filtered_data.shape)
 
             
-            ###yearDiff == 2: year = end-1
-            yearMinusOne = list(filtered_data['endYear'] - 1)
-            yearMinusOne = [str(x) for x in yearMinusOne]
-            filtered_data['yearMinusOne'] = yearMinusOne
+            # print('post fitler')
+            # print(filtered_data)
+            # print(filtered_data.shape)
+
+            ###Case: yearDiff == 3: drop that row because report given to sec is just wrong
+            filtered_data = filtered_data[filtered_data['yearDiff'] < 3]
+            
+            ###Case: yearDiff == 2: year = (end - 1)
+            # yearMinusOne = list(filtered_data['endYear'] - 1)
+            # yearMinusOne = [str(x) for x in yearMinusOne]
+            # filtered_data['yearMinusOne'] = yearMinusOne
             filtered_data['year1'] = filtered_data['yearMinusOne'].where(filtered_data['yearDiff'] == 2)
             # print('just 2s')
             # print(filtered_data)
 
-            ### yearDiff == 0: start=year
+            ###Case: yearDiff == 0: start=year
             startYearStrings = list(filtered_data['startYear'])
             startYearStrings = [str(x) for x in startYearStrings]
             filtered_data['startYear'] = startYearStrings
@@ -632,26 +666,26 @@ def dropDuplicatesInDF(df):
             # print('just 2s and 0s')
             # print(filtered_data)
 
-            ### year diff == 1: end month >= 6, year=end; else year = start
+            ###Case: year diff == 1: if end month >= 6, year=end; else year = start
             endYearStrings = list(filtered_data['endYear'])
             endYearStrings = [str(x) for x in endYearStrings]
             filtered_data['endYear'] = endYearStrings
             filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 6))
-            filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 6))#, other=filtered_data['startYear'])
+            filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 6))
             # print('all three applied')
             # print(filtered_data)
             # filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
-            filtered_data['year'] = filtered_data['year1'].fillna(filtered_data['year2'])
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year3'])
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year4'])
+            filtered_data['year'] = filtered_data['year1'].fillna(filtered_data['year2'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year3'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year4'])#.infer_objects(copy=False)
             #.replace(np.NaN,filtered_data['year4'])
             filtered_data = filtered_data.drop('yearDiff',axis=1)
             # print('post yeardiff drops')
             # print(filtered_data)
-            filtered_data = filtered_data.drop('endMonth',axis=1)
+            # filtered_data = filtered_data.drop('endMonth',axis=1)
             # print('post endmonth drops')
             # print(filtered_data)
-            filtered_data = filtered_data.drop('yearMinusOne',axis=1)
+            # filtered_data = filtered_data.drop('yearMinusOne',axis=1)
             filtered_data = filtered_data.drop('year1',axis=1)
             filtered_data = filtered_data.drop('year2',axis=1)
             filtered_data = filtered_data.drop('year3',axis=1)
@@ -664,6 +698,8 @@ def dropDuplicatesInDF(df):
         # print('post end drops')
         # print(filtered_data)
         filtered_data = filtered_data.drop('startYear',axis=1)
+        filtered_data = filtered_data.drop('yearMinusOne',axis=1)
+        filtered_data = filtered_data.drop('endMonth',axis=1)
         # print('post start drops')
         # print(filtered_data)
         
@@ -680,7 +716,6 @@ def dropDuplicatesInDF(df):
         # print('seper')
         # print(filtered_data)
         
-
     except Exception as err:
         print("drop duplicates error")
         print(err)
@@ -690,8 +725,6 @@ def dropDuplicatesInDF(df):
         # if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all(): #starts feb, ends jan, hopefully one year later
         #     filtered_data['year'] = filtered_data.start.str[:4]
         # else:
-
-
         #     filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7]) #Where the months are the same
         #     # print(filtered_data['compare'])
 
@@ -715,8 +748,6 @@ def dropDuplicatesInDF(df):
         #     # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
         #     filtered_data = filtered_data.pop('compare')
         #     #####
-
-
 
 def dropUselessColumns(df):
     try:
@@ -750,7 +781,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
-        # print('post drop fy records pre drop dupes')
+        # print('post drop fy records pre order')
         # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
@@ -1089,7 +1120,7 @@ def cleanDebt(short, long1, long2, long3, long4):
         # print('printing long1')
         # print(long1)
         # print('printing long2')
-        print(long2)
+        # print(long2)
         # print('printing long3')
         # print(long3)
         # print('printing long4')
@@ -1102,23 +1133,23 @@ def cleanDebt(short, long1, long2, long3, long4):
         shortNlong1['subTotalDebt'] = shortNlong1['val_x'] + shortNlong1['val_y']
         shortNlong1 = shortNlong1.drop(['val_x','val_y'],axis=1)
 
-        print('shortnlong1')
-        print(shortNlong1)
+        # print('shortnlong1')
+        # print(shortNlong1)
         
         plusLong2 = pd.merge(shortNlong1, long2, on=['year','Ticker','CIK','Units'], how='outer')
-        print('post merge')
-        print(plusLong2)
+        # print('pluslong2')
+        # print(plusLong2)
         plusLong2['val'] = plusLong2['val'].fillna(0)
-        plusLong2['subTotalDebt'] = plusLong2['subTotalDebt'].fillna(0) #Luke omg debt needs to fit together. and i think this block did it. copy paste. let's gooooooo!
-        print('post fill na')
-        print(plusLong2)
+        plusLong2['subTotalDebt'] = plusLong2['subTotalDebt'].fillna(0) #Luke omg debt needs to fit together. and i think this block did it. copy paste. let's gooooooo!sss
+        # print('post fill na pluslong2')
+        # print(plusLong2)
         plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
-        print('total debt')
-        print(plusLong2)
+        # print('total debt pluslong2')
+        # print(plusLong2)
         plusLong2 = plusLong2.drop(['subTotalDebt','val'],axis=1)
 
-        print('pluslong2')
-        print(plusLong2)
+        # print('pluslong2 dropped columns')
+        # print(plusLong2)
 
         plusLong3 = pd.merge(plusLong2, long3, on=['year','Ticker','CIK','Units'], how='outer')
         plusLong3['val'] = plusLong3['val'].fillna(0)
@@ -1517,8 +1548,8 @@ def fillEmptyROICGrowthRates(df):
                 fixTracker += 1
             # print('it was int paid')
             df_filled['liabilities'] = df_filled['liabilities'].ffill().bfill()
-        if equityFlag == 1:
-            df_filled['TotalEquity'] = df_filled['assets']-df_filled['liabilities']
+        # if equityFlag == 1:
+        df_filled['TotalEquity'] = df_filled['TotalEquity'].fillna(df_filled['assets'] - df_filled['liabilities'])
 
         
         if fixTracker > 4:
@@ -1661,6 +1692,8 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         # print('taxrate df')
         # print(taxRate_df)
         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
+        # print('netincome df')
+        # print(netInc_df)
         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
                                     consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False),
                                     consolidateSingleAttribute(ticker, year, version, longTermDebt3, False), consolidateSingleAttribute(ticker, year, version, longTermDebt4, False))
@@ -1757,10 +1790,31 @@ def checkYearsIntegrity(sector):
         nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
         incMissingYearTracker = []
         incomeEndYearTracker = []
-        divYearTracker = []
-        divomeNullTracker = []
-        roicYearTracker = []
-        roicNullTracker = []
+        dMissingYearTracker = []
+        dEndYearTracker = []
+        rMissingYearTracker = []
+        rEndYearTracker = []
+        #NEW
+        incRev = []
+        incNetInc = []
+        incOpCF = []
+        incCapEx = []
+        incNetCF = []
+        incDepnAmor = []
+        incGainProp = []
+
+        # divYearTracker = []
+        # divomeNullTracker = []
+        #NEW
+        dIntPaid = []
+        dTotalPaid = []
+        dShares = []
+
+        # roicYearTracker = []
+        # roicNullTracker = []
+        #new
+        rTotalEq = []
+
         toRecapture = []
         yearsList = ['2023','2024'] #2022
         version123 = '2'
@@ -1769,8 +1823,8 @@ def checkYearsIntegrity(sector):
             print(x)
             try:
                 incTable = makeIncomeTableEntry(x, '2024', version123, False)
-                # divsTable = makeDividendTableEntry(x,'2024',version123,False)
-                # roicTable = makeROICtableEntry(x,'2024', version123, False)
+                divsTable = makeDividendTableEntry(x,'2024',version123,False)
+                roicTable = makeROICtableEntry(x,'2024', version123, False)
                 #make lists of years columns, use to track years
                 iyears = list(incTable['year'])
                 iyearsint = []
@@ -1782,6 +1836,55 @@ def checkYearsIntegrity(sector):
                     incMissingYearTracker.append(x)
                 if iend != 2023:
                     incomeEndYearTracker.append(x)
+                if incTable['revenue'].isnull().any():
+                    incRev.append(x)
+                if incTable['netIncome'].isnull().any():
+                    incNetInc.append(x)
+                if incTable['operatingCashFlow'].isnull().any():
+                    incOpCF.append(x)
+                if incTable['capEx'].isnull().any():
+                    incCapEx.append(x)
+                if incTable['netCashFlow'].isnull().any():
+                    incNetCF.append(x)
+                if incTable['depreNAmor'].isnull().any():
+                    incDepnAmor.append(x)
+                if incTable['gainSaleProp'].isnull().any():
+                    incGainProp.append(x)
+
+                #make lists of years columns, use to track years
+                dyears = list(divsTable['year'])
+                dyearsint = []
+                for z in dyears:
+                    dyearsint.append(int(z))
+                dstart, dend = dyearsint[0], dyearsint[-1]
+                dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+                if len(dMissingYears) > 0:
+                    dMissingYearTracker.append(x)
+                if dend != 2023:
+                    dEndYearTracker.append(x)
+                if divsTable['interestPaid'].isnull().any():
+                    dIntPaid.append(x)
+                if divsTable['totalDivsPaid'].isnull().any():
+                    dTotalPaid.append(x)
+                if divsTable['shares'].isnull().any():
+                    dShares.append(x)
+                 
+
+
+                # #make lists of years columns, use to track years
+                ryears = list(roicTable['year'])
+                ryearsint = []
+                for a in ryears:
+                    ryearsint.append(int(a))
+                rstart, rend = ryearsint[0], ryearsint[-1]
+                rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+                if len(rMissingYears) > 0:
+                    rMissingYearTracker.append(x)
+                if rend != 2023:
+                    rEndYearTracker.append(x)
+                if roicTable['TotalEquity'].isnull().any():
+                    rTotalEq.append(x)
+                
                  
             except Exception as err:
                 print("nested check years integrity error: ")
@@ -1797,10 +1900,41 @@ def checkYearsIntegrity(sector):
     finally:
         print('recap list: ')
         print(toRecapture)
-        print('missing years:')
+        print('missing income years:')
         print(incMissingYearTracker)
-        print('wrong end year')
+        print('wrong income end year')
         print(incomeEndYearTracker)
+        print('missing income revenue')
+        print(incRev)
+        print('missing income netIncome')
+        print(incNetInc)
+        print('missing income opCF')
+        print(incOpCF)
+        print('missing income capEx')
+        print(incCapEx)
+        print('missing income netCF')
+        print(incNetCF)
+        print('missing income depreNAmor')
+        print(incDepnAmor)
+        print('missing income prop sales')
+        print(incGainProp)
+        print('missing div years:')
+        print(dMissingYearTracker)
+        print('wrong div end year')
+        print(dEndYearTracker)
+        print('missing div intPaid')
+        print(dIntPaid)
+        print('missing div totalPaid')
+        print(dTotalPaid)
+        print('missing div shares')
+        print(dShares)
+        print('missing roic years:')
+        print(rMissingYearTracker)
+        print('wrong roic end year')
+        print(rEndYearTracker)
+        print('missing roic total equity')
+        print(rTotalEq)
+        
 
 def checkTechIncYears():
     try:
@@ -1932,7 +2066,6 @@ def checkTechDivYears():
         print(divNullTracker)
         print('years off')
         print(divYearTracker)
-
 
 def checkREIncYears():
     try:
@@ -2068,7 +2201,7 @@ def checkREDivYears():
 
 # checkYearsIntegrity(tech)
 
-# write_Master_csv_from_EDGAR('O',ultimateTagsList,'2024','2') #'0000726728'
+# write_Master_csv_from_EDGAR('ACN',ultimateTagsList,'2024','2') #'0000726728'
 # write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
 # write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
 # for x in incRERecap:
@@ -2078,22 +2211,26 @@ def checkREDivYears():
 # nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
 # print(nameCikDict)
 
-# print(consolidateSingleAttribute('ONTO', '2024', '2', longTermDebt1, False)) #netIncome totalCommonStockDivsPaid
-# print(consolidateSingleAttribute('MSFT', '2024', '2', netIncome, False)) #netIncome totalCommonStockDivsPaid
+ticker100 = 'ACN' #ABR
+year100 = '2024'
+version100 = '2'
+# print(consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False))
+# print(cleanDividends(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, declaredORPaidCommonStockDivsPerShare, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, basicSharesOutstanding, False)))
 
-#end year
-#  'WDAY', 'CRWD', 'MRVL', 'MDB', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'ZM', 'CHKP', 'DIDIY', 'OKTA', 'NICE'
-#missing
-# 'CDNS', 'WDAY', 'TDY', 'LDOS', 'TRMB', 'LSCC', 'ONTO',
+# print(cleanDebt(consolidateSingleAttribute(ticker100, year100, version100, shortTermDebt, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt1, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt2, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt3, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt4, False)))
+        
+# print(cleanTotalEquity(consolidateSingleAttribute(ticker100, year100, version100, totalAssets, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, totalLiabilities, False), 
+#                                       consolidateSingleAttribute(ticker100, year100, version100, nonCurrentLiabilities, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False)))
 
-ticker12 = 'ONTO' #ABR
+ticker12 = 'NVDA' #ABR
 year12 = '2024'
 version12 = '2'
-print(cleanDebt(consolidateSingleAttribute(ticker12, year12, version12, shortTermDebt, False), 
-                                    consolidateSingleAttribute(ticker12, year12, version12, longTermDebt1, False), consolidateSingleAttribute(ticker12, year12, version12, longTermDebt2, False),
-                                    consolidateSingleAttribute(ticker12, year12, version12, longTermDebt3, False), consolidateSingleAttribute(ticker12, year12, version12, longTermDebt4, False)))
-
-
 # print(ticker12 + ' income:')
 # print(makeIncomeTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs:')
@@ -2131,7 +2268,6 @@ version14 = '2'
 # print(ticker14 + '  roic: ')
 # print(makeROICtableEntry(ticker14,'2024',version14,False))
 
-
 #refined screener results:
 #income
 REincrecap = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'MSTO', 'PVOZ']
@@ -2141,6 +2277,28 @@ REincwrongendyear = ['BEKE', 'SKT', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS',
                     'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'MSPC', 'SFRT']
 
 # print(set(wrong).difference(REincwrongendyear))
+
+techrecap2 =['INTC', 'ARM', 'SHOP', 'ADI', 'TOELY', 'CDNS', 'NXPI', 'ADSK', 'MSI', 'MCHP', 'MRAAY', 'DSCSY', 'ANSS', 'FTV', 'HPQ', 'GRMN', 'PCRFY', 'NTDTY', 'FLT', 'ENTG', 'GDDY', 'MANH', 'NICE', 'AZPN', 'OMRNY', 'ROHCY', 'SAIC', 'ARW', 'CNXC', 'VRNS', 'CRUS', 'ASMVY', 'SEDG', 'BMI', 'CVLT', 'VERX', 'WOLF', 'BDC', 'SANM', 'SRAD', 'ODD', 'PRGS', 'AGYS', 'SIMO', 'ROG', 'VIAV', 'EXTR', 'NATL', 'COHU', 'SPNS', 'TTMI', 'KN', 'SMTC', 'INFN', 'BELFA', 'GB', 'RDWR', 'VMEO', 'ITRN', 'CEVA', 'UIS', 'RDZN', 'DJCO', 'LYTS', 'ABXXF', 'GILT', 'DAKT', 'WBX', 'TCX', 'CRNT', 'RPMT', 'OPTX', 'ARBE', 'EAXR', 'CCRD', 'ELTK', 'ALAR', 'FEBO', 'SPPL', 'GRRR', 'XBP', 'ALLT', 'CSLR', 'NVNI', 'YIBO', 'SMSI', 'DGHI', 'BTQQF', 'KNW', 'MOGO', 'MMTIF', 'MRT', 'AWRE', 'DAIO', 'ITMSF', 'ULY', 'LAES', 'BMR', 'MAPPF', 'CXAI', 'SYNX', 'BOSC', 'ELSE', 'NOWG', 'HLRTF', 'MCLDF', 'JNVR', 'MHUBF', 'PKKFF', 'CAUD', 'VJET', 'SGN', 'SSCC', 'SGE', 'INTZ', 'AMST', 'AWIN', 'SOPA', 'VS', 'IMTE', 'VSOLF', 'AUUD', 'YQAI']
+techmissingincomeyears = ['INST', 'LPL', 'WNS', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'CYCA', 'MTBL', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'INTV']
+techwrongendyearincome = ['TSM', 'ORCL', 'SONY', 'INFY', 'SNOW', 'DELL', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'IOT', 'NTAP', 'DIDIY', 'DT', 'PSTG', 'NICE', 'PATH', 'GEN', 'LOGI', 'GRAB', 'ESTC', 'GTLB', 'QRVO', 'FLEX', 'DOCU', 'S', 'NXT', 'WIX', 'SAIC', 'YMM', 'SMAR', 'ALGM', 'BRZE', 'STNE', 'CRUS', 'KD', 'HCP', 'PAGS', 'CVLT', 'DXC', 'CAMT', 'NCNO', 'CXM', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'RUM', 'SIMO', 'LSPD', 'AMBA', 'PLUS', 'VRNT', 'BB', 'SPNS', 'NTCT', 'CSIQ', 'BASE', 'JKS', 'SMTC', 'DQ', 'ZUO', 'GCT', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'GB', 'PSFE', 'RDWR', 'HKD', 'ASTS', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'SCWX', 'MTWO', 'NNDM', 'SPWR', 'CINT', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'TSAT', 'RDZN', 'AUDC', 'DOMO', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'GILT', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'BLZE', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'MAXN', 'TCX', 'ITI', 'CRNT', 'MIXT', 'WEWA', 'OUST', 'BKSY', 'REKR', 'RPMT', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'QUIK', 'PAYS', 'TIO', 'OPTX', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'FEIM', 'MPTI', 'SOL', 'AUID', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'ALAR', 'CYRB', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'PXDT', 'GRRR', 'XBP', 'ALLT', 'BCRD', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 'CSLR', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'GSIT', 'QUBT', 'DGHI', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'RCAT', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'CPTN', 'MOGO', 'AISP', 'DSWL', 'MRT', 'QMCO', 'INVU', 'SODI', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'AITX', 'SEAV', 'BNZI', 'RVYL', 'JG', 'SGMA', 'AMPG', 'TAIT', 'CXAI', 'SPI', 'SCND', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'EBZT', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'MCLDF', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'WRNT', 'TNLX', 'CRTG', 'BLBX', 'MIND', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'ELWS', 'SUIC', 'NXTP', 'EZFL', 'AWIN', 'VIDE', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'VS', 'IMTE', 'KCRD', 'FRGT', 'SMTK', 'AUUD', 'MICS', 'WDLF', 'WAVD', 'GVP', 'AVOI', 'CAMP', 'SUNW', 'LGIQ']
+techmissingrev = ['RDZN', 'NUKK', 'OPTX', 'TYGO', 'ALAR', 'MOBX', 'XBP', 'CSLR', 'HYSR', 'AISP', 'MRT', 'AVAI', 'MSAI', 'BNZI', 'CXAI', 'MVLA', 'VSMR', 'CAUD', 'JTAI', 'AWIN', 'VS', 'NEWH']
+techmissingnetincome = ['ALAR', 'MMTIF']
+techmissingincomeopCF = ['ALAR', 'XBP', 'MOGO', 'BCAN', 'VS']
+techmissingincomecapEx = ['SAP', 'QCOM', 'SONY', 'PANW', 'LRCX', 'WDAY', 'ROP', 'MSI', 'FTNT', 'IT', 'ANSS', 'HPQ', 'GLW', 'NOK', 'HPE', 'DIDIY', 'GRAB', 'JNPR', 'ZI', 'OTEX', 'CACI', 'PSN', 'YMM', 'LYFT', 'ST', 'CLS', 'DAVA', 'VSH', 'WNS', 'ESE', 'BMBL', 'AVDX', 'AGYS', 'RUM', 'SIMO', 'PLUS', 'CTS', 'CRCT', 'EVBG', 'DGII', 'TUYA', 'SCSC', 'BIGC', 'KC', 'MTWO', 'CINT', 'ITRN', 'STEM', 'RDZN', 'VPG', 'APPS', 'NUKK', 'RMNI', 'CLMB', 'BKSY', 'NOTE', 'REKR', 'RPMT', 'SQNS', 'INVE', 'OPTX', 'RELL', 'PHUN', 'PWFL', 'TYGO', 'ALAR', 'CYRB', 'BKKT', 'MOBX', 'XBP', 'AKTS', 'CSLR', 'SMSI', 'LVER', 'APCX', 'HSTA', 'CPTN', 'MOGO', 'ALMU', 'AISP', 'MRT', 'JFU', 'AVAI', 'SOS', 'MSAI', 'SEAV', 'BNZI', 'SGMA', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'CLOQ', 'CYCA', 'SOBR', 'VSMR', 'CAUD', 'VJET', 'QURT', 'BOXL', 'JTAI', 'FWFW', 'AWIN', 'VMNT', 'VS', 'DTSS', 'CIIT', 'WDLF', 'AVOI', 'LGIQ']
+techmissingincomenetCF = ['SIMO', 'MOGO', 'ONEI', 'VSMR', 'PRST', 'VS']
+techmissingincomedepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'INTC', 'IBM', 'TXN', 'SONY', 'LRCX', 'ADI', 'INFY', 'CRWD', 'MRVL', 'STM', 'ZS', 'WIT', 'GFS', 'ANSS', 'GLW', 'CAJPY', 'GIB', 'GRMN', 'PCRFY', 'NOK', 'TDY', 'ASX', 'UMC', 'FLT', 'WDC', 'ERIC', 'DIDIY', 'SWKS', 'OKTA', 'NICE', 'PATH', 'TRMB', 'GRAB', 'ZBRA', 'JKHY', 'DBX', 'ZI', 'QRVO', 'GLOB', 'CFLT', 'COHR', 'GWRE', 'OLED', 'BILL', 'CIEN', 'CACI', 'WIX', 'DSGX', 'FN', 'PSN', 'CCCS', 'G', 'CGNX', 'RMBS', 'STNE', 'CNXC', 'ALIT', 'KD', 'DLO', 'TDC', 'HCP', 'CLS', 'POWI', 'BLKB', 'SLAB', 'BMI', 'PAGS', 'VERX', 'DAVA', 'BOX', 'BL', 'NVEI', 'PYCR', 'INST', 'SPT', 'LPL', 'ALRM', 'LITE', 'DIOD', 'RNG', 'SRAD', 'WNS', 'TIXT', 'PRFT', 'VSAT', 'JAMF', 'AGYS', 'SIMO', 'LSPD', 'IONQ', 'ROG', 'ZETA', 'VIAV', 'UCTT', 'UPBD', 'AMPL', 'CSGS', 'TTMI', 'HLIT', 'MLNK', 'VTEX', 'ADEA', 'DCBO', 'NOVA', 'CRSR', 'BASE', 'JKS', 'DQ', 'ZUO', 'INFN', 'ICHR', 'ETWO', 'INDI', 'NVTS', 'GDS', 'TASK', 'ACMR', 'GDYN', 'IMOS', 'BTDR', 'GB', 'TTEC', 'NYAX', 'HKD', 'DMRC', 'RPAY', 'KARO', 'YALA', 'YEXT', 'AAOI', 'DDD', 'CRNC', 'AOSL', 'VMEO', 'SNPO', 'MTWO', 'NNDM', 'NRDY', 'CINT', 'MGIC', 'AEHR', 'TSAT', 'CEVA', 'XPER', 'RDZN', 'COMM', 'AUDC', 'DOMO', 'APPS', 'BAND', 'CAN', 'QIWI', 'RXT', 'MTLS', 'MTC', 'WBX', 'NUKK', 'PERF', 'BBAI', 'LUNA', 'TCX', 'EGAN', 'VLN', 'AEVA', 'ITI', 'CRNT', 'WEWA', 'LTRX', 'VCSA', 'NOTE', 'MRAM', 'ATGL', 'SQNS', 'QUIK', 'TIO', 'OPTX', 'ARBE', 'ARAT', 'ZFOX', 'MYNA', 'PHUN', 'HOLO', 'MKFG', 'CMBM', 'DHX', 'ALYA', 'LDTC', 'PXPC', 'MPTI', 'SANG', 'ZENV', 'OCFT', 'SYT', 'TYGO', 'ALAR', 'CYRB', 'ARQQ', 'ONDS', 'TACT', 'MOBX', 'GRRR', 'XBP', 'BCRD', 'GMM', 'SPRU', 'CSLR', 'FTCI', 'POET', 'AEYE', 'EBON', 'DZSI', 'QUBT', 'DGHI', 'STIX', 'APGT', 'LVER', 'FCUV', 'HKIT', 'RCAT', 'OSS', 'USIO', 'AIRG', 'BTCM', 'APCX', 'HSTA', 'CPTN', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'LGL', 'FKWL', 'SATX', 'SWVL', 'ARBB', 'SCTC', 'JFU', 'AVAI', 'BMTX', 'GETR', 'MSAI', 'SCIA', 'SEAV', 'BNZI', 'JG', 'AMPG', 'CXAI', 'SPI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CLOQ', 'SKKY', 'CYCA', 'KULR', 'HUBC', 'AHI', 'MCLDF', 'MINM', 'STRC', 'VSMR', 'PRST', 'CAUD', 'LKCO', 'UPYY', 'APYP', 'TURB', 'SVRE', 'HTCR', 'DSNY', 'SDCH', 'VJET', 'BCAN', 'MTEK', 'ISUN', 'QURT', 'IFBD', 'WLDS', 'MITQ', 'CRTG', 'SCKT', 'WETG', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'FWFW', 'MOB', 'OST', 'ELWS', 'TGL', 'EZFL', 'AWIN', 'INTV', 'BBLR', 'VS', 'IMTE', 'VVPR', 'KCRD', 'SMTK', 'CIIT', 'WDLF', 'GVP', 'LGIQ', 'TGCB']
+techmissingincomepropsales = []
+techmissingdivyears =['WIX', 'VRNS', 'INST', 'LPL', 'WNS', 'HLIT', 'MODN', 'YEXT', 'MVIS', 'DJCO', 'EGHT', 'MTC', 'LUNA', 'KOPN', 'WEWA', 'ATOM', 'EACO', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'PXLW', 'WHEN', 'BCOV', 'RSSS', 'LINK', 'ALLT', 'AKTS', 'AEYE', 'DPSI', 'FCUV', 'CPTN', 'PALT', 'INVU', 'SODI', 'LGL', 'IDN', 'ANY', 'MPAD', 'SCTC', 'NXPL', 'DUOT', 'MFON', 'INSG', 'VHC', 'AITX', 'TSRI', 'HWNI', 'SKKY', 'MMAT', 'CYCA', 'KULR', 'PAYD', 'APYP', 'INPX', 'SDCH', 'GSTX', 'BLIN', 'LEDS', 'SLNH', 'VISL', 'CLRI', 'FWFW', 'SUIC', 'INTV', 'OMQS', 'DTSS', 'CIIT', 'SUNW', 'LGIQ']
+techwrongdivendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'SNOW', 'DELL', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'IOT', 'NTAP', 'DIDIY', 'DT', 'PSTG', 'NICE', 'PATH', 'GEN', 'LOGI', 'GRAB', 'ESTC', 'GTLB', 'QRVO', 'FLEX', 'DOCU', 'S', 'NXT', 'DUOL', 'WIX', 'SAIC', 'YMM', 'SMAR', 'ALGM', 'BRZE', 'STNE', 'CRUS', 'KD', 'HCP', 'PAGS', 'CVLT', 'DXC', 'CAMT', 'NCNO', 'CXM', 'CRDO', 'LPL', 'AI', 'YOU', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'RUM', 'SIMO', 'LSPD', 'AMBA', 'PLUS', 'VRNT', 'BB', 'SPNS', 'NTCT', 'CSIQ', 'BASE', 'JKS', 'SMTC', 'DQ', 'ZUO', 'GCT', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'HKD', 'ASTS', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'SCWX', 'MTWO', 'NNDM', 'SPWR', 'CINT', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'TSAT', 'AUDC', 'DOMO', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'GILT', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'BLZE', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'MAXN', 'TCX', 'ITI', 'CRNT', 'MIXT', 'WEWA', 'OUST', 'BKSY', 'REKR', 'RPMT', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'QUIK', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'HOLO', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'FEIM', 'MPTI', 'SOL', 'AUID', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'CYRB', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'GSIT', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'RCAT', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'HSTA', 'CPTN', 'AISP', 'DSWL', 'QMCO', 'INVU', 'SODI', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'AITX', 'SEAV', 'BNZI', 'RVYL', 'JG', 'SGMA', 'AMPG', 'TAIT', 'SPI', 'SCND', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'EBZT', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'BOSC', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'WRNT', 'TNLX', 'CRTG', 'BLBX', 'MIND', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'ELWS', 'SUIC', 'NXTP', 'EZFL', 'VIDE', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'KCRD', 'FRGT', 'SMTK', 'CIIT', 'AUUD', 'MICS', 'WDLF', 'WAVD', 'GVP', 'AVOI', 'CAMP', 'SUNW', 'LGIQ', 'TGCB']
+techmissingdivintPaid =['INTU', 'TXN', 'SNOW', 'ADSK', 'MPWR', 'GLW', 'BR', 'ZM', 'CHKP', 'IOT', 'TYL', 'DT', 'EPAM', 'APP', 'MANH', 'AFRM', 'NTNX', 'PATH', 'GEN', 'AZPN', 'GTLB', 'DBX', 'OTEX', 'MNDY', 'CYBR', 'FFIV', 'CFLT', 'PCTY', 'MSTR', 'NXT', 'DUOL', 'UI', 'G', 'FRSH', 'CGNX', 'ARW', 'BRZE', 'VNT', 'AUR', 'HCP', 'NVMI', 'BMI', 'FROG', 'BOX', 'CXM', 'CRDO', 'RUN', 'AI', 'ALRM', 'MQ', 'YOU', 'QTWO', 'NABL', 'BMBL', 'PRFT', 'JAMF', 'APPN', 'RUM', 'SIMO', 'AMBA', 'IONQ', 'SWI', 'ROG', 'PLAB', 'PAY', 'VICR', 'EVCM', 'CLBT', 'PAYO', 'SEMR', 'BB', 'PRO', 'AMPL', 'SPNS', 'VZIO', 'AVPT', 'KN', 'GRND', 'ADEA', 'DCBO', 'NOVA', 'CRSR', 'PDFS', 'STER', 'SGH', 'NVTS', 'TUYA', 'GDYN', 'LIFX', 'WKME', 'BTDR', 'RSKD', 'PGY', 'RDWR', 'ASTS', 'DMRC', 'RPAY', 'PUBM', 'YALA', 'MEI', 'CORZ', 'LASR', 'VMEO', 'IIIV', 'SCWX', 'SMRT', 'ITRN', 'CEVA', 'LAW', 'XPER', 'DOMO', 'OSPN', 'NVEC', 'NTGR', 'NLST', 'AMSWA', 'BAND', 'EGHT', 'IBEX', 'NUKK', 'FRGE', 'API', 'CLMB', 'SSTI', 'KOPN', 'TCX', 'EGAN', 'VLN', 'AEVA', 'ITI', 'IMMR', 'MIXT', 'LPSN', 'NOTE', 'INVE', 'MAPS', 'AIXI', 'LTCH', 'UPLD', 'ARBE', 'ZFOX', 'AXTI', 'UEIC', 'CCRD', 'WHEN', 'PXPC', 'MPTI', 'IZM', 'MKTW', 'SYT', 'NA', 'TYGO', 'CYRB', 'LINK', 'BKKT', 'MOBX', 'PET', 'ALLT', 'GWSO', 'MLGO', 'KWIK', 'AKTS', 'FTCI', 'EBON', 'SMSI', 'GSIT', 'QUBT', 'LVER', 'CPTN', 'PALT', 'AISP', 'DSWL', 'AWRE', 'CPSH', 'GUER', 'REFR', 'FKWL', 'JFU', 'AVAI', 'INSG', 'VHC', 'BMR', 'CLPS', 'MSAI', 'SCIA', 'SEAV', 'BNZI', 'GOLQ', 'MVLA', 'EBZT', 'INRD', 'ELSE', 'XELA', 'CYN', 'IDAI', 'STRC', 'HMBL', 'QURT', 'WLDS', 'MITQ', 'WATT', 'BLIN', 'LEDS', 'WETG', 'LIDR', 'NAHD', 'JTAI', 'AMST', 'VMNT', 'SBIG', 'KCRD', 'WDLF', 'GVP', 'TGCB']
+techmissdivpaid = []
+techmissingdivshares = []
+techmissingroicyears = ['EPAM', 'LPL', 'WNS', 'ARAT', 'LINK', 'AKTS', 'DPSI', 'CPTN', 'ALMU', 'SODI', 'AITX', 'FTFT', 'CYCA', 'APYP', 'SLNH', 'FWFW', 'NUGN']
+techwrongroicendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'SNOW', 'DELL', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'ASX', 'UMC', 'CHKP', 'IOT', 'NTAP', 'DIDIY', 'DT', 'PSTG', 'PATH', 'GEN', 'LOGI', 'GRAB', 'ESTC', 'GTLB', 'QRVO', 'FLEX', 'DOCU', 'S', 'NXT', 'WIX', 'YMM', 'SMAR', 'ALGM', 'BRZE', 'STNE', 'KD', 'HCP', 'PAGS', 'DXC', 'CAMT', 'NCNO', 'CXM', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'RUM', 'LSPD', 'AMBA', 'PLUS', 'VRNT', 'BB', 'NTCT', 'CSIQ', 'BASE', 'JKS', 'DQ', 'ZUO', 'GCT', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'HKD', 'ASTS', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'SCWX', 'MTWO', 'NNDM', 'SPWR', 'CINT', 'MGIC', 'CGNT', 'MLAB', 'AEHR', 'TSAT', 'AUDC', 'DOMO', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'EGHT', 'BLZE', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'OUST', 'BKSY', 'REKR', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'QUIK', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'MPTI', 'SOL', 'AUID', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'CYRB', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'PXDT', 'BCRD', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'GSIT', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'HKIT', 'BTTC', 'RCAT', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'CPTN', 'AISP', 'DSWL', 'QMCO', 'INVU', 'SODI', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'AITX', 'SEAV', 'BNZI', 'RVYL', 'JG', 'SGMA', 'AMPG', 'TAIT', 'SPI', 'SCND', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'EBZT', 'FTFT', 'CISO', 'CLOQ', 'MARK', 'PRKR', 'MMAT', 'CTM', 'INRD', 'KULR', 'MTBL', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'APYP', 'SVRE', 'HTCR', 'UAVS', 'INPX', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'WRNT', 'TNLX', 'CRTG', 'BLBX', 'MIND', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'TSSI', 'ELWS', 'SUIC', 'NXTP', 'EZFL', 'VIDE', 'OMQS', 'VMNT', 'SBIG', 'KCRD', 'FRGT', 'SMTK', 'MICS', 'WDLF', 'WAVD', 'GVP', 'AVOI', 'CAMP', 'SUNW', 'LGIQ']
+techmissingroictotalequity = ['VSMR']
+
+print(set(techmissingincomeyears).difference(techmissingroicyears))
+#################
 
 TECHincrecap = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'NATL', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 
                 'ULY', 'LAES', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'MHUBF', 'PKKFF', 'SGN', 'SSCC', 'SGE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 
@@ -2209,55 +2367,7 @@ version123 = '0'
 # print(makeROICtableEntry(ticker123,'2024',version123,False))
 
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
-
-# checkTechDivYears()
-divsRecap = ['VERX', 'SRAD', 'ODD', 'NATL', 'BELFA', 'GB', 'RDZN', 'WBX', 'OPTX', 'ALAR', 'GRRR', 'XBP', 'CSLR', 'DGHI', 'MOGO', 'MRT', 'ULY', 'LAES', 'CXAI', 'MCLDF', 'JNVR', 
-            'SGN', 'SGE', 'AWIN', 'VS', 'IMTE', 'SYTA', 'MTMV', 'RBT']
-divsFullNulls = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'ASMVY', 'ABXXF', 'EAXR', 'FEBO', 'SPPL', 'NVNI', 'YIBO', 'BTQQF', 'ITMSF', 'MAPPF', 'SYNX', 'NOWG', 'HLRTF', 
-                'MHUBF', 'PKKFF', 'SSCC', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'GBUX', 'CMCZ', 'ZICX', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'SWISF', 'DCSX', 'RONN']
-divsYearsOff = ['TSM', 'ATEYY', 'GFS', 'CAJPY', 'PCRFY', 'ASX', 'UMC', 'CHKP', 'DIDIY', 'NICE', 'GRAB', 'DUOL', 'WIX', 'YMM', 'STNE', 'PAGS', 'CAMT', 'LPL', 'AI', 'RUM', 'SIMO', 
-                'SPNS', 'CSIQ', 'JKS', 'DQ', 'GCT', 'INFN', 'DBD', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'HIMX', 'BTDR', 'WALD', 'PSFE', 'RDWR', 'ASTS', 'YALA', 'DDD', 'KC', 'MTWO', 'NNDM', 
-                'CINT', 'MGIC', 'ITRN', 'TSAT', 'AUDC', 'VNET', 'GILT', 'CAN', 'QIWI', 'BLZE', 'MTLS', 'MTC', 'NUKK', 'FRGE', 'API', 'PERF', 'SSTI', 'LUNA', 'TCX', 'CRNT', 'OUST', 'BKSY', 
-                'REKR', 'RPMT', 'WRAP', 'TROO', 'SQNS', 'PAYS', 'TIO', 'MAPS', 'AIXI', 'QBTS', 'LTCH', 'INTT', 'ARBE', 'ARAT', 'MYNA', 'HOLO', 'PWFL', 'BEEM', 'VUZI', 'WHEN', 'ELTK', 'MPTI', 
-                'SOL', 'AUID', 'ZENV', 'OCFT', 'SYT', 'NA', 'TYGO', 'ONDS', 'LINK', 'BKKT', 'ZEPP', 'MOBX', 'PET', 'EBIXQ', 'ALLT', 'GWSO', 'VLD', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'VERI', 
-                'POET', 'SNCR', 'EBON', 'DZSI', 'DPSI', 'EGIO', 'QUBT', 'KPLT', 'STIX', 'APGT', 'LVER', 'FCUV', 'BTTC', 'OSS', 'USIO', 'BTCM', 'AGMH', 'APCX', 'HSTA', 'CPTN', 'AISP', 
-                'INVU', 'LGL', 'GUER', 'IDN', 'CREX', 'SATX', 'SWVL', 'SCTC', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'DUOT', 'DAIO', 'INLX', 'MFON', 'SONM', 'UTSI', 'WYY', 'WKEY', 
-                'BMTX', 'DTST', 'GETR', 'CLRO', 'MSAI', 'SEAV', 'BNZI', 'RVYL', 'JG', 'AMPG', 'TAIT', 'SPI', 'SCND', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'ONEI', 'FTFT', 'CISO', 'CLOQ', 'MARK', 
-                'PRKR', 'MMAT', 'BOSC', 'CTM', 'INRD', 'KULR', 'MTBL', 'ELSE', 'XELA', 'KLDI', 'HUBC', 'SOBR', 'IDAI', 'MINM', 'PAYD', 'VSMR', 'CAUD', 'AIAD', 'LKCO', 'OLB', 'APYP', 'SVRE', 
-                'HTCR', 'UAVS', 'INPX', 'VJET', 'BCAN', 'HMBL', 'ISUN', 'QURT', 'IFBD', 'WATT', 'DPLS', 'TNLX', 'CRTG', 'BLBX', 'IONI', 'SCKT', 'WETG', 'SLNH', 'VISL', 'LCTC', 'LIDR', 
-                'NAHD', 'JTAI', 'QH', 'NUGN', 'MOB', 'INTZ', 'TSSI', 'SUIC', 'NXTP', 'EZFL', 'OMQS', 'SOPA', 'VMNT', 'SBIG', 'FRGT', 'SMTK', 'CIIT', 'AUUD', 'WDLF', 'WAVD', 'GVP', 'AVOI', 
-                'SUNW', 'LGIQ', 'VEII', 'ASNS', 'MWRK', 'IPSI', 'DATS', 'VERB', 'WISA', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'VBIX', 'MYSZ', 'UCLE', 'BRQSF', 'ATDS', 
-                'PRSO', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'TWOH', 'PEGY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'GIGA', 
-                'SATT', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 
-                'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'CATG', 'WBSR', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 
-                'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'HMELF']
-
-# checkTechIncYears()
-### Income check results
-incFullNulls = ['ARM', 'TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'STNE', 'ASMVY', 'SIMO', 'NATL', 'MTTR', 'RDZN', 'ABXXF', 'NUKK', 'OPTX', 'EAXR', 'HOLO', 
-                'SYT', 'TYGO', 'ALAR', 'FEBO', 'SPPL', 'MOBX', 'XBP', 'CSLR', 'NVNI', 'YIBO', 'HYSR', 'DGHI', 'BTQQF', 'LVER', 'MOGO', 'AISP', 'MMTIF', 'MRT', 'AVAI', 'ITMSF', 
-                'ULY', 'LAES', 'MSAI', 'BNZI', 'MAPPF', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'SYNX', 'NOWG', 'HLRTF', 'JNVR', 'VSMR', 'MHUBF', 'PRST', 'PKKFF', 'CAUD', 'TURB', 'BCAN', 
-                'SGN', 'SSCC', 'SGE', 'JTAI', 'AWIN', 'VS', 'NEWH', 'VSOLF', 'WDLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'XALL', 'GBUX', 'SMME', 'CMCZ', 'SYTA', 'ONCI', 'PSWW', 'ZICX', 
-                'VISM', 'BCNN', 'NIRLQ', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'EXEO', 'CATG', 'WBSR', 'SWISF', 'DCSX', 'GSPT', 'MJDS', 'SANP', 'SDVI', 'DIGAF', 'RONN']
-incYearsOff = ['ATEYY', 'LTCH', 'RAASY', 'BTCM', 'VIAO', 'MCLDF', 'IINX', 'RDAR', 'ALFIQ', 'OGBLY', 'NIPNF', 'AUOTY', 'AATC', 'WSTL', 'EVOL', 'DROP', 'SPYR', 'EHVVF', 'BTZI', 'SEII', 
-                'XDSL', 'ADGO']
-defClosed = ['MAXD']
-exUS = ['PCRFY','WALD']
-
-###RE probs orig
-incRERecap = ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 
-                'MTPP', 'ABCP', 'MSPC', 'SFRT']
-incREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
-incREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'AIRE', 'HWTR', 'LRHC', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 
-                'XIN', 'BRST', 'SQFT', 'GYRO', 'MHPC', 'SGD', 'TPHS', 'CRDV', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'UK', 'NIHK', 
-                'HCDIQ', 'DPWW', 'SRC', 'SGIC', 'UCASU']
-divsRERecap = ['BPYPP', 'SKT', 'FPH', 'NEN', 'AIRE', 'LRHC', 'SGD', 'UCASU', 'SFRT']
-divsREFullNulls = ['HLDCY', 'HNGKY', 'VTMX', 'SDHC', 'MSTO', 'PVOZ']
-divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', 'KANP', 'CMCT', 'FGNV', 'HWTR', 'AEI', 'SRRE', 'OMH', 'GIPR', 'NYC', 'CMRF', 'LEJU', 'XIN', 'BRST', 
-                'MDJH', 'SQFT', 'GYRO', 'MHPC', 'TPHS', 'CRDV', 'MTPP', 'WEWKQ', 'ILAL', 'GBR', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'PW', 'HBUV', 'NIHK', 'HCDIQ', 'DPWW', 
-                'SRC', 'SGIC', 'MSPC']
-
-
+#########################################################################################
 # for x in yearsOff2:
 #     nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2') #nameCikDict[x],
@@ -2272,11 +2382,7 @@ divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', '
 # print(yearsOffOverlap)
 # print(set(fullNullOverlap).intersection(yearsOffOverlap))
 
-
 # print(len(incFullNulls))
-# print(len(divsFullNulls))
-# print(len(incYearsOff))
-# print(len(divsYearsOff))
 
 #THROW THIS INTO ANALYSIS/METRICS TABLE
         # eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
@@ -2293,36 +2399,6 @@ divsREYearsOff = ['BEKE', 'SRG', 'PCOK', 'MLP', 'NTPIF', 'OZ', 'STRS', 'SACH', '
         # if pluseps['eps'].isnull().any():
         #         integrity_flag = 'Acceptable'
         #         pluseps['eps'] = pluseps['eps'].replace("", None).ffill()
-def makeStockAnalysisTableEntry():
-    return null
-    #not sure if this should have yearly values, cumulative values, averaged values and given years of average. huh
-
-
-def uploadToDB(table, df):
-    return null
-
-#tickers_cik
-# for i in range(math.floor(len(full_cik_list)/10531)):
-#     cik = full_cik_list['CIK'][i] #tickers_cik['cik_str'][i]
-#     ticker = full_cik_list['Ticker'][i] #tickers_cik['ticker'][i]
-#     title = full_cik_list['Company Name'][i] #tickers_cik['title'][i]
-# test
-#     company_data = EDGAR_query(cik, header,['EarningsPerShareBasic','CommonStockDividendsPerShareDeclared', 'CommonStockDividendsPerShareCashPaid']) #remember no tags is possible
-    
-#     company_data['Ticker'] = ticker #'ticker'
-#     company_data['Company Name'] = title #'title'
-#     company_data['CIK'] = cik #'cik' all in brackets
-
-# #    #Filter for annual data only
-#     try:
-#         company_data = company_data[company_data['form'].str.contains('10-K') == True] #Keep only annual data
-#     except:
-#         print('frame/form not a column.')
-    
-#     EDGAR_data = pd.concat([EDGAR_data, company_data], ignore_index = True)
-#     time.sleep(0.1)
-
-# csv.simple_saveDF_to_csv('./sec_related/', EDGAR_data, 'EDGAR1', False)
 
 #---------------------------------------------------------------------
 # Things to calculate
@@ -2342,27 +2418,8 @@ def uploadToDB(table, df):
 ###
 
 #---------------------------------------------------------------------
-#The testing zone
+#The testing zone - includes yahoo finance examples
 #---------------------------------------------------------------------
-# print(consolidateSingleAttribute('O', '2024', '0', tota, False))
-
-# print('O income: ')
-# print(makeIncomeTableEntry('O', '2024', '0', False))
-# print('O divs: ')
-# print(makeDividendTableEntry('O', '2024', '0', False))
-# print('o roic: ')
-# print(makeROICtableEntry('O', '2024', '0', False))
-# print('MSFT income: ')
-# print(makeIncomeTableEntry('MSFT', '2024', '0', False))
-# print('msft divs: ')
-# print(makeDividendTableEntry('MSFT', '2024', '0', False))
-# print('msft roic: ')
-# print(makeROICtableEntry('MSFT', '2024', '0', False))
-
-# for x in makeROICtableEntry('MSFT', '2024', '0', False):
-#     print(x)
-# print(cleanDeprNAmor(consolidateSingleAttribute('O', '2024', '0', deprecAndAmor, False)))
-
 # ticker = 'MSFT'
 # stock = yf.Ticker(ticker)
 # dict1 = stock.info
@@ -2384,7 +2441,8 @@ def uploadToDB(table, df):
 #---------------------------------------------------------------------
 #DB interaction notes
 #---------------------------------------------------------------------
-
+def uploadToDB(table, df):
+    return null
 ##LUKE OK THIS WORKS. need to add it to consolidation: remove useless columns, add an end year where appropriate, then add it all to DB tables. 
 # conn = sql.connect(db_path)
 # query = conn.cursor()
@@ -2406,44 +2464,6 @@ def uploadToDB(table, df):
 # query.close()
 # conn.close()
 #----------------------------------------------------------------------------------------------
-
-
-
-#This one is going to be long and arduous: Each tag needs to calculate the final values. longdebt1/2+shortdebt all calc'd, then added together, THEN uploaded to DB as TotalDebt, for example. 
-#See models.py for help with each part! you got this!
-def createAllAttributesInsertToDB(ticker, year, version):
-    try:
-        consolidateSingleAttribute(ticker, year, version, revenue, 'revenue')
-        consolidateSingleAttribute(ticker, year, version, netIncome, 'netIncome')
-        consolidateSingleAttribute(ticker, year, version, operatingIncome,  'operatingIncome')
-        consolidateSingleAttribute(ticker, year, version, taxRate, 'taxRate')
-        consolidateSingleAttribute(ticker, year, version, interestPaid, 'interestPaid')
-        consolidateSingleAttribute(ticker, year, version, shortTermDebt, 'shortTermDebt')
-        consolidateSingleAttribute(ticker, year, version, longTermDebt1, 'longTermDebt1')
-        consolidateSingleAttribute(ticker, year, version, longTermDebt2, 'longTermDebt2')
-        consolidateSingleAttribute(ticker, year, version, totalAssets, 'totalAssets')
-        consolidateSingleAttribute(ticker, year, version, totalLiabilities, 'totalLiabilities')
-        consolidateSingleAttribute(ticker, year, version, operatingCashFlow, 'operatingCashFlow')
-        consolidateSingleAttribute(ticker, year, version, capEx, 'capEx')
-        consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, 'totalCommonStockDivsPaid')
-        consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, 'declaredORPaidCommonStockDivsPerShare')
-        consolidateSingleAttribute(ticker, year, version, eps, 'eps')
-        consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, 'basicSharesOutstanding')
-        consolidateSingleAttribute(ticker, year, version, gainSaleProperty, 'gainSaleProperty')
-        consolidateSingleAttribute(ticker, year, version, deprecAndAmor, 'deprecAndAmor')
-        consolidateSingleAttribute(ticker, year, version, netCashFlow, 'netCashFlow')
-
-        ### If anyone can explain to me why this only returns a series of CSV's, all named with the appropriate list-naming, but only containing revenue's values... 
-        # ##    There may or may not be a prize involved...
-        ###    This is when the function took in a list, the ultimateListNames above, iterated through it to generate csv's. They all contained the same values, however, 
-        ###     i would iterate through the appropriate names/titles. Stumped me. So I hard coded the above while crying.
-        # for i in tagList:
-        #     checker = i
-        #     consolidateSingleAttribute(ticker, year, version, checker, checker)
-                    
-    except Exception as err:
-        print("create all error: ")
-        print(err)
 
 
 #---------------------------------------------------------------------
