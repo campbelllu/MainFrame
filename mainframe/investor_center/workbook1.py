@@ -320,7 +320,7 @@ netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic',
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense','FinanceCosts','InterestExpenseDebt','InterestAndDebtExpense','InterestIncomeExpenseNet','InterestIncomeExpenseNonoperatingNet',
-                'FinancingInterestExpense','InterestPaidNet']
+                'FinancingInterestExpense','InterestPaidNet','InterestRevenueExpense']
 incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations']
 shortTermDebt = ['LongTermDebtCurrent','ShorttermBorrowings']
 longTermDebt1 = ['LongTermDebtNoncurrent','NoncurrentPortionOfNoncurrentBondsIssued']#,'LongTermDebt']
@@ -328,37 +328,45 @@ longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent','NoncurrentPortionOfNoncurr
 longTermDebt3 = ['NoncurrentLeaseLiabilities']
 longTermDebt4 = ['LongtermBorrowings']
 totalAssets = ['Assets']
+currentAssets = ['CurrentAssets']
+nonCurrentAssets = ['NoncurrentAssets']
 totalLiabilities = ['Liabilities']
-currentLiabilities = ['LiabilitiesCurrent']
-nonCurrentLiabilities = ['LiabilitiesNoncurrent']
-shareHolderEquity = ['StockholdersEquity']
+currentLiabilities = ['LiabilitiesCurrent','CurrentLiabilities']
+nonCurrentLiabilities = ['LiabilitiesNoncurrent','NoncurrentLiabilities']
+shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest']
 
 exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually
 
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',
         'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets','PaymentsToAcquireProductiveAssets',
-        'PaymentsForCapitalImprovements'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
+        'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
-                            'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities'] #DividendsPaid could be useful later
-declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid','InvestmentCompanyDistributionToShareholdersPerShare']
+                            'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities',
+                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares'] #DividendsPaid could be useful later
+declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid','InvestmentCompanyDistributionToShareholdersPerShare',
+                                        'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit']
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
                             'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted','NumberOfSharesIssued']#'WeightedAverageShares']
-gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes','GainsLossesOnSalesOfInvestmentRealEstate']
+gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes',
+                    'GainsLossesOnSalesOfInvestmentRealEstate']
 deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','DepreciationAmortizationAndAccretionNet','AmortizationOfIntangibleAssets',
-                    'AdjustmentsForDepreciationAndAmortisationExpense','DeferredTaxLiabilityAsset']
+                    'AdjustmentsForDepreciationAndAmortisationExpense','DeferredTaxLiabilityAsset','AdjustmentsForDepreciationExpense']
 deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
 deprecAndAmor3 = ['DepreciationAndAmortization']
+
+## could be really cool NAV NetAssetValuePerShare ###LUKE CHECK THIS OUT FOR BRD's and REITS! maybe super duper awesome
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
-                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, deprecAndAmor3, shareHolderEquity ]
+                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
+                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
                 'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
-                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity']
+                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -649,6 +657,9 @@ def dropDuplicatesInDF(df):
             # print(filtered_data)
         filtered_data['endYear'] = endYear
         filtered_data['endMonth'] = endMonth
+        # print('end month col')
+        # print(filtered_data['endMonth'])
+        # print(type(filtered_data['endMonth'].loc[0]))
         yearMinusOne = list(filtered_data['endYear'] - 1)
         yearMinusOne = [str(x) for x in yearMinusOne]
         filtered_data['yearMinusOne'] = yearMinusOne
@@ -663,7 +674,24 @@ def dropDuplicatesInDF(df):
             # filtered_data['start'] = filtered_data['start'].infer_objects(copy=False).fillna(0) #.replace(np.NaN,0) #this one
             
             filtered_data['startYear'] = 0#filtered_data['start']#'0000-00-00' #this one
-            filtered_data['year'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 12, other=filtered_data['yearMinusOne'])
+            # endMonthCheck = [9,10,11,12]
+            filtered_data['year10'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 8)
+            filtered_data['year11'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 9)  #, other=filtered_data['yearMinusOne'])
+            filtered_data['year12'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 10)
+            filtered_data['year13'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 11)
+            filtered_data['year14'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 12)
+
+            filtered_data['year'] = filtered_data['year10'].fillna(filtered_data['year11'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year12'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year13'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year14'])
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['yearMinusOne'])
+         
+            filtered_data = filtered_data.drop('year10',axis=1)
+            filtered_data = filtered_data.drop('year11',axis=1)
+            filtered_data = filtered_data.drop('year12',axis=1)
+            filtered_data = filtered_data.drop('year13',axis=1)
+            filtered_data = filtered_data.drop('year14',axis=1)
             # print('start null')
             # print(filtered_data)
 
@@ -1240,6 +1268,23 @@ def cleanDebt(short, long1, long2, long3, long4):
         print("clean Debt error: ")
         print(err)
 
+def cleanAssets(nonCurrent, current):
+    try:
+        # nonCurrent['year'] = nonCurrent.end.str[:4]
+        # current['year'] = current.end.str[:4]
+
+        # nonCurrent = nonCurrent.drop(columns=['start','end'])
+        # current = current.drop(columns=['start','end'])
+
+        anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
+        anl['val'] = anl['val_x'] + anl['val_y']
+        anl = anl.drop(['val_x','val_y'],axis=1) 
+        return anl
+
+    except Exception as err:
+        print("clean assets error: ")
+        print(err)
+
 def cleanLiabilities(nonCurrent, current):
     try:
         # nonCurrent['year'] = nonCurrent.end.str[:4]
@@ -1249,15 +1294,15 @@ def cleanLiabilities(nonCurrent, current):
         # current = current.drop(columns=['start','end'])
 
         anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
-        anl['liabilities'] = anl['val_x'] + anl['val_y']
-        anl = anl.drop(['val_x','val_y'],axis=1)
+        anl['val'] = anl['val_x'] + anl['val_y']
+        anl = anl.drop(['val_x','val_y'],axis=1) 
         return anl
 
     except Exception as err:
         print("clean Liabilities error: ")
         print(err)
 
-def cleanTotalEquity(assets, liabilities, nc, cu, reportedEquity):
+def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
     try:
         #take assets and liabilities and get total equity from them
         # assets['year'] = assets.end.str[:4]
@@ -1268,10 +1313,11 @@ def cleanTotalEquity(assets, liabilities, nc, cu, reportedEquity):
 
         # print('weird reqport??E?')
         # print(reportedEquity)
-        
+        if assets.empty:
+            assets = cleanAssets(ncA, cuA)
 
         if liabilities.empty:
-            liabilities = cleanLiabilities(nc, cu)
+            liabilities = cleanLiabilities(ncL, cuL)
         # print('liabilities?!?')
         # print(liabilities)
         # print('assets?')
@@ -1383,72 +1429,175 @@ def cleanDividends(total, perShare, shares):
         # print(shares)
         # print(total)
         # print(perShare)
+        df_col_added = pd.merge(total, perShare, on=['year','Ticker','CIK'], how='outer')
+        df_col_added = pd.merge(shares, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        # print('tot and pshare pre temps')
+        # print(df_col_added)
         
-        if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
-            cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
-                     'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
-            # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
-            df_col_added = pd.DataFrame(cols, index=[0])
-            return df_col_added
-            # shares['val'] = 1
-        else:
-            sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+        #first we check for nans, keep them in mind for later
+        nanList = []
+        for x in df_col_added:
+            if df_col_added[x].isnull().any():
+                # integrity_flag = 'Acceptable'
+                nanList.append(x)
+                # print('nans found: ' + x)
+        #How to handle those empty values in each column
+        df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
+        df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+        df_col_added['tempShares'] = df_col_added['totalDivsPaid'] / df_col_added['divsPaidPerShare']
+        # print('tot and pshare post temps')
+        # print(df_col_added)
+
+        for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
+            if x == 'divsPaidPerShare':
+                df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+                # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+                # df_col_added['divGrowthRate'] = growthCol1 
+            elif x == 'totalDivsPaid':
+                df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+                # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+                # df_col_added['divGrowthRate'] = growthCol1 
+        df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare','tempShares'])
+        # print('tot and pshare post fills and drops')
+        # print(df_col_added)
+        
+        # if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
+        #     cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
+        #              'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
+        #     # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+        #     df_col_added = pd.DataFrame(cols, index=[0])
+        #     return df_col_added
+        #     # shares['val'] = 1
+        # else:
+            # sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
             # print('sharesNperShare: ')
             # print(sharesNperShare)
-            df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+            # df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')
             # print('total + shares + per share: ')
             # print(df_col_added)
-            df_col_added['shares'] = df_col_added['shares'].replace("", None).ffill().bfill() #any missing shares values?
-            # if df_col_added['shares'].empty:
-            #     df_col_added['sharesGrowthRate'] = np.NaN
-            # else:
-            growthCol = grManualCalc(df_col_added['shares'])
-            df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
-            # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
+        df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
+        # if df_col_added['shares'].empty:
+        #     df_col_added['sharesGrowthRate'] = np.NaN
+        # else:
+        growthCol = grManualCalc(df_col_added['shares'])
+        df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+        # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
 
-            #first we check for nans, keep them in mind for later
-            nanList = []
-            for x in df_col_added:
-                if df_col_added[x].isnull().any():
-                    # integrity_flag = 'Acceptable'
-                    nanList.append(x)
-                    # print('nans found: ' + x)
-            #How to handle those empty values in each column
-            df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
-            df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+        
 
-            # df42 = pd.DataFrame()
-            # df42['temp'] = df_col_added['tempPerShare']
-            # df42['actual'] = df_col_added['divsPaidPerShare']
-            # print(df42)
 
-            for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
-                if x == 'divsPaidPerShare':
-                    df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
-                    # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
-                    # df_col_added['divGrowthRate'] = growthCol1 
-                elif x == 'totalDivsPaid':
-                    df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
-                    # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
-                    # df_col_added['divGrowthRate'] = growthCol1 
-            df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
+        # df42 = pd.DataFrame()
+        # df42['temp'] = df_col_added['tempPerShare']
+        # df42['actual'] = df_col_added['divsPaidPerShare']
+        # print(df42)
 
-            growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
-            df_col_added['divGrowthRateBOT'] = growthCol1 
-            growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
-            df_col_added['divGrowthRateBOPS'] = growthCol2
-            
-            # if df_col_added['divsPaidPerShares'].empty:
-            #     df_col_added['divGrowthRate'] = np.NaN
-            # else:
-            
-            # print('average growth rate: ')
-            # print(df_col_added['divGrowthRate'].mean())
+        
 
-            return df_col_added
+        growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+        df_col_added['divGrowthRateBOT'] = growthCol1 
+        growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
+        df_col_added['divGrowthRateBOPS'] = growthCol2
+        
+        # if df_col_added['divsPaidPerShares'].empty:
+        #     df_col_added['divGrowthRate'] = np.NaN
+        # else:
+        
+        # print('average growth rate: ')
+        # print(df_col_added['divGrowthRate'].mean())
+
+        # return df_col_added
     except Exception as err:
         print("clean dividends error: ")
         print(err)
+    finally:
+        return df_col_added
+
+# def cleanDividends(total, perShare, shares):  #backup
+
+#     try:
+#         # shares['year'] = shares.end.str[:4]
+#         shares = shares.rename(columns={'val':'shares'})
+#         shares = shares.drop(columns=['Units'])
+#         # total['year'] = total.end.str[:4]
+#         total = total.rename(columns={'val':'totalDivsPaid'})
+#         # perShare['year'] = perShare.end.str[:4]
+#         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
+#         perShare = perShare.drop(columns=['Units'])
+
+#         # shares = shares.drop(columns=['start','end'])
+#         # total = total.drop(columns=['start','end'])
+#         # perShare = perShare.drop(columns=['start','end'])
+
+#         print('shares, total, pershare: ')
+#         print(shares)
+#         print(total)
+#         print(perShare)
+        
+#         if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
+#             cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
+#                      'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
+#             # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+#             df_col_added = pd.DataFrame(cols, index=[0])
+#             return df_col_added
+#             # shares['val'] = 1
+#         else:
+#             sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+#             # print('sharesNperShare: ')
+#             # print(sharesNperShare)
+#             df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+#             # print('total + shares + per share: ')
+#             # print(df_col_added)
+#             df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
+#             # if df_col_added['shares'].empty:
+#             #     df_col_added['sharesGrowthRate'] = np.NaN
+#             # else:
+#             growthCol = grManualCalc(df_col_added['shares'])
+#             df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+#             # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
+
+#             #first we check for nans, keep them in mind for later
+#             nanList = []
+#             for x in df_col_added:
+#                 if df_col_added[x].isnull().any():
+#                     # integrity_flag = 'Acceptable'
+#                     nanList.append(x)
+#                     # print('nans found: ' + x)
+#             #How to handle those empty values in each column
+#             df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
+#             df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+
+#             # df42 = pd.DataFrame()
+#             # df42['temp'] = df_col_added['tempPerShare']
+#             # df42['actual'] = df_col_added['divsPaidPerShare']
+#             # print(df42)
+
+#             for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
+#                 if x == 'divsPaidPerShare':
+#                     df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+#                     # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+#                     # df_col_added['divGrowthRate'] = growthCol1 
+#                 elif x == 'totalDivsPaid':
+#                     df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+#                     # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+#                     # df_col_added['divGrowthRate'] = growthCol1 
+#             df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
+
+#             growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+#             df_col_added['divGrowthRateBOT'] = growthCol1 
+#             growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
+#             df_col_added['divGrowthRateBOPS'] = growthCol2
+            
+#             # if df_col_added['divsPaidPerShares'].empty:
+#             #     df_col_added['divGrowthRate'] = np.NaN
+#             # else:
+            
+#             # print('average growth rate: ')
+#             # print(df_col_added['divGrowthRate'].mean())
+
+#             return df_col_added
+#     except Exception as err:
+#         print("clean dividends error: ")
+#         print(err)
 
 def fillEmptyIncomeGrowthRates(df):
     try:
@@ -1521,7 +1670,9 @@ def fillEmptyDivsGrowthRates(df):
             # print('it was per share divs paid')
             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
         if df_filled['shares'].isnull().all():
-            print('all shares null')
+            # print('all shares null')
+            fixTracker += 3
+            df_filled['shares'] = df_filled['shares'].replace(np.NaN, 0)
         elif df_filled['shares'].isnull().any():
             percentNull = df_filled['shares'].isnull().sum() / len(df_filled['shares'])
             if percentNull > 0.4:
@@ -1566,8 +1717,9 @@ def fillEmptyDivsGrowthRates(df):
         
         # print('ppost drop shares and div GR')
         # print(df_filled)
-
-        if fixTracker == 4:
+        # print('fixTracker')
+        # print(fixTracker)
+        if fixTracker >= 4:
             df_filled['integrityFlag'] = 'NeedsWork'
         elif fixTracker == 0: 
             df_filled['integrityFlag'] = 'Good'
@@ -1768,6 +1920,9 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         print(err)
 
 def makeROICtableEntry(ticker, year, version, index_flag):
+    #editing notes: calcs for adjroic and roce and such, add examples including reported total equity
+    #test achr too. really weird numbers with negative net income
+    #vs pct which is similar but diff roic???
     try:
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
         # print('opinc df')
@@ -1785,7 +1940,9 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         # print(totalDebt_df)
         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
                                     consolidateSingleAttribute(ticker, year, version, totalLiabilities, False), consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
-                                    consolidateSingleAttribute(ticker, year, version, currentLiabilities, False), consolidateSingleAttribute(ticker, year, version, shareHolderEquity, False))
+                                    consolidateSingleAttribute(ticker, year, version, currentLiabilities, False), consolidateSingleAttribute(ticker, year, version, nonCurrentAssets, False),
+                                    consolidateSingleAttribute(ticker, year, version, currentAssets, False), consolidateSingleAttribute(ticker, year, version, shareHolderEquity, False))
+                                    
         # print('TEquity df')
         # print(totalEquity_df)
 
@@ -1839,13 +1996,13 @@ def makeROICtableEntry(ticker, year, version, index_flag):
 def makeDividendTableEntry(ticker, year, version, index_flag): 
     try:
         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
-        print('intpaid: ')
-        print(intPaid_df)
+        # print('intpaid: ')
+        # print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
-        print('divsdf: ')
-        print(divs_df)
+        # print('divsdf: ')
+        # print(divs_df)
         if divs_df['year'][0] == -1:
             df_dunce = pd.DataFrame(columns=['Ticker'])
             df_dunce.loc[0, 'Ticker'] = ticker
@@ -2351,6 +2508,47 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['NTES', 'AMX', 'EA', 'CHT', 'TTWO', 'TME', 'TIMB', 'SKM', 'KT', 'YNDX', 'TKC', 'ATHM', 'LGF-A', 'WB', 'YY', 'ROVR', 'WLY', 'VEON', 'PERI', 'SCHL', 'MOMO', 'OPRA', 'HUYA', 'ATEX', 'GRVY', 'GDEV', 'ZH', 'RSVR', 'LDSN', 'JFIN', 'SIFY', 'DOYU', 'DRCT', 'UONE', 'LVO', 'SKLZ', 'MVNC', 'FNGR', 'XNET', 'WIMI', 'BBUZ', 'EZOO', 'KORE', 'SCGY', 'CMCM', 'BHAT', 'STCN', 'TOON', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'NCTY', 'ANGH', 'CRGE', 'ELRE', 'GAME', 'KRKR', 'CNVS', 'GIGM', 'EDUC', 'FAZE', 'BREA', 'FDIT', 'DMSL', 'SALM', 'CNFN', 'KDOZF', 'SPTY', 'SLE', 'BAOS', 'CNET', 'CSSE', 'TLLYF', 'MGAM', 'SNPW', 'VYBE', 'ANTE', 'VRVR', 'VNUE', 'TRKAQ', 'FMHS', 'NUGL', 'MOBQ', 'GROM', 'COMS', 'CMGO', 'QTTOY', 'NWCN', 'SLDC', 'BOTY', 'GFMH', 'ROI', 'SRAX', 'TMGI', 'CCCP', 'MDEX', 'SNWR', 'WINR', 'VOCL', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'AFOM', 'NTTYY', 'CELJF', 'OIBRQ', 'ILLMF', 'IDWM', 'EMWPF', 'LTES', 'BYOC', 'GZIC', 'TOWTF', 'BTIM', 'PTNRF', 'LOVLQ']
 ###
+
+lickit = [ ]
+#
+#['EVEX', 'ACHR', 'PCT',  'SB', 'FREY', ,  'SPEC',  'SSET', ] #rev
+#['PCAR']  #equity
+
+# for x in lickit:
+#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
+# checkYearsIntegrityList(lickit)
+
+# print(len(lickit))
+
+ticker235 = 'PCAR' #LUKE RUN THIS AND CHECK NUMBERS. LOOKING GOOD MAKING GOOD PROGRESS!!
+# print(nameCikDict[ticker235])
+print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
+# write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
+year235 = '2024'
+version235 = '2'
+print(ticker235 + ' income:')
+print(makeIncomeTableEntry(ticker235,year235,version235,False))
+print(ticker235 + ' divs:')
+print(makeDividendTableEntry(ticker235,year235,version235,False))
+print(ticker235 + '  roic: ')
+print(makeROICtableEntry(ticker235,year235,version235,False))
+
+# print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
+# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
+
+# print(cleanTotalEquity(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False), 
+#                                     consolidateSingleAttribute(ticker235, year235, version235, totalLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentLiabilities, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, currentLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False)))
+
+
+# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
+
+# print(set(techmissingincomeyears).difference(techmissingroicyears))
+
 ###NEW ind
 # recapList = 
 # ['EADSY', 'ATLKY', 'PCAR', 'BAESY', 'DKILY', 'CODYY', 'WTKWY', 'FANUY', 'CJPRY', 'SGSOY', 'BOUYY', 'TKHVY', 'RBA', 'ASR', 'OUKPY', 'EBCOY', 'SMBMY', 'ALSMY', 'VIAAY', 'MSSMY', 'ATS', 'AFLYY', 'ROYMY', 'IHICY', 'VSTS', 'OSTIY', 'SHZNY', 'GBX', 'ECO', 'AZUL', 'SPLP', 'GSL', 'FLYX', 'MIESY', 'KNOP', 'TUSK', 'FBYD', 'STI', 'PMEC', 'CCTG', 'AERT', 'EESH', 'PNYG', 'ROMA', 'MMTRS', 'CBMJ', 'MSNVF', 'ESGL', 'BURU', 'GPAK', 'CISS', 'IAALF', 'GOGR', 'SSHT', 'UMAV', 'MHHC', 'RCIT', 'DPUI', 'EENEF', 'GOL', 'GNGYF', 'EXROF', 'BCCEF', 'USDP', 'JETR', 'FTRS', 'LEAS', 'KNOS', 'WTII']
@@ -2428,6 +2626,7 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['YPF', 'CSAN', 'UGP', 'FRO', 'EURN', 'TGS', 'VIST', 'LPG', 'TNP', 'NESR', 'UNTC', 'UROY', 'BROG', 'PNRG', 'DLNG', 'IMPP', 'WSTRF', 'WTRV', 'PXS', 'SMGI', 'BANL', 'QSEP', 'VIVK', 'MXC', 'SPND', 'LRDC', 'TRLEF', 'VYEY', 'OILY', 'SNMP', 'NSFDF', 'GWTI', 'PTCO', 'NRIS', 'ROYL', 'OILCF', 'GRVE', 'GSPE', 'VBHI', 'AMNI', 'QREE', 'DBRM', 'MMEX', 'PCCYF', 'SNPMF', 'ATGFF', 'THNPF', 'SPTJF', 'VTDRF', 'ALPSQ', 'PQEFF', 'BRLL', 'MRGE', 'MSCH', 'FTXP', 'BBLS']
 ###
+
 ###NEW HEALTH
 # recap list: 
 # ['CSLLY', 'IQV', 'SAUHY', 'SGIOY', 'RYZB', 'GNNDY', 'NHNKY', 'BTSG', 'AMAM', 'PHVS', 'LTGHY', 'BIOGY', 'ABVX', 'AVBP', 'PRTC', 'GUTS', 'ANRO', 'NBTX', 'ANL', 'TLSI', 'IPHA', 'GNFT', 'MESO', 'CYBN', 'BSEM', 'AMIX', 'GALT', 'MLEC', 'GRUSF', 'LUDG', 'MSCLF', 'ONMD', 'GDTC', 'SLDX', 'VTVT', 'OCEA', 'GXXY', 'NRXS', 'IMRN', 'MSTH', 'LVRLF', 'CBIH', 'GSAC', 'XTLB', 'GRPS', 'BPTS', 'XRTX', 'SZLSF', 'REPCF', 'JUVAF', 'SFWJ', 'RSHN', 'ICCO', 'EBYH', 'ECGI', 'XCRT', 'TEVNF', 'NXGB', 'BLFE', 'CBDL', 'MGX', 'CHRO', 'RSCI', 'CUBT', 'CSSI', 'HALB', 'WSRC', 'AGNPF', 'SLHGF', 'NBCO', 'EMGE', 'FZRO', 'CNNA', 'DHAI']
@@ -2466,41 +2665,6 @@ def checkYearsIntegrityList(sectorList):
 # wrong roic end year
 # ['MDT', 'MCK', 'TAK', 'STE', 'RDY', 'IMGN', 'ROIV', 'GRFS', 'DOCS', 'IMVT', 'HAE', 'NEOG', 'PBH', 'EVO', 'PDCO', 'TARO', 'SUPN', 'TLRY', 'ACCD', 'GRCL', 'MDRX', 'CVAC', 'ICVX', 'CALT', 'KALV', 'REPL', 'LIAN', 'CDMO', 'PROC', 'HARP', 'CGC', 'NNOX', 'OPRX', 'ME', 'ANGO', 'LFCR', 'LMDXF', 'CLLS', 'CDT', 'CORBF', 'BLUE', 'INFU', 'ACB', 'ELTP', 'THRX', 'AHG', 'CYDY', 'IMAB', 'OCGN', 'ZTEK', 'VTGN', 'PETS', 'GTH', 'RVPH', 'YI', 'CYT', 'MDXH', 'GLSI', 'SY', 'LIFW', 'SHLT', 'ZJYL', 'BNR', 'CELU', 'CSBR', 'AFMD', 'FFNTF', 'TIHE', 'INCR', 'EGRX', 'XAIR', 'VICP', 'CDTX', 'PRE', 'CNTB', 'IPA', 'EAR', 'CUTR', 'ICU', 'TLSA', 'ENLV', 'CXXIF', 'PNPL', 'OKYO', 'BYSI', 'ESLA', 'DXR', 'PNXP', 'NYMXF', 'YS', 'EUDA', 'BIMI', 'YBGJ', 'NKGN', 'SNCE', 'MOVE', 'CCM', 'BGXX', 'SRNEQ', 'MODD', 'UBX', 'CNTG', 'FRLN', 'RLFTY', 'ETST', 'ETAO', 'PHXM', 'OCX', 'AURX', 'MDNAF', 'MHUA', 'ACRHF', 'STRM', 'ACST', 'HSTI', 'ALRN', 'MYNZ', 'AIH', 'NTRB', 'OHCS', 'TRIB', 'SRZN', 'PMCB', 'PETV', 'RXMD', 'IGC', 'NBIO', 'NLSP', 'OTLC', 'VBIV', 'RDHL', 'CLRD', 'ICCT', 'RMSL', 'BMRA', 'COSM', 'CHEK', 'NXGL', 'ADXS', 'NEXI', 'CRYM', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'BCEL', 'MCUJF', 'AVCRF', 'ONVO', 'ORGS', 'EIGR', 'ZCMD', 'ASLN', 'BTTX', 'PFHO', 'FRES', 'CANN', 'NHIQ', 'EDXC', 'BETRF', 'HSCS', 'RADCQ', 'BSGM', 'SIEN', 'BTCY', 'APM', 'NSTG', 'PBIO', 'HEPA', 'CJJD', 'XWEL', 'ACBM', 'QLIS', 'ADTX', 'NVTA', 'HENC', 'ALZN', 'ABTI', 'ECIA', 'JRSS', 'ADMT', 'BTAX', 'XCUR', 'EMMA', 'MDGS', 'MEDS', 'OTRK', 'MRZM', 'MDVL', 'CPMV', 'AEMD', 'AXIM', 'TSOI', 'CLSH', 'VFRM', 'RNVA', 'OPGN', 'BZYR', 'ONCO', 'BDRX', 'ARDS', 'STEK', 'OWPC', 'AVRW', 'FOXO', 'CWBR', 'CYTO', 'QRON', 'VYCO', 'WINT', 'NBSE', 'ELOX', 'NMRD', 'INQD', 'CNNC', 'QLGN', 'BACK', 'THMO', 'INVO', 'SNOA', 'LGMK', 'NAOV', 'AKAN', 'GBLX', 'SCNI', 'AGTX', 'VRAX', 'IONM', 'SEQL', 'IPCIF', 'NEPT', 'NVIV', 'GRST', 'KOAN', 'WORX', 'CSUI', 'DVLP', 'NREG', 'CBDS', 'BSPK', 'SXTC', 'CMRA', 'BXRX', 'PAXH', 'ATHXQ', 'HADV', 'CANB', 'MJNE', 'KAYS', 'NTRR', 'BLCM', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'ENMI', 'SDCCQ', 'GMVDF', 'QTXB', 'EMED', 'SGBI', 'IMPLQ', 'TPIA', 'CSTF', 'BLMS', 'BBBT', 'MITI', 'VNTH', 'GLSHQ', 'MMNFF', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'PEARQ', 'RBSH', 'INFIQ', 'STMH', 'BIOCQ', 'ABMC', 'TMBRQ', 'HTGMQ', 'NOVNQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'GNRS', 'NMTRQ', 'ABCZF', 'SWGHF', 'BFFTF', 'RAIN', 'AKUMQ', 'BIOE', 'SIOX', 'XTXXF', 'SKYI', 'GBCS', 'FZMD', 'LNDZF', 'NHWK', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'CLYYF', 'IGEX', 'NAVB', 'CANQF', 'ABMT', 'REMI', 'ARAV', 'MCOA', 'DMK', 'GPFT', 'HSTO', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'GENN', 'SNNC', 'TOMDF', 'KGKG', 'EVLO', 'WCUI', 'ENDV', 'VIVE', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CALA', 'CENBF', 'EVIO', 'CLCS', 'PHCG', 'NLBS', 'GRYN', 'EWLL', 'NPHC', 'TAUG', 'CPMD', 'CMXC', 'NBRVF', 'SSTC', 'MDNC']
 ###
-
-lickit = ['V', 'NU', 'BSBR', 'CM', 'CBSH', 'AB', 'MC']
-
-# for x in lickit:
-#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
-# checkYearsIntegrityList(lickit)
-
-# write_Master_csv_from_EDGAR('GS',ultimateTagsList,'2024','2')
-print(nameCikDict['AB'])
-
-## could be really cool NAV NetAssetValuePerShare
-
-
-ticker235 = 'V'
-year235 = '2024'
-version235 = '2'
-# print(ticker235 + ' income:')
-# print(makeIncomeTableEntry(ticker235,year235,version235,False))
-# print(ticker235 + ' divs:')
-# print(makeDividendTableEntry(ticker235,year235,version235,False))
-# print(ticker235 + '  roic: ')
-# print(makeROICtableEntry(ticker235,year235,version235,False))
-
-print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
-print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False))
-print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
-# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
-
-
-# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
-
-# print(set(techmissingincomeyears).difference(techmissingroicyears))
-
 
 ###NEW Finance
 # finrecaplist = ['V', 'IBN', 'ANZGY', 'NU', 'ARES', 'BSBR', 'CM',]
@@ -2685,7 +2849,7 @@ version100 = '2'
 #                                       consolidateSingleAttribute(ticker100, year100, version100, nonCurrentLiabilities, False),
 #                                     consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False)))
 
-ticker12 = 'TYGO' #ABR
+ticker12 = 'V' #ABR
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
@@ -2695,7 +2859,7 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024',version12,False))
 
-ticker13 = 'MSFT' #EGP
+ticker13 = 'MSFT' 
 year13 = '2024'
 version13 = '2'
 # print(ticker13 + ' income:')
@@ -2705,7 +2869,7 @@ version13 = '2'
 # print(ticker13 + '  roic: ')
 # print(makeROICtableEntry(ticker13,'2024',version13,False))
 
-ticker12 = 'CRM' #ABR
+ticker12 = 'NEE' 
 year12 = '2024'
 version12 = '2'
 # print(ticker12 + ' income:')
@@ -2725,33 +2889,28 @@ version14 = '2'
 # print(ticker14 + '  roic: ')
 # print(makeROICtableEntry(ticker14,'2024',version14,False))
 
-#########################################################
-
-
-
-# write_Master_csv_from_EDGAR(ticker235,'0000313838',ultimateTagsList,year235,version235)
-
-ticker234 = 'MSFT'
+ticker234 = 'ARCC'
 year234 = '2024'
 version234 = '2'
-# print('MSFT income:')
+# print(ticker234 + ' income:')
 # print(makeIncomeTableEntry(ticker234,year234,version234,False))
-# print('MSFT divs:')
+# print(ticker234 + ' divs:')
 # print(makeDividendTableEntry(ticker234,year234,version234,False))
-# print('MSFT roic: ')
+# print(ticker234 + ' roic: ')
 # print(makeROICtableEntry(ticker234,year234,version234,False))
 
-# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','2')
 
 ticker123 = 'AMZN' #AMZN
 year123 = '2024'
-version123 = '0'
+version123 = '2'
 # print('AMZN income:')
 # print(makeIncomeTableEntry(ticker123,'2024',version123,False))
 # print('AMZN divs:')
 # print(makeDividendTableEntry(ticker123,'2024',version123,False))
 # print('AMZN roic: ')
 # print(makeROICtableEntry(ticker123,'2024',version123,False))
+
+#########################################################
 
 # write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
 #########################################################################################
