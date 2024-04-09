@@ -314,7 +314,7 @@ operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFrom
 investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
 financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
-            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings'] #banks?! GrossInvestmentIncomeOperating
+            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings','GrossInvestmentIncomeOperating'] #banks?! GrossInvestmentIncomeOperating
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
                 'ProfitLossAttributableToOwnersOfParent','ProfitLoss']
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
@@ -1289,10 +1289,14 @@ def cleanTotalEquity(assets, liabilities, nc, cu, reportedEquity):
         assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
         assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
         assAndLies = pd.merge(assAndLies, reportedEquity, on=['Units','year','Ticker','CIK'], how='outer')
+
         assAndLies['ReportedTotalEquity'] = assAndLies['val']
         assAndLies = assAndLies.drop(['val'],axis=1)
+
         assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
         # assAndLies['ReportedTotalEquity'] = reportedEquity
+        # print('TEquity checker')
+        # print(assAndLies)
 
         return assAndLies
 
@@ -1788,10 +1792,26 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         ### LUKE WE NEED TO ADJUST ROCE et all values based on if total equity is reported vs calculated by us. see which one is 'more full' essentially, before making calcs off it. for accuracy!
 
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
-        opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
-        opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
-        # print('opincntax df')
+        # print('opIncNtax')
         # print(opIncNtax)
+        if opIncNtax['Units'].isnull().all():
+            opIncNtax = opIncNtax.drop(columns=['Units'], axis=1)
+            # print('opincntax df in empty if')
+            # print(opIncNtaxNinc)
+            # print(opIncNtax)
+            opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK'], how='outer')
+            # print('still in iff post merge')
+            # print(opIncNtaxNinc)
+        else:
+
+
+            opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+            opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
+        # print('opincntax df after if')
+        # print(opIncNtaxNinc)
+        # print(opIncNtax)
+
+        
         plustDebt = pd.merge(opIncNtaxNinc, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
         # print('plusdebt df')
         # print(plustDebt)
@@ -1819,13 +1839,13 @@ def makeROICtableEntry(ticker, year, version, index_flag):
 def makeDividendTableEntry(ticker, year, version, index_flag): 
     try:
         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
-        # print('intpaid: ')
-        # print(intPaid_df)
+        print('intpaid: ')
+        print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
-        # print('divsdf: ')
-        # print(divs_df)
+        print('divsdf: ')
+        print(divs_df)
         if divs_df['year'][0] == -1:
             df_dunce = pd.DataFrame(columns=['Ticker'])
             df_dunce.loc[0, 'Ticker'] = ticker
@@ -2176,76 +2196,7 @@ def checkYearsIntegrityList(sectorList):
         print('missing roic total equity')
         print(rTotalEq)
         
-# harvestMasterCSVs(consStaples)  #comms #
 
-# checkYearsIntegritySector(consCyclical)
-
-# write_Master_csv_from_EDGAR('SIMO',ultimateTagsList,'2024','2') #'0000726728'
-# write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
-# write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
-# for x in incRERecap:
-#     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
-#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
-# 
-# nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
-# print(nameCikDict)
-
-ticker100 = 'ARCC' #ABR
-year100 = '2024'
-version100 = '2'
-# print(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False))
-# print(cleanDividends(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False), 
-#                                     consolidateSingleAttribute(ticker100, year100, version100, declaredORPaidCommonStockDivsPerShare, False),
-#                                     consolidateSingleAttribute(ticker100, year100, version100, basicSharesOutstanding, False)))
-
-# print(cleanDebt(consolidateSingleAttribute(ticker100, year100, version100, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt1, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt3, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt4, False)))
-        
-# print(cleanTotalEquity(consolidateSingleAttribute(ticker100, year100, version100, totalAssets, False), 
-#                                     consolidateSingleAttribute(ticker100, year100, version100, totalLiabilities, False), 
-#                                       consolidateSingleAttribute(ticker100, year100, version100, nonCurrentLiabilities, False),
-#                                     consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False)))
-
-ticker12 = 'TYGO' #ABR
-year12 = '2024'
-version12 = '2'
-# print(ticker12 + ' income:')
-# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' divs:')
-# print(makeDividendTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' roic: ')
-# print(makeROICtableEntry(ticker12,'2024',version12,False))
-
-ticker13 = 'MSFT' #EGP
-year13 = '2024'
-version13 = '2'
-# print(ticker13 + ' income:')
-# print(makeIncomeTableEntry(ticker13,'2024',version13,False))
-# print(ticker13 + ' divs:')
-# print(makeDividendTableEntry(ticker13,'2024',version13,False))
-# print(ticker13 + '  roic: ')
-# print(makeROICtableEntry(ticker13,'2024',version13,False))
-
-ticker12 = 'CRM' #ABR
-year12 = '2024'
-version12 = '2'
-# print(ticker12 + ' income:')
-# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' divs:')
-# print(makeDividendTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' roic: ')
-# print(makeROICtableEntry(ticker12,'2024','0',False))
-
-ticker14 = 'O' #EGP
-year14 = '2024'
-version14 = '2'
-# print(ticker14 + ' income:')
-# print(makeIncomeTableEntry(ticker14,year14,version14,False))
-# print(ticker14 + ' divs:')
-# print(makeDividendTableEntry(ticker14,'2024',version14,False))
-# print(ticker14 + '  roic: ')
-# print(makeROICtableEntry(ticker14,'2024',version14,False))
 
 #refined screener results:
 ###NEW Materials
@@ -2516,23 +2467,37 @@ version14 = '2'
 # ['MDT', 'MCK', 'TAK', 'STE', 'RDY', 'IMGN', 'ROIV', 'GRFS', 'DOCS', 'IMVT', 'HAE', 'NEOG', 'PBH', 'EVO', 'PDCO', 'TARO', 'SUPN', 'TLRY', 'ACCD', 'GRCL', 'MDRX', 'CVAC', 'ICVX', 'CALT', 'KALV', 'REPL', 'LIAN', 'CDMO', 'PROC', 'HARP', 'CGC', 'NNOX', 'OPRX', 'ME', 'ANGO', 'LFCR', 'LMDXF', 'CLLS', 'CDT', 'CORBF', 'BLUE', 'INFU', 'ACB', 'ELTP', 'THRX', 'AHG', 'CYDY', 'IMAB', 'OCGN', 'ZTEK', 'VTGN', 'PETS', 'GTH', 'RVPH', 'YI', 'CYT', 'MDXH', 'GLSI', 'SY', 'LIFW', 'SHLT', 'ZJYL', 'BNR', 'CELU', 'CSBR', 'AFMD', 'FFNTF', 'TIHE', 'INCR', 'EGRX', 'XAIR', 'VICP', 'CDTX', 'PRE', 'CNTB', 'IPA', 'EAR', 'CUTR', 'ICU', 'TLSA', 'ENLV', 'CXXIF', 'PNPL', 'OKYO', 'BYSI', 'ESLA', 'DXR', 'PNXP', 'NYMXF', 'YS', 'EUDA', 'BIMI', 'YBGJ', 'NKGN', 'SNCE', 'MOVE', 'CCM', 'BGXX', 'SRNEQ', 'MODD', 'UBX', 'CNTG', 'FRLN', 'RLFTY', 'ETST', 'ETAO', 'PHXM', 'OCX', 'AURX', 'MDNAF', 'MHUA', 'ACRHF', 'STRM', 'ACST', 'HSTI', 'ALRN', 'MYNZ', 'AIH', 'NTRB', 'OHCS', 'TRIB', 'SRZN', 'PMCB', 'PETV', 'RXMD', 'IGC', 'NBIO', 'NLSP', 'OTLC', 'VBIV', 'RDHL', 'CLRD', 'ICCT', 'RMSL', 'BMRA', 'COSM', 'CHEK', 'NXGL', 'ADXS', 'NEXI', 'CRYM', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'BCEL', 'MCUJF', 'AVCRF', 'ONVO', 'ORGS', 'EIGR', 'ZCMD', 'ASLN', 'BTTX', 'PFHO', 'FRES', 'CANN', 'NHIQ', 'EDXC', 'BETRF', 'HSCS', 'RADCQ', 'BSGM', 'SIEN', 'BTCY', 'APM', 'NSTG', 'PBIO', 'HEPA', 'CJJD', 'XWEL', 'ACBM', 'QLIS', 'ADTX', 'NVTA', 'HENC', 'ALZN', 'ABTI', 'ECIA', 'JRSS', 'ADMT', 'BTAX', 'XCUR', 'EMMA', 'MDGS', 'MEDS', 'OTRK', 'MRZM', 'MDVL', 'CPMV', 'AEMD', 'AXIM', 'TSOI', 'CLSH', 'VFRM', 'RNVA', 'OPGN', 'BZYR', 'ONCO', 'BDRX', 'ARDS', 'STEK', 'OWPC', 'AVRW', 'FOXO', 'CWBR', 'CYTO', 'QRON', 'VYCO', 'WINT', 'NBSE', 'ELOX', 'NMRD', 'INQD', 'CNNC', 'QLGN', 'BACK', 'THMO', 'INVO', 'SNOA', 'LGMK', 'NAOV', 'AKAN', 'GBLX', 'SCNI', 'AGTX', 'VRAX', 'IONM', 'SEQL', 'IPCIF', 'NEPT', 'NVIV', 'GRST', 'KOAN', 'WORX', 'CSUI', 'DVLP', 'NREG', 'CBDS', 'BSPK', 'SXTC', 'CMRA', 'BXRX', 'PAXH', 'ATHXQ', 'HADV', 'CANB', 'MJNE', 'KAYS', 'NTRR', 'BLCM', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'ENMI', 'SDCCQ', 'GMVDF', 'QTXB', 'EMED', 'SGBI', 'IMPLQ', 'TPIA', 'CSTF', 'BLMS', 'BBBT', 'MITI', 'VNTH', 'GLSHQ', 'MMNFF', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'PEARQ', 'RBSH', 'INFIQ', 'STMH', 'BIOCQ', 'ABMC', 'TMBRQ', 'HTGMQ', 'NOVNQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'GNRS', 'NMTRQ', 'ABCZF', 'SWGHF', 'BFFTF', 'RAIN', 'AKUMQ', 'BIOE', 'SIOX', 'XTXXF', 'SKYI', 'GBCS', 'FZMD', 'LNDZF', 'NHWK', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'CLYYF', 'IGEX', 'NAVB', 'CANQF', 'ABMT', 'REMI', 'ARAV', 'MCOA', 'DMK', 'GPFT', 'HSTO', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'GENN', 'SNNC', 'TOMDF', 'KGKG', 'EVLO', 'WCUI', 'ENDV', 'VIVE', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CALA', 'CENBF', 'EVIO', 'CLCS', 'PHCG', 'NLBS', 'GRYN', 'EWLL', 'NPHC', 'TAUG', 'CPMD', 'CMXC', 'NBRVF', 'SSTC', 'MDNC']
 ###
 
-lickit = [ ]  #['V', 'IBN', 'ANZGY', 'NU', 'ARES', 'BSBR', 'CM',] recap
+lickit = ['V', 'NU', 'BSBR', 'CM', 'CBSH', 'AB', 'MC']
 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
-# write_Master_csv_from_EDGAR('ARCC',ultimateTagsList,'2024','2')
+# write_Master_csv_from_EDGAR('GS',ultimateTagsList,'2024','2')
+print(nameCikDict['AB'])
+
+## could be really cool NAV NetAssetValuePerShare
+
 
 ticker235 = 'V'
 year235 = '2024'
 version235 = '2'
-print(ticker235 + ' income:')
-print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print(ticker235 + ' divs:')
-print(makeDividendTableEntry(ticker235,year235,version235,False))
-print(ticker235 + '  roic: ')
-print(makeROICtableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' income:')
+# print(makeIncomeTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' divs:')
+# print(makeDividendTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + '  roic: ')
+# print(makeROICtableEntry(ticker235,year235,version235,False))
+
+print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
+print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False))
+print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
+# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
+
+
+# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
 
 # print(set(techmissingincomeyears).difference(techmissingroicyears))
 
@@ -2689,11 +2654,78 @@ techmissingdivintPaid =['SNOW', 'MPWR', 'ZM', 'CHKP', 'IOT', 'EPAM', 'NTNX', 'PA
 
 
 #################
+# harvestMasterCSVs(consStaples)  #comms #
 
-#divs
+# checkYearsIntegritySector(consCyclical)
 
+# write_Master_csv_from_EDGAR('SIMO',ultimateTagsList,'2024','2') #'0000726728'
+# write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
+# write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
+# for x in incRERecap:
+#     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
+# 
+# nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
+# print(nameCikDict)
 
-#roic
+ticker100 = 'ARCC' #ABR
+year100 = '2024'
+version100 = '2'
+# print(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False))
+# print(cleanDividends(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, declaredORPaidCommonStockDivsPerShare, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, basicSharesOutstanding, False)))
+
+# print(cleanDebt(consolidateSingleAttribute(ticker100, year100, version100, shortTermDebt, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt1, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt2, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt3, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt4, False)))
+        
+# print(cleanTotalEquity(consolidateSingleAttribute(ticker100, year100, version100, totalAssets, False), 
+#                                     consolidateSingleAttribute(ticker100, year100, version100, totalLiabilities, False), 
+#                                       consolidateSingleAttribute(ticker100, year100, version100, nonCurrentLiabilities, False),
+#                                     consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False)))
+
+ticker12 = 'TYGO' #ABR
+year12 = '2024'
+version12 = '2'
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024',version12,False))
+
+ticker13 = 'MSFT' #EGP
+year13 = '2024'
+version13 = '2'
+# print(ticker13 + ' income:')
+# print(makeIncomeTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + ' divs:')
+# print(makeDividendTableEntry(ticker13,'2024',version13,False))
+# print(ticker13 + '  roic: ')
+# print(makeROICtableEntry(ticker13,'2024',version13,False))
+
+ticker12 = 'CRM' #ABR
+year12 = '2024'
+version12 = '2'
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024','0',False))
+
+ticker14 = 'O' #EGP
+year14 = '2024'
+version14 = '2'
+# print(ticker14 + ' income:')
+# print(makeIncomeTableEntry(ticker14,year14,version14,False))
+# print(ticker14 + ' divs:')
+# print(makeDividendTableEntry(ticker14,'2024',version14,False))
+# print(ticker14 + '  roic: ')
+# print(makeROICtableEntry(ticker14,'2024',version14,False))
+
+#########################################################
 
 
 
