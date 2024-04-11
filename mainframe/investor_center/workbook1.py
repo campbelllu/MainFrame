@@ -218,7 +218,7 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
             for i in range(len(tags)):
                 try:
                     tag = tags[i] 
-                    units = list(response.json()['facts'][x][tag]['units'].keys())#[0] #Luke heck man here we go again
+                    units = list(response.json()['facts'][x][tag]['units'].keys())#[0] 
                     # print('units?')
                     # print(units)
                     # print('tags[i]')
@@ -277,8 +277,8 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
         print('edgar query super error')
         print(err)
 
-        ###LUKE DONT BREAK IT
-        # units = list(response.json()['facts'][x][tag]['units'].keys())[0] #Luke heck man here we go again
+        ### DONT BREAK IT
+        # units = list(response.json()['facts'][x][tag]['units'].keys())[0] #
         #             # print('units?')
         #             # print(units)
         #             # print('tags[i]')
@@ -347,7 +347,7 @@ declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared',
                                         'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit']
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
-                            'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted','NumberOfSharesIssued']#'WeightedAverageShares']
+                           'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted', 'NumberOfSharesIssued']
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes',
                     'GainsLossesOnSalesOfInvestmentRealEstate']
 deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','DepreciationAmortizationAndAccretionNet','AmortizationOfIntangibleAssets',
@@ -355,18 +355,18 @@ deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','Deprecia
 deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
 deprecAndAmor3 = ['DepreciationAndAmortization']
 
-## could be really cool NAV NetAssetValuePerShare ###LUKE CHECK THIS OUT FOR BRD's and REITS! maybe super duper awesome
+netAssetValue = ['NetAssetValuePerShare'] #Luke don't forget to add this into a table somewhere
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
                 investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
-                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets ]
+                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
                 'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
-                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets']
+                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -515,15 +515,6 @@ def dropAllExceptFYRecords(df):
             held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         #Now checking for those halfies because some companies just file things weirdly.
-        #LUKE PROGRAMMATICALLY GO THRU THIS. combine the three steps into some for loops so it's much less copy paste. you got this!
-        #1-6,7,11
-        #now we have to iterate through monthly reportings because of some strange reporting practices
-        # print('df outside of the if????')
-        # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
-        # if returned_data.empty:
-            # print('df in if????')
-            # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
-            #iterate thru revCD to find latest they report, log that number, use it as start to check to the 12th.
         for x in revCD:
             # print('x')
             # print(x)
@@ -538,9 +529,7 @@ def dropAllExceptFYRecords(df):
             else:
                 lastKnownLog = x
                 held_data2 = df[(df['start'].str.contains(lastKnownLog)==True) & (df['end'].str.contains('-12-')==True)]
-                ### LUKE. one major thing here is if the only records are montly reported. 
-                ### 1-12 nothing? cool, caught it for 1-x, x-12. what about 1-2, 2-3, 3-4... ?
-                ### SEe below. this might actually not be an issue. you may just be rusty
+                
                 # print('held2 in else')
                 # print(held_data2)
         # print('pine be empty')
@@ -563,45 +552,11 @@ def dropAllExceptFYRecords(df):
         #held4['val'] = dummy1 + dumm2
         #concat to returned data
 
-        ###luke this worked, trying to automate above
-        # held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
-        # held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
-        # held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
-        # print('held1211')
-        # print(held_data1211)
-
-        # held_data6212 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-12-')==True)]
-        # held_data7212 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-12-')==True)]
-        # held_data11212 = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains('-12-')==True)]
-
-        # # if held_data126.empty:
-        # held7 = pd.merge(held_data127, held_data7212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        # held7['val'] = held7['val_x'] + held7['val_y']
-        # held7['start'] = held7['start_x']
-        # held7['end'] = held7['end_y']
-        # held7 = held7.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        # held7 = held7.dropna(subset=['val'])#,'start'])
-        # returned_data = pd.concat([returned_data, held7], ignore_index = True)
-        # # else:
-        # held6 = pd.merge(held_data126, held_data6212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        # held6['val'] = held6['val_x'] + held6['val_y']
-        # held6['start'] = held6['start_x']
-        # held6['end'] = held6['end_y']
-        # held6 = held6.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        # held6 = held6.dropna(subset=['val'])#,'start'])
-        # returned_data = pd.concat([returned_data, held6], ignore_index = True)
-
-        # held11 = pd.merge(held_data1211, held_data11212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
-        # held11['val'] = held11['val_x'] + held11['val_y']
-        # held11['start'] = held11['start_x']
-        # held11['end'] = held11['end_y']
-        # held11 = held11.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
-        # held11 = held11.dropna(subset=['val'])#,'start'])
-        # returned_data = pd.concat([returned_data, held11], ignore_index = True)
+        
 
         
 
-        #Monthly reporting sometimes also throws things off. #luke uncomment
+        #Monthly reporting sometimes also throws things off. 
         if returned_data.empty:
             listMax = df.end.str[5:7]
             tarMax = str(listMax.max())
@@ -625,7 +580,7 @@ def orderAttributeDF(df):
         return filtered_data
 
 def dropDuplicatesInDF(df):
-    #LUKE drop down to the years columns. hit a run. see the years are kinda weird. figure it out. you got this!
+    
     try:
         # filtered_data = pd.DataFrame()
         # print('pre drop dupes')
@@ -634,20 +589,7 @@ def dropDuplicatesInDF(df):
         endYear = []
         endMonth = []
         startYear = []
-        # for x in filtered_data: ###LUKE: val in debt and such are floats. they need to be int's or str or other. check which things may need to be floats. deal with them accordingly.
-        #     print(x)
-        #     print(type(x))
-        #     print(type(filtered_data[x].loc[0])) 
-        # if filtered_data['end'].isnull().all(): #LUKE just delete these if's ### Why would end ever be empty? 
-        #     filtered_data['end'] = filtered_data['end'].fillna(0)
-        #     filtered_data['endYear'] = filtered_data['end']#0#'0000-00-00'
-        # else:
-        # if filtered_data['end'].isnull().all():
-        #     # print('all null found')
-        #     pass
-        # else:
-            # print('end not nulls bro')
-            # print(type(filtered_data['end']))
+        
         for x in filtered_data['end']: #Prep endyear-related for year calc's
             # print(type(x))
             #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
@@ -672,21 +614,30 @@ def dropDuplicatesInDF(df):
             # print(type(filtered_data['start'].loc[0]))
             # print(filtered_data['start'].loc[0])
             # filtered_data['start'] = filtered_data['start'].infer_objects(copy=False).fillna(0) #.replace(np.NaN,0) #this one
+            # print('start is bad')
+            # print(filtered_data['endMonth'])
             
             filtered_data['startYear'] = 0#filtered_data['start']#'0000-00-00' #this one
             # endMonthCheck = [9,10,11,12]
+            filtered_data['year8'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 6)
+            filtered_data['year9'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 7)
             filtered_data['year10'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 8)
             filtered_data['year11'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 9)  #, other=filtered_data['yearMinusOne'])
             filtered_data['year12'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 10)
             filtered_data['year13'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 11)
             filtered_data['year14'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 12)
 
-            filtered_data['year'] = filtered_data['year10'].fillna(filtered_data['year11'])#.infer_objects(copy=False)
+
+            filtered_data['year'] = filtered_data['year8'].fillna(filtered_data['year9'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year10'])
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year11'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year12'])#.infer_objects(copy=False)
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year13'])#.infer_objects(copy=False)
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year14'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['yearMinusOne'])
          
+            filtered_data = filtered_data.drop('year8',axis=1)
+            filtered_data = filtered_data.drop('year9',axis=1)
             filtered_data = filtered_data.drop('year10',axis=1)
             filtered_data = filtered_data.drop('year11',axis=1)
             filtered_data = filtered_data.drop('year12',axis=1)
@@ -697,6 +648,7 @@ def dropDuplicatesInDF(df):
 
         else: #Otherwise fill necessary columns for year calc's
             # print('start filled')
+            # print('we hit else anyway?')
             for x in filtered_data['start']:
                 # print('start?!?')
                 # print(filtered_data.where(filtered_data.isnull()))
@@ -712,7 +664,7 @@ def dropDuplicatesInDF(df):
             # print('start problem?')
             # print(startYear)
             # print(filtered_data['startYear'])
-            ###LUKE TRY LEAVING START EMPTY. EASIER TO CHEKC. LESS ERRORS. MUCH CODE. WOW
+            ### TRY LEAVING START EMPTY. EASIER TO CHEKC. LESS ERRORS. MUCH CODE. WOW
         # if filtered_data['start'].loc[0] == 0: #In the case of those null start datasets this one
             # filtered_data['year'] = filtered_data.end.str[:4] #this one
             # print('wtf start is zero')
@@ -762,8 +714,8 @@ def dropDuplicatesInDF(df):
             endYearStrings = list(filtered_data['endYear'])
             endYearStrings = [str(x) for x in endYearStrings]
             filtered_data['endYear'] = endYearStrings
-            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 6))
-            filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 6))
+            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 5)) #changed here from 6; Luke wtf records wtf
+            filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 5))
             # print('all three applied')
             # print(filtered_data)
             # filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
@@ -853,6 +805,8 @@ def dropUselessColumns(df):
 # Returns organized data pertaining to the tag(s) provided in form of DF
 def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
     try:
+        # print('taglist')
+        # print(tagList)
         #get csv to df from params
         filtered_data = csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
         held_data = pd.DataFrame()
@@ -860,7 +814,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
     
         for x in tagList:
             
-            held_data = filtered_data[filtered_data['Tag'].str.contains(x) == True]
+            held_data = filtered_data[filtered_data['Tag'].eq(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
             # print(x)
             # if 'PerShare' in x:
@@ -869,13 +823,14 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         returned_data = get_Only_10k_info(returned_data)
         # print('10k data')
         # print(returned_data)
+        # print(returned_data.shape)
         
         # print('pre drop fy records')
         # print(returned_data.to_string())
-        # print(returned_data.shape)
+        
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         # print('post drop fy records pre order')
-        # print(returned_data.to_string())
+        # print(returned_data)
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
         # print('post order pre drop  dupes')
@@ -886,6 +841,8 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print('post drop  dupes')
         # print(returned_data)
         # print(returned_data.shape)
+
+
         returned_data = dropUselessColumns(returned_data)
         
         # print('consolidate all drops done')
@@ -1122,7 +1079,6 @@ def cleanEPS(df):
         print(err)
 
 def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
-    #Gives error warning of deprecation if there are null values. Filled values produce no warning. LUKE Edit later if necessary due to deprecation error code.
     try:
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
@@ -1233,7 +1189,7 @@ def cleanDebt(short, long1, long2, long3, long4):
         # print('pluslong2')
         # print(plusLong2)
         plusLong2['val'] = plusLong2['val'].fillna(0)
-        plusLong2['subTotalDebt'] = plusLong2['subTotalDebt'].fillna(0) #Luke omg debt needs to fit together. and i think this block did it. copy paste. let's gooooooo!sss
+        plusLong2['subTotalDebt'] = plusLong2['subTotalDebt'].fillna(0) 
         # print('post fill na pluslong2')
         # print(plusLong2)
         plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
@@ -1461,7 +1417,7 @@ def cleanDividends(total, perShare, shares):
         # print('tot and pshare post fills and drops')
         # print(df_col_added)
         
-        # if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
+        # if shares.empty:# and total.empty and perShare.empty: #LUKE maybe double check everything's working via checks, but this work around is deprecated
         #     cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
         #              'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
         #     # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
@@ -1512,92 +1468,7 @@ def cleanDividends(total, perShare, shares):
     finally:
         return df_col_added
 
-# def cleanDividends(total, perShare, shares):  #backup
 
-#     try:
-#         # shares['year'] = shares.end.str[:4]
-#         shares = shares.rename(columns={'val':'shares'})
-#         shares = shares.drop(columns=['Units'])
-#         # total['year'] = total.end.str[:4]
-#         total = total.rename(columns={'val':'totalDivsPaid'})
-#         # perShare['year'] = perShare.end.str[:4]
-#         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
-#         perShare = perShare.drop(columns=['Units'])
-
-#         # shares = shares.drop(columns=['start','end'])
-#         # total = total.drop(columns=['start','end'])
-#         # perShare = perShare.drop(columns=['start','end'])
-
-#         print('shares, total, pershare: ')
-#         print(shares)
-#         print(total)
-#         print(perShare)
-        
-#         if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
-#             cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
-#                      'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
-#             # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
-#             df_col_added = pd.DataFrame(cols, index=[0])
-#             return df_col_added
-#             # shares['val'] = 1
-#         else:
-#             sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
-#             # print('sharesNperShare: ')
-#             # print(sharesNperShare)
-#             df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
-#             # print('total + shares + per share: ')
-#             # print(df_col_added)
-#             df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
-#             # if df_col_added['shares'].empty:
-#             #     df_col_added['sharesGrowthRate'] = np.NaN
-#             # else:
-#             growthCol = grManualCalc(df_col_added['shares'])
-#             df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
-#             # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
-
-#             #first we check for nans, keep them in mind for later
-#             nanList = []
-#             for x in df_col_added:
-#                 if df_col_added[x].isnull().any():
-#                     # integrity_flag = 'Acceptable'
-#                     nanList.append(x)
-#                     # print('nans found: ' + x)
-#             #How to handle those empty values in each column
-#             df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
-#             df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
-
-#             # df42 = pd.DataFrame()
-#             # df42['temp'] = df_col_added['tempPerShare']
-#             # df42['actual'] = df_col_added['divsPaidPerShare']
-#             # print(df42)
-
-#             for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
-#                 if x == 'divsPaidPerShare':
-#                     df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
-#                     # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
-#                     # df_col_added['divGrowthRate'] = growthCol1 
-#                 elif x == 'totalDivsPaid':
-#                     df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
-#                     # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
-#                     # df_col_added['divGrowthRate'] = growthCol1 
-#             df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
-
-#             growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
-#             df_col_added['divGrowthRateBOT'] = growthCol1 
-#             growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
-#             df_col_added['divGrowthRateBOPS'] = growthCol2
-            
-#             # if df_col_added['divsPaidPerShares'].empty:
-#             #     df_col_added['divGrowthRate'] = np.NaN
-#             # else:
-            
-#             # print('average growth rate: ')
-#             # print(df_col_added['divGrowthRate'].mean())
-
-#             return df_col_added
-#     except Exception as err:
-#         print("clean dividends error: ")
-#         print(err)
 
 def fillEmptyIncomeGrowthRates(df):
     try:
@@ -1606,9 +1477,9 @@ def fillEmptyIncomeGrowthRates(df):
         fixTracker = 0
         for x in tarList:
             tarGrowthRate = x + 'GrowthRate'
-            meanReplacement = df_filled[x].mean()
+            # meanReplacement = df_filled[x].mean()
             savedCol = df_filled[x]
-            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill() LUKE we trying backfilling instead
+            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
             df_filled[x] = df_filled[x].ffill().bfill()
 
             growthCol = grManualCalc(df_filled[x])
@@ -1697,7 +1568,7 @@ def fillEmptyDivsGrowthRates(df):
         if df_filled['divGrowthRateBOT'].isnull().any():
             growthCol = grManualCalc(df_filled['totalDivsPaid'])
             df_filled['temp2'] = growthCol
-        #     #LUKE MAKE sure this isn't messing up final table once presented
+        #     
             df_filled['divGrowthRateBOT'] = df_filled['divGrowthRateBOT'].fillna(df_filled.pop('temp2'))#['temp2'])
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
@@ -1706,7 +1577,7 @@ def fillEmptyDivsGrowthRates(df):
         if df_filled['divGrowthRateBOPS'].isnull().any():
             growthCol = grManualCalc(df_filled['divsPaidPerShare'])
             df_filled['temp3'] = growthCol
-        #     #LUKE MAKE sure this isn't messing up final table once presented
+        #     
             df_filled['divGrowthRateBOPS'] = df_filled['divGrowthRateBOPS'].fillna(df_filled.pop('temp3'))#['temp2'])
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
@@ -1921,7 +1792,7 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
 
 def makeROICtableEntry(ticker, year, version, index_flag):
     #editing notes: calcs for adjroic and roce and such, add examples including reported total equity
-    #test achr too. really weird numbers with negative net income
+    #test achr too. really weird numbers with negative net income #luke this is what you're looking for
     #vs pct which is similar but diff roic???
     try:
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
@@ -1946,7 +1817,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         # print('TEquity df')
         # print(totalEquity_df)
 
-        ### LUKE WE NEED TO ADJUST ROCE et all values based on if total equity is reported vs calculated by us. see which one is 'more full' essentially, before making calcs off it. for accuracy!
+    
 
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         # print('opIncNtax')
@@ -1984,7 +1855,18 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
         plustEquity['adjRoic'] = plustEquity['netIncome'] / plustEquity['investedCapital'] * 100
-        plustEquity['roce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
+        plustEquity['calculatedRoce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
+        plustEquity['reportedRoce'] = plustEquity['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
+
+        # print('ass')
+        # print(plustEquity['assets'])
+        # print('lia')
+        # print(plustEquity['liabilities'])
+        # print('eq')
+        # print(plustEquity['TotalEquity'])
+        # print('rep eq')
+        # print(plustEquity['ReportedTotalEquity'])
+
 
 
         return plustEquity
@@ -2353,7 +2235,58 @@ def checkYearsIntegrityList(sectorList):
         print('missing roic total equity')
         print(rTotalEq)
         
+lickit = [ ]
+#
 
+# for x in lickit:
+#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
+# checkYearsIntegrityList(lickit)
+
+# print(len(lickit))
+
+ticker12 = 'ACHR' #ABR
+print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
+year12 = '2024'
+version12 = '2'
+print(ticker12 + ' income:')
+print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+print(ticker12 + ' divs:')
+print(makeDividendTableEntry(ticker12,'2024',version12,False))
+print(ticker12 + ' roic: ')
+print(makeROICtableEntry(ticker12,'2024',version12,False))
+
+
+ticker235 = 'PCT' 
+# print(nameCikDict[ticker235])
+print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
+# write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
+year235 = '2024'
+version235 = '2'
+print(ticker235 + ' income:')
+print(makeIncomeTableEntry(ticker235,year235,version235,False))
+print(ticker235 + ' divs:')
+print(makeDividendTableEntry(ticker235,year235,version235,False))
+print(ticker235 + '  roic: ')
+print(makeROICtableEntry(ticker235,year235,version235,False))
+
+
+
+# print(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
+# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
+
+# print(cleanTotalEquity(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False), 
+#                                     consolidateSingleAttribute(ticker235, year235, version235, totalLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentLiabilities, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, currentLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentAssets, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, currentAssets, False), consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False)))
+
+
+# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
+#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
+
+# print(set(techmissingincomeyears).difference(techmissingroicyears))
 
 #refined screener results:
 ###NEW Materials
@@ -2394,6 +2327,7 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['VALE', 'CTA-PA', 'PKX', 'JHX', 'SUZ', 'RPM', 'SQM', 'CX', 'EXP', 'SIM', 'SID', 'BVN', 'SBSW', 'BAK', 'SGML', 'HWKN', 'LOMA', 'GSM', 'ASTL', 'DRD', 'CPAC', 'SVM', 'GDRZF', 'ANVI', 'VZLA', 'MSB', 'SMID', 'RBTK', 'CMCL', 'LOOP', 'ASPI', 'FRD', 'AREC', 'YCQH', 'ACRG', 'GEVI', 'FURY', 'MULG', 'RMRI', 'EVA', 'DYNR', 'LONCF', 'XTGRF', 'GLGI', 'USAU', 'ELBM', 'LBSR', 'COPR', 'UAMY', 'GRFX', 'CRCUF', 'HLP', 'ZKIN', 'RETO', 'GURE', 'NRHI', 'TLRS', 'BGLC', 'BASA', 'GRMC', 'MAGE', 'IMII', 'GNTOF', 'COWI', 'ATAO', 'WOLV', 'SRGZ', 'MNGG', 'HHHEF', 'ETCK', 'PVNNF', 'GPLDF', 'VYST', 'RMESF', 'MLYF', 'AMRSQ', 'GYST', 'MXSG', 'MKDTY', 'AMNL', 'STCC', 'CGSI', 'ALMMF', 'ERLFF', 'NSRCF', 'MPVDF', 'SMTSF', 'AVLNF', 'SHVLF', 'HGLD', 'SILEF', 'JSHG', 'EXNRF', 'SGMD', 'SINC', 'GIGGF', 'VNTRD']
 ###
+
 ###NEW Cons Cyclical
 # recapList =
 # ['NKE', 'CFRUY', 'MBGYY', 'RACE', 'OLCLY', 'DNZOY', 'YAHOY', 'CUK', 'VFS', 'ONON', 'RKUNY', 'BKGFY', 'PLNT', 'LNNGY', 'DUFRY', 'NGKSY', 'KBH', 'IHCPF', 'GEF', 'ZKH', 'MBUMY', 'FUN', 'EXTO', 'RICK', 'HVT', 'BH-A', 'IOCJY', 'MCFT', 'GHG', 'CDRO', 'PNST', 'BSET', 'MHGU', 'CJET', 'LGCB', 'FCCI', 'CREV', 'EGOX', 'HWH', 'ELMSQ', 'NCL', 'RWGI', 'JEWL', 'FFIE', 'HCNWF', 'JPOTF', 'MI', 'IVP', 'VEST', 'VMHG', 'MASN', 'GEGI', 'LFEV', 'FBCD', 'YUKA', 'PMNT', 'YAMHF', 'GFASY', 'GVSI', 'NEXCF', 'ELIO', 'ODDAF', 'ARVL', 'SPQS', 'SPBV', 'RECX', 'WNRS']
@@ -2432,6 +2366,7 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['TM', 'BABA', 'PDD', 'HMC', 'JD', 'LI', 'TCOM', 'SE', 'DECK', 'DRI', 'NIO', 'KMX', 'RL', 'CASY', 'HTHT', 'VIPS', 'XPEV', 'MMYT', 'LKNCY', 'VFC', 'CPRI', 'SKY', 'MOD', 'PSNY', 'UAA', 'CVCO', 'BOOT', 'ARCO', 'NWTN', 'VSTO', 'SGHC', 'LZB', 'AMWD', 'GOOS', 'MNRO', 'NGMS', 'DESP', 'BWMX', 'HSAI', 'HEPS', 'NAAS', 'DADA', 'FSR', 'CRMT', 'LOVE', 'CYD', 'BBW', 'NEGG', 'ALLG', 'LANV', 'NATH', 'HOFT', 'CTRN', 'RERE', 'PLCE', 'INSE', 'CBD', 'TLYS', 'THCH', 'MPAA', 'VIRC', 'BARK', 'CANG', 'BZUN', 'EM', 'LAKE', 'NIU', 'CONN', 'AOUT', 'NOBH', 'YTRA', 'LUXH', 'KEQU', 'TOUR', 'BGI', 'NTZ', 'ZKGCF', 'TUP', 'TCS', 'VIOT', 'CULP', 'CRWS', 'INTG', 'VNCE', 'BNED', 'SLNA', 'PEV', 'RENT', 'JRSH', 'ECDA', 'MRM', 'SOND', 'FGH', 'JOAN', 'CHSN', 'XELB', 'VIVC', 'SCTH', 'BFX', 'MOGU', 'LNBY', 'BFI', 'EXPR', 'YJ', 'UXIN', 'PDRO', 'TKLF', 'POL', 'JXJT', 'USLG', 'BWMG', 'PRSI', 'NROM', 'KXIN', 'UCAR', 'SEVCQ', 'LTRY', 'CMOT', 'ELYS', 'OCG', 'FUV', 'EVVL', 'WNW', 'JWEL', 'LQLY', 'SPEV', 'SECO', 'SHMY', 'PIK', 'JZXN', 'SBET', 'NVFY', 'DBGI', 'AUVI', 'KITL', 'BQ', 'AREB', 'ASAP', 'AHRO', 'CNXA', 'DREM', 'OMTK', 'MSSV', 'SKFG', 'SCRH', 'MCOM', 'NNAX', 'FLES', 'BBIG', 'IDICQ', 'REII', 'THBD', 'BTDG', 'IMBIQ', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'EVTK', 'FTCHF', 'FXLV', 'AMTY', 'PFSF', 'ARMV', 'ELRA', 'LCLP', 'AMHG', 'FJHL', 'SSUNF', 'LSEB']
 ###
+
 ###NEW Cons Staples
 # recapList = 
 # ['FMX', 'BUD', 'BTI', 'STZ', 'SVNDY', 'JRONY', 'SMKUY', 'MEJHY', 'CUYTY', 'LCCTF', 'FIZZ', 'DFIHY', 'MRRTY', 'IMKTA', 'NISUY', 'KLG', 'EWCZ', 'GGROU', 'RFLFY', 'AAGR', 'YERBF', 'DDC', 'DTCK', 'YGF', 'NASO', 'PCST', 'VPRB', 'INKW', 'HIRU', 'GRLF', 'LBWR', 'PDPG', 'EARI', 'BMXC', 'TBBB', 'BRLS', 'BLEG', 'WNBD']
@@ -2470,6 +2405,7 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['GIS', 'BF-B', 'KOF', 'LW', 'EDU', 'SJM', 'CAG', 'ACI', 'ELF', 'TAL', 'BRFS', 'ASAI', 'RLX', 'HELE', 'CCU', 'AQPW', 'AFYA', 'UVV', 'GOTU', 'AGRO', 'KUBR', 'VTRU', 'DAO', 'SENEA', 'YSG', 'VSTA', 'AFRI', 'DDL', 'BIG', 'MAMA', 'IH', 'STG', 'SKIL', 'HIGR', 'FVTI', 'ZHYBF', 'NXMH', 'CFOO', 'GCEH', 'CHUC', 'PYYX', 'JZ', 'RGF', 'COE', 'GNS', 'MALG', 'AACG', 'LXEH', 'RMCF', 'NPLS', 'PCSV', 'YQ', 'EOSS', 'MSS', 'STKH', 'CTGL', 'FEDU', 'PAVS', 'EDTK', 'AIXN', 'TCTM', 'PETZ', 'BRSH', 'SHMP', 'GV', 'HPCO', 'CLEU', 'WAFU', 'MNKA', 'LEAI', 'BTCT', 'BTTR', 'SNBH', 'RMHB', 'CYAN', 'AMBO', 'WTER', 'CBDW', 'RVIV', 'TANH', 'SRSG', 'GNLN', 'FHSEY', 'NBND', 'SHRG', 'VGFCQ', 'SMFL', 'NAFS', 'RTON', 'BDPT', 'SKVI', 'MFLTY', 'ASII', 'NUVI', 'OGAA', 'IFMK', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'NTCO', 'GWLL', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'ZVOI', 'SUWN', 'HVCW', 'DTEAF', 'ITOR']
 ###
+
 ###NEW Comms
 # recapList = 
 # ['TLGPY', 'PUBGY', 'VOD', 'KKPNY', 'VIVHY', 'VDMCY', 'CSXXY', 'IIJIY', 'HMNTY', 'TV', 'SEAT', 'CCG', 'SGA', 'GOAI', 'HAO', 'MCHX', 'KUKE', 'ABLV', 'PODC', 'TRFE', 'MNY', 'SNAL', 'MMV', 'QYOUF', 'HRYU', 'EGLXF', 'TRUG', 'FENG', 'LEBGF', 'MIMO', 'HHSE', 'VSME', 'GTRL', 'SONG', 'CBIA', 'TAMG', 'MRNJ', 'UVSS', 'SNMN', 'EMDF', 'WTKN', 'GTOR', 'QBCRF', 'CAPV', 'MIKP', 'MOCI', 'PSRU', 'MACT', 'MEDE']
@@ -2508,46 +2444,6 @@ def checkYearsIntegrityList(sectorList):
 # wrongroicendyear =
 # ['NTES', 'AMX', 'EA', 'CHT', 'TTWO', 'TME', 'TIMB', 'SKM', 'KT', 'YNDX', 'TKC', 'ATHM', 'LGF-A', 'WB', 'YY', 'ROVR', 'WLY', 'VEON', 'PERI', 'SCHL', 'MOMO', 'OPRA', 'HUYA', 'ATEX', 'GRVY', 'GDEV', 'ZH', 'RSVR', 'LDSN', 'JFIN', 'SIFY', 'DOYU', 'DRCT', 'UONE', 'LVO', 'SKLZ', 'MVNC', 'FNGR', 'XNET', 'WIMI', 'BBUZ', 'EZOO', 'KORE', 'SCGY', 'CMCM', 'BHAT', 'STCN', 'TOON', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'NCTY', 'ANGH', 'CRGE', 'ELRE', 'GAME', 'KRKR', 'CNVS', 'GIGM', 'EDUC', 'FAZE', 'BREA', 'FDIT', 'DMSL', 'SALM', 'CNFN', 'KDOZF', 'SPTY', 'SLE', 'BAOS', 'CNET', 'CSSE', 'TLLYF', 'MGAM', 'SNPW', 'VYBE', 'ANTE', 'VRVR', 'VNUE', 'TRKAQ', 'FMHS', 'NUGL', 'MOBQ', 'GROM', 'COMS', 'CMGO', 'QTTOY', 'NWCN', 'SLDC', 'BOTY', 'GFMH', 'ROI', 'SRAX', 'TMGI', 'CCCP', 'MDEX', 'SNWR', 'WINR', 'VOCL', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'AFOM', 'NTTYY', 'CELJF', 'OIBRQ', 'ILLMF', 'IDWM', 'EMWPF', 'LTES', 'BYOC', 'GZIC', 'TOWTF', 'BTIM', 'PTNRF', 'LOVLQ']
 ###
-
-lickit = [ ]
-#
-#['EVEX', 'ACHR', 'PCT',  'SB', 'FREY', ,  'SPEC',  'SSET', ] #rev
-#['PCAR']  #equity
-
-# for x in lickit:
-#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
-# checkYearsIntegrityList(lickit)
-
-# print(len(lickit))
-
-ticker235 = 'PCAR' #LUKE RUN THIS AND CHECK NUMBERS. LOOKING GOOD MAKING GOOD PROGRESS!!
-# print(nameCikDict[ticker235])
-print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
-# write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
-year235 = '2024'
-version235 = '2'
-print(ticker235 + ' income:')
-print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print(ticker235 + ' divs:')
-print(makeDividendTableEntry(ticker235,year235,version235,False))
-print(ticker235 + '  roic: ')
-print(makeROICtableEntry(ticker235,year235,version235,False))
-
-# print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False))
-# print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
-# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
-# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
-
-# print(cleanTotalEquity(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False), 
-#                                     consolidateSingleAttribute(ticker235, year235, version235, totalLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentLiabilities, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, currentLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False)))
-
-
-# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
-
-# print(set(techmissingincomeyears).difference(techmissingroicyears))
 
 ###NEW ind
 # recapList = 
@@ -2794,27 +2690,27 @@ print(makeROICtableEntry(ticker235,year235,version235,False))
 # print(len(techmissingincomecapex2))
 
 ##Tech
-techrecap2 = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'CNXC', 'ASMVY', 'VERX', 'SRAD', 'ODD', 'BELFA', 'GB', 'RDZN', 'ABXXF', 'WBX', 'OPTX', 'EAXR', 'FEBO', 'SPPL', 'GRRR', 'NVNI', 'YIBO', 'DGHI', 'BTQQF', 'LVER', 'MMTIF', 'MRT', 'ITMSF', 'MAPPF', 'CXAI', 'SYNX', 'NOWG', 'HLRTF', 'MCLDF', 'MHUBF', 'PKKFF', 'CAUD', 'VJET', 'SSCC', 'AWIN', 'IMTE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'ASFT', 'GBUX', 'CMCZ', 'ZICX', 'FLXT', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'SWISF', 'DCSX', 'RONN']
-# print(len(techrecap2))
-techwrongendyearincome = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'GB', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'RDZN', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'OPTX', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'GRRR', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'DGHI', 'KPLT', 'STIX', 'APGT', 'LVER', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'MRT', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'CXAI', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MCLDF', 'MINM', 'VSMR', 'CAUD', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'AWIN', 'VIDE', 'SOPA', 'IMTE', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
-techwrongdivendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'YOU', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'HSTA', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'NUGN', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'VS', 'KCRD', 'FRGT', 'CIIT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
-techwrongroicendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
+# techrecap2 = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'CNXC', 'ASMVY', 'VERX', 'SRAD', 'ODD', 'BELFA', 'GB', 'RDZN', 'ABXXF', 'WBX', 'OPTX', 'EAXR', 'FEBO', 'SPPL', 'GRRR', 'NVNI', 'YIBO', 'DGHI', 'BTQQF', 'LVER', 'MMTIF', 'MRT', 'ITMSF', 'MAPPF', 'CXAI', 'SYNX', 'NOWG', 'HLRTF', 'MCLDF', 'MHUBF', 'PKKFF', 'CAUD', 'VJET', 'SSCC', 'AWIN', 'IMTE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'ASFT', 'GBUX', 'CMCZ', 'ZICX', 'FLXT', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'SWISF', 'DCSX', 'RONN']
+# # print(len(techrecap2))
+# techwrongendyearincome = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'GB', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'RDZN', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'OPTX', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'GRRR', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'DGHI', 'KPLT', 'STIX', 'APGT', 'LVER', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'MRT', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'CXAI', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MCLDF', 'MINM', 'VSMR', 'CAUD', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'AWIN', 'VIDE', 'SOPA', 'IMTE', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
+# techwrongdivendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'YOU', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'HSTA', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'NUGN', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'VS', 'KCRD', 'FRGT', 'CIIT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
+# techwrongroicendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
 
-techmissingincomeyears = ['INST', 'LPL', 'WNS', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'MTBL', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'INTV', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'ONCI', 'PTOS', 'CRCW', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
-techmissingdivyears =['INST', 'LPL', 'WNS', 'RPAY', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'APYP', 'BLBX', 'SLNH', 'FWFW', 'SUIC', 'INTV', 'VEII', 'CHJI', 'CUEN', 'TTCM', 'CYAP', 'PTOS', 'CRCW', 'GAXY', 'MJDS']
-techmissingroicyears = ['EPAM', 'LPL', 'WNS', 'ARAT', 'LINK', 'AKTS', 'DPSI', 'CPTN', 'ALMU', 'SODI', 'AITX', 'ONEI', 'FTFT', 'CYCA', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'PTOS', 'MCCX', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
+# techmissingincomeyears = ['INST', 'LPL', 'WNS', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'MTBL', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'INTV', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'ONCI', 'PTOS', 'CRCW', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
+# techmissingdivyears =['INST', 'LPL', 'WNS', 'RPAY', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'APYP', 'BLBX', 'SLNH', 'FWFW', 'SUIC', 'INTV', 'VEII', 'CHJI', 'CUEN', 'TTCM', 'CYAP', 'PTOS', 'CRCW', 'GAXY', 'MJDS']
+# techmissingroicyears = ['EPAM', 'LPL', 'WNS', 'ARAT', 'LINK', 'AKTS', 'DPSI', 'CPTN', 'ALMU', 'SODI', 'AITX', 'ONEI', 'FTFT', 'CYCA', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'PTOS', 'MCCX', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
 
-techmissingrev = ['RDZN', 'NUKK', 'OPTX', 'MOBX', 'XBP', 'HYSR', 'MRT', 'AVAI', 'CXAI', 'MVLA', 'VSMR', 'CAUD', 'AWIN', 'NEWH', 'SMME', 'NIRLQ', 'CATG', 'GSPT', 'SANP']
-techmissingnetincome = ['MMTIF']
-techmissingincomecapEx = ['GRAB', 'LYFT', 'DAVA', 'BMBL', 'AVDX', 'PLUS', 'CRCT', 'BIGC', 'KC', 'MTWO', 'STEM', 'RDZN', 'NUKK', 'BKSY', 'RPMT', 'SQNS', 'OPTX', 'MOBX', 'LVER', 'APCX', 'HSTA', 'ALMU', 'AISP', 'MRT', 'ULY', 'SEAV', 'SGMA', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'CLOQ', 'CYCA', 'SOBR', 'VSMR', 'CAUD', 'BOXL', 'FWFW', 'AWIN', 'VMNT', 'DTSS', 'CIIT', 'WDLF', 'LGIQ', 'MWRK', 'OVTZ', 'LZGI', 'XALL', 'ALDS', 'SMME', 'PSWW', 'LAAB', 'VISM', 'FLXT', 'WDDD', 'ITOX', 'PTOS', 'NIRLQ', 'CDAY', 'WBSR', 'IPTK', 'GSPT', 'DROP', 'EHVVF', 'MJDS', 'SANP', 'ADGO', 'SDVI', 'DIGAF', 'GDLG', 'TFLM', 'ANKM', 'TRSO']
+# techmissingrev = ['RDZN', 'NUKK', 'OPTX', 'MOBX', 'XBP', 'HYSR', 'MRT', 'AVAI', 'CXAI', 'MVLA', 'VSMR', 'CAUD', 'AWIN', 'NEWH', 'SMME', 'NIRLQ', 'CATG', 'GSPT', 'SANP']
+# techmissingnetincome = ['MMTIF']
+# techmissingincomecapEx = ['GRAB', 'LYFT', 'DAVA', 'BMBL', 'AVDX', 'PLUS', 'CRCT', 'BIGC', 'KC', 'MTWO', 'STEM', 'RDZN', 'NUKK', 'BKSY', 'RPMT', 'SQNS', 'OPTX', 'MOBX', 'LVER', 'APCX', 'HSTA', 'ALMU', 'AISP', 'MRT', 'ULY', 'SEAV', 'SGMA', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'CLOQ', 'CYCA', 'SOBR', 'VSMR', 'CAUD', 'BOXL', 'FWFW', 'AWIN', 'VMNT', 'DTSS', 'CIIT', 'WDLF', 'LGIQ', 'MWRK', 'OVTZ', 'LZGI', 'XALL', 'ALDS', 'SMME', 'PSWW', 'LAAB', 'VISM', 'FLXT', 'WDDD', 'ITOX', 'PTOS', 'NIRLQ', 'CDAY', 'WBSR', 'IPTK', 'GSPT', 'DROP', 'EHVVF', 'MJDS', 'SANP', 'ADGO', 'SDVI', 'DIGAF', 'GDLG', 'TFLM', 'ANKM', 'TRSO']
 
-techmissingincomeopCF = ['BCAN']
-techmissingincomenetCF = ['VSMR', 'EXEO']
+# techmissingincomeopCF = ['BCAN']
+# techmissingincomenetCF = ['VSMR', 'EXEO']
 
-techmissdivpaid = []
-techmissingdivshares = []
-techmissingroictotalequity = ['VSMR']
-techmissingdivintPaid =['SNOW', 'MPWR', 'ZM', 'CHKP', 'IOT', 'EPAM', 'NTNX', 'PATH', 'GTLB', 'DBX', 'MNDY', 'CYBR', 'FFIV', 'CFLT', 'PCTY', 'MSTR', 'NXT', 'DUOL', 'UI', 'FRSH', 'CGNX', 'BRZE', 'AUR', 'HCP', 'FROG', 'BOX', 'CRDO', 'RUN', 'AI', 'ALRM', 'MQ', 'YOU', 'QTWO', 'NABL', 'BMBL', 'APPN', 'AMBA', 'SWI', 'PAY', 'EVCM', 'CLBT', 'PAYO', 'SEMR', 'AMPL', 'VZIO', 'DCBO', 'PDFS', 'TUYA', 'WKME', 'BTDR', 'RSKD', 'PGY', 'RDWR', 'DMRC', 'YALA', 'CORZ', 'LASR', 'VMEO', 'SCWX', 'ITRN', 'CEVA', 'LAW', 'XPER', 'DOMO', 'NVEC', 'AMSWA', 'EGHT', 'NUKK', 'API', 'CLMB', 'KOPN', 'EGAN', 'VLN', 'AEVA', 'ITI', 'IMMR', 'MAPS', 'AIXI', 'ARBE', 'ZFOX', 'AXTI', 'UEIC', 'WHEN', 'PXPC', 'MKTW', 'SYT', 'NA', 'LINK', 'MOBX', 'ALLT', 'GWSO', 'GSIT', 'DSWL', 'AWRE', 'GUER', 'REFR', 'JFU', 'VHC', 'MSAI', 'SEAV', 'BNZI', 'GOLQ', 'MVLA', 'EBZT', 'INRD', 'JNVR', 'SGN', 'HMBL', 'QURT', 'WLDS', 'MITQ', 'LEDS', 'WETG', 'LIDR', 'NAHD', 'AMST', 'KCRD', 'WDLF', 'ELST', 'FCCN', 'CTKYY', 'WOWI', 'NIRLQ', 'THPTF', 'FALC', 'GSPT', 'TCCO', 'BTZI', 'MJDS', 'SANP', 'SDVI', 'GDLG', 'HMELF', 'TFLM', 'ANKM']
+# techmissdivpaid = []
+# techmissingdivshares = []
+# techmissingroictotalequity = ['VSMR']
+# techmissingdivintPaid =['SNOW', 'MPWR', 'ZM', 'CHKP', 'IOT', 'EPAM', 'NTNX', 'PATH', 'GTLB', 'DBX', 'MNDY', 'CYBR', 'FFIV', 'CFLT', 'PCTY', 'MSTR', 'NXT', 'DUOL', 'UI', 'FRSH', 'CGNX', 'BRZE', 'AUR', 'HCP', 'FROG', 'BOX', 'CRDO', 'RUN', 'AI', 'ALRM', 'MQ', 'YOU', 'QTWO', 'NABL', 'BMBL', 'APPN', 'AMBA', 'SWI', 'PAY', 'EVCM', 'CLBT', 'PAYO', 'SEMR', 'AMPL', 'VZIO', 'DCBO', 'PDFS', 'TUYA', 'WKME', 'BTDR', 'RSKD', 'PGY', 'RDWR', 'DMRC', 'YALA', 'CORZ', 'LASR', 'VMEO', 'SCWX', 'ITRN', 'CEVA', 'LAW', 'XPER', 'DOMO', 'NVEC', 'AMSWA', 'EGHT', 'NUKK', 'API', 'CLMB', 'KOPN', 'EGAN', 'VLN', 'AEVA', 'ITI', 'IMMR', 'MAPS', 'AIXI', 'ARBE', 'ZFOX', 'AXTI', 'UEIC', 'WHEN', 'PXPC', 'MKTW', 'SYT', 'NA', 'LINK', 'MOBX', 'ALLT', 'GWSO', 'GSIT', 'DSWL', 'AWRE', 'GUER', 'REFR', 'JFU', 'VHC', 'MSAI', 'SEAV', 'BNZI', 'GOLQ', 'MVLA', 'EBZT', 'INRD', 'JNVR', 'SGN', 'HMBL', 'QURT', 'WLDS', 'MITQ', 'LEDS', 'WETG', 'LIDR', 'NAHD', 'AMST', 'KCRD', 'WDLF', 'ELST', 'FCCN', 'CTKYY', 'WOWI', 'NIRLQ', 'THPTF', 'FALC', 'GSPT', 'TCCO', 'BTZI', 'MJDS', 'SANP', 'SDVI', 'GDLG', 'HMELF', 'TFLM', 'ANKM']
 
 
 #################
@@ -2849,15 +2745,7 @@ version100 = '2'
 #                                       consolidateSingleAttribute(ticker100, year100, version100, nonCurrentLiabilities, False),
 #                                     consolidateSingleAttribute(ticker100, year100, version100, currentLiabilities, False)))
 
-ticker12 = 'V' #ABR
-year12 = '2024'
-version12 = '2'
-# print(ticker12 + ' income:')
-# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' divs:')
-# print(makeDividendTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' roic: ')
-# print(makeROICtableEntry(ticker12,'2024',version12,False))
+
 
 ticker13 = 'MSFT' 
 year13 = '2024'
@@ -3073,6 +2961,130 @@ def uploadToDB(table, df):
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+
+##drop all except fy records notes
+###luke this worked, trying to automate above
+        # held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
+        # held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
+        # held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
+        # print('held1211')
+        # print(held_data1211)
+
+        # held_data6212 = df[(df['start'].str.contains('-06-')==True) & (df['end'].str.contains('-12-')==True)]
+        # held_data7212 = df[(df['start'].str.contains('-07-')==True) & (df['end'].str.contains('-12-')==True)]
+        # held_data11212 = df[(df['start'].str.contains('-11-')==True) & (df['end'].str.contains('-12-')==True)]
+
+        # # if held_data126.empty:
+        # held7 = pd.merge(held_data127, held_data7212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held7['val'] = held7['val_x'] + held7['val_y']
+        # held7['start'] = held7['start_x']
+        # held7['end'] = held7['end_y']
+        # held7 = held7.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held7 = held7.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held7], ignore_index = True)
+        # # else:
+        # held6 = pd.merge(held_data126, held_data6212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held6['val'] = held6['val_x'] + held6['val_y']
+        # held6['start'] = held6['start_x']
+        # held6['end'] = held6['end_y']
+        # held6 = held6.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held6 = held6.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held6], ignore_index = True)
+
+        # held11 = pd.merge(held_data1211, held_data11212, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
+        # held11['val'] = held11['val_x'] + held11['val_y']
+        # held11['start'] = held11['start_x']
+        # held11['end'] = held11['end_y']
+        # held11 = held11.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
+        # held11 = held11.dropna(subset=['val'])#,'start'])
+        # returned_data = pd.concat([returned_data, held11], ignore_index = True)
+
+# def cleanDividends(total, perShare, shares):  #backup
+
+#     try:
+#         # shares['year'] = shares.end.str[:4]
+#         shares = shares.rename(columns={'val':'shares'})
+#         shares = shares.drop(columns=['Units'])
+#         # total['year'] = total.end.str[:4]
+#         total = total.rename(columns={'val':'totalDivsPaid'})
+#         # perShare['year'] = perShare.end.str[:4]
+#         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
+#         perShare = perShare.drop(columns=['Units'])
+
+#         # shares = shares.drop(columns=['start','end'])
+#         # total = total.drop(columns=['start','end'])
+#         # perShare = perShare.drop(columns=['start','end'])
+
+#         print('shares, total, pershare: ')
+#         print(shares)
+#         print(total)
+#         print(perShare)
+        
+#         if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
+#             cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
+#                      'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
+#             # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+#             df_col_added = pd.DataFrame(cols, index=[0])
+#             return df_col_added
+#             # shares['val'] = 1
+#         else:
+#             sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+#             # print('sharesNperShare: ')
+#             # print(sharesNperShare)
+#             df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
+#             # print('total + shares + per share: ')
+#             # print(df_col_added)
+#             df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
+#             # if df_col_added['shares'].empty:
+#             #     df_col_added['sharesGrowthRate'] = np.NaN
+#             # else:
+#             growthCol = grManualCalc(df_col_added['shares'])
+#             df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+#             # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
+
+#             #first we check for nans, keep them in mind for later
+#             nanList = []
+#             for x in df_col_added:
+#                 if df_col_added[x].isnull().any():
+#                     # integrity_flag = 'Acceptable'
+#                     nanList.append(x)
+#                     # print('nans found: ' + x)
+#             #How to handle those empty values in each column
+#             df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
+#             df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
+
+#             # df42 = pd.DataFrame()
+#             # df42['temp'] = df_col_added['tempPerShare']
+#             # df42['actual'] = df_col_added['divsPaidPerShare']
+#             # print(df42)
+
+#             for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
+#                 if x == 'divsPaidPerShare':
+#                     df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+#                     # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+#                     # df_col_added['divGrowthRate'] = growthCol1 
+#                 elif x == 'totalDivsPaid':
+#                     df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
+#                     # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
+#                     # df_col_added['divGrowthRate'] = growthCol1 
+#             df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare'])
+
+#             growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
+#             df_col_added['divGrowthRateBOT'] = growthCol1 
+#             growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
+#             df_col_added['divGrowthRateBOPS'] = growthCol2
+            
+#             # if df_col_added['divsPaidPerShares'].empty:
+#             #     df_col_added['divGrowthRate'] = np.NaN
+#             # else:
+            
+#             # print('average growth rate: ')
+#             # print(df_col_added['divGrowthRate'].mean())
+
+#             return df_col_added
+#     except Exception as err:
+#         print("clean dividends error: ")
+#         print(err)
 
 # def checkTechIncYears():
 #     try:
@@ -3338,7 +3350,7 @@ def uploadToDB(table, df):
 #         print(divYearTracker)
 
 # def dropDuplicatesInDF(df):
-#     #LUKE
+#  
 #     ### look at onto and compare against working ones below: nvda, crm, msft, o
 #     ### let's make cases of sorts. if statements. whatever. but sort it as such:
 #     ### years: same year? diff years by 1? dif years by 2?
