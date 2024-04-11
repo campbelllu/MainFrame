@@ -327,7 +327,7 @@ longTermDebt1 = ['LongTermDebtNoncurrent','NoncurrentPortionOfNoncurrentBondsIss
 longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent','NoncurrentPortionOfNoncurrentLoansReceived']
 longTermDebt3 = ['NoncurrentLeaseLiabilities']
 longTermDebt4 = ['LongtermBorrowings']
-totalAssets = ['Assets']
+totalAssets = ['Assets','LiabilitiesAndStockholdersEquity']
 currentAssets = ['CurrentAssets']
 nonCurrentAssets = ['NoncurrentAssets']
 totalLiabilities = ['Liabilities']
@@ -1791,9 +1791,6 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         print(err)
 
 def makeROICtableEntry(ticker, year, version, index_flag):
-    #editing notes: calcs for adjroic and roce and such, add examples including reported total equity
-    #test achr too. really weird numbers with negative net income #luke this is what you're looking for
-    #vs pct which is similar but diff roic???
     try:
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
         # print('opinc df')
@@ -1855,6 +1852,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
         plustEquity['adjRoic'] = plustEquity['netIncome'] / plustEquity['investedCapital'] * 100
+        plustEquity['reportedAdjRoic'] = plustEquity['netIncome'] / (plustEquity['ReportedTotalEquity'] + plustEquity['TotalDebt']) * 100
         plustEquity['calculatedRoce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
         plustEquity['reportedRoce'] = plustEquity['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
 
@@ -1925,9 +1923,9 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
     
     # print('you got this!')
 
-def checkYearsIntegritySector(sector):
+def checkYearsIntegritySector(sector,begNum,endNum):
     try:
-        nameCheckList = sector['Ticker']
+        nameCheckList = sector['Ticker'][begNum:endNum]
         # nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
         incMissingYearTracker = []
         incomeEndYearTracker = []
@@ -1949,6 +1947,7 @@ def checkYearsIntegritySector(sector):
         #NEW
         dIntPaid = []
         dTotalPaid = []
+        dSharesPaid = []
         dShares = []
 
         # roicYearTracker = []
@@ -1957,11 +1956,14 @@ def checkYearsIntegritySector(sector):
         rTotalEq = []
 
         toRecapture = []
-        yearsList = ['2023','2024'] #2022
+        yearsList = ['2023'] #2022
         version123 = '2'
+        # numTracker = tracker
 
-        for x in nameCheckList:
-            print(x)
+        # while endNum > numTracker:
+        for x in nameCheckList:# in range(len(nameCheckList)/10):
+            print(x)# + ', ' + str(numTracker) + ' out of ' + str(endNum))
+            # numTracker += 1
             try:
                 incTable = makeIncomeTableEntry(x, '2024', version123, False)
                 divsTable = makeDividendTableEntry(x,'2024',version123,False)
@@ -1972,9 +1974,9 @@ def checkYearsIntegritySector(sector):
                 for y in iyears:
                     iyearsint.append(int(y))
                 istart, iend = iyearsint[0], iyearsint[-1]
-                iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
-                if len(iMissingYears) > 0:
-                    incMissingYearTracker.append(x)
+                # iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+                # if len(iMissingYears) > 0:
+                #     incMissingYearTracker.append(x)
                 if iend != 2023:
                     incomeEndYearTracker.append(x)
                 if incTable['revenue'].isnull().any():
@@ -1998,18 +2000,20 @@ def checkYearsIntegritySector(sector):
                 for z in dyears:
                     dyearsint.append(int(z))
                 dstart, dend = dyearsint[0], dyearsint[-1]
-                dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
-                if len(dMissingYears) > 0:
-                    dMissingYearTracker.append(x)
+                # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+                # if len(dMissingYears) > 0:
+                #     dMissingYearTracker.append(x)
                 if dend != 2023:
                     dEndYearTracker.append(x)
                 if divsTable['interestPaid'].isnull().any():
                     dIntPaid.append(x)
                 if divsTable['totalDivsPaid'].isnull().any():
                     dTotalPaid.append(x)
+                if divsTable['divsPaidPerShare'].isnull().any():
+                    dSharesPaid.append(x)
                 if divsTable['shares'].isnull().any():
                     dShares.append(x)
-                 
+                
 
 
                 # #make lists of years columns, use to track years
@@ -2018,15 +2022,18 @@ def checkYearsIntegritySector(sector):
                 for a in ryears:
                     ryearsint.append(int(a))
                 rstart, rend = ryearsint[0], ryearsint[-1]
-                rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
-                if len(rMissingYears) > 0:
-                    rMissingYearTracker.append(x)
+                # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+                # if len(rMissingYears) > 0:
+                #     rMissingYearTracker.append(x)
                 if rend != 2023:
                     rEndYearTracker.append(x)
                 if roicTable['TotalEquity'].isnull().any():
-                    rTotalEq.append(x)
+                    if roicTable['ReportedTotalEquity'].isnull().any():
+                        rTotalEq.append(x)
                 
-                 
+                # if numTracker == endNum:
+                #     break
+                
             except Exception as err:
                 print("nested check years integrity error: ")
                 print(err)
@@ -2062,6 +2069,8 @@ def checkYearsIntegritySector(sector):
         print(dIntPaid)
         print('missingDivTotalPaid = ')
         print(dTotalPaid)
+        print('missingDivSharesPaid = ')
+        print(dSharesPaid)
         print('missingSshares = ')
         print(dShares)
         
@@ -2069,12 +2078,12 @@ def checkYearsIntegritySector(sector):
         print('missingTotalEquity = ')
         print(rTotalEq)
 
-        print('missingincomeyears = ')
-        print(incMissingYearTracker)
-        print('missingdivyears = ')
-        print(dMissingYearTracker)
-        print('missingroicyears =')
-        print(rMissingYearTracker)
+        # print('missingincomeyears = ')
+        # print(incMissingYearTracker)
+        # print('missingdivyears = ')
+        # print(dMissingYearTracker)
+        # print('missingroicyears =')
+        # print(rMissingYearTracker)
 
         print('wrongincomeendyear = ')
         print(incomeEndYearTracker)
@@ -2083,7 +2092,6 @@ def checkYearsIntegritySector(sector):
         print('wrongroicendyear = ')
         print(rEndYearTracker)
         
-
 def checkYearsIntegrityList(sectorList):
     try:
         nameCheckList = sectorList
@@ -2108,6 +2116,7 @@ def checkYearsIntegrityList(sectorList):
         #NEW
         dIntPaid = []
         dTotalPaid = []
+        dSharesPaid = []
         dShares = []
 
         # roicYearTracker = []
@@ -2131,9 +2140,9 @@ def checkYearsIntegrityList(sectorList):
                 for y in iyears:
                     iyearsint.append(int(y))
                 istart, iend = iyearsint[0], iyearsint[-1]
-                iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
-                if len(iMissingYears) > 0:
-                    incMissingYearTracker.append(x)
+                # iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+                # if len(iMissingYears) > 0:
+                #     incMissingYearTracker.append(x)
                 if iend != 2023:
                     incomeEndYearTracker.append(x)
                 if incTable['revenue'].isnull().any():
@@ -2157,15 +2166,17 @@ def checkYearsIntegrityList(sectorList):
                 for z in dyears:
                     dyearsint.append(int(z))
                 dstart, dend = dyearsint[0], dyearsint[-1]
-                dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
-                if len(dMissingYears) > 0:
-                    dMissingYearTracker.append(x)
+                # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+                # if len(dMissingYears) > 0:
+                #     dMissingYearTracker.append(x)
                 if dend != 2023:
                     dEndYearTracker.append(x)
                 if divsTable['interestPaid'].isnull().any():
                     dIntPaid.append(x)
                 if divsTable['totalDivsPaid'].isnull().any():
                     dTotalPaid.append(x)
+                if divsTable['divsPaidPerShare'].isnull().any():
+                    dSharesPaid.append(x)
                 if divsTable['shares'].isnull().any():
                     dShares.append(x)
                  
@@ -2177,13 +2188,16 @@ def checkYearsIntegrityList(sectorList):
                 for a in ryears:
                     ryearsint.append(int(a))
                 rstart, rend = ryearsint[0], ryearsint[-1]
-                rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
-                if len(rMissingYears) > 0:
-                    rMissingYearTracker.append(x)
+                # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+                # if len(rMissingYears) > 0:
+                #     rMissingYearTracker.append(x)
                 if rend != 2023:
                     rEndYearTracker.append(x)
+                # if roicTable['TotalEquity'].isnull().any():
+                #     rTotalEq.append(x)
                 if roicTable['TotalEquity'].isnull().any():
-                    rTotalEq.append(x)
+                    if roicTable['ReportedTotalEquity'].isnull().any():
+                        rTotalEq.append(x)
                 
                  
             except Exception as err:
@@ -2200,8 +2214,8 @@ def checkYearsIntegrityList(sectorList):
     finally:
         print('recap list: ')
         print(toRecapture)
-        print('missing income years:')
-        print(incMissingYearTracker)
+        # print('missing income years:')
+        # print(incMissingYearTracker)
         print('wrong income end year')
         print(incomeEndYearTracker)
         print('missing income revenue')
@@ -2218,56 +2232,59 @@ def checkYearsIntegrityList(sectorList):
         print(incDepnAmor)
         print('missing income prop sales')
         print(incGainProp)
-        print('missing div years:')
-        print(dMissingYearTracker)
+        # print('missing div years:')
+        # print(dMissingYearTracker)
         print('wrong div end year')
         print(dEndYearTracker)
         print('missing div intPaid')
         print(dIntPaid)
         print('missing div totalPaid')
         print(dTotalPaid)
+        print('missingDivSharesPaid = ')
+        print(dSharesPaid)
         print('missing div shares')
         print(dShares)
-        print('missing roic years:')
-        print(rMissingYearTracker)
+        # print('missing roic years:')
+        # print(rMissingYearTracker)
         print('wrong roic end year')
         print(rEndYearTracker)
         print('missing roic total equity')
         print(rTotalEq)
         
-lickit = [ ]
+lickit = [ ] #equity
 #
 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
+checkYearsIntegritySector(realEstate,9,10)
 
 # print(len(lickit))
 
-ticker12 = 'ACHR' #ABR
+ticker12 = 'SJW' #ABR
 print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
+# write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
 version12 = '2'
-print(ticker12 + ' income:')
-print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-print(ticker12 + ' divs:')
-print(makeDividendTableEntry(ticker12,'2024',version12,False))
-print(ticker12 + ' roic: ')
-print(makeROICtableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024',version12,False))
 
 
-ticker235 = 'PCT' 
-# print(nameCikDict[ticker235])
+ticker235 = 'NWN' 
 print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
 version235 = '2'
-print(ticker235 + ' income:')
-print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print(ticker235 + ' divs:')
-print(makeDividendTableEntry(ticker235,year235,version235,False))
-print(ticker235 + '  roic: ')
-print(makeROICtableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' income:')
+# print(makeIncomeTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' divs:')
+# print(makeDividendTableEntry(ticker235,year235,version235,False))
+# print(ticker235 + '  roic: ')
+# print(makeROICtableEntry(ticker235,year235,version235,False))
 
 
 
