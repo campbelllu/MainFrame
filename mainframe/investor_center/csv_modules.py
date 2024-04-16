@@ -40,7 +40,7 @@ def simple_saveDF_to_csv(folder, df, name, index_flag):
 #load csv's into dataframe
 def simple_get_df_from_csv(folder, name, index_flag):
     try:
-        df = pd.read_csv(folder + name + '.csv', index_col = index_flag)
+        df = pd.read_csv(folder + name + '.csv', dtype={'start':str}, index_col = index_flag) #dtype={'start':str} added to silence a dtype error, could cause issues down the line? (https://stackoverflow.com/questions/24251219/pandas-read-csv-low-memory-and-dtype-options)
     except FileNotFoundError as err:
         print("File Does Not Exist")
     else:

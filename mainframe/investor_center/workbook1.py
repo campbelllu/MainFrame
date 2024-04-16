@@ -311,11 +311,11 @@ netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPer
                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect', 'IncreaseDecreaseInCashAndCashEquivalents',
                 'CashAndCashEquivalentsPeriodIncreaseDecrease','IncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChanges'] #operCF + InvestCF + FinancingCF
 operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities','NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
-                    'NetCashProvidedByUsedInContinuingOperations', 'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital']
+                    'NetCashProvidedByUsedInContinuingOperations', 'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations','CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
 investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
 financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
-            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings','GrossInvestmentIncomeOperating'] #banks?! GrossInvestmentIncomeOperating
+            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings','GrossInvestmentIncomeOperating','RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
                 'ProfitLossAttributableToOwnersOfParent','ProfitLoss']
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
@@ -334,7 +334,8 @@ nonCurrentAssets = ['NoncurrentAssets']
 totalLiabilities = ['Liabilities']
 currentLiabilities = ['LiabilitiesCurrent','CurrentLiabilities']
 nonCurrentLiabilities = ['LiabilitiesNoncurrent','NoncurrentLiabilities']
-shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest']
+shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest','EquityAttributableToOwnersOfParent','PartnersCapital','Equity',
+                        'MembersCapital']
 
 exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually
 
@@ -467,7 +468,7 @@ def dropAllExceptFYRecords(df):
         # print(revCD)
         # halfStarts = ['-01-','-06-','-07-']
         # halfEnds = ['-06-','-07-','-12-']
-        #First we check for the full year reportings
+        #First we check for the full year reportings, includes start dates
         for x in oneEnds:
             # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
             held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
@@ -516,7 +517,7 @@ def dropAllExceptFYRecords(df):
         for x in twelveEnds:
             held_data = df[(df['start'].str.contains('-12-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-        #Now checking for those halfies because some companies just file things weirdly.
+        #Now checking for those halfies because some companies just file things weirdly. Still including start dates
         for x in revCD:
             # print('x')
             # print(x)
@@ -559,16 +560,24 @@ def dropAllExceptFYRecords(df):
         # print(returned_data)
         
 
-        #Monthly reporting sometimes also throws things off. 
+        # No start dates and some monthly reporters make things weird, empty here.
+        # So just pass the whole data set to the sorter and duplicate trimmer, let them deal with it
         if returned_data.empty:
             #if said month string is 12, year is end.str.year, if it's 01, it's year -1 ok ok
-            listMax = df.end.str[5:7]
-            # print(listMax)
-            tarMax = str(listMax.max())
-            held_data = df[df['end'].str.contains(tarMax)==True] #held_data
-            held_data2 = df[df['end'].str.contains('-01-')==True]
-            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-            returned_data = pd.concat([returned_data, held_data2], ignore_index = True)
+            # listMax = df.end.str[5:7]
+            # # print('all the end months')
+            # # print(listMax.unique())
+            # tarMax = str(listMax.max())
+            # held_data = df[df['end'].str.contains(tarMax)==True] #held_data
+            # held_data2 = df[df['end'].str.contains('-01-')==True]
+            # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+            # returned_data = pd.concat([returned_data, held_data2], ignore_index = True)
+
+            # yeartest = df.end.str[:4]
+            # print(yeartest)
+            # held_data = df[df['end'].str.contains('2014')==True]
+            # print(held_data)
+            returned_data = df
            
         # print('post check if empty')
         # print(returned_data)
@@ -818,6 +827,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(tagList)
         #get csv to df from params
         filtered_data = csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
+        # print(filtered_data)
         held_data = pd.DataFrame()
         returned_data = pd.DataFrame()
     
@@ -836,6 +846,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         
         # print('pre drop fy records')
         # print(returned_data.to_string())
+        # print(returned_data.shape)
         
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         # print('post drop fy records pre order')
@@ -1994,7 +2005,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         # print('opIncNtax')
         # print(opIncNtax)
-        if opIncNtax['Units'].isnull().all():
+        if opIncNtax['Units'].isnull().any():
             opIncNtax = opIncNtax.drop(columns=['Units'], axis=1)
             # print('opincntax df in empty if')
             # print(opIncNtaxNinc)
@@ -2003,7 +2014,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
             # print('still in iff post merge')
             # print(opIncNtaxNinc)
         else:
-
+            # print('in else')
 
             opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
             opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
@@ -3051,42 +3062,24 @@ def checkYearsIntegrityList(sectorList):
     #     print(rTotalEq)
         
 
-#INDUSTRIALS #look close at pool and ndsn ups??? ///cni not filing with sec since 2020?!? (https://stackoverflow.com/questions/24251219/pandas-read-csv-low-memory-and-dtype-options)
-#[ 'J',  'TTEK', 'ARMK', 'OSK', 'TSN']  all have weird gaps in equity/ROIC table. might need closer lookie poo
-#'HRL' duplicate years in roic
 
-
-#HEALTHCARE
-# missingTotalEquity = ['MRK', 'ABBV', 'TMO', 'ABT', 'AMGN', 'SNY', 'BSX', 'GILD', 'BDX', 'MCK', 'COR','CAH', 'ILMN', 'PHG', 'HOLX', 'DGX', 'UHS', 'TECH']
-# missingNetCF = ['HLN', 'ARGX']
-# recapList = ['ISRG', 'CSLLY', 'MRNA', 'VEEV']
-# missingRevenue = ['NVS', 'SNY']
-# missingOpCF = ['PHG']
-# missingCapEx = ['RPRX']
-# missingDepreNAmor = ['ARGX', 'BNTX', 'PHG', 'GMAB', 'HOLX', 'RDY', 'SNN', 'LEGN']
-# missingIntPaid = ['KRTX']
-
-#Finance
-# missingTotalEquity = ['MMC','CM']
-# missingIntPaid = ['AMP', 'PUK', 'PFG']
-# missingCapEx = ['AFL', 'CM', 'MFC', 'IBKR', 'PRU', 'IX', 'PFG']
-# missingRevenue = ['BSBR', 'DFS', 'RKT', 'FCNCA']
-
-#Energy
-# missingRevenue = ['APA']
-# missingOpCF = ['CPG']
-# missingCapEx = ['SHEL', 'TTE', 'EOG', 'PSX', 'SU', 'WDS', 'FANG', 'PR', 'APA', 'CHRD','SM', 'MGY', 'CPG', 'BSM', 'STR', 'WHD', 'BTE']
-# missingDepreNAmor = ['SHEL', 'EQNR', 'CNQ', 'EPD', 'E', 'SU', 'WDS', 'CVE', 'TS', 'PBA', 'PR', 'YPF', 'CSAN', 'UGP', 'NE', 'VNOM','VVV', 'VAL', 'PTEN', 'SM', 'NXE', 'CPG', 'EURN', 'STNG', 'ERF', 'TGS', 'TRMD', 'VIST', 'BTE']
-# missingIntPaid = ['EQNR', 'TPL']
-# missingTotalEquity = ['TTE', 'EOG', 'EPD', 'PXD', 'OXY', 'VLO', 'SU', 'WMB', 'OKE', 'LNG', 'DVN', 'CQP', 'TRGP', 'DINO', 'APA', 'UGP','ENLC', 'CRC', 'EURN', 'TDW']
-
-lickit = [ ]
+lickit = ['CNI']
+# checkYearsIntegritySector(materials,0,50)
 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
-ticker12 = 'ACI' #ABR
+
+#NKE roce years off one year early. big table has nan's in it
+#'TCOM' years are all messed up
+#DIS years
+#in the fill growth rate calcs, add functions to fill in net cash flow if you have blanks and the others cash flows to provide values. do for all fields
+#SHW weird 2008 repeat
+#CX weird repeat 2018 roic and income, years are right tho!
+#dvn bad roic years, crc too, tdw, argx
+                        
+ticker12 = 'TCOM' #ABR
 print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
@@ -3098,51 +3091,13 @@ print(makeDividendTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs and roic table: ')
 # print(makeConsolidatedTableEntry(ticker12, year12, version12, False).iloc[:, 0:12])
 print(ticker12 + ' roic: ')
-print(makeROICtableEntry(ticker12,'2024',version12,False))
+print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
 # print(ticker12 + ' divs and roic table: ')
-# print(makeConsolidatedTableEntry(ticker12, year12, version12, False))
-
-#Discretionary
-# missingTotalEquity = ['MCD', 'NKE', 'TJX', 'MAR', 'STLA', 'RACE', 'ORLY', 'ROST', 'AZO', 'EXPE']
-# missingDepreNAmor = ['STLA', 'RACE', 'TCOM']
-#recap 'CMG'
-
-#Comms
-# missingTotalEquity = ['DIS', 'CMCSA', 'CHTR', 'ORAN', 'VOD', 'TEF', 'LYV', 'OMC', 'NWSA', 'FOXA', 'WPP', 'MTCH', 'PARA']
-# missingNetCF = ['BCE']
-# missingDepreNAmor = ['AMX', 'SPOT', 'CHTR', 'BCE', 'ORAN', 'CHT', 'TLK', 'TU', 'RCI', 'VOD', 'TEF', 'VIV', 'TME', 'WPP', 'MTCH', 'TIMB']
-# missingRevenue = ['VIV']
-
-#Materials  ###RS??!? 
-# /home/user1/masterSword/MainFrame/mainframe/investor_center/csv_modules.py:43: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
-#   df = pd.read_csv(folder + name + '.csv', index_col = index_flag)
-##same error as pool above
-# missingTotalEquity = ['SHW', 'DOW', 'LYB', 'CF', 'ALB']
-# missingDepreNAmor = ['BHP', 'RIO', 'SHW', 'NUE', 'PKX', 'NTR', 'MT', 'FNV', 'WPM', 'TECK', 'SUZ', 'SQM']
-# missingCapEx = ['WPM']
-#recap CX
+# print(makeConsolidatedTableEntry(ticker12, year12, version12, False)['ReportedTotalEquity'])
 
 
 
-
-# checkYearsIntegritySector(util,0,40)
-
-# checkYearsIntegritySector(materials,0,50)
-
-# print(len(lickit))
-
-
-
-# arcroic = makeROICtableEntry(ticker12,'2024',version12,False)
-# arcfull = makeConsolidatedTableEntry(ticker12, year12, version12, False)
-
-# print(arcroic['netIncome'] == arcfull['netIncome'])
-# print(arcroic['netIncome'])
-# print(arcfull['netIncome'])
-
-
-
-ticker235 = 'RRX' 
+ticker235 = 'HRL' 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
@@ -3181,19 +3136,7 @@ version235 = '2'
 # print(len(techmissingincomecapex2))
 
 #################
-# harvestMasterCSVs(consStaples)  #comms #
 
-# checkYearsIntegritySector(consCyclical)
-
-# write_Master_csv_from_EDGAR('SIMO',ultimateTagsList,'2024','2') #'0000726728'
-# write_Master_csv_from_EDGAR('EGP','0000049600',ultimateTagsList,'2024','2')
-# write_Master_csv_from_EDGAR('ABR','0001253986',ultimateTagsList,'2024','2')
-# for x in incRERecap:
-#     nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
-#     write_Master_csv_from_EDGAR(x,nameCikDict[x],ultimateTagsList,'2024','2')
-# 
-# nameCikDict = realEstate.set_index('Ticker')['CIK'].to_dict()
-# print(nameCikDict)
 
 ticker100 = 'ARCC' #ABR
 year100 = '2024'
