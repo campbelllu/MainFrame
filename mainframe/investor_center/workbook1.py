@@ -19,6 +19,7 @@ from collections import Counter as counter
 import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
+# import gc
 
 import csv_modules as csv
 
@@ -162,7 +163,7 @@ comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Se
 consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
 consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
 energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
-financial = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
+finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
 health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
 ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
 realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
@@ -339,7 +340,8 @@ exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You
 
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',
         'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets','PaymentsToAcquireProductiveAssets',
-        'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
+        'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets','PaymentsToDevelopRealEstateAssets',
+        'PurchaseOfAvailableforsaleFinancialAssets','PaymentsToAcquireAndDevelopRealEstate'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
                             'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities',
                             'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares'] #DividendsPaid could be useful later
@@ -553,16 +555,23 @@ def dropAllExceptFYRecords(df):
         #concat to returned data
 
         
-
+        # print('pre check if empty')
+        # print(returned_data)
         
 
         #Monthly reporting sometimes also throws things off. 
         if returned_data.empty:
+            #if said month string is 12, year is end.str.year, if it's 01, it's year -1 ok ok
             listMax = df.end.str[5:7]
+            # print(listMax)
             tarMax = str(listMax.max())
             held_data = df[df['end'].str.contains(tarMax)==True] #held_data
+            held_data2 = df[df['end'].str.contains('-01-')==True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+            returned_data = pd.concat([returned_data, held_data2], ignore_index = True)
            
+        # print('post check if empty')
+        # print(returned_data)
         # print(returned_data)
         return returned_data
     except Exception as err:
@@ -830,11 +839,11 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         # print('post drop fy records pre order')
-        # print(returned_data)
+        # print(returned_data.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
         # print('post order pre drop  dupes')
-        # print(returned_data)
+        # print(returned_data.to_string())
         # print(returned_data.shape)
 
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
@@ -1777,8 +1786,73 @@ def fillEmptyROICGrowthRates2(df): #LUKE make an ulti-fill function for the comb
         # print(df_filled)
         return df_filled
 
-def fillAllEmptyGrowthRates(df):
+def fillUnits(df):
+    try:
+        df_filled = pd.DataFrame()
+        if df['Units'].isnull().all():
+            # print('they all empty')
+            df_filled = df.drop('Units',axis=1)
+        else:
+            # print('filling empties')
+            df_filled = df
+            df_filled['Units'] = df_filled['Units'].ffill().bfill()
 
+        return df_filled
+    except Exception as err:
+        print("fill Units error: ")
+        print(err)
+
+def fillAllEmptyGrowthRates(df):
+    try:
+        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
+        df_filled = df
+        fixTracker = 0
+        for x in tarList:
+            tarGrowthRate = x + 'GrowthRate'
+            # meanReplacement = df_filled[x].mean()
+            savedCol = df_filled[x]
+            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
+            df_filled[x] = df_filled[x].ffill().bfill()
+
+            growthCol = grManualCalc(df_filled[x])
+            df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
+
+            if savedCol.isnull().any():
+                percentNull = savedCol.isnull().sum() / len(savedCol)
+                if percentNull > 0.4:
+                    fixTracker += 1
+            # if savedCol.equals(df_filled[x]):
+            #     continue
+            # else:
+            #     fixTracker += 1
+
+        
+        # if df_filled['depreNAmor'].isnull().any():
+        #     percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
+        #     if percentNull > 0.4:
+        #         fixTracker += 1
+        #     # fixTracker += 1  
+        #     # print('it was shares')
+        #     df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
+
+        # if df_filled['Units'].isnull().all():
+        #     # print('they all empty')
+        #     df_filled = df_filled.drop('Units',axis=1)
+        # else:
+        #     # print('filling empties')
+        #     df_filled['Units'] = df_filled['Units'].ffill().bfill()
+
+        if fixTracker > 4:
+            df_filled['INCintegrityFlag'] = 'NeedsWork'
+        elif fixTracker == 0: 
+            df_filled['INCintegrityFlag'] = 'Good'
+        else:
+            df_filled['INCintegrityFlag'] = 'Acceptable'
+        return df_filled
+    except Exception as err:
+        print("fill empty inc GR error: ")
+        print(err)
+        
 #Making tables for DB insertion
 def makeIncomeTableEntry(ticker, year, version, index_flag): 
     try:
@@ -2022,7 +2096,7 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
         print("makeDividend table error: ")
         print(err)
 
-def makeDivAndROICTableEntry(ticker, year, version, index_flag):
+def makeConsolidatedTableEntry(ticker, year, version, index_flag):
     try:
         rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
         # print('rev df: ')
@@ -2104,25 +2178,7 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         # print(plusSaleProp['investingCashFlow'])
         # print(plusSaleProp['investingCashFlowGrowthRate'])
 
-        #CLEAN column empty values here before adding FFO calculations 
-        plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
-        # print('integrated income table')
-        # print(plusSaleProp)
-        plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
-        
-        addfcf = cleanfcf(plusSaleProp)
-        # print('addfcf: ')
-        # print(addfcf)
-        
-        addfcfMargin = cleanfcfMargin(addfcf)
-        #Clean sales of property
-        addfcfMargin['gainSaleProp']=addfcfMargin['gainSaleProp'].replace(np.nan,0)
-        # print('addfcfMargin: ')
-        # print(addfcfMargin)
-
-        addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
-        growthCol = grManualCalc(addfcfMargin['ffo'])
-        addfcfMargin['ffoGrowthRate'] = growthCol
+        plusSaleProp = fillUnits(plusSaleProp)
 
 
         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
@@ -2160,12 +2216,8 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         # print(intNdivs)
         # print('pre fill intndivs: ')
         # print(intNdivs)
-
-        # print('pre GR fill divs')
-        # print(intNdivs)
-        intNdivs = fillEmptyDivsGrowthRates(intNdivs)
-        # print('post GR fill divs')
-        # print(intNdivs)
+        intNdivs = fillUnits(intNdivs)
+        
 
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
         # print('opinc df')
@@ -2189,8 +2241,6 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         # print('TEquity df')
         # print(totalEquity_df)
 
-    
-
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         # print('opIncNtax')
         # print(opIncNtax)
@@ -2205,14 +2255,12 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         #     # print(opIncNtaxNinc)
         # else:
 
-
         #     opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
         #     opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
 
         # print('opincntax df after if')
         # print(opIncNtaxNinc)
         # print(opIncNtax)
-
         
         plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
         # print('plusdebt df')
@@ -2223,32 +2271,112 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
 
+        plustEquity = fillUnits(plustEquity)
+
         # print('pre GR fill equity')
         # print(plustEquity)
 
-        plustEquity = fillEmptyROICGrowthRates(plustEquity) #one or two?!?! LUKE
-
-        # print('post GR fill equity')
-        # print(plustEquity)
-
-
-        plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
-        plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
-        plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
-        plustEquity['adjRoic'] = addfcfMargin['netIncome'] / plustEquity['investedCapital'] * 100
-        plustEquity['reportedAdjRoic'] = addfcfMargin['netIncome'] / (plustEquity['ReportedTotalEquity'] + plustEquity['TotalDebt']) * 100
-        plustEquity['calculatedRoce'] = addfcfMargin['netIncome'] / plustEquity['TotalEquity'] * 100
-        plustEquity['reportedRoce'] = addfcfMargin['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
+        
 
         # print('post fill intndivs: ')
         # print(intNdivs)
+        
+        ###INCOME TABLE IS plusSaleProp
+        ###Dividends table is intNdivs
+        ###ROIC TABLE is plustEquity
         divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
-        incDivsROIC = pd.merge(divsPlusROIC,addfcfMargin, on=['year','Ticker','CIK','Units'], how='outer')
+        incDivsROIC = pd.merge(divsPlusROIC,plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
+        
+
+        incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC)
+
+        
+
+        
+
+        incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
+        incDivsROIC = incDivsROIC.drop(columns=['depreNAmorGrowthRate'])
+        incDivsROIC = cleanfcf(incDivsROIC)
+
+        incDivsROIC = cleanfcfMargin(incDivsROIC)
+        # #Clean sales of property
+        incDivsROIC['gainSaleProp'] = incDivsROIC['gainSaleProp'].replace(np.nan,0)
+        incDivsROIC['ffo'] = incDivsROIC['netIncome'] + incDivsROIC['depreNAmor'] - incDivsROIC['gainSaleProp']
+        growthCol = grManualCalc(incDivsROIC['ffo'])
+        incDivsROIC['ffoGrowthRate'] = growthCol
+
+        incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC)
+        incDivsROIC['nopat'] = incDivsROIC['operatingIncome'] * (1 - incDivsROIC['taxRate'])
+        incDivsROIC['investedCapital'] = incDivsROIC['TotalEquity'] + incDivsROIC['TotalDebt']
+        incDivsROIC['roic'] = incDivsROIC['nopat'] / incDivsROIC['investedCapital'] * 100
+        incDivsROIC['adjRoic'] = incDivsROIC['netIncome'] / incDivsROIC['investedCapital'] * 100
+        incDivsROIC['reportedAdjRoic'] = incDivsROIC['netIncome'] / (incDivsROIC['ReportedTotalEquity'] + incDivsROIC['TotalDebt']) * 100
+        incDivsROIC['calculatedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['TotalEquity'] * 100
+        incDivsROIC['reportedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['ReportedTotalEquity'] * 100
+
+
+        ### EQUITY/ROIC TABLE AT END
+        # incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC) #one or two?!?! LUKE
+        # print('post GR fill equity')
+        # print(plustEquity)
+
+        # plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
+        # plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
+        # plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
+        # plustEquity['adjRoic'] = addfcfMargin['netIncome'] / plustEquity['investedCapital'] * 100
+        # plustEquity['reportedAdjRoic'] = addfcfMargin['netIncome'] / (plustEquity['ReportedTotalEquity'] + plustEquity['TotalDebt']) * 100
+        # plustEquity['calculatedRoce'] = addfcfMargin['netIncome'] / plustEquity['TotalEquity'] * 100
+        # plustEquity['reportedRoce'] = addfcfMargin['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
+
+        ###
+
+        ### DIV CLEANING AT THE END
+        # print('pre GR fill divs')
+        # print(intNdivs)
+        # incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC)
+        # print('post GR fill divs')
+        # print(intNdivs)
+
+        ###
+        ### INCOME CLEANING AT THE END
+        #CLEAN column empty values here before adding FFO calculations 
+        # incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
+        # plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
+        
+        # addfcf = cleanfcf(plusSaleProp)
+        # # print('addfcf: ')
+        # # print(addfcf)
+        
+        # addfcfMargin = cleanfcfMargin(addfcf)
+        # #Clean sales of property
+        # addfcfMargin['gainSaleProp']=addfcfMargin['gainSaleProp'].replace(np.nan,0)
+        # # print('addfcfMargin: ')
+        # # print(addfcfMargin)
+
+        # addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
+        # growthCol = grManualCalc(addfcfMargin['ffo'])
+        # addfcfMargin['ffoGrowthRate'] = growthCol
+
+        ###
+
+        # print('income')
+        # print(plusSaleProp)
+        # print('altogether inc')
+        # print(incDivsROIC.iloc[:, 20:35])
+        # print('divs')
+        # print(intNdivs)
+        # print('altogether divs')
+        # print(incDivsROIC.iloc[:, :11])
+        # print('eq roic')
+        # print(plustEquity)
+        # # print('divs plus eq')
+        # # print(divsPlusROIC)
+        # print('altogether roic')
+        # print(incDivsROIC.iloc[:, 36:50])
         # print(incDivsROIC.shape)
         # for z in incDivsROIC:
         #     print(z)
-        # print(divsPlusROIC.head())
-
+        
         return incDivsROIC
     
     except Exception as err:
@@ -2256,6 +2384,176 @@ def makeDivAndROICTableEntry(ticker, year, version, index_flag):
         print(err)
 
 def checkYearsIntegritySector(sector,begNum,endNum):
+    try:
+        nameCheckList = sector['Ticker'][begNum:endNum]
+        # nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
+        MissingYearTracker = []
+        EndYearTracker = []
+        # dMissingYearTracker = []
+        # dEndYearTracker = []
+        # rMissingYearTracker = []
+        # rEndYearTracker = []
+        #NEW
+        incRev = []
+        incNetInc = []
+        incOpCF = []
+        incCapEx = []
+        incNetCF = []
+        incDepnAmor = []
+        incGainProp = []
+
+        # divYearTracker = []
+        # divomeNullTracker = []
+        #NEW
+        dIntPaid = []
+        dTotalPaid = []
+        dSharesPaid = []
+        dShares = []
+
+        # roicYearTracker = []
+        # roicNullTracker = []
+        #new
+        rTotalEq = []
+
+        toRecapture = []
+        yearsList = ['2023'] #2022
+        version123 = '2'
+        # numTracker = tracker
+
+        # while endNum > numTracker:
+        for x in nameCheckList:# in range(len(nameCheckList)/10):
+            print(x)# + ', ' + str(numTracker) + ' out of ' + str(endNum))
+            # gc.collect() #not helping memory issue
+            # numTracker += 1
+            try:
+                theTable = makeConsolidatedTableEntry(x, '2024', version123, False)
+                # divsTable = makeDividendTableEntry(x,'2024',version123,False)
+                # roicTable = makeROICtableEntry(x,'2024', version123, False)
+                #make lists of years columns, use to track years
+                iyears = list(theTable['year'])
+                iyearsint = []
+                for y in iyears:
+                    iyearsint.append(int(y))
+                istart, iend = iyearsint[0], iyearsint[-1]
+                iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+                if len(iMissingYears) > 0:
+                    MissingYearTracker.append(x)
+                if iend != 2023:
+                    EndYearTracker.append(x)
+                if theTable['revenue'].isnull().any():
+                    incRev.append(x)
+                if theTable['netIncome'].isnull().any():
+                    incNetInc.append(x)
+                if theTable['operatingCashFlow'].isnull().any():
+                    incOpCF.append(x)
+                if theTable['capEx'].isnull().any():
+                    incCapEx.append(x)
+                if theTable['netCashFlow'].isnull().any():
+                    incNetCF.append(x)
+                if theTable['depreNAmor'].isnull().any():
+                    incDepnAmor.append(x)
+                if theTable['gainSaleProp'].isnull().any():
+                    incGainProp.append(x)
+
+                #make lists of years columns, use to track years
+                # dyears = list(theTable['year'])
+                # dyearsint = []
+                # for z in dyears:
+                #     dyearsint.append(int(z))
+                # dstart, dend = dyearsint[0], dyearsint[-1]
+                # # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+                # # if len(dMissingYears) > 0:
+                # #     dMissingYearTracker.append(x)
+                # if dend != 2023:
+                #     dEndYearTracker.append(x)
+                if theTable['interestPaid'].isnull().any():
+                    dIntPaid.append(x)
+                if theTable['totalDivsPaid'].isnull().any():
+                    dTotalPaid.append(x)
+                if theTable['divsPaidPerShare'].isnull().any():
+                    dSharesPaid.append(x)
+                if theTable['shares'].isnull().any():
+                    dShares.append(x)
+                
+
+
+                # #make lists of years columns, use to track years
+                # ryears = list(roicTable['year'])
+                # ryearsint = []
+                # for a in ryears:
+                #     ryearsint.append(int(a))
+                # rstart, rend = ryearsint[0], ryearsint[-1]
+                # # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+                # # if len(rMissingYears) > 0:
+                # #     rMissingYearTracker.append(x)
+                # if rend != 2023:
+                #     rEndYearTracker.append(x)
+                if theTable['TotalEquity'].isnull().any():
+                    if theTable['ReportedTotalEquity'].isnull().any():
+                        rTotalEq.append(x)
+                
+                # if numTracker == endNum:
+                #     break
+                
+            except Exception as err:
+                print("nested check years integrity error: ")
+                print(err)
+                toRecapture.append(x)
+                continue             
+
+
+    except Exception as err:
+        print("check years integrity error: ")
+        print(err)
+
+    finally:
+        print('recapList = ')
+        print(toRecapture)
+        
+        print('missingRevenue = ')
+        print(incRev)
+        print('missingNetIncome = ')
+        print(incNetInc)
+        print('missingOpCF = ')
+        print(incOpCF)
+        print('missingCapEx = ')
+        print(incCapEx)
+        print('missingNetCF = ')
+        print(incNetCF)
+        print('missingDepreNAmor = ')
+        print(incDepnAmor)
+        print('missing income prop sales')
+        print(incGainProp)
+        
+        
+        print('missingIntPaid = ')
+        print(dIntPaid)
+        print('missingDivTotalPaid = ')
+        print(dTotalPaid)
+        print('missingDivSharesPaid = ')
+        print(dSharesPaid)
+        print('missingSshares = ')
+        print(dShares)
+        
+        
+        print('missingTotalEquity = ')
+        print(rTotalEq)
+
+        print('missing years = ')
+        print(MissingYearTracker)
+        # print('missingdivyears = ')
+        # print(dMissingYearTracker)
+        # print('missingroicyears =')
+        # print(rMissingYearTracker)
+
+        print('wrong end year = ')
+        print(EndYearTracker)
+        # print('wrongdivendyear = ')
+        # print(dEndYearTracker)
+        # print('wrongroicendyear = ')
+        # print(rEndYearTracker)
+        
+def checkYearsIntegritySectorBACKUP(sector,begNum,endNum):
     try:
         nameCheckList = sector['Ticker'][begNum:endNum]
         # nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
@@ -2428,12 +2726,12 @@ def checkYearsIntegrityList(sectorList):
     try:
         nameCheckList = sectorList
         # nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
-        incMissingYearTracker = []
-        incomeEndYearTracker = []
-        dMissingYearTracker = []
-        dEndYearTracker = []
-        rMissingYearTracker = []
-        rEndYearTracker = []
+        MissingYearTracker = []
+        EndYearTracker = []
+        # dMissingYearTracker = []
+        # dEndYearTracker = []
+        # rMissingYearTracker = []
+        # rEndYearTracker = []
         #NEW
         incRev = []
         incNetInc = []
@@ -2457,81 +2755,85 @@ def checkYearsIntegrityList(sectorList):
         rTotalEq = []
 
         toRecapture = []
-        yearsList = ['2023','2024'] #2022
+        yearsList = ['2023'] #2022
         version123 = '2'
+        # numTracker = tracker
 
-        for x in nameCheckList:
-            print(x)
+        # while endNum > numTracker:
+        for x in nameCheckList:# in range(len(nameCheckList)/10):
+            print(x)# + ', ' + str(numTracker) + ' out of ' + str(endNum))
+            # gc.collect() #not helping memory issue
+            # numTracker += 1
             try:
-                incTable = makeIncomeTableEntry(x, '2024', version123, False)
-                divsTable = makeDividendTableEntry(x,'2024',version123,False)
-                roicTable = makeROICtableEntry(x,'2024', version123, False)
+                theTable = makeConsolidatedTableEntry(x, '2024', version123, False)
+                # divsTable = makeDividendTableEntry(x,'2024',version123,False)
+                # roicTable = makeROICtableEntry(x,'2024', version123, False)
                 #make lists of years columns, use to track years
-                iyears = list(incTable['year'])
+                iyears = list(theTable['year'])
                 iyearsint = []
                 for y in iyears:
                     iyearsint.append(int(y))
                 istart, iend = iyearsint[0], iyearsint[-1]
-                # iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
-                # if len(iMissingYears) > 0:
-                #     incMissingYearTracker.append(x)
+                iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+                if len(iMissingYears) > 0:
+                    MissingYearTracker.append(x)
                 if iend != 2023:
-                    incomeEndYearTracker.append(x)
-                if incTable['revenue'].isnull().any():
+                    EndYearTracker.append(x)
+                if theTable['revenue'].isnull().any():
                     incRev.append(x)
-                if incTable['netIncome'].isnull().any():
+                if theTable['netIncome'].isnull().any():
                     incNetInc.append(x)
-                if incTable['operatingCashFlow'].isnull().any():
+                if theTable['operatingCashFlow'].isnull().any():
                     incOpCF.append(x)
-                if incTable['capEx'].isnull().any():
+                if theTable['capEx'].isnull().any():
                     incCapEx.append(x)
-                if incTable['netCashFlow'].isnull().any():
+                if theTable['netCashFlow'].isnull().any():
                     incNetCF.append(x)
-                if incTable['depreNAmor'].isnull().any():
+                if theTable['depreNAmor'].isnull().any():
                     incDepnAmor.append(x)
-                if incTable['gainSaleProp'].isnull().any():
+                if theTable['gainSaleProp'].isnull().any():
                     incGainProp.append(x)
 
                 #make lists of years columns, use to track years
-                dyears = list(divsTable['year'])
-                dyearsint = []
-                for z in dyears:
-                    dyearsint.append(int(z))
-                dstart, dend = dyearsint[0], dyearsint[-1]
-                # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
-                # if len(dMissingYears) > 0:
-                #     dMissingYearTracker.append(x)
-                if dend != 2023:
-                    dEndYearTracker.append(x)
-                if divsTable['interestPaid'].isnull().any():
+                # dyears = list(theTable['year'])
+                # dyearsint = []
+                # for z in dyears:
+                #     dyearsint.append(int(z))
+                # dstart, dend = dyearsint[0], dyearsint[-1]
+                # # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+                # # if len(dMissingYears) > 0:
+                # #     dMissingYearTracker.append(x)
+                # if dend != 2023:
+                #     dEndYearTracker.append(x)
+                if theTable['interestPaid'].isnull().any():
                     dIntPaid.append(x)
-                if divsTable['totalDivsPaid'].isnull().any():
+                if theTable['totalDivsPaid'].isnull().any():
                     dTotalPaid.append(x)
-                if divsTable['divsPaidPerShare'].isnull().any():
+                if theTable['divsPaidPerShare'].isnull().any():
                     dSharesPaid.append(x)
-                if divsTable['shares'].isnull().any():
+                if theTable['shares'].isnull().any():
                     dShares.append(x)
-                 
+                
 
 
                 # #make lists of years columns, use to track years
-                ryears = list(roicTable['year'])
-                ryearsint = []
-                for a in ryears:
-                    ryearsint.append(int(a))
-                rstart, rend = ryearsint[0], ryearsint[-1]
-                # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
-                # if len(rMissingYears) > 0:
-                #     rMissingYearTracker.append(x)
-                if rend != 2023:
-                    rEndYearTracker.append(x)
-                # if roicTable['TotalEquity'].isnull().any():
-                #     rTotalEq.append(x)
-                if roicTable['TotalEquity'].isnull().any():
-                    if roicTable['ReportedTotalEquity'].isnull().any():
+                # ryears = list(roicTable['year'])
+                # ryearsint = []
+                # for a in ryears:
+                #     ryearsint.append(int(a))
+                # rstart, rend = ryearsint[0], ryearsint[-1]
+                # # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+                # # if len(rMissingYears) > 0:
+                # #     rMissingYearTracker.append(x)
+                # if rend != 2023:
+                #     rEndYearTracker.append(x)
+                if theTable['TotalEquity'].isnull().any():
+                    if theTable['ReportedTotalEquity'].isnull().any():
                         rTotalEq.append(x)
                 
-                 
+                # if numTracker == endNum:
+                #     break
+                
             except Exception as err:
                 print("nested check years integrity error: ")
                 print(err)
@@ -2544,82 +2846,304 @@ def checkYearsIntegrityList(sectorList):
         print(err)
 
     finally:
-        print('recap list: ')
+        print('recapList = ')
         print(toRecapture)
-        # print('missing income years:')
-        # print(incMissingYearTracker)
-        print('wrong income end year')
-        print(incomeEndYearTracker)
-        print('missing income revenue')
+        
+        print('missingRevenue = ')
         print(incRev)
-        print('missing income netIncome')
+        print('missingNetIncome = ')
         print(incNetInc)
-        print('missing income opCF')
+        print('missingOpCF = ')
         print(incOpCF)
-        print('missing income capEx')
+        print('missingCapEx = ')
         print(incCapEx)
-        print('missing income netCF')
+        print('missingNetCF = ')
         print(incNetCF)
-        print('missing income depreNAmor')
+        print('missingDepreNAmor = ')
         print(incDepnAmor)
         print('missing income prop sales')
         print(incGainProp)
-        # print('missing div years:')
-        # print(dMissingYearTracker)
-        print('wrong div end year')
-        print(dEndYearTracker)
-        print('missing div intPaid')
+        
+        
+        print('missingIntPaid = ')
         print(dIntPaid)
-        print('missing div totalPaid')
+        print('missingDivTotalPaid = ')
         print(dTotalPaid)
         print('missingDivSharesPaid = ')
         print(dSharesPaid)
-        print('missing div shares')
+        print('missingSshares = ')
         print(dShares)
-        # print('missing roic years:')
-        # print(rMissingYearTracker)
-        print('wrong roic end year')
-        print(rEndYearTracker)
-        print('missing roic total equity')
-        print(rTotalEq)
         
-lickit = [ ] #equity
-#
+        
+        print('missingTotalEquity = ')
+        print(rTotalEq)
+
+        print('missing years = ')
+        print(MissingYearTracker)
+        # print('missingdivyears = ')
+        # print(dMissingYearTracker)
+        # print('missingroicyears =')
+        # print(rMissingYearTracker)
+
+        print('wrong end year = ')
+        print(EndYearTracker)
+        # print('wrongdivendyear = ')
+        # print(dEndYearTracker)
+        # print('wrongroicendyear = ')
+        # print(rEndYearTracker)
+    
+    # try:
+    #     nameCheckList = sectorList
+    #     # nameCikDict = sector.set_index('Ticker')['CIK'].to_dict()
+    #     incMissingYearTracker = []
+    #     incomeEndYearTracker = []
+    #     dMissingYearTracker = []
+    #     dEndYearTracker = []
+    #     rMissingYearTracker = []
+    #     rEndYearTracker = []
+    #     #NEW
+    #     incRev = []
+    #     incNetInc = []
+    #     incOpCF = []
+    #     incCapEx = []
+    #     incNetCF = []
+    #     incDepnAmor = []
+    #     incGainProp = []
+
+    #     # divYearTracker = []
+    #     # divomeNullTracker = []
+    #     #NEW
+    #     dIntPaid = []
+    #     dTotalPaid = []
+    #     dSharesPaid = []
+    #     dShares = []
+
+    #     # roicYearTracker = []
+    #     # roicNullTracker = []
+    #     #new
+    #     rTotalEq = []
+
+    #     toRecapture = []
+    #     yearsList = ['2023','2024'] #2022
+    #     version123 = '2'
+
+    #     for x in nameCheckList:
+    #         print(x)
+    #         try:
+    #             incTable = makeIncomeTableEntry(x, '2024', version123, False)
+    #             divsTable = makeDividendTableEntry(x,'2024',version123,False)
+    #             roicTable = makeROICtableEntry(x,'2024', version123, False)
+    #             #make lists of years columns, use to track years
+    #             iyears = list(incTable['year'])
+    #             iyearsint = []
+    #             for y in iyears:
+    #                 iyearsint.append(int(y))
+    #             istart, iend = iyearsint[0], iyearsint[-1]
+    #             # iMissingYears = sorted(set(range(istart,iend)) - set(iyearsint))
+    #             # if len(iMissingYears) > 0:
+    #             #     incMissingYearTracker.append(x)
+    #             if iend != 2023:
+    #                 incomeEndYearTracker.append(x)
+    #             if incTable['revenue'].isnull().any():
+    #                 incRev.append(x)
+    #             if incTable['netIncome'].isnull().any():
+    #                 incNetInc.append(x)
+    #             if incTable['operatingCashFlow'].isnull().any():
+    #                 incOpCF.append(x)
+    #             if incTable['capEx'].isnull().any():
+    #                 incCapEx.append(x)
+    #             if incTable['netCashFlow'].isnull().any():
+    #                 incNetCF.append(x)
+    #             if incTable['depreNAmor'].isnull().any():
+    #                 incDepnAmor.append(x)
+    #             if incTable['gainSaleProp'].isnull().any():
+    #                 incGainProp.append(x)
+
+    #             #make lists of years columns, use to track years
+    #             dyears = list(divsTable['year'])
+    #             dyearsint = []
+    #             for z in dyears:
+    #                 dyearsint.append(int(z))
+    #             dstart, dend = dyearsint[0], dyearsint[-1]
+    #             # dMissingYears = sorted(set(range(dstart,dend)) - set(dyearsint))
+    #             # if len(dMissingYears) > 0:
+    #             #     dMissingYearTracker.append(x)
+    #             if dend != 2023:
+    #                 dEndYearTracker.append(x)
+    #             if divsTable['interestPaid'].isnull().any():
+    #                 dIntPaid.append(x)
+    #             if divsTable['totalDivsPaid'].isnull().any():
+    #                 dTotalPaid.append(x)
+    #             if divsTable['divsPaidPerShare'].isnull().any():
+    #                 dSharesPaid.append(x)
+    #             if divsTable['shares'].isnull().any():
+    #                 dShares.append(x)
+                 
+
+
+    #             # #make lists of years columns, use to track years
+    #             ryears = list(roicTable['year'])
+    #             ryearsint = []
+    #             for a in ryears:
+    #                 ryearsint.append(int(a))
+    #             rstart, rend = ryearsint[0], ryearsint[-1]
+    #             # rMissingYears = sorted(set(range(rstart,rend)) - set(ryearsint))
+    #             # if len(rMissingYears) > 0:
+    #             #     rMissingYearTracker.append(x)
+    #             if rend != 2023:
+    #                 rEndYearTracker.append(x)
+    #             # if roicTable['TotalEquity'].isnull().any():
+    #             #     rTotalEq.append(x)
+    #             if roicTable['TotalEquity'].isnull().any():
+    #                 if roicTable['ReportedTotalEquity'].isnull().any():
+    #                     rTotalEq.append(x)
+                
+                 
+    #         except Exception as err:
+    #             print("nested check years integrity error: ")
+    #             print(err)
+    #             toRecapture.append(x)
+    #             continue             
+
+
+    # except Exception as err:
+    #     print("check years integrity error: ")
+    #     print(err)
+
+    # finally:
+    #     print('recap list: ')
+    #     print(toRecapture)
+    #     # print('missing income years:')
+    #     # print(incMissingYearTracker)
+    #     print('wrong income end year')
+    #     print(incomeEndYearTracker)
+    #     print('missing income revenue')
+    #     print(incRev)
+    #     print('missing income netIncome')
+    #     print(incNetInc)
+    #     print('missing income opCF')
+    #     print(incOpCF)
+    #     print('missing income capEx')
+    #     print(incCapEx)
+    #     print('missing income netCF')
+    #     print(incNetCF)
+    #     print('missing income depreNAmor')
+    #     print(incDepnAmor)
+    #     print('missing income prop sales')
+    #     print(incGainProp)
+    #     # print('missing div years:')
+    #     # print(dMissingYearTracker)
+    #     print('wrong div end year')
+    #     print(dEndYearTracker)
+    #     print('missing div intPaid')
+    #     print(dIntPaid)
+    #     print('missing div totalPaid')
+    #     print(dTotalPaid)
+    #     print('missingDivSharesPaid = ')
+    #     print(dSharesPaid)
+    #     print('missing div shares')
+    #     print(dShares)
+    #     # print('missing roic years:')
+    #     # print(rMissingYearTracker)
+    #     print('wrong roic end year')
+    #     print(rEndYearTracker)
+    #     print('missing roic total equity')
+    #     print(rTotalEq)
+        
+
+#INDUSTRIALS #look close at pool and ndsn ups??? ///cni not filing with sec since 2020?!? (https://stackoverflow.com/questions/24251219/pandas-read-csv-low-memory-and-dtype-options)
+#[ 'J',  'TTEK', 'ARMK', 'OSK', 'TSN']  all have weird gaps in equity/ROIC table. might need closer lookie poo
+#'HRL' duplicate years in roic
+
+
+#HEALTHCARE
+# missingTotalEquity = ['MRK', 'ABBV', 'TMO', 'ABT', 'AMGN', 'SNY', 'BSX', 'GILD', 'BDX', 'MCK', 'COR','CAH', 'ILMN', 'PHG', 'HOLX', 'DGX', 'UHS', 'TECH']
+# missingNetCF = ['HLN', 'ARGX']
+# recapList = ['ISRG', 'CSLLY', 'MRNA', 'VEEV']
+# missingRevenue = ['NVS', 'SNY']
+# missingOpCF = ['PHG']
+# missingCapEx = ['RPRX']
+# missingDepreNAmor = ['ARGX', 'BNTX', 'PHG', 'GMAB', 'HOLX', 'RDY', 'SNN', 'LEGN']
+# missingIntPaid = ['KRTX']
+
+#Finance
+# missingTotalEquity = ['MMC','CM']
+# missingIntPaid = ['AMP', 'PUK', 'PFG']
+# missingCapEx = ['AFL', 'CM', 'MFC', 'IBKR', 'PRU', 'IX', 'PFG']
+# missingRevenue = ['BSBR', 'DFS', 'RKT', 'FCNCA']
+
+#Energy
+# missingRevenue = ['APA']
+# missingOpCF = ['CPG']
+# missingCapEx = ['SHEL', 'TTE', 'EOG', 'PSX', 'SU', 'WDS', 'FANG', 'PR', 'APA', 'CHRD','SM', 'MGY', 'CPG', 'BSM', 'STR', 'WHD', 'BTE']
+# missingDepreNAmor = ['SHEL', 'EQNR', 'CNQ', 'EPD', 'E', 'SU', 'WDS', 'CVE', 'TS', 'PBA', 'PR', 'YPF', 'CSAN', 'UGP', 'NE', 'VNOM','VVV', 'VAL', 'PTEN', 'SM', 'NXE', 'CPG', 'EURN', 'STNG', 'ERF', 'TGS', 'TRMD', 'VIST', 'BTE']
+# missingIntPaid = ['EQNR', 'TPL']
+# missingTotalEquity = ['TTE', 'EOG', 'EPD', 'PXD', 'OXY', 'VLO', 'SU', 'WMB', 'OKE', 'LNG', 'DVN', 'CQP', 'TRGP', 'DINO', 'APA', 'UGP','ENLC', 'CRC', 'EURN', 'TDW']
+
+lickit = [ ]
 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
-# checkYearsIntegritySector(realEstate,9,10)
 
-# print(len(lickit))
-
-ticker12 = 'ARCC' #ABR
+ticker12 = 'ACI' #ABR
 print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
 version12 = '2'
-# print(ticker12 + ' income:')
-# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' divs:')
-# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+print(ticker12 + ' income:')
+print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+print(ticker12 + ' divs:')
+print(makeDividendTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs and roic table: ')
-# print(makeDivAndROICTableEntry(ticker12, year12, version12, False).iloc[:, 0:12])
-# print(ticker12 + ' roic: ')
-# print(makeROICtableEntry(ticker12,'2024',version12,False))
+# print(makeConsolidatedTableEntry(ticker12, year12, version12, False).iloc[:, 0:12])
+print(ticker12 + ' roic: ')
+print(makeROICtableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs and roic table: ')
-# print(makeDivAndROICTableEntry(ticker12, year12, version12, False))
+# print(makeConsolidatedTableEntry(ticker12, year12, version12, False))
 
-arcroic = makeROICtableEntry(ticker12,'2024',version12,False)
-arcfull = makeDivAndROICTableEntry(ticker12, year12, version12, False)
+#Discretionary
+# missingTotalEquity = ['MCD', 'NKE', 'TJX', 'MAR', 'STLA', 'RACE', 'ORLY', 'ROST', 'AZO', 'EXPE']
+# missingDepreNAmor = ['STLA', 'RACE', 'TCOM']
+#recap 'CMG'
 
-print(arcroic['netIncome'] == arcfull['netIncome'])
-print(arcroic['netIncome'])
-print(arcfull['netIncome'])
+#Comms
+# missingTotalEquity = ['DIS', 'CMCSA', 'CHTR', 'ORAN', 'VOD', 'TEF', 'LYV', 'OMC', 'NWSA', 'FOXA', 'WPP', 'MTCH', 'PARA']
+# missingNetCF = ['BCE']
+# missingDepreNAmor = ['AMX', 'SPOT', 'CHTR', 'BCE', 'ORAN', 'CHT', 'TLK', 'TU', 'RCI', 'VOD', 'TEF', 'VIV', 'TME', 'WPP', 'MTCH', 'TIMB']
+# missingRevenue = ['VIV']
+
+#Materials  ###RS??!? 
+# /home/user1/masterSword/MainFrame/mainframe/investor_center/csv_modules.py:43: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
+#   df = pd.read_csv(folder + name + '.csv', index_col = index_flag)
+##same error as pool above
+# missingTotalEquity = ['SHW', 'DOW', 'LYB', 'CF', 'ALB']
+# missingDepreNAmor = ['BHP', 'RIO', 'SHW', 'NUE', 'PKX', 'NTR', 'MT', 'FNV', 'WPM', 'TECK', 'SUZ', 'SQM']
+# missingCapEx = ['WPM']
+#recap CX
 
 
 
-ticker235 = 'NWN' 
-print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
+
+# checkYearsIntegritySector(util,0,40)
+
+# checkYearsIntegritySector(materials,0,50)
+
+# print(len(lickit))
+
+
+
+# arcroic = makeROICtableEntry(ticker12,'2024',version12,False)
+# arcfull = makeConsolidatedTableEntry(ticker12, year12, version12, False)
+
+# print(arcroic['netIncome'] == arcfull['netIncome'])
+# print(arcroic['netIncome'])
+# print(arcfull['netIncome'])
+
+
+
+ticker235 = 'RRX' 
+# print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
 version235 = '2'
@@ -2629,10 +3153,12 @@ version235 = '2'
 # print(makeDividendTableEntry(ticker235,year235,version235,False))
 # print(ticker235 + '  roic: ')
 # print(makeROICtableEntry(ticker235,year235,version235,False))
+# print(ticker235 + ' divs and roic table: ')
+# print(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
 
 
-# print(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
 # totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
@@ -2649,430 +3175,10 @@ version235 = '2'
 
 # print(set(techmissingincomeyears).difference(techmissingroicyears))
 
-#refined screener results:
-###NEW Materials
-# recapList =
-# ['RTNTF', 'SHECY', 'GLNCY', 'PTCAY', 'HDELY', 'MTLHY', 'AU', 'BDNNY', 'BZZUY', 'FUPBY', 'JSCPY', 'PUTKY', 'SHWDY', 'BBMPY', 'KOZAY', 'SLVYY', 'OUTKY', 'WS', 'PDO', 'CARCY', 'WTTR', 'LAC', 'RUPRF', 'AMLI', 'NWGL', 'LOMLF', 'FFMGF', 'ERDCF', 'ORRCF', 'WMLLF', 'SPAZF', 'GSVRF', 'AIRRF', 'UURAF', 'SVRSF', 'SMDRF', 'EQTRF', 'LISMF', 'AGXPF', 'LILIF', 'PAANF', 'AAU', 'TETOF', 'TRBMF', 'GSHRF', 'HGAS', 'GFGSF', 'JGLDF', 'AUCUF', 'HANNF', 'RSMXF', 'MXROF', 'GXSFF', 'FEMFF', 'EQMEF', 'SRLZF', 'VAUCF', 'TIGCF', 'GESI', 'NMREF', 'EVGDF', 'PBMLF', 'GARWF', 'CXXMF', 'NULGF', 'SILS', 'CGOLF', 'NVSGF', 'BMXI', 'BATXF', 'BKTPF', 'FMNJ', 'PMCOF', 'BGAVF', 'KNGRF', 'ZPHYF', 'ABCFF', 'NVDEF', 'ORMNF', 'EGMCF', 'BITTF', 'MEXGF', 'ABNAF', 'INUMF', 'SMREF', 'AVPMF', 'SIXWF', 'LNZNF', 'UBEOF', 'SGTM', 'OCGSF', 'RYTTF', 'MLLOF', 'DMXCF']
-# missingRevenue =
-# ['GATO', 'TMC', 'GDRZF', 'IPI', 'DC', 'PPTA', 'CTGO', 'ASPI', 'THM', 'NB', 'FEAM', 'TMQ', 'USGO', 'AUGG', 'XTGRF', 'TMRC', 'HGAS', 'RYES', 'SVBL', 'SCYYF', 'AHNR', 'TARSF', 'GNTOF', 'ATAO', 'SRGZ', 'MNGG', 'GKIN', 'MLYF']    
-# missingNetIncome =
-# ['AAU']
-# missingOpCF =
-# ['SLI', 'GLDG']
-# missingCapEx =
-# ['WPM', 'RGLD', 'ICL', 'BTG', 'TFPM', 'SAND', 'FSM', 'NGD', 'LZM', 'TMC', 'ANVI', 'MSB', 'MTA', 'RBTK', 'WRN', 'YCQH', 'NGLD', 'VOXR', 'XPL', 'CRCUF', 'PZG', 'LCGMF', 'AXREF', 'HGAS', 'FMST', 'NRHI', 'NMEX', 'AHNR', 'GRMC', 'THMG', 'ATAO', 'SRGZ', 'MNGG', 'AMRSQ', 'CGSI', 'SMTSF', 'JSHG', 'RLEA', 'GNVR']
-# missingNetCF =
-# ['VZLA']
-# missingDepreNAmor =
-# ['BHP', 'RIO', 'SHW', 'NUE', 'PKX', 'NTR', 'MT', 'FNV', 'WPM', 'TECK', 'SUZ', 'SQM', 'CX', 'GGB', 'TX', 'UFPI', 'KGC', 'WFG', 'ICL', 'SSL', 'SIM', 'PAAS', 'AGI', 'BVN', 'HMY', 'BTG', 'SBSW', 'MEOH', 'BAK', 'CSTM', 'OR', 'TFPM', 'EGO', 'HBM', 'ERO', 'SGML', 'EQX', 'AG', 'SAND', 'IAG', 'LOMA', 'ORLA', 'CGAU', 'GSM', 'LVRO', 'NEXA', 'FSM', 'MAG', 'NGD', 'SA', 'ASTL', 'SILV', 'NG', 'BIOX', 'ASIX', 'LAC', 'LAAC', 'DRD', 'MTAL', 'NFGC', 'ODC', 'LZM', 'GATO', 'CPAC', 'ARMN', 'SVM', 'TMC', 'IAUX', 'TGB', 'SKE', 'GDRZF', 'EXK', 'ANVI', 'VZLA', 'IPX', 'SLI', 'MSB', 'MTA', 'ODV', 'NEWP', 'GAU', 'CMCL', 'GROY', 'PNRLF', 'DC', 'PPTA', 'WRN', 'IONR', 'EMX', 'GLDG', 'CTGO', 'ASPI', 'VRDR', 'NAK', 'NMG', 'NTIC', 'LGO', 'FRD', 'ABAT', 'PLG', 'YCQH', 'NB', 'TRX', 'NGLD', 'VOXR', 'FFMGF', 'USGO', 'STCB', 'ASM', 'ITRG', 'FURY', 'USAS', 'AUGG', 'LONCF', 'RNGE', 'ELBM', 'LBSR', 'INHD', 'CRCUF', 'ZKIN', 'PZG', 'AAU', 'LCGMF', 'AXREF', 'LITM', 'HGAS', 'FMST', 'NRHI', 'AUST', 'ARRKF', 'NMEX', 'FUST', 'QZMRF', 'PBMLF', 'PGOL', 'AHNR', 'TARSF', 'ENRT', 'ATAO', 'WOLV', 'HHHEF', 'AVPMF', 'GKIN', 'GPLDF', 'RMESF', 'MKDTY', 'AMNL', 'ALMMF', 'ERLFF', 'NSRCF', 'MPVDF', 'SMTSF', 'AVLNF', 'SHVLF', 'SILEF', 'JSHG', 'EXNRF', 'GIGGF']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['CX', 'RGLD', 'ALTM', 'HCC', 'MAG', 'WLKP', 'SKE', 'ANVI', 'VZLA', 'NEWP', 'DC', 'PPTA', 'WRN', 'THM', 'YCQH', 'VOXR', 'USGO', 'ITRG', 'BHIL', 'ELBM', 'COPR', 'CRCUF', 'AAU', 'AUST', 'ARRKF', 'BGLC', 'PGOL', 'JUPGF', 'TARSF', 'YTEN', 'HHHEF', 'SMTSF', 'GIGGF']
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# []
-# missingincomeyears =
-# ['VALE', 'GOLD', 'AEM', 'MOS', 'SID', 'ARCH', 'BIOX', 'MTA', 'DC', 'ABAT', 'THM', 'AREC', 'NNUP', 'RNGE', 'BIOF', 'CRKN', 'COWI', 'GKIN', 'VYST', 'AMRSQ', 'MXSG', 'ERLFF', 'NSRCF', 'GNVR']
-# missingdivyears =
-# ['VALE', 'GOLD', 'AEM', 'MOS', 'SID', 'ARCH', 'BIOX', 'MTA', 'DC', 'LOOP', 'ABAT', 'THM', 'AREC', 'RNGE', 'BIOF', 'CRKN', 'THMG', 'COWI', 'GKIN', 'VYST', 'AMRSQ', 'MXSG', 'CGSI', 'NSRCF', 'GNVR']
-# missingroicyears =
-# ['VALE', 'GOLD', 'AEM', 'SID', 'BIOX', 'VRDR', 'ABAT', 'THM', 'AREC', 'NNUP', 'BIOF', 'COWI', 'VYST', 'AMRSQ', 'MXSG', 'ERLFF', 'NSRCF', 'GNVR']
-# wrongincomeendyear =
-# ['VALE', 'CTA-PA', 'PKX', 'JHX', 'SUZ', 'RPM', 'SQM', 'CX', 'EXP', 'SIM', 'SID', 'BVN', 'SBSW', 'BAK', 'SGML', 'HWKN', 'LOMA', 'GSM', 'ASTL', 'DRD', 'CPAC', 'SVM', 'GDRZF', 'ANVI', 'VZLA', 'MSB', 'SMID', 'RBTK', 'CMCL', 'PNRLF', 'LOOP', 'ASPI', 'FRD', 'AREC', 'YCQH', 'ACRG', 'GEVI', 'FURY', 'MULG', 'RMRI', 'EVA', 'DYNR', 'LONCF', 'XTGRF', 'GLGI', 'USAU', 'ELBM', 'LBSR', 'COPR', 'UAMY', 'GRFX', 'CRCUF', 'HLP', 'ZKIN', 'AAU', 'HGAS', 'RETO', 'GURE', 'NRHI', 'TLRS', 'BGLC', 'PBMLF', 'BASA', 'GRMC', 'MAGE', 'IMII', 'GNTOF', 'COWI', 'ATAO', 'WOLV', 'SRGZ', 'MNGG', 'HHHEF', 'ETCK', 'AVPMF', 'PVNNF', 'GPLDF', 'VYST', 'RMESF', 'MLYF', 'AMRSQ', 'GYST', 'MXSG', 'MKDTY', 'AMNL', 'STCC', 'CGSI', 'ALMMF', 'ERLFF', 'NSRCF', 'MPVDF', 'SMTSF', 'AVLNF', 'SHVLF', 'HGLD', 'SILEF', 'JSHG', 'EXNRF', 'SGMD', 'SINC', 'GIGGF', 'VNTRD']
-# wrongdivendyear =
-# ['VALE', 'CTA-PA', 'PKX', 'JHX', 'SUZ', 'RPM', 'SQM', 'CX', 'EXP', 'SIM', 'SID', 'BVN', 'SBSW', 'BAK', 'SGML', 'HWKN', 'LOMA', 'GSM', 'ASTL', 'WLKP', 'DRD', 'CPAC', 'SVM', 'GDRZF', 'ANVI', 'VZLA', 'MSB', 'SMID', 'RBTK', 'CMCL', 'PNRLF', 'LOOP', 'ASPI', 'FRD', 'AREC', 'YCQH', 'TRX', 'ACRG', 'GEVI', 'FURY', 'MULG', 'XPL', 'RMRI', 'EVA', 'DYNR', 'LONCF', 'XTGRF', 'GLGI', 'USAU', 'ELBM', 'LBSR', 'COPR', 'UAMY', 'GRFX', 'CRCUF', 'HLP', 'ZKIN', 'AAU', 'RETO', 'GURE', 'NRHI', 'TLRS', 'BGLC', 'LTUM', 'BASA', 'GRMC', 'MAGE', 'IMII', 'GNTOF', 'COWI', 'ATAO', 'WOLV', 'SRGZ', 'MNGG', 'HHHEF', 'ETCK', 'AVPMF', 'PVNNF', 'GPLDF', 'VYST', 'RMESF', 'MLYF', 'AMRSQ', 'GYST', 'MXSG', 'MKDTY', 'AMNL', 'STCC', 'CGSI', 'ALMMF', 'ERLFF', 'NSRCF', 'MPVDF', 'SMTSF', 'AVLNF', 'SHVLF', 'HGLD', 'SILEF', 'JSHG', 'EXNRF', 'SGMD', 'SINC', 'GIGGF', 'VNTRD']
-# wrongroicendyear =
-# ['VALE', 'CTA-PA', 'PKX', 'JHX', 'SUZ', 'RPM', 'SQM', 'CX', 'EXP', 'SIM', 'SID', 'BVN', 'SBSW', 'BAK', 'SGML', 'HWKN', 'LOMA', 'GSM', 'ASTL', 'DRD', 'CPAC', 'SVM', 'GDRZF', 'ANVI', 'VZLA', 'MSB', 'SMID', 'RBTK', 'CMCL', 'LOOP', 'ASPI', 'FRD', 'AREC', 'YCQH', 'ACRG', 'GEVI', 'FURY', 'MULG', 'RMRI', 'EVA', 'DYNR', 'LONCF', 'XTGRF', 'GLGI', 'USAU', 'ELBM', 'LBSR', 'COPR', 'UAMY', 'GRFX', 'CRCUF', 'HLP', 'ZKIN', 'RETO', 'GURE', 'NRHI', 'TLRS', 'BGLC', 'BASA', 'GRMC', 'MAGE', 'IMII', 'GNTOF', 'COWI', 'ATAO', 'WOLV', 'SRGZ', 'MNGG', 'HHHEF', 'ETCK', 'PVNNF', 'GPLDF', 'VYST', 'RMESF', 'MLYF', 'AMRSQ', 'GYST', 'MXSG', 'MKDTY', 'AMNL', 'STCC', 'CGSI', 'ALMMF', 'ERLFF', 'NSRCF', 'MPVDF', 'SMTSF', 'AVLNF', 'SHVLF', 'HGLD', 'SILEF', 'JSHG', 'EXNRF', 'SGMD', 'SINC', 'GIGGF', 'VNTRD']
-###
-
-###NEW Cons Cyclical
-# recapList =
-# ['NKE', 'CFRUY', 'MBGYY', 'RACE', 'OLCLY', 'DNZOY', 'YAHOY', 'CUK', 'VFS', 'ONON', 'RKUNY', 'BKGFY', 'PLNT', 'LNNGY', 'DUFRY', 'NGKSY', 'KBH', 'IHCPF', 'GEF', 'ZKH', 'MBUMY', 'FUN', 'EXTO', 'RICK', 'HVT', 'BH-A', 'IOCJY', 'MCFT', 'GHG', 'CDRO', 'PNST', 'BSET', 'MHGU', 'CJET', 'LGCB', 'FCCI', 'CREV', 'EGOX', 'HWH', 'ELMSQ', 'NCL', 'RWGI', 'JEWL', 'FFIE', 'HCNWF', 'JPOTF', 'MI', 'IVP', 'VEST', 'VMHG', 'MASN', 'GEGI', 'LFEV', 'FBCD', 'YUKA', 'PMNT', 'YAMHF', 'GFASY', 'GVSI', 'NEXCF', 'ELIO', 'ODDAF', 'ARVL', 'SPQS', 'SPBV', 'RECX', 'WNRS']
-# missingRevenue =
-# ['QS', 'NWTN', 'SES', 'RERE', 'PNST', 'ECDA', 'NCNC', 'HWH', 'ELMSQ', 'FFIE', 'PFSF', 'LSEB']
-# missingNetIncome =
-# []
-# missingOpCF =
-# []
-# missingCapEx =
-# ['BABA', 'LGIH', 'MSGE', 'MSC', 'PNST', 'EM', 'VNJA', 'PTZH', 'RENT', 'ECDA', 'CTNT', 'KEYR', 'HWH', 'SCTH', 'ELMSQ', 'SRM', 'KENS', 'PDRO', 'EBET', 'GHST', 'SPEV', 'OCTO', 'AUVI', 'SKFG', 'SCRH', 'MCOM', 'WESC', 'ALTB', 'MVXM', 'EVTK', 'ELRA', 'LCLP', 'FJHL']
-# missingNetCF =
-# ['ELRA']
-# missingDepreNAmor =
-# ['NKE', 'STLA', 'RACE', 'TCOM', 'DKNG', 'BALL', 'IHG', 'PAG', 'CVNA', 'BIRK', 'ONON', 'VIPS', 'CCK', 'LCID', 'XPEV', 'AS', 'MMYT', 'GIL', 'ALSN', 'DOOO', 'MNSO', 'PSNY', 'ZGN', 'ADNT', 'BOOT', 'AMBP', 'DAN', 'BKE', 'MBC', 'SGHC', 'OLPX', 'XPEL', 'GES', 'GOOS', 'MNRO', 'NGMS', 'BZH', 'EVGO', 'HLLY', 'GGR', 'BWMX', 'HEPS', 'PBPB', 'CYD', 'GAMB', 'UHG', 'JMIA', 'WEYS', 'BRLT', 'ALLG', 'LANV', 'MYTE', 'CBD', 'CDRO', 'RCKY', 'GOEV', 'FLXS', 'SPWH', 'PNST', 'NOBH', 'YTRA', 'VNJA', 'KEQU', 'TOUR', 'NTZ', 'CULP', 'SLNA', 'FTEL', 'RENT', 'VEV', 'KIRK', 'ECDA', 'CTNT', 'WBUY', 'CZOO', 'RIDEQ', 'NCNC', 'HWH', 'SCTH', 'FRSX', 'ELMSQ', 'LNBY', 'SRM', 'ZAPP', 'KENS', 'SPGC', 'TRNR', 'PDRO', 'VMAR', 'JXJT', 'USLG', 'REBN', 'SEVCQ', 'CMOT', 'EFOI', 'GHST', 'LQLY', 'SPEV', 'JZXN', 'SKFG', 'SCRH', 'THBD', 'CGAC', 'TKAYF', 'ALTB', 'MVXM', 'EVTK', 'FTCHF', 'ARVL', 'FXLV', 'LCLP', 'SSUNF']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['NKE', 'ABNB', 'CMG', 'LULU', 'QSR', 'DECK', 'WSM', 'BURL', 'WING', 'CART', 'SN', 'GLBE', 'W', 'GIL', 'BROS', 'COLM', 'AEO', 'AMBP', 'BKE', 'NWTN', 'GOOS', 'RVLV', 'CWH', 'FLWS', 'HSAI', 'SES', 'FNKO', 'SFIX', 'MPX', 'UHG', 'FINR', 'INVZ', 'NATH', 'DTC', 'EM', 'AOUT', 'NOBH', 'WISH', 'LUXH', 'VNJA', 'PTZH', 'BGI', 'LL', 'VIOT', 'REE', 'ECDA', 'BIMT', 'SOND', 'WBUY', 'NCNC', 'TBTC', 'KENS', 'VMAR', 'OCG', 'WNW', 'LQLY', 'SKFG', 'REII', 'SFTGQ', 'ALTB', 'MVXM', 'EVTK', 'ARMV', 'AMHG', 'FJHL', 'LSEB']
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# []
-# missingincomeyears =
-# ['HMC', 'HRB', 'VC', 'MLKN', 'WPRT', 'BIMT', 'VIVC', 'CTHR', 'AYRO', 'SNTW', 'BRVO', 'JXJT', 'REBN', 'AREB', 'AHRO', 'FLES', 'ALTB', 'MVXM']
-# missingdivyears =
-# ['HMC', 'VC', 'MLKN', 'WPRT', 'HFUS', 'BIMT', 'VIVC', 'CTHR', 'AYRO', 'SNTW', 'BRVO', 'JXJT', 'REBN', 'AREB', 'AHRO', 'DREM', 'FLES', 'ALTB', 'MVXM']
-# missingroicyears =
-# ['HMC', 'PRKA', 'BIMT', 'KENS', 'AYRO', 'SNTW', 'BRVO', 'JXJT', 'REBN', 'AREB', 'AHRO', 'FLES', 'ALTB', 'MVXM']
-# wrongincomeendyear =
-# ['TM', 'BABA', 'PDD', 'NKE', 'HMC', 'JD', 'LI', 'TCOM', 'SE', 'DECK', 'DRI', 'NIO', 'KMX', 'RL', 'CASY', 'HTHT', 'VIPS', 'XPEV', 'MMYT', 'LKNCY', 'VFC', 'CPRI', 'SKY', 'MOD', 'PSNY', 'UAA', 'CVCO', 'BOOT', 'ARCO', 'ATAT', 'NWTN', 'VSTO', 'SGHC', 'LZB', 'AMWD', 'GOOS', 'MNRO', 'NGMS', 'DESP', 'BWMX', 'HSAI', 'HEPS', 'NAAS', 'DADA', 'FSR', 'CRMT', 'LOVE', 'CYD', 'BBW', 'NEGG', 'GHG', 'ALLG', 'LANV', 'NATH', 'HOFT', 'CTRN', 'RERE', 'PLCE', 'INSE', 'CBD', 'TLYS', 'THCH', 'CDRO', 'MPAA', 'VIRC', 'BARK', 'CANG', 'BZUN', 'PNST', 'EM', 'NIU', 'CONN', 'AOUT', 'NOBH', 'YTRA', 'LUXH', 'KEQU', 'TOUR', 'BGI', 'NTZ', 'ZKGCF', 'TUP', 'TCS', 'VIOT', 'CULP', 'CRWS', 'INTG', 'VNCE', 'BNED', 'SLNA', 'PEV', 'RENT', 'JRSH', 'ECDA', 'MRM', 'SOND', 'FGH', 'CZOO', 'JOAN', 'CHSN', 'XELB', 'VIVC', 'SCTH', 'BFX', 'ELMSQ', 'MOGU', 'LNBY', 'BFI', 'EXPR', 'YJ', 'UXIN', 'FFIE', 'PDRO', 'TKLF', 'POL', 'JXJT', 'USLG', 'BWMG', 'PRSI', 'NROM', 'KXIN', 'UCAR', 'SEVCQ', 'LTRY', 'CMOT', 'ELYS', 'OCG', 'FUV', 'EVVL', 'WNW', 'JWEL', 'LQLY', 'SPEV', 'SECO', 'SHMY', 'PIK', 'JZXN', 'SBET', 'NVFY', 'DBGI', 'AUVI', 'KITL', 'BQ', 'AREB', 'ASAP', 'AHRO', 'CNXA', 'DREM', 'OMTK', 'MSSV', 'SKFG', 'SCRH', 'MCOM', 'NNAX', 'FLES', 'BBIG', 'IDICQ', 'REII', 'THBD', 'BTDG', 'IMBIQ', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'EVTK', 'FTCHF', 'ARVL', 'FXLV', 'AMTY', 'PFSF', 'ARMV', 'ELRA', 'LCLP', 'AMHG', 'FJHL', 'SSUNF', 'LSEB']
-# wrongdivendyear =
-# ['TM', 'BABA', 'PDD', 'NKE', 'HMC', 'JD', 'LI', 'TCOM', 'SE', 'DECK', 'DRI', 'NIO', 'KMX', 'RL', 'CASY', 'HTHT', 'VIPS', 'XPEV', 'MMYT', 'LKNCY', 'VFC', 'CPRI', 'SKY', 'MOD', 'PSNY', 'UAA', 'CVCO', 'BOOT', 'ARCO', 'NWTN', 'VSTO', 'SGHC', 'LZB', 'AMWD', 'GOOS', 'MNRO', 'NGMS', 'DESP', 'BWMX', 'HSAI', 'HEPS', 'NAAS', 'DADA', 'FSR', 'CRMT', 'LOVE', 'CYD', 'FINR', 'BBW', 'NEGG', 'ALLG', 'LANV', 'NATH', 'HOFT', 'CTRN', 'RERE', 'PLCE', 'INSE', 'CBD', 'TLYS', 'THCH', 'MPAA', 'VIRC', 'BARK', 'CANG', 'BZUN', 'EM', 'LAKE', 'NIU', 'CONN', 'AOUT', 'NOBH', 'YTRA', 'LUXH', 'VNJA', 'KEQU', 'TOUR', 'BGI', 'NTZ', 'ZKGCF', 'TUP', 'TCS', 'VIOT', 'CULP', 'CRWS', 'INTG', 'VNCE', 'BNED', 'SLNA', 'PEV', 'RENT', 'JRSH', 'ECDA', 'MRM', 'SOND', 'FGH', 'WBUY', 'CZOO', 'JOAN', 'CHSN', 'XELB', 'VIVC', 'SCTH', 'BFX', 'MOGU', 'LNBY', 'BFI', 'EXPR', 'YJ', 'UXIN', 'PDRO', 'TKLF', 'POL', 'JXJT', 'USLG', 'BWMG', 'PRSI', 'NROM', 'KXIN', 'UCAR', 'SEVCQ', 'LTRY', 'CMOT', 'ELYS', 'OCG', 'FFLO', 'FUV', 'EVVL', 'WNW', 'JWEL', 'LQLY', 'SPEV', 'SECO', 'SHMY', 'PIK', 'JZXN', 'SBET', 'NVFY', 'DBGI', 'AUVI', 'KITL', 'BQ', 'AREB', 'ASAP', 'AHRO', 'CNXA', 'DREM', 'OMTK', 'MSSV', 'SKFG', 'SCRH', 'MCOM', 'NNAX', 'FLES', 'BBIG', 'IDICQ', 'REII', 'THBD', 'BTDG', 'IMBIQ', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'MVXM', 'WCRS', 'DSHK', 'LMPX', 'EVTK', 'FTCHF', 'FXLV', 'AMTY', 'PFSF', 'ARMV', 'ELRA', 'LCLP', 'AMHG', 'FJHL', 'SSUNF', 'LSEB']
-# wrongroicendyear =
-# ['TM', 'BABA', 'PDD', 'HMC', 'JD', 'LI', 'TCOM', 'SE', 'DECK', 'DRI', 'NIO', 'KMX', 'RL', 'CASY', 'HTHT', 'VIPS', 'XPEV', 'MMYT', 'LKNCY', 'VFC', 'CPRI', 'SKY', 'MOD', 'PSNY', 'UAA', 'CVCO', 'BOOT', 'ARCO', 'NWTN', 'VSTO', 'SGHC', 'LZB', 'AMWD', 'GOOS', 'MNRO', 'NGMS', 'DESP', 'BWMX', 'HSAI', 'HEPS', 'NAAS', 'DADA', 'FSR', 'CRMT', 'LOVE', 'CYD', 'BBW', 'NEGG', 'ALLG', 'LANV', 'NATH', 'HOFT', 'CTRN', 'RERE', 'PLCE', 'INSE', 'CBD', 'TLYS', 'THCH', 'MPAA', 'VIRC', 'BARK', 'CANG', 'BZUN', 'EM', 'LAKE', 'NIU', 'CONN', 'AOUT', 'NOBH', 'YTRA', 'LUXH', 'KEQU', 'TOUR', 'BGI', 'NTZ', 'ZKGCF', 'TUP', 'TCS', 'VIOT', 'CULP', 'CRWS', 'INTG', 'VNCE', 'BNED', 'SLNA', 'PEV', 'RENT', 'JRSH', 'ECDA', 'MRM', 'SOND', 'FGH', 'JOAN', 'CHSN', 'XELB', 'VIVC', 'SCTH', 'BFX', 'MOGU', 'LNBY', 'BFI', 'EXPR', 'YJ', 'UXIN', 'PDRO', 'TKLF', 'POL', 'JXJT', 'USLG', 'BWMG', 'PRSI', 'NROM', 'KXIN', 'UCAR', 'SEVCQ', 'LTRY', 'CMOT', 'ELYS', 'OCG', 'FUV', 'EVVL', 'WNW', 'JWEL', 'LQLY', 'SPEV', 'SECO', 'SHMY', 'PIK', 'JZXN', 'SBET', 'NVFY', 'DBGI', 'AUVI', 'KITL', 'BQ', 'AREB', 'ASAP', 'AHRO', 'CNXA', 'DREM', 'OMTK', 'MSSV', 'SKFG', 'SCRH', 'MCOM', 'NNAX', 'FLES', 'BBIG', 'IDICQ', 'REII', 'THBD', 'BTDG', 'IMBIQ', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'EVTK', 'FTCHF', 'FXLV', 'AMTY', 'PFSF', 'ARMV', 'ELRA', 'LCLP', 'AMHG', 'FJHL', 'SSUNF', 'LSEB']
-###
-
-###NEW Cons Staples
-# recapList = 
-# ['FMX', 'BUD', 'BTI', 'STZ', 'SVNDY', 'JRONY', 'SMKUY', 'MEJHY', 'CUYTY', 'LCCTF', 'FIZZ', 'DFIHY', 'MRRTY', 'IMKTA', 'NISUY', 'KLG', 'EWCZ', 'GGROU', 'RFLFY', 'AAGR', 'YERBF', 'DDC', 'DTCK', 'YGF', 'NASO', 'PCST', 'VPRB', 'INKW', 'HIRU', 'GRLF', 'LBWR', 'PDPG', 'EARI', 'BMXC', 'TBBB', 'BRLS', 'BLEG', 'WNBD']
-# missingRevenue =
-# ['EWCZ', 'AAGR', 'NUVI', 'PCNT', 'BRLS', 'GLUC', 'SGLA']
-# missingNetIncome =
-# []
-# missingOpCF =
-# []
-# missingCapEx =
-# ['HIMS', 'AQPW', 'HAIN', 'YUMM', 'HIGR', 'NXMH', 'BFNH', 'AAGR', 'PGID', 'NPLS', 'EOSS', 'VINE', 'RMHB', 'SNAX', 'CBDW', 'YCRM', 'NGTF', 'SRSG', 'AGRI', 'NAFS', 'ARRT', 'SKVI', 'NUVI', 'PCNT', 'BRLS', 'NTCO', 'GWLL', 'MCLE', 'GLUC', 'FKST', 'SGLA', 'HVCW', 'ITOR']
-# missingNetCF =
-# ['NXMH', 'SGLA']
-# missingDepreNAmor =
-# ['FMX', 'BUD', 'UL', 'DEO', 'BTI', 'ABEV', 'CCEP', 'KOF', 'SJM', 'JBSAY', 'TAL', 'BRFS', 'ASAI', 'GHC', 'NOMD', 'RLX', 'CCU', 'AKO-A', 'ATGE', 'AFYA', 'GOTU', 'AGRO', 'OTLY', 'VTRU', 'YUMM', 'LND', 'ISPR', 'SNDL', 'SKIN', 'YSG', 'VSTA', 'AFRI', 'QSG', 'FREE', 'WILC', 'HIGR', 'AIU', 'BFNH', 'AAGR', 'CFOO', 'GNS', 'LXEH', 'NPLS', 'YQ', 'EOSS', 'STKH', 'FEDU', 'EDTK', 'NCRA', 'LQR', 'VINE', 'BRSH', 'KAVL', 'SNBH', 'TOFB', 'WTER', 'CBDW', 'NGTF', 'SRSG', 'NBND', 'VGFCQ', 'NAFS', 'BDPT', 'MFLTY', 'NUVI', 'TDNT', 'BRLS', 'NTCO', 'GWLL', 'BRCNF', 'MCLE', 'GLUC', 'LMDCF', 'SGLA', 'SUWN', 'DTEAF', 'BRWC', 'ITOR']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['MNST', 'LW', 'INGR', 'LANC', 'SAM', 'GO', 'DNUT', 'GOTU', 'HNST', 'QSG', 'MAMA', 'IH', 'ZVIA', 'BFNH', 'UG', 'MALG', 'AACG', 'ATPC', 'FEDU', 'EXDW', 'DQWS', 'MNKA', 'CBDW', 'AGRI', 'MFLTY', 'NUVI', 'OGAA', 'MCLE', 'SGLA', 'BRWC', 'ITOR']
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# ['RMHB', 'SGLA']
-# missingincomeyears =
-# ['SMPL', 'NOMD', 'CALM', 'AQPW', 'UTZ', 'SPTN', 'KUBR', 'SNDL', 'BIG', 'SKIL', 'GCEH', 'PYYX', 'EXDW', 'BRSH', 'YCRM', 'NAFS', 'BDPT', 'ASII', 'PCNT', 'ICNB', 'QOEG', 'FKST']
-# missingdivyears =
-# ['BTI', 'NOMD', 'CALM', 'AQPW', 'SPTN', 'KUBR', 'SNDL', 'WILC', 'SKIL', 'GCEH', 'PYYX', 'AACG', 'EXDW', 'BRSH', 'YCRM', 'BDPT', 'ASII', 'ICNB', 'RAYT']
-# missingroicyears =
-# ['NOMD', 'AQPW', 'UTZ', 'KUBR', 'SKIL', 'GCEH', 'PYYX', 'EXDW', 'YCRM', 'NAFS', 'BDPT', 'ASII', 'PCNT', 'ICNB', 'QOEG', 'FKST']
-# wrongincomeendyear =
-# ['FMX', 'STZ', 'GIS', 'BF-B', 'KOF', 'LW', 'EDU', 'SJM', 'CAG', 'ACI', 'ELF', 'TAL', 'BRFS', 'FIZZ', 'ASAI', 'RLX', 'HELE', 'CCU', 'AQPW', 'AFYA', 'UVV', 'GOTU', 'AGRO', 'KUBR', 'VTRU', 'DAO', 'SENEA', 'YSG', 'VSTA', 'AFRI', 'DDL', 'BIG', 'MAMA', 'IH', 'STG', 'SKIL', 'HIGR', 'FVTI', 'ZHYBF', 'NXMH', 'AAGR', 'CFOO', 'GCEH', 'CHUC', 'PYYX', 'JZ', 'RGF', 'COE', 'GNS', 'MALG', 'AACG', 'LXEH', 'RMCF', 'NPLS', 'PCSV', 'YQ', 'EOSS', 'MSS', 'STKH', 'CTGL', 'FEDU', 'PAVS', 'VPRB', 'EDTK', 'AIXN', 'TCTM', 'PETZ', 'BRSH', 'SHMP', 'GV', 'HPCO', 'CLEU', 'WAFU', 'MNKA', 'LEAI', 'BTCT', 'BTTR', 'SNBH', 'RMHB', 'CYAN', 'AMBO', 'WTER', 'CBDW', 'RVIV', 'TANH', 'SRSG', 'GNLN', 'FHSEY', 'NBND', 'SHRG', 'VGFCQ', 'SMFL', 'NAFS', 'RTON', 'BDPT', 'SKVI', 'MFLTY', 'ASII', 'NUVI', 'OGAA', 'IFMK', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'BRLS', 'NTCO', 'GWLL', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'ZVOI', 'SUWN', 'HVCW', 'DTEAF', 'ITOR']
-# wrongdivendyear =
-# ['GIS', 'BF-B', 'KOF', 'LW', 'EDU', 'SJM', 'CAG', 'ACI', 'ELF', 'TAL', 'BRFS', 'ASAI', 'RLX', 'HELE', 'CCU', 'AQPW', 'AFYA', 'UVV', 'GOTU', 'AGRO', 'KUBR', 'VTRU', 'DAO', 'SENEA', 'YSG', 'VSTA', 'AFRI', 'DDL', 'BIG', 'MAMA', 'IH', 'STG', 'SKIL', 'HIGR', 'FVTI', 'ZHYBF', 'NXMH', 'UMEWF', 'CFOO', 'GCEH', 'CHUC', 'PYYX', 'JZ', 'RGF', 'COE', 'GNS', 'MALG', 'AACG', 'LXEH', 'PGID', 'RMCF', 'NPLS', 'PCSV', 'YQ', 'EOSS', 'MSS', 'STKH', 'CTGL', 'FEDU', 'PAVS', 'VPRB', 'EDTK', 'AIXN', 'TCTM', 'PETZ', 'BRSH', 'SHMP', 'GV', 'HPCO', 'CLEU', 'WAFU', 'MNKA', 'LEAI', 'BTCT', 'BTTR', 'SNBH', 'RMHB', 'CYAN', 'AMBO', 'WTER', 'CBDW', 'RVIV', 'TANH', 'SRSG', 'GNLN', 'FHSEY', 'NBND', 'SHRG', 'VGFCQ', 'SMFL', 'NAFS', 'RTON', 'BDPT', 'ARRT', 'SKVI', 'MFLTY', 'ASII', 'NUVI', 'OGAA', 'IFMK', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'NTCO', 'GWLL', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'ZVOI', 'SUWN', 'HVCW', 'DTEAF', 'ITOR']
-# wrongroicendyear =
-# ['GIS', 'BF-B', 'KOF', 'LW', 'EDU', 'SJM', 'CAG', 'ACI', 'ELF', 'TAL', 'BRFS', 'ASAI', 'RLX', 'HELE', 'CCU', 'AQPW', 'AFYA', 'UVV', 'GOTU', 'AGRO', 'KUBR', 'VTRU', 'DAO', 'SENEA', 'YSG', 'VSTA', 'AFRI', 'DDL', 'BIG', 'MAMA', 'IH', 'STG', 'SKIL', 'HIGR', 'FVTI', 'ZHYBF', 'NXMH', 'CFOO', 'GCEH', 'CHUC', 'PYYX', 'JZ', 'RGF', 'COE', 'GNS', 'MALG', 'AACG', 'LXEH', 'RMCF', 'NPLS', 'PCSV', 'YQ', 'EOSS', 'MSS', 'STKH', 'CTGL', 'FEDU', 'PAVS', 'EDTK', 'AIXN', 'TCTM', 'PETZ', 'BRSH', 'SHMP', 'GV', 'HPCO', 'CLEU', 'WAFU', 'MNKA', 'LEAI', 'BTCT', 'BTTR', 'SNBH', 'RMHB', 'CYAN', 'AMBO', 'WTER', 'CBDW', 'RVIV', 'TANH', 'SRSG', 'GNLN', 'FHSEY', 'NBND', 'SHRG', 'VGFCQ', 'SMFL', 'NAFS', 'RTON', 'BDPT', 'SKVI', 'MFLTY', 'ASII', 'NUVI', 'OGAA', 'IFMK', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'NTCO', 'GWLL', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'ZVOI', 'SUWN', 'HVCW', 'DTEAF', 'ITOR']
-###
-
-###NEW Comms
-# recapList = 
-# ['TLGPY', 'PUBGY', 'VOD', 'KKPNY', 'VIVHY', 'VDMCY', 'CSXXY', 'IIJIY', 'HMNTY', 'TV', 'SEAT', 'CCG', 'SGA', 'GOAI', 'HAO', 'MCHX', 'KUKE', 'ABLV', 'PODC', 'TRFE', 'MNY', 'SNAL', 'MMV', 'QYOUF', 'HRYU', 'EGLXF', 'TRUG', 'FENG', 'LEBGF', 'MIMO', 'HHSE', 'VSME', 'GTRL', 'SONG', 'CBIA', 'TAMG', 'MRNJ', 'UVSS', 'SNMN', 'EMDF', 'WTKN', 'GTOR', 'QBCRF', 'CAPV', 'MIKP', 'MOCI', 'PSRU', 'MACT', 'MEDE']
-# missingRevenue =
-# ['VIV', 'VPLM', 'MMV', 'TRUG', 'MGAM', 'SNWR', 'CLIS']
-# missingNetIncome =
-# []
-# missingOpCF =
-# []
-# missingCapEx =
-# ['EA', 'TKO', 'CRTO', 'DRCT', 'MVNC', 'RSTN', 'MMV', 'NCTY', 'CRGE', 'EGLXF', 'ELRE', 'TRUG', 'FHLD', 'XESP', 'FDIT', 'DROR', 'HHSE', 'CNNN', 'ONFO', 'FMHS', 'NUGL', 'CMGO', 'SLDC', 'HMLA', 'TMGI', 'SNWR', 'CLIS', 'FRFR', 'AFOM', 'IDWM', 'BTIM', 'BRQL']
-# missingNetCF =
-# ['BCE', 'ANGH', 'QBCRF']
-# missingDepreNAmor =
-# ['GOOGL', 'AMX', 'SPOT', 'CHTR', 'EA', 'BCE', 'ORAN', 'CHT', 'TLK', 'TU', 'RCI', 'VOD', 'TEF', 'VIV', 'TME', 'WPP', 'MTCH', 'TIMB', 'PSO', 'SKM', 'KT', 'PHI', 'TKC', 'IAC', 'BILI', 'MANU', 'TEO', 'IQ', 'ATHM', 'GSAT', 'TGNA', 'TIGO', 'PLTK', 'YY', 'GETY', 'CRTO', 'TV', 'VEON', 'ANGI', 'MOMO', 'IHS', 'OPRA', 'HUYA', 'RBBN', 'PGRU', 'GDEV', 'NEXN', 'SOHU', 'LDSN', 'MYPS', 'SIFY', 'ADTH', 'DOYU', 'OB', 'KNIT', 'TRVG', 'BRAG', 'XNET', 'SCOR', 'CMCM', 'BHAT', 'KUKE', 'STCN', 'UCL', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'MMV', 'ANGH', 'CURI', 'EGLXF', 'ELRE', 'GAME', 'KRKR', 'BMTM', 'TRUG', 'GIGM', 'FHLD', 'BREA', 'XESP', 'FDIT', 'SPTY', 'DROR', 'LCFY', 'HHSE', 'ADD', 'MGOL', 'VYBE', 'MMND', 'VRVR', 'ONFO', 'DBMM', 'NUGL', 'SLDC', 'GFMH', 'SRAX', 'HMLA', 'TMGI', 'SNWR', 'WINR', 'MLFB', 'CLIS', 'FRFR', 'AFOM', 'QBCRF', 'CELJF', 'ILLMF', 'GZIC', 'TOWTF', 'PTNRF']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['NTES', 'PINS', 'TWLO', 'YELP', 'SSTK', 'HUYA', 'KIND', 'RBBN', 'CNSL', 'ZH', 'JFIN', 'DOYU', 'KNIT', 'SCOR', 'GAIA', 'CMCM', 'VPLM', 'RSTN', 'AAQL', 'CURI', 'KRKR', 'FDIT', 'ASST', 'TC', 'CCCP', 'CLIS', 'NTTYY', 'TOWTF']   
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# ['WPP']
-# missingincomeyears =
-# ['WMG', 'FYBR', 'THRY', 'MVNC', 'IQST', 'KTEL', 'AREN', 'HMMR', 'TRKAQ', 'CMGO', 'ROI', 'HMLA', 'TMGI', 'CLIS']
-# missingdivyears =
-# ['FYBR', 'THRY', 'MVNC', 'GMGI', 'IQST', 'KTEL', 'AREN', 'HMMR', 'VNUE', 'TRKAQ', 'CMGO', 'HMLA', 'TMGI', 'CLIS']
-# missingroicyears =
-# ['THRY', 'MVNC', 'IQST', 'KTEL', 'HMMR', 'TRKAQ', 'CMGO', 'ROI', 'HMLA', 'TMGI', 'CLIS']
-# wrongincomeendyear =
-# ['NTES', 'AMX', 'EA', 'CHT', 'TTWO', 'VOD', 'TME', 'TIMB', 'SKM', 'KT', 'YNDX', 'TKC', 'IIJIY', 'ATHM', 'LGF-A', 'WB', 'YY', 'ROVR', 'WLY', 'TV', 'VEON', 'PERI', 'SCHL', 'MOMO', 'OPRA', 'HUYA', 'ATEX', 'GRVY', 'GDEV', 'ZH', 'RSVR', 'LDSN', 'JFIN', 'SIFY', 'DOYU', 'DRCT', 'UONE', 'LVO', 'SKLZ', 'MVNC', 'FNGR', 'XNET', 'WIMI', 'BBUZ', 'EZOO', 'KORE', 'SCGY', 'CMCM', 'BHAT', 'KUKE', 'STCN', 'TOON', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'MMV', 'NCTY', 'ANGH', 'CRGE', 'EGLXF', 'ELRE', 'GAME', 'KRKR', 'CNVS', 'TRUG', 'FENG', 'GIGM', 'EDUC', 'FAZE', 'BREA', 'FDIT', 'MIMO', 'DMSL', 'SALM', 'CNFN', 'KDOZF', 'SPTY', 'SLE', 'HHSE', 'BAOS', 'CNET', 'CSSE', 'TLLYF', 'MGAM', 'SNPW', 'VYBE', 'ANTE', 'VRVR', 'VNUE', 'TRKAQ', 'FMHS', 'NUGL', 'MOBQ', 'GROM', 'COMS', 'CMGO', 'QTTOY', 'NWCN', 'SLDC', 'BOTY', 'GFMH', 'ROI', 'SRAX', 'TMGI', 'CCCP', 'MDEX', 'SNWR', 'WINR', 'VOCL', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'AFOM', 'NTTYY', 'QBCRF', 'CELJF', 'OIBRQ', 'ILLMF', 'IDWM', 'EMWPF', 'LTES', 'BYOC', 'GZIC', 'TOWTF', 'BTIM', 'PTNRF', 'LOVLQ']
-# wrongdivendyear =
-# ['NTES', 'AMX', 'EA', 'CHT', 'TTWO', 'VOD', 'TME', 'TIMB', 'SKM', 'KT', 'YNDX', 'TKC', 'ATHM', 'LGF-A', 'YY', 'ROVR', 'WLY', 'VEON', 'PERI', 'SCHL', 'MOMO', 'OPRA', 'HUYA', 'ATEX', 'GRVY', 'GDEV', 'ZH', 'RSVR', 'LDSN', 'JFIN', 'SIFY', 'DOYU', 'DRCT', 'KNIT', 'UONE', 'LVO', 'SKLZ', 'MVNC', 'FNGR', 'XNET', 'WIMI', 'BBUZ', 'EZOO', 'KORE', 'SCGY', 'CMCM', 'BHAT', 'IQST', 'TOON', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'NCTY', 'ANGH', 'CRGE', 'ELRE', 'GAME', 'KRKR', 'CNVS', 'GIGM', 'EDUC', 'FAZE', 'BREA', 'FDIT', 'DMSL', 'SALM', 'CNFN', 'KDOZF', 'SPTY', 'SLE', 'BAOS', 'CNET', 'CSSE', 'TLLYF', 'MGAM', 'SNPW', 'VYBE', 'ANTE', 'VRVR', 'VNUE', 'TRKAQ', 'FMHS', 'NUGL', 'MOBQ', 'GROM', 'COMS', 'CMGO', 'QTTOY', 'NWCN', 'SLDC', 'BOTY', 'GFMH', 'ROI', 'SRAX', 'TMGI', 'CCCP', 'MDEX', 'SNWR', 'WINR', 'VOCL', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'AFOM', 'NTTYY', 'CELJF', 'OIBRQ', 'ILLMF', 'IDWM', 'EMWPF', 'LTES', 'BYOC', 'GZIC', 'TOWTF', 'BTIM', 'PTNRF', 'LOVLQ']
-# wrongroicendyear =
-# ['NTES', 'AMX', 'EA', 'CHT', 'TTWO', 'TME', 'TIMB', 'SKM', 'KT', 'YNDX', 'TKC', 'ATHM', 'LGF-A', 'WB', 'YY', 'ROVR', 'WLY', 'VEON', 'PERI', 'SCHL', 'MOMO', 'OPRA', 'HUYA', 'ATEX', 'GRVY', 'GDEV', 'ZH', 'RSVR', 'LDSN', 'JFIN', 'SIFY', 'DOYU', 'DRCT', 'UONE', 'LVO', 'SKLZ', 'MVNC', 'FNGR', 'XNET', 'WIMI', 'BBUZ', 'EZOO', 'KORE', 'SCGY', 'CMCM', 'BHAT', 'STCN', 'TOON', 'RSTN', 'ICLK', 'SJ', 'AAQL', 'NCTY', 'ANGH', 'CRGE', 'ELRE', 'GAME', 'KRKR', 'CNVS', 'GIGM', 'EDUC', 'FAZE', 'BREA', 'FDIT', 'DMSL', 'SALM', 'CNFN', 'KDOZF', 'SPTY', 'SLE', 'BAOS', 'CNET', 'CSSE', 'TLLYF', 'MGAM', 'SNPW', 'VYBE', 'ANTE', 'VRVR', 'VNUE', 'TRKAQ', 'FMHS', 'NUGL', 'MOBQ', 'GROM', 'COMS', 'CMGO', 'QTTOY', 'NWCN', 'SLDC', 'BOTY', 'GFMH', 'ROI', 'SRAX', 'TMGI', 'CCCP', 'MDEX', 'SNWR', 'WINR', 'VOCL', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'AFOM', 'NTTYY', 'CELJF', 'OIBRQ', 'ILLMF', 'IDWM', 'EMWPF', 'LTES', 'BYOC', 'GZIC', 'TOWTF', 'BTIM', 'PTNRF', 'LOVLQ']
-###
-
-###NEW ind
-# recapList = 
-# ['EADSY', 'ATLKY', 'PCAR', 'BAESY', 'DKILY', 'CODYY', 'WTKWY', 'FANUY', 'CJPRY', 'SGSOY', 'BOUYY', 'TKHVY', 'RBA', 'ASR', 'OUKPY', 'EBCOY', 'SMBMY', 'ALSMY', 'VIAAY', 'MSSMY', 'ATS', 'AFLYY', 'ROYMY', 'IHICY', 'VSTS', 'OSTIY', 'SHZNY', 'GBX', 'ECO', 'AZUL', 'SPLP', 'GSL', 'FLYX', 'MIESY', 'KNOP', 'TUSK', 'FBYD', 'STI', 'PMEC', 'CCTG', 'AERT', 'EESH', 'PNYG', 'ROMA', 'MMTRS', 'CBMJ', 'MSNVF', 'ESGL', 'BURU', 'GPAK', 'CISS', 'IAALF', 'GOGR', 'SSHT', 'UMAV', 'MHHC', 'RCIT', 'DPUI', 'EENEF', 'GOL', 'GNGYF', 'EXROF', 'BCCEF', 'USDP', 'JETR', 'FTRS', 'LEAS', 'KNOS', 'WTII']
-# missingRevenue =
-# ['EVEX', 'ACHR', 'PCT', 'FLYX', 'SB', 'FREY', 'ZCAR', 'STI', 'AERT', 'HOVR', 'SPEC', 'GRHI', 'MMTRS', 'BURU', 'SSET', 'HLLK', 'JPEX']
-# missingNetIncome =
-# ['MMTRS']
-# missingOpCF =
-# ['MMTRS']
-# missingCapEx =
-# ['ADP', 'PAC', 'CAR', 'HTZ', 'CTOS', 'SFL', 'MRTN', 'CMRE', 'NAT', 'CRESY', 'FLYX', 'EGLE', 'SB', 'PANL', 'HSHP', 'WSCO', 'HQI', 'ELVA', 'CRAWA', 'ZCAR', 'RR', 'STI', 'BEEP', 'NEOV', 'NSGP', 'AERT', 'HOVR', 'UNXP', 'CLEV', 'QIND', 'EAWD', 'PNYG', 'WLGS', 'GRHI', 'MMTRS', 'BURU', 'NORD', 'YJGJ', 'GTLL', 'JKSM', 'NVGT', 'QPRC', 'DRFS', 'RAKR', 'ATVK', 'HLLK', 'JFIL', 'KDCE', 'DTII', 'JPEX', 'MSYN', 'MJHI', 'ACMB', 'ARMC', 'PRPI', 'IWAL', 'ECOX', 'CDXQ']
-# missingNetCF =
-# ['HLLK', 'PRPI']
-# missingDepreNAmor =
-# ['LTMAY', 'UNP', 'RELX', 'ITW', 'TRI', 'PH', 'FAST', 'OTIS', 'RYAAY', 'PWR', 'POOL', 'GFL', 'RTO', 'PNR', 'TFII', 'UHAL', 'NVT', 'FBIN', 'STN', 'AGCO', 'APG', 'RHI', 'PAC', 'SITE', 'AIT', 'CAE', 'CAR', 'R', 'AL', 'HRI', 'CAAP', 'CPA', 'OMAB', 'SPR', 'ERJ', 'HAYW', 'WERN', 'ALG', 'BE', 'PGTI', 'JBI', 'GOGL', 'SBLK', 'UPWK', 'TNC', 'BBU', 'SFL', 'ACHR', 'MRTN', 'ZIM', 'PRG', 'CDLR', 'VVX', 'BLDP', 'TDCX', 'VLRS', 'AZUL', 'NAT', 'PCT', 'BV', 'CRESY', 'EUBG', 'ASC', 'LNZA', 'FLYX', 'MTW', 'ACCO', 'EBF', 'LILM', 'SB', 'FORR', 'ADSE', 'LEV', 'PTSI', 'AMBI', 'MVST', 'QUAD', 'ESEA', 'MEC', 'GASS', 'GHM', 'SMR', 'NVX', 'WSCO', 'GRIN', 'FLCX', 'EVTL', 'SHIP', 'CRGO', 'ELVA', 'ESOA', 'SATL', 'ARC', 'ZCAR', 'RR', 'OMEX', 'STI', 'PYRGF', 'FLUX', 'GP', 'AQMS', 'EDRY', 'ESP', 'NEOV', 'NSGP', 'AZ', 'XOS', 'ASTR', 'GLBS', 'AERT', 'FTEK', 'VCIG', 'LICN', 'HOVR', 'GFAI', 'SPEC', 'UNXP', 'USEA', 'GTMAY', 'LWLW', 'DCFC', 'AIRI', 'QIND', 'SNRG', 'EAWD', 'YGMZ', 'PNYG', 'WLGS', 'MWG', 'GRHI', 'MMTRS', 'KIQ', 'KWE', 'MNTS', 'CHNR', 'PRZO', 'CAMG', 'OZSC', 'GPOX', 'BURU', 'NORD', 'BWVI', 'SMX', 'TBLT', 'YJGJ', 'AEHL', 'GTLL', 'KRFG', 'PTNYF', 'AETHF', 'WARM', 'IMHC', 'DRFS', 'BLIS', 'RAKR', 'HLLK', 'BLPG', 'COUV', 'JFIL', 'HWKE', 'KDCE', 'BBRW', 'JPEX', 'MSYN', 'PHOT', 'CHEAF', 'CHKIF', 'GOL', 'GNGYF', 'ACMB', 'DPRO', 'PRPI', 'TMRR', 'ECOX']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['CAT', 'ABBNY', 'TRI', 'URI', 'SYM', 'AXON', 'WMS', 'CLH', 'CHRW', 'BZ', 'ATKR', 'ESAB', 'EXPO', 'AVAV', 'CSWI', 'STRL', 'RXO', 'MIR', 'RKLB', 'SFL', 'ULCC', 'VVX', 'TGI', 'DNOW', 'PRLB', 'KRNT', 'NKLA', 'LNZA', 'AGX', 'NPK', 'BWMN', 'AMPX', 'DSKE', 'FREY', 'GENC', 'NVX', 'FLCX', 'SHIM', 'VTSI', 'ZCAR', 'RR', 'LUNR', 'BGSF', 'IVAC', 'ASFH', 'RVSN', 'SOAR', 'APT', 'ESP', 'BWEN', 'XOS', 'KSCP', 'HSON', 'SUGP', 'LICN', 'HOVR', 'SNT', 'UNXP', 'OP', 'CVR', 'CLWT', 'GRHI', 'KIQ', 'QWTR', 'YJGJ', 'JCSE', 'MACE', 'KRFG', 'TLSS', 'DRFS', 'BRDSQ', 'HLLK', 'MKULQ', 'TSP', 'ACMB', 'PWDY', 'TMRR']
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# ['RTO', 'HLLK']
-# missingincomeyears =
-# ['CWST', 'FA', 'BV', 'GNK', 'EGLE', 'BBCP', 'KODK', 'POWW', 'SKYX', 'HRBR', 'CODA', 'AGSS', 'CLIR', 'APWC', 'LWLW', 'OP', 'ALPP', 'AIRI', 'IVDA', 'KWE', 'SGBX', 'QWTR', 'TLSS', 'STAF', 'NVGT', 'CIRX', 'BRBL', 'RNWR', 'PWDY', 'IWAL', 'CDXQ']
-# missingdivyears =
-# ['GPN', 'CWST', 'FA', 'BV', 'GNK', 'EGLE', 'LMB', 'BBCP', 'KODK', 'POWW', 'SKYX', 'HRBR', 'CODA', 'AGSS', 'APWC', 'LWLW', 'ALPP', 'AIRI', 'IVDA', 'KWE', 'CAMG', 'QWTR', 'TLSS', 'STAF', 'NVGT', 'CIRX', 'BRBL', 'RNWR', 'PWDY', 'PCTL', 'IWAL', 'CDXQ']
-# missingroicyears =
-# ['EGLE', 'POWW', 'SKYX', 'HRBR', 'CODA', 'AGSS', 'CLIR', 'APWC', 'LWLW', 'ALPP', 'AIRI', 'IVDA', 'KWE', 'QWTR', 'NVGT', 'CIRX', 'BRBL', 'RNWR', 'PWDY', 'IWAL', 'CDXQ']
-# wrongincomeendyear =
-# ['CNI', 'CTAS', 'FDX', 'PAYX', 'RYAAY', 'BAH', 'ZTO', 'WMS', 'UHAL', 'PAC', 'RBC', 'CAE', 'BZ', 'CPA', 'OMAB', 'ENS', 'AVAV', 'CSWI', 'GMS', 'KFY', 'WOR', 'AIR', 'TGH', 'AZZ', 'SCS', 'APOG', 'CMCO', 'TGI', 'CPLP', 'TRNS', 'THR', 'TDCX', 'VLRS', 'AZUL', 'NAT', 'EH', 'FLYX', 'SWBI', 'AGX', 'EBF', 'ADSE', 'RGP', 'AMSC', 'AMBI', 'PKE', 'ESEA', 'POWW', 'GASS', 'GHM', 'FLCX', 'ICTSF', 'SATL', 'ZCAR', 'TAYD', 'HRBR', 'OMEX', 'STI', 'MEEC', 'PYRGF', 'GTII', 'GP', 'PPIH', 'RSKIA', 'EDRY', 'BUKS', 'NSGP', 'PPSI', 'AIRT', 'BEST', 'ASTR', 'GTEC', 'AERT', 'CVU', 'OESX', 'VCIG', 'TPCS', 'DFLI', 'CACO', 'FATH', 'SNT', 'PGTK', 'APWC', 'JYD', 'GFAI', 'EPOW', 'GTMAY', 'CETY', 'OPTT', 'KITT', 'AUSI', 'ALPP', 'GWAV', 'AIRI', 'QIND', 'SNRG', 'EAWD', 'OCLN', 'YGMZ', 'IDEX', 'CLWT', 'WLGS', 'MWG', 'HIHO', 'LASE', 'ILAG', 'MNTS', 'CHNR', 'CRWE', 'TIKK', 'RAYA', 'CAMG', 'OZSC', 'GPOX', 'BURU', 'BLNC', 'NORD', 'VIEW', 'SGBX', 'ATXG', 'UNQL', 'AGFY', 'QWTR', 'PTRAQ', 'BWVI', 'SENR', 'SMX', 'TBLT', 'YJGJ', 'AEHL', 'JCSE', 'BKYI', 'UUU', 'JAN', 'MACE', 'AMMJ', 'KRFG', 'TLSS', 'STAF', 'PTNYF', 'AETHF', 'RCRT', 'WARM', 'IMHC', 'JKSM', 'NVGT', 'DRFS', 'SPCB', 'EFSH', 'AULT', 'BLIS', 'DLYT', 'SSET', 'BRDSQ', 'FIFG', 'COUV', 'JFIL', 'GXXM', 'ZEVY', 'KDCE', 'DTII', 'DGWR', 'GDSI', 'BBRW', 'JPEX', 'CIRX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'MKULQ', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'GOL', 'GNGYF', 'YELLQ', 'NM-PH', 'TSP', 'ACMB', 'ADMQ', 'USDP', 'UCIX', 'PRPI', 'AMMX', 'PWDY', 'RELT', 'TMRR', 'PCTL', 'ECOX', 'RENO', 'CDXQ', 'HYREQ']
-# wrongdivendyear =
-# ['CNI', 'CTAS', 'FDX', 'PAYX', 'RYAAY', 'BAH', 'ZTO', 'WMS', 'UHAL', 'PAC', 'RBC', 'CAE', 'BZ', 'CPA', 'OMAB', 'ENS', 'AVAV', 'CSWI', 'GMS', 'KFY', 'WOR', 'AIR', 'TGH', 'BBU', 'AZZ', 'SCS', 'APOG', 'CMCO', 'TGI', 'CPLP', 'TRNS', 'THR', 'TDCX', 'VLRS', 'NAT', 'EH', 'SWBI', 'AGX', 'EBF', 'ADSE', 'RGP', 'AMSC', 'AMBI', 'PKE', 'ESEA', 'POWW', 'GASS', 'GHM', 'FLCX', 'SCWO', 'SATL', 'ZCAR', 'TAYD', 'HRBR', 'OMEX', 'MEEC', 'PYRGF', 'GTII', 'GP', 'PPIH', 'RSKIA', 'EDRY', 'BUKS', 'NSGP', 'PPSI', 'AIRT', 'BEST', 'ASTR', 'GTEC', 'LTBR', 'CVU', 'OESX', 'VCIG', 'TPCS', 'DFLI', 'HOVR', 'CACO', 'FATH', 'SNT', 'PGTK', 'APWC', 'JYD', 'GFAI', 'UNXP', 'EPOW', 'GTMAY', 'CETY', 'OPTT', 'KITT', 'AUSI', 'OP', 'ALPP', 'GWAV', 'AIRI', 'QIND', 'SNRG', 'EAWD', 'OCLN', 'YGMZ', 'IDEX', 'CLWT', 'WLGS', 'MWG', 'HIHO', 'LASE', 'ILAG', 'MNTS', 'CHNR', 'CRWE', 'TIKK', 'RAYA', 'CAMG', 'OZSC', 'ENG', 'GPOX', 'BLNC', 'NORD', 'VIEW', 'SGBX', 'ATXG', 'UNQL', 'AGFY', 'QWTR', 'PTRAQ', 'BWVI', 'SENR', 'TBLT', 'YJGJ', 'AEHL', 'JCSE', 'BKYI', 'UUU', 'JAN', 'MACE', 'AMMJ', 'KRFG', 'TLSS', 'STAF', 'PTNYF', 'AETHF', 'RCRT', 'WARM', 'IMHC', 'JKSM', 'NVGT', 'DRFS', 'SPCB', 'EFSH', 'AULT', 'BLIS', 'DLYT', 'SSET', 'BRDSQ', 'FIFG', 'COUV', 'JFIL', 'GXXM', 'HWKE', 'ZEVY', 'KDCE', 'DTII', 'DGWR', 'GDSI', 'BBRW', 'JPEX', 'CIRX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'MKULQ', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'YELLQ', 'NM-PH', 'TSP', 'ACMB', 'ADMQ', 'UCIX', 'PRPI', 'AMMX', 'PWDY', 'RELT', 'TMRR', 'PCTL', 'ECOX', 'RENO', 'CDXQ', 'HYREQ']
-# wrongroicendyear =
-# ['CNI', 'CTAS', 'FDX', 'PAYX', 'RYAAY', 'BAH', 'ZTO', 'WMS', 'UHAL', 'PAC', 'RBC', 'CAE', 'BZ', 'CPA', 'OMAB', 'ENS', 'AVAV', 'CSWI', 'GMS', 'KFY', 'WOR', 'AIR', 'TGH', 'AZZ', 'SCS', 'APOG', 'CMCO', 'TGI', 'CPLP', 'TRNS', 'THR', 'TDCX', 'VLRS', 'NAT', 'EH', 'SWBI', 'AGX', 'EBF', 'ADSE', 'RGP', 'AMSC', 'AMBI', 'PKE', 'ESEA', 'POWW', 'GASS', 'GHM', 'FLCX', 'ICTSF', 'ZCAR', 'TAYD', 'HRBR', 'OMEX', 'MEEC', 'PYRGF', 'GTII', 'GP', 'PPIH', 'RSKIA', 'EDRY', 'BUKS', 'NSGP', 'PPSI', 'AIRT', 'BEST', 'ASTR', 'GTEC', 'CVU', 'OESX', 'VCIG', 'TPCS', 'DFLI', 'CACO', 'FATH', 'SNT', 'PGTK', 'APWC', 'JYD', 'GFAI', 'EPOW', 'GTMAY', 'CETY', 'OPTT', 'KITT', 'AUSI', 'OP', 'ALPP', 'GWAV', 'AIRI', 'QIND', 'SNRG', 'EAWD', 'OCLN', 'YGMZ', 'IDEX', 'CLWT', 'WLGS', 'MWG', 'HIHO', 'LASE', 'ILAG', 'MNTS', 'CHNR', 'CRWE', 'TIKK', 'RAYA', 'CAMG', 'OZSC', 'GPOX', 'BLNC', 'NORD', 'VIEW', 'SGBX', 'ATXG', 'UNQL', 'AGFY', 'QWTR', 'PTRAQ', 'BWVI', 'SENR', 'SMX', 'TBLT', 'YJGJ', 'AEHL', 'JCSE', 'BKYI', 'UUU', 'JAN', 'MACE', 'AMMJ', 'KRFG', 'TLSS', 'STAF', 'PTNYF', 'AETHF', 'RCRT', 'WARM', 'IMHC', 'JKSM', 'NVGT', 'DRFS', 'SPCB', 'EFSH', 'AULT', 'BLIS', 'DLYT', 'SSET', 'BRDSQ', 'FIFG', 'COUV', 'JFIL', 'GXXM', 'ZEVY', 'KDCE', 'DTII', 'DGWR', 'GDSI', 'BBRW', 'JPEX', 'CIRX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'MKULQ', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'YELLQ', 'NM-PH', 'TSP', 'ACMB', 'ADMQ', 'UCIX', 'PRPI', 'AMMX', 'PWDY', 'RELT', 'TMRR', 'PCTL', 'ECOX', 'RENO', 'CDXQ', 'HYREQ']
-###
-
-###NEW Energy
-# recapList = 
-# ['TTE', 'PBR', 'BP', 'ET', 'MPLX', 'BKR', 'EC', 'CCJ', 'OMVKY', 'GLPEY', 'PAA', 'WES', 'HESM', 'IDKOY', 'SUN', 'ADOOY', 'BSM', 'NS', 'USAC', 'CRGY', 'GLP', 'NRP', 'SBR', 'NGL', 'PBT', 'WTI', 'SJT', 'MVO', 'GVXXF', 'KGEI', 'VOC', 'CRT', 'MMLP', 'ANLDF', 'MPIR', 'BPT', 'PRT', 'PVL', 'NRT', 'CHKR', 'CWPE', 'HGTXU', 'MTR', 'BKUCF', 'EGYF', 'MARPS', 'ECTM', 'GULTU', 'SSOF', 'FECOF', 'REOS', 'NXMR', 'AURI', 'SAPMF', 'CRNZF', 'SDTTU']
-# missingRevenue =
-# ['APA', 'OILY', 'SRNW', 'TPET', 'GRVE', 'GSPE', 'BRLL', 'MSCH']
-# missingNetIncome =
-# []
-# missingOpCF =
-# ['CPG']
-# missingCapEx =
-# ['SHEL', 'TTE', 'EOG', 'PSX', 'SU', 'WDS', 'FANG', 'PR', 'APA', 'CHRD', 'SM', 'MGY', 'CPG', 'BSM', 'STR', 'WHD', 'BTE', 'GPOR', 'TALO', 'CRGY', 'HPK', 'VET', 'MNR', 'BORR', 'EE', 'GRNT', 'NESR', 'VTS', 'DEC', 'TXO', 'BRY', 'UROY', 'AMPY', 'EPM', 'GTE', 'PNRG', 'TRLM', 'PHX', 'EPSN', 'MXC', 'VYEY', 'OILY', 'SRNW', 'TPET', 'PTCO', 'ROYL', 'ALTX', 'CRCE', 'FECOF', 'GRVE', 'AMNI', 'QREE', 'DBRM', 'ALPSQ', 'CJAX', 'BRLL', 'MRGE', 'MSCH', 'OKMN']      
-# missingNetCF =
-# []
-# missingDepreNAmor =
-# ['SHEL', 'TTE', 'BP', 'EQNR', 'CNQ', 'EPD', 'E', 'SU', 'WDS', 'MPLX', 'CVE', 'EC', 'CCJ', 'TS', 'PBA', 'PR', 'YPF', 'HESM', 'CSAN', 'UGP', 'NE', 'VNOM', 'VVV', 'SUN', 'VAL', 'PTEN', 'SM', 'NXE', 'CPG', 'EURN', 'STNG', 'ERF', 'TGS', 'TRMD', 'VIST', 'BTE', 'DNN', 'DHT', 'VET', 'BORR', 'FLNG', 'NEXT', 'DO', 'PDS', 'EU', 'GRNT', 'EFXT', 'VTS', 'DEC', 'OBE', 'GPRK', 'GFR', 'UROY', 'BROG', 'TRLM', 'DLNG', 'EPSN', 'NINE', 'IMPP', 'WSTRF', 'PXS', 'ZNOG', 'LRDC', 'TRLEF', 'SRNW', 'TPET', 'PTCO', 'CRCE', 'FECOF', 'GSPE', 'QREE', 'PCCYF', 'SNPMF', 'THNPF', 'SPTJF', 'GLOG-PA', 'VTDRF', 'BRLL', 'MRGE', 'MSCH']
-# missing income prop sales
-# []
-# missingIntPaid =
-# ['EQNR', 'TPL', 'WFRD', 'XPRO', 'EE', 'DMLP', 'CLNE', 'SND', 'NCSM', 'CKX', 'VIVK', 'SPND', 'SRNW', 'ALTX', 'CRCE', 'ALPSQ', 'PQEFF', 'OKMN']
-# missingDivTotalPaid =
-# []
-# missingSshares =
-# []
-# missingTotalEquity =
-# []
-# missingincomeyears =
-# ['PBR', 'SUN', 'VAL', 'CRC', 'TDW', 'BTU', 'PARR', 'SBOW', 'SD', 'UNTC', 'AMPY', 'KLXE', 'BATL', 'PFIE', 'CEI', 'OILY', 'GWTI', 'VTDRF']
-# missingdivyears =
-# ['NXE', 'CRC', 'TDW', 'BTU', 'PARR', 'LEU', 'SBOW', 'NESR', 'SD', 'UNTC', 'AMPY', 'KLXE', 'BATL', 'PFIE', 'CEI', 'OILY', 'GWTI', 'VTDRF']
-# missingroicyears =
-# ['SBOW', 'SD', 'CEI', 'OILY', 'GWTI']
-# wrongincomeendyear =
-# ['PBR', 'EC', 'YPF', 'CSAN', 'UGP', 'FRO', 'EURN', 'TGS', 'VIST', 'LPG', 'NGL', 'NESR', 'UNTC', 'UROY', 'BROG', 'PNRG', 'DLNG', 'IMPP', 'WSTRF', 'WTRV', 'PXS', 'SMGI', 'BANL', 'QSEP', 'INDO', 'VIVK', 'MXC', 'SPND', 'LRDC', 'TRLEF', 'VYEY', 'OILY', 'SNMP', 'NSFDF', 'GWTI', 'PTCO', 'NRIS', 'ROYL', 'OILCF', 'GRVE', 'GSPE', 'VBHI', 'AMNI', 'QREE', 'DBRM', 'MMEX', 'PCCYF', 'SNPMF', 'ATGFF', 'THNPF', 'SPTJF', 'VTDRF', 'ALPSQ', 'PQEFF', 'BRLL', 'MRGE', 'MSCH', 'FTXP', 'BBLS']
-# wrongdivendyear =
-# ['YPF', 'CSAN', 'UGP', 'FRO', 'EURN', 'TGS', 'VIST', 'LPG', 'TNP', 'NESR', 'UNTC', 'UROY', 'BROG', 'PNRG', 'IMPP', 'WSTRF', 'WTRV', 'PXS', 'SMGI', 'BANL', 'QSEP', 'INDO', 'VIVK', 'MXC', 'SPND', 'LRDC', 'TRLEF', 'VYEY', 'OILY', 'SNMP', 'NSFDF', 'GWTI', 'PTCO', 'NRIS', 'ROYL', 'ALTX', 'OILCF', 'GRVE', 'GSPE', 'VBHI', 'AMNI', 'QREE', 'DBRM', 'MMEX', 'PCCYF', 'SNPMF', 'ATGFF', 'THNPF', 'SPTJF', 'VTDRF', 'ALPSQ', 'PQEFF', 'BRLL', 'MRGE', 'MSCH', 'FTXP', 'BBLS']
-# wrongroicendyear =
-# ['YPF', 'CSAN', 'UGP', 'FRO', 'EURN', 'TGS', 'VIST', 'LPG', 'TNP', 'NESR', 'UNTC', 'UROY', 'BROG', 'PNRG', 'DLNG', 'IMPP', 'WSTRF', 'WTRV', 'PXS', 'SMGI', 'BANL', 'QSEP', 'VIVK', 'MXC', 'SPND', 'LRDC', 'TRLEF', 'VYEY', 'OILY', 'SNMP', 'NSFDF', 'GWTI', 'PTCO', 'NRIS', 'ROYL', 'OILCF', 'GRVE', 'GSPE', 'VBHI', 'AMNI', 'QREE', 'DBRM', 'MMEX', 'PCCYF', 'SNPMF', 'ATGFF', 'THNPF', 'SPTJF', 'VTDRF', 'ALPSQ', 'PQEFF', 'BRLL', 'MRGE', 'MSCH', 'FTXP', 'BBLS']
-###
-
-###NEW HEALTH
-# recap list: 
-# ['CSLLY', 'IQV', 'SAUHY', 'SGIOY', 'RYZB', 'GNNDY', 'NHNKY', 'BTSG', 'AMAM', 'PHVS', 'LTGHY', 'BIOGY', 'ABVX', 'AVBP', 'PRTC', 'GUTS', 'ANRO', 'NBTX', 'ANL', 'TLSI', 'IPHA', 'GNFT', 'MESO', 'CYBN', 'BSEM', 'AMIX', 'GALT', 'MLEC', 'GRUSF', 'LUDG', 'MSCLF', 'ONMD', 'GDTC', 'SLDX', 'VTVT', 'OCEA', 'GXXY', 'NRXS', 'IMRN', 'MSTH', 'LVRLF', 'CBIH', 'GSAC', 'XTLB', 'GRPS', 'BPTS', 'XRTX', 'SZLSF', 'REPCF', 'JUVAF', 'SFWJ', 'RSHN', 'ICCO', 'EBYH', 'ECGI', 'XCRT', 'TEVNF', 'NXGB', 'BLFE', 'CBDL', 'MGX', 'CHRO', 'RSCI', 'CUBT', 'CSSI', 'HALB', 'WSRC', 'AGNPF', 'SLHGF', 'NBCO', 'EMGE', 'FZRO', 'CNNA', 'DHAI']
-# missing income revenue
-# ['NVS', 'SNY', 'PCVX', 'IMVT', 'NUVL', 'BHVN', 'MLTX', 'AMED', 'NMRA', 'GPCR', 'VERA', 'APGE', 'PROK', 'EWTX', 'DYN', 'IRON', 'KURA', 'DAWN', 'BLTE', 'SANA', 'CABA', 'AKRO', 'GRCL', 'CRGX', 'TYRA', 'TRML', 'VERV', 'SSII', 'OLMA', 'ZNTL', 'ORIC', 'ETNB', 'SLRN', 'ABVX', 'HLVX', 'IGMS', 'CMPS', 'LBPH', 'BMEA', 'ELVN', 'MLYS', 'ANTX', 'AVTE', 'IVVD', 'AVXL', 'REPL', 'LIAN', 'ANNX', 'AURA', 'THRD', 'NUVB', 'CELC', 'TNYA', 'PEPG', 'NAUT', 'RPTX', 'INZY', 'HUMA', 'AEON', 'ACET', 'KOD', 'ERAS', 'TLSI', 'HOWL', 'GLUE', 'DRTS', 'CDT', 'GOSS', 'JSPR', 'ALDX', 'CMPX', 'THRX', 'ENGN', 'MNMD', 'ABOS', 'GRPH', 'PDSB', 'ZURA', 'PYXS', 'VOR', 'PRLD', 'ARMP', 'VTYX', 'ELEV', 'ATHA', 'NVCT', 'RVPH', 'IOBT', 'ALLK', 'CYT', 'KNTE', 'IMUX', 'GLSI', 'LIFW', 'VIGL', 'RGC', 'GALT', 'IRME', 'CRVS', 'TRVI', 'PMVP', 'CTCX', 'ACRV', 'ELYM', 'CGTX', 'MURA', 'RBOT', 'RLYB', 'SKYE', 'ANEB', 'VICP', 'GNTA', 'CDTX', 'AVRO', 'RTGN', 'RPHM', 'PASG', 'QNCX', 'CALC', 'MIST', 'ICU', 'INAB', 'ENLV', 'BIVI', 'SSIC', 'INTS', 'BEAT', 'LTRN', 'ESLA', 'CLRB', 'ACXP', 'RZLT', 'NRXP', 'ACHL', 'PMN', 'NKGN', 'ONMD', 'MOVE', 'PYPD', 'INKT', 'VINC', 'RNXT', 'APRE', 'NRBO', 'SNSE', 'BCLI', 'OCEA', 'XLO', 'NLSP', 'GLTO', 'CNTX', 'MIRA', 'INDP', 'ICCT', 'AKTX', 'CHEK', 'CVKD', 'BCEL', 'PHGE', 'GRTX', 'VIRI', 'APM', 'CMMB', 'QLIS', 'ALZN', 'HOTH', 'SHPH', 'ATXI', 'BPTS', 'VRPX', 'ARTL', 'CPMV', 'STSS', 'PRFX', 'SNPX', 'ONCO', 'CING', 'CWBR', 'NBSE', 'ALLR', 'CNSP', 'ADIL', 'KRBP', 'ATNF', 'IONM', 'NVIV', 'DRMA', 'REVB', 'THAR', 'ZVSA', 'BLPH', 'RNAZ', 'KTRA', 'PPCB', 'RBSH', 'GNRS', 'NMTRQ', 'TELO', 'FBLG', 'RAIN', 'SIOX', 'RAPH', 'SKYI', 'CANQF', 'EVLO', 'PHBI', 'CLCS', 'CNNA', 'DHAI']
-# missing income netIncome
-# []
-# missing income opCF
-# ['PHG', 'ONCY']
-# missing income capEx
-# ['LLY', 'WAT', 'RPRX', 'NUVL', 'VKTX', 'PRTA', 'ALHC', 'MD', 'MLYS', 'ANTX', 'ZIMV', 'NUVB', 'TLSI', 'INMB', 'CDT', 'APLT', 'SGMT', 'JSPR', 'IVA', 'MNMD', 'ZURA', 'BCAB', 'NVCT', 'RVPH', 'NGM', 'ANVS', 'GLSI', 'MGRM', 'COYA', 'ELYM', 'TIHE', 'ANEB', 'VICP', 'BCTX', 'RTGN', 'PASG', 'PHCI', 'ICU', 'INAB', 'BIVI', 'SSIC', 'CKPT', 'INTS', 'ESLA', 'ACXP', 'DYAI', 'RMTI', 'NKGN', 'ONMD', 'MDAI', 'BKUH', 'RNXT', 'ETAO', 'MAIA', 'MDNAF', 'CLDI', 'OHCS', 'PMCB', 'OCEA', 'COEP', 'NBIO', 'BIXT', 'MIRA', 'ICCT', 'ALRTF', 'ELAB', 'MCUJF', 'DRUG', 'INTI', 'EDXC', 'VIRI', 'ALID', 'SNGX', 'PKTX', 'RSCF', 'ACBM', 'ADTX', 'ALZN', 'CELZ', 'ATXI', 'BPTS', 'XRTX', 'MNPR', 'LIXT', 'VRPX', 'ARTL', 'LSDI', 'SILO', 'BZYR', 'ACON', 'ENSC', 'RGBP', 'IPIX', 'QRON', 'HSTC', 'INQD', 'NXL', 'EVOK', 'INBS', 'VRAX', 'ATNF', 'PXMD', 'DRMA', 'CSUI', 'PAXH', 'ATHXQ', 'HADV', 'NXEN', 'USAQ', 'THAR', 'ZVSA', 'INQR', 'GCAN', 'ENMI', 'VYND', 'KTRA', 'QTXB', 'CNBX', 'EMED', 'BLMS', 'BBBT', 'VNTH', 'RGMP', 'QBIO', 'GNRS', 'TELO', 'BFFTF', 'SIOX', 'SKYI', 'IGEX', 'REMI', 'GRNF', 'IGPK', 'SNNC', 'THCT', 'CNNA', 'SYBE', 'SSTC', 'DHAI']
-# missing income netCF
-# ['HLN', 'ARGX', 'MDXH', 'CSTF', 'IGPK', 'CNNA']
-# missing income depreNAmor
-# ['NVO', 'ABBV', 'NVS', 'AZN', 'ABT', 'ISRG', 'ELV', 'SNY', 'GILD', 'GSK', 'TAK', 'HLN', 'ALC', 'GEHC', 'MTD', 'ARGX', 'BNTX', 'WAT', 'PHG', 'GMAB', 'HOLX', 'RPRX', 'RDY', 'SNN', 'LEGN', 'MEDP', 'STVN', 'APLS', 'ASND', 'IONS', 'ITCI', 'GRFS', 'IMVT', 'NUVL', 'AXSM', 'OGN', 'ALVO', 'MLTX', 'OLK', 'SMMT', 'VKTX', 'EVO', 'MOR', 'GLPG', 'CNMD', 'INDV', 'GPCR', 'VERA', 'HRMY', 'SNDX', 'APGE', 'EWTX', 'KROS', 'AMRX', 'ALPN', 'KURA', 'ATRC', 'PHVS', 'STAA', 'EYPT', 'MRVI', 'TNGX', 'BLTE', 'SANA', 'IMTX', 'MDXG', 'RLAY', 'CABA', 'AKRO', 'AMLX', 'TARS', 'RNA', 'CRGX', 'PLRX', 'AGTI', 'QTRX', 'ORIC', 'SLN', 'CRLBF', 'ZYME', 'ETNB', 'ABVX', 'EXAI', 'CVAC', 'PHAR', 'ICVX', 'HLVX', 'MPLN', 'IGMS', 'VREX', 'PRTC', 'BMEA', 'MLYS', 'ANTX', 'PRAX', 'EDIT', 'AVTE', 'CALT', 'MREO', 'VALN', 'ARQT', 'IVVD', 'LUNG', 'ADPT', 'CVRX', 'FULC', 'ORGO', 'TRDA', 'ESPR', 'PLSE', 'OCS', 'KRRO', 'LIAN', 'NPCE', 'EPIX', 'ABUS', 'GHRS', 'ZYXI', 'JANX', 'PROC', 'VYGR', 'AURA', 'NBTX', 'THRD', 'CGC', 'CELC', 'KMDA', 'NAUT', 'RPTX', 'SPOK', 'HUMA', 'NYXH', 'ADCT', 'AAGH', 'TSHA', 'SOPH', 'IMMP', 'ACIU', 'KOD', 'IPSC', 'UTMD', 'LRMR', 'ADAP', 'TLSI', 'HOWL', 'LYRA', 'GNLX', 'OPT', 'FGEN', 'GLUE', 'LMDXF', 'DRTS', 'LFMD', 'BDTX', 'CLLS', 'VRCA', 'INMB', 'SGHT', 'PROF', 'CDT', 'CORBF', 'IPHA', 'AUGX', 'GLYC', 'APLT', 'CDXS', 'OGI', 'OMGA', 'STOK', 'SGMT', 'STXS', 'CGEN', 'GNFT', 'ACB', 'QIPT', 'IVA', 'ALDX', 'SCPH', 'THRX', 'MNMD', 'ABOS', 'IMRX', 'DBVT', 'PRQR', 'LDDD', 'TELA', 'ZURA', 'XBIT', 'CRMD', 'MESO', 'VOR', 'RLMD', 'MOLN', 'CPSI', 'CYBN', 'VTYX', 'ZTEK', 'HITI', 'INO', 'DSGN', 'ELEV', 'PETS', 'ATHA', 'GTH', 'NVCT', 'RVPH', 'NGM', 'DMAC', 'ANVS', 'SEER', 'RNAC', 'MDWD', 'PLX', 'MDXH', 'GLSI', 'SHLT', 'BWAY', 'MYO', 'RGC', 'DCTH', 'IRME', 'COYA', 'IFRX', 'PMVP', 'LPTX', 'ELMD', 'CLSD', 'VAXX', 'ONCY', 'ACRV', 'BLRX', 'MLEC', 'CMRX', 'AFMD', 'THTX', 'GRUSF', 'ELYM', 'MURA', 'CRDL', 'INCR', 'RBOT', 'IKNA', 'SKYE', 'ANEB', 'IMMX', 'ICCM', 'VICP', 'APLM', 'HLCO', 'PRE', 'CNTB', 'IPA', 'RTGN', 'HRGN', 'DRIO', 'LNSR', 'CLNN', 'PHCI', 'ICU', 'INAB', 'TLSA', 'ALGS', 'IXHL', 'BIVI', 'SSIC', 'CKPT', 'INTS', 'PVCT', 'BEAT', 'PNPL', 'OKYO', 'BYSI', 'LVTX', 'OMIC', 'ESLA', 'ACXP', 'DYAI', 'DXR', 'PNXP', 'FIXX', 'ICCC', 'NRXP', 'NYMXF', 'EVGN', 'YS', 'ELTX', 'EUDA', 'PMN', 'NKGN', 'ONMD', 'SYRA', 'MDAI', 'CCM', 'PYPD', 'BGXX', 'HUGE', 'PLUR', 'BFRG', 'NSYS', 'BKUH', 'ENTX', 'INKT', 'CNTG', 'RLFTY', 'RNXT', 'GDTC', 'PHXM', 'MAIA', 'MDNAF', 'ACST', 'HSTI', 'PPBT', 'COCH', 'FBRX', 'MYNZ', 'AIH', 'EVAX', 'NRBO', 'CLDI', 'ITRM', 'VTVT', 'TRIB', 'AIM', 'SNTI', 'BCLI', 'OCEA', 'NRSN', 'IKT', 'NLSP', 'GLTO', 'OTLC', 'LABP', 'RDHL', 'NCNA', 'BIXT', 'MIRA', 'RASP', 'INDP', 'ICCT', 'ATHE', 'NNVC', 'OSA', 'PRTG', 'MBIO', 'IINN', 'CVKD', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'IMRN', 'ELAB', 'MCUJF', 'AVCRF', 'TBIO', 'ZCMD', 'ASLN', 'ARTH', 'MGRX', 'DRUG', 'AEZS', 'SONX', 'INTI', 'VIRI', 'HSCS', 'LVRLF', 'GENE', 'KZIA', 'BNOX', 'GTBP', 'CMMB', 'GNPX', 'PKTX', 'ACBM', 'QLIS', 'ADTX', 'KTTA', 'HENC', 'ALZN', 'HOTH', 'SHPH', 'AFIB', 'ABTI', 'BPTH', 'ATXI', 'XTLB', 'XCUR', 'MDGS', 'MEDS', 'BPTS', 'XRTX', 'MNPR', 'LIXT', 'CMND', 'VRPX', 'MDVL', 'ARTL', 'LSDI', 'CPMV', 'HSDT', 'SILO', 'PRFX', 'ISPC', 'PTIX', 'PBLA', 'PCSA', 'ONCO', 'ENSC', 'AGRX', 'BDRX', 'CING', 'QNRX', 'IMCC', 'RGBP', 'SXTP', 'IPIX', 'FOXO', 'CYTO', 'QRON', 'HSTC', 'PCYN', 'NXL', 'EVOK', 'CNSP', 'AKAN', 'AGTX', 'ADIL', 'KRBP', 'VRAX', 'ATNF', 'SPRC', 'PXMD', 'SEQL', 'NEPT', 'BBLG', 'GSTC', 'SINT', 'CMRA', 'BXRX', 'REVB', 'PAXH', 'BFRI', 'HADV', 'NXEN', 'THAR', 'ZVSA', 'PKBO', 'BLPH', 'GRI', 'INQR', 'TCBP', 'GCAN', 'ENMI', 'VYND', 'KTRA', 'CNBX', 'TPIA', 'CSTF', 'SIGY', 'BLMS', 'VNTH', 'GLSHQ', 'RGMP', 'QBIO', 'PEARQ', 'INFIQ', 'TMBRQ', 'GNRS', 'NMTRQ', 'TELO', 'FBLG', 'ABCZF', 'SWGHF', 'BFFTF', 'RAPH', 'XTXXF', 'SKYI', 'PMEDF', 'TMDIF', 'CLYYF', 'IGEX', 'CANQF', 'ABMT', 'GRNF', 'IGPK', 'SNNC', 'EVLO', 'WCUI', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CLCS', 'GRYN', 'CNNA', 'SYBE', 'SSTC', 'WLSS', 'AMJT', 'DHAI']
-# missing income prop sales
-# []
-# missing div intPaid
-# ['ISRG', 'MRNA', 'VEEV', 'KRTX', 'MEDP', 'CRSP', 'DOCS', 'NUVL', 'AXSM', 'SHC', 'RCM', 'ACAD', 'SGRY', 'BHVN', 'RARE', 'MLTX', 'AXNX', 'IDYA', 'ACLX', 'VKTX', 'NMRA', 'NTLA', 'DNLI', 'BEAM', 'VRNOF', 'GPCR', 'KYMR', 'SDGR', 'PTCT', 'APGE', 'EWTX', 'DYN', 'INBX', 'AMRX', 'WRBY', 'TARO', 'CPRX', 'TNDM', 'ABCL', 'SAGE', 'RCUS', 'AGIO', 'KNSA', 'MIRM', 'VIR', 'SANA', 'FDMT', 'RLAY', 'CABA', 'SAVA', 'ARCT', 'AMLX', 'ACCD', 'EMBC', 'TYRA', 'TRML', 'VERV', 'RAPT', 'SYRE', 'ZNTL', 'ORIC', 'HSTM', 'ZYME', 'SLRN', 'CGEM', 'IGMS', 'LBPH', 'PRME', 'BMEA', 'ELVN', 'ALEC', 'MLYS', 'ANTX', 'PRAX', 'EDIT', 'IRMD', 'URGN', 'YMAB', 'HCAT', 'IVVD', 'COGT', 'NKTX', 'FULC', 'TRDA', 'LYEL', 'STTK', 'ANNX', 'NRIX', 'JANX', 'TALK', 'AURA', 'TERN', 'ITOS', 'NUVB', 'AVIR', 'TNYA', 'TCMD', 'PEPG', 'ANIK', 'NAUT', 'RPTX', 'NNOX', 'VMD', 'AEON', 'TSVT', 'AMWL', 'AKYA', 'BTMD', 'BVS', 'SLDB', 'CCCC', 'ERAS', 'OVID', 'ADAP', 'SERA', 'LYRA', 'GTHX', 'GNLX', 'VNDA', 'GLUE', 'DRTS', 'GLYC', 'APLT', 'BLUE', 'STOK', 'SGMT', 'THRX', 'IMRX', 'GRPH', 'LDDD', 'ZURA', 'XBIT', 'PYXS', 'VOR', 'PRLD', 'JYNT', 'CYBN', 'VTYX', 'DSGN', 'GBIO', 'PETS', 'NVCT', 'NGM', 'DMAC', 'LIFE', 'ANVS', 'ALLK', 'CYT', 'KNTE', 'GLSI', 'SY', 'VIGL', 'MGRM', 'RGC', 'CRVS', 'COYA', 'SGMO', 'CLSD', 'ONCY', 'CTCX', 'CELU', 'ACRV', 'ACRS', 'CSBR', 'AFMD', 'THTX', 'ALVR', 'ELYM', 'HYPR', 'SPRO', 'MURA', 'CRDL', 'INCR', 'IKNA', 'ICCM', 'VICP', 'GNTA', 'RPHM', 'PASG', 'CALC', 'INAB', 'TSBX', 'LTRN', 'MTNB', 'ESLA', 'CLRB', 'ELDN', 'ACXP', 'DYAI', 'DXR', 'FIXX', 'BOLT', 'ACHL', 'EUDA', 'NKGN', 'SLGL', 'SNCE', 'BGXX', 'MEIP', 'ENTX', 'CARA', 'FRLN', 'ATIP', 'APRE', 'MDNAF', 'ALRN', 'CWBHF', 'COCH', 'ITRM', 'CMAX', 'CCLD', 'SNTI', 'SRZN', 'XLO', 'EDSA', 'INDP', 'ICCT', 'RNLX', 'TLIS', 'NXGL', 'ORGS', 'TOVX', 'PRPO', 'DRUG', 'AEZS', 'SONX', 'NHIQ', 'BNTC', 'CYCN', 'QLIS', 'BPTH', 'CLVR', 'TTNP', 'RSLS', 'FNCH', 'SNPX', 'BZYR', 'ONCO', 'AVTX', 'NURO', 'APVO', 'ARDS', 'LOWLF', 'SLRX', 'INBS', 'ADIL', 'VRAX', 'GLMD', 'HADV', 'NBY', 'BLPH', 'GRI', 'INQR', 'SDCCQ', 'STMH', 'GNRS', 'RAPH', 'SKYI', 'SQZB', 'TOMDF', 'WLSS']
-# missing div totalPaid
-# []
-# missing div shares
-# []
-# missing roic total equity
-# ['SLN', 'SKYI']
-# missing income years:
-# ['ALC', 'SGRY', 'SMMT', 'LIVN', 'LFST', 'MDRX', 'MNKD', 'ESPR', 'RENB', 'RLMD', 'KRMD', 'CRDF', 'CRVO', 'SSIC', 'RZLT', 'NMTC', 'ETST', 'ABIO', 'AURX', 'HSTI', 'IMTH', 'BCLI', 'PETV', 'RXMD', 'EDSA', 'RASP', 'ADXS', 'BUDZ', 'CANN', 'ALID', 'HENC', 'MRZM', 'CPMV', 'HSDT', 'SILO', 'AXIM', 'NSTM', 'CNNC', 'CYCC', 'ENVB', 'GBLX', 'AGTX', 'TENX', 'NVIV', 'GRST', 'GSTC', 'WHSI', 'CBDS', 'NTRR', 'SIGY', 'INLB', 'HDVY', 'ARPC', 'ABMT', 'GRNF', 'ENDV', 'THCT', 'NLBS']
-# missing div years:
-# ['ALC', 'ALNY', 'RGEN', 'SGRY', 'SMMT', 'LIVN', 'LFST', 'LGND', 'CABA', 'MDRX', 'MPLN', 'OABI', 'AAGH', 'OVID', 'RENB', 'JSPR', 'RLMD', 'KRMD', 'CRVO', 'MIST', 'RZLT', 'NMTC', 'ETST', 'AURX', 'HSTI', 'IMTH', 'PETV', 'RXMD', 'CLRD', 'EDSA', 'RASP', 'BUDZ', 'CANN', 'ALID', 'HENC', 'MRZM', 'AIMD', 'CPMV', 'HSDT', 'SILO', 'AXIM', 'AVTX', 'NSTM', 'ENVB', 'GBLX', 'AGTX', 'TENX', 'GRST', 'WHSI', 'CBDS', 'NTRR', 'SIGY', 'INLB', 'HDVY', 'ARPC', 'GPFT', 'GRNF', 'ENDV', 'THCT', 'NLBS']
-# missing roic years:
-# ['ALC', 'MNKD', 'ESPR', 'RENB', 'QIPT', 'RLMD', 'CRDF', 'CRVO', 'RZLT', 'NMTC', 'ETST', 'ABIO', 'LEXX', 'IMTH', 'BCLI', 'RXMD', 'ADXS', 'BUDZ', 'HENC', 'MRZM', 'SILO', 'AXIM', 'NSTM', 'CYCC', 'ENVB', 'GBLX', 'NVIV', 'GRST', 'GSTC', 'CBDS', 'NTRR', 'SIGY', 'INLB', 'HDVY', 'ARPC', 'ABMT', 'GRNF', 'ENDV', 'THCT', 'NLBS']
-# wrong income end year
-# ['MDT', 'MCK', 'TAK', 'STE', 'RDY', 'IMGN', 'ROIV', 'GRFS', 'DOCS', 'IMVT', 'HAE', 'NEOG', 'PBH', 'EVO', 'PDCO', 'TARO', 'SUPN', 'PHVS', 'TLRY', 'ACCD', 'MDRX', 'CVAC', 'ICVX', 'PRTC', 'CALT', 'KALV', 'REPL', 'LIAN', 'CDMO', 'PROC', 'HARP', 'NBTX', 'CGC', 'NNOX', 'OPRX', 'ME', 'TLSI', 'ANGO', 'LFCR', 'LMDXF', 'CLLS', 'CDT', 'CORBF', 'BLUE', 'INFU', 'ACB', 'ELTP', 'THRX', 'AHG', 'CYDY', 'IMAB', 'CYBN', 'OCGN', 'ZTEK', 'VTGN', 'PETS', 'GTH', 'RVPH', 'YI', 'CYT', 'MDXH', 'GLSI', 'SY', 'LIFW', 'SHLT', 'ZJYL', 'BNR', 'CELU', 'CSBR', 'AFMD', 'FFNTF', 'TIHE', 'INCR', 'EGRX', 'XAIR', 'VICP', 'CDTX', 'PRE', 'CNTB', 'IPA', 'EAR', 'CUTR', 'ICU', 'TLSA', 'ENLV', 'CXXIF', 'PNPL', 'OKYO', 'BYSI', 'ESLA', 'DXR', 'PNXP', 'NYMXF', 'YS', 'EUDA', 'BIMI', 'YBGJ', 'NKGN', 'ONMD', 'SNCE', 'MOVE', 'CCM', 'BGXX', 'SRNEQ', 'MODD', 'UBX', 'CNTG', 'RLFTY', 'GDTC', 'ETST', 'ETAO', 'PHXM', 'OCX', 'AURX', 'MDNAF', 'MHUA', 'ACRHF', 'STRM', 'ACST', 'HSTI', 'ALRN', 'MYNZ', 'AIH', 'NTRB', 'OHCS', 'TRIB', 'SRZN', 'PMCB', 'PETV', 'OCEA', 'RXMD', 'IGC', 'NBIO', 'NLSP', 'OTLC', 'VBIV', 'RDHL', 'CLRD', 'ICCT', 'RMSL', 'BMRA', 'COSM', 'CHEK', 'NXGL', 'ADXS', 'NEXI', 'CRYM', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'BCEL', 'MCUJF', 'AVCRF', 'ONVO', 'ORGS', 'EIGR', 'ZCMD', 'ASLN', 'BTTX', 'PFHO', 'FRES', 'CANN', 'NHIQ', 'EDXC', 'BETRF', 'HSCS', 'RADCQ', 'BSGM', 'SIEN', 'BTCY', 'APM', 'NSTG', 'PBIO', 'HEPA', 'CJJD', 'XWEL', 'ACBM', 'QLIS', 'ADTX', 'NVTA', 'HENC', 'ALZN', 'ABTI', 'ECIA', 'JRSS', 'ADMT', 'BTAX', 'XTLB', 'XCUR', 'EMMA', 'MDGS', 'MEDS', 'BPTS', 'XRTX', 'OTRK', 'MRZM', 'MDVL', 'CPMV', 'AEMD', 'AXIM', 'TSOI', 'CLSH', 'VFRM', 'RNVA', 'OPGN', 'BZYR', 'ONCO', 'BDRX', 'ARDS', 'STEK', 'OWPC', 'AVRW', 'FOXO', 'CWBR', 'CYTO', 'QRON', 'VYCO', 'WINT', 'NBSE', 'ELOX', 'NMRD', 'INQD', 'CNNC', 'QLGN', 'BACK', 'THMO', 'INVO', 'SNOA', 'LGMK', 'NAOV', 'AKAN', 'GBLX', 'SCNI', 'AGTX', 'VRAX', 'IONM', 'SEQL', 'IPCIF', 'NEPT', 'NVIV', 'GRST', 'KOAN', 'WORX', 'CSUI', 'DVLP', 'NREG', 'CBDS', 'BSPK', 'SXTC', 'CMRA', 'BXRX', 'PAXH', 'ATHXQ', 'HADV', 'CANB', 'MJNE', 'KAYS', 'NTRR', 'BLCM', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'ENMI', 'SDCCQ', 'GMVDF', 'QTXB', 'EMED', 'SGBI', 'IMPLQ', 'TPIA', 'CSTF', 'BLMS', 'BBBT', 'MITI', 'VNTH', 'GLSHQ', 'MMNFF', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'PEARQ', 'RBSH', 'INFIQ', 'STMH', 'BIOCQ', 'ABMC', 'TMBRQ', 'HTGMQ', 'NOVNQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'GNRS', 'NMTRQ', 'ABCZF', 'SWGHF', 'BFFTF', 'RAIN', 'AKUMQ', 'BIOE', 'SIOX', 'XTXXF', 'SKYI', 'GBCS', 'FZMD', 'LNDZF', 'NHWK', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'CLYYF', 'IGEX', 'NAVB', 'CANQF', 'ABMT', 'REMI', 'ARAV', 'MCOA', 'DMK', 'GPFT', 'HSTO', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'GENN', 'SNNC', 'TOMDF', 'KGKG', 'EVLO', 'WCUI', 'ENDV', 'VIVE', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CALA', 'CENBF', 'EVIO', 'CLCS', 'PHCG', 'NLBS', 'GRYN', 'EWLL', 'NPHC', 'CNNA', 'TAUG', 'CPMD', 'CMXC', 'NBRVF', 'SSTC', 'DHAI', 'MDNC']
-# wrong div end year
-# ['MDT', 'MCK', 'TAK', 'STE', 'RDY', 'IMGN', 'ROIV', 'GRFS', 'DOCS', 'IMVT', 'HAE', 'NEOG', 'PBH', 'EVO', 'PDCO', 'DYN', 'TARO', 'SUPN', 'TLRY', 'ACCD', 'GRCL', 'MDRX', 'CVAC', 'ICVX', 'CALT', 'KALV', 'REPL', 'LIAN', 'CDMO', 'PROC', 'HARP', 'NBTX', 'CGC', 'NNOX', 'OPRX', 'ME', 'ANGO', 'LFCR', 'LMDXF', 'CLLS', 'CDT', 'CORBF', 'BLUE', 'INFU', 'ACB', 'ELTP', 'THRX', 'AHG', 'CYDY', 'IMAB', 'CYBN', 'OCGN', 'ZTEK', 'VTGN', 'PETS', 'GTH', 'RVPH', 'YI', 'CYT', 'MDXH', 'GLSI', 'SY', 'LIFW', 'SHLT', 'ZJYL', 'VNRX', 'BNR', 'CELU', 'CSBR', 'AFMD', 'FFNTF', 'TIHE', 'INCR', 'EGRX', 'XAIR', 'VICP', 'CDTX', 'PRE', 'CNTB', 'IPA', 'EAR', 'CUTR', 'ICU', 'TLSA', 'VANI', 'ENLV', 'CXXIF', 'PNPL', 'OKYO', 'BYSI', 'ESLA', 'DXR', 'PNXP', 'NYMXF', 'YS', 'EUDA', 'BIMI', 'YBGJ', 'NKGN', 'SNCE', 'MOVE', 'CCM', 'BGXX', 'SRNEQ', 'MODD', 'UBX', 'CNTG', 'FRLN', 'RLFTY', 'ETST', 'ETAO', 'PHXM', 'OCX', 'AURX', 'MDNAF', 'MHUA', 'ACRHF', 'STRM', 'ACST', 'HSTI', 'ALRN', 'MYNZ', 'AIH', 'NTRB', 'LEXX', 'OHCS', 'TRIB', 'SRZN', 'PMCB', 'PETV', 'RXMD', 'IGC', 'NBIO', 'NLSP', 'OTLC', 'VBIV', 'RDHL', 'CLRD', 'EDSA', 'ICCT', 'RMSL', 'BMRA', 'COSM', 'PRTG', 'CHEK', 'NXGL', 'BMMJ', 'ADXS', 'NEXI', 'CRYM', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'BCEL', 'MCUJF', 'AVCRF', 'ONVO', 'ORGS', 'NDRA', 'EIGR', 'ZCMD', 'ASLN', 'BTTX', 'PFHO', 'FRES', 'CANN', 'NHIQ', 'EDXC', 'BETRF', 'HSCS', 'RADCQ', 'BSGM', 'SIEN', 'BTCY', 'NSTG', 'PBIO', 'HEPA', 'CJJD', 'XWEL', 'ACBM', 'QLIS', 'ADTX', 'NVTA', 'HENC', 'ALZN', 'CELZ', 'ABTI', 'ECIA', 'JRSS', 'ADMT', 'BTAX', 'XTLB', 'XCUR', 'EMMA', 'MDGS', 'MEDS', 'BPTS', 'OTRK', 'MRZM', 'MDVL', 'CPMV', 'AEMD', 'AXIM', 'TSOI', 'CLSH', 'VFRM', 'RNVA', 'OPGN', 'BZYR', 'ONCO', 'BDRX', 'QNRX', 'ARDS', 'STEK', 'OWPC', 'VTAK', 'AVRW', 'FOXO', 'CWBR', 'CYTO', 'QRON', 'VYCO', 'WINT', 'NBSE', 'ELOX', 'NMRD', 'INQD', 'CNNC', 'QLGN', 'CYCC', 'BACK', 'THMO', 'INVO', 'SNOA', 'LGMK', 'NAOV', 'AKAN', 'GBLX', 'SCNI', 'AGTX', 'VRAX', 'IONM', 'SEQL', 'IPCIF', 'NEPT', 'NVIV', 'DRMA', 'GRST', 'KOAN', 'WORX', 'CSUI', 'DVLP', 'NREG', 'CBDS', 'BSPK', 'SXTC', 'CMRA', 'BXRX', 'PAXH', 'ATHXQ', 'HADV', 'CANB', 'MJNE', 'KAYS', 'NTRR', 'BLCM', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'ENMI', 'SDCCQ', 'GMVDF', 'QTXB', 'EMED', 'SGBI', 'IMPLQ', 'TPIA', 'CSTF', 'BLMS', 'BBBT', 'MITI', 'VNTH', 'GLSHQ', 'MMNFF', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'PEARQ', 'RBSH', 'INFIQ', 'STMH', 'BIOCQ', 'ABMC', 'TMBRQ', 'HTGMQ', 'NOVNQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'GNRS', 'NMTRQ', 'ABCZF', 'SWGHF', 'BFFTF', 'RAIN', 'AKUMQ', 'BIOE', 'SIOX', 'XTXXF', 'SKYI', 'GBCS', 'FZMD', 'LNDZF', 'NHWK', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'CLYYF', 'IGEX', 'NAVB', 'CANQF', 'ABMT', 'REMI', 'ARAV', 'MCOA', 'DMK', 'GPFT', 'HSTO', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'GENN', 'SNNC', 'TOMDF', 'KGKG', 'EVLO', 'WCUI', 'ENDV', 'VIVE', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CALA', 'CENBF', 'EVIO', 'CLCS', 'PHCG', 'NLBS', 'GRYN', 'EWLL', 'NPHC', 'TAUG', 'CPMD', 'CMXC', 'NBRVF', 'SSTC', 'AMJT', 'MDNC']
-# wrong roic end year
-# ['MDT', 'MCK', 'TAK', 'STE', 'RDY', 'IMGN', 'ROIV', 'GRFS', 'DOCS', 'IMVT', 'HAE', 'NEOG', 'PBH', 'EVO', 'PDCO', 'TARO', 'SUPN', 'TLRY', 'ACCD', 'GRCL', 'MDRX', 'CVAC', 'ICVX', 'CALT', 'KALV', 'REPL', 'LIAN', 'CDMO', 'PROC', 'HARP', 'CGC', 'NNOX', 'OPRX', 'ME', 'ANGO', 'LFCR', 'LMDXF', 'CLLS', 'CDT', 'CORBF', 'BLUE', 'INFU', 'ACB', 'ELTP', 'THRX', 'AHG', 'CYDY', 'IMAB', 'OCGN', 'ZTEK', 'VTGN', 'PETS', 'GTH', 'RVPH', 'YI', 'CYT', 'MDXH', 'GLSI', 'SY', 'LIFW', 'SHLT', 'ZJYL', 'BNR', 'CELU', 'CSBR', 'AFMD', 'FFNTF', 'TIHE', 'INCR', 'EGRX', 'XAIR', 'VICP', 'CDTX', 'PRE', 'CNTB', 'IPA', 'EAR', 'CUTR', 'ICU', 'TLSA', 'ENLV', 'CXXIF', 'PNPL', 'OKYO', 'BYSI', 'ESLA', 'DXR', 'PNXP', 'NYMXF', 'YS', 'EUDA', 'BIMI', 'YBGJ', 'NKGN', 'SNCE', 'MOVE', 'CCM', 'BGXX', 'SRNEQ', 'MODD', 'UBX', 'CNTG', 'FRLN', 'RLFTY', 'ETST', 'ETAO', 'PHXM', 'OCX', 'AURX', 'MDNAF', 'MHUA', 'ACRHF', 'STRM', 'ACST', 'HSTI', 'ALRN', 'MYNZ', 'AIH', 'NTRB', 'OHCS', 'TRIB', 'SRZN', 'PMCB', 'PETV', 'RXMD', 'IGC', 'NBIO', 'NLSP', 'OTLC', 'VBIV', 'RDHL', 'CLRD', 'ICCT', 'RMSL', 'BMRA', 'COSM', 'CHEK', 'NXGL', 'ADXS', 'NEXI', 'CRYM', 'ADXN', 'ALRTF', 'GBNH', 'NTBL', 'BCEL', 'MCUJF', 'AVCRF', 'ONVO', 'ORGS', 'EIGR', 'ZCMD', 'ASLN', 'BTTX', 'PFHO', 'FRES', 'CANN', 'NHIQ', 'EDXC', 'BETRF', 'HSCS', 'RADCQ', 'BSGM', 'SIEN', 'BTCY', 'APM', 'NSTG', 'PBIO', 'HEPA', 'CJJD', 'XWEL', 'ACBM', 'QLIS', 'ADTX', 'NVTA', 'HENC', 'ALZN', 'ABTI', 'ECIA', 'JRSS', 'ADMT', 'BTAX', 'XCUR', 'EMMA', 'MDGS', 'MEDS', 'OTRK', 'MRZM', 'MDVL', 'CPMV', 'AEMD', 'AXIM', 'TSOI', 'CLSH', 'VFRM', 'RNVA', 'OPGN', 'BZYR', 'ONCO', 'BDRX', 'ARDS', 'STEK', 'OWPC', 'AVRW', 'FOXO', 'CWBR', 'CYTO', 'QRON', 'VYCO', 'WINT', 'NBSE', 'ELOX', 'NMRD', 'INQD', 'CNNC', 'QLGN', 'BACK', 'THMO', 'INVO', 'SNOA', 'LGMK', 'NAOV', 'AKAN', 'GBLX', 'SCNI', 'AGTX', 'VRAX', 'IONM', 'SEQL', 'IPCIF', 'NEPT', 'NVIV', 'GRST', 'KOAN', 'WORX', 'CSUI', 'DVLP', 'NREG', 'CBDS', 'BSPK', 'SXTC', 'CMRA', 'BXRX', 'PAXH', 'ATHXQ', 'HADV', 'CANB', 'MJNE', 'KAYS', 'NTRR', 'BLCM', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'ENMI', 'SDCCQ', 'GMVDF', 'QTXB', 'EMED', 'SGBI', 'IMPLQ', 'TPIA', 'CSTF', 'BLMS', 'BBBT', 'MITI', 'VNTH', 'GLSHQ', 'MMNFF', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'PEARQ', 'RBSH', 'INFIQ', 'STMH', 'BIOCQ', 'ABMC', 'TMBRQ', 'HTGMQ', 'NOVNQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'GNRS', 'NMTRQ', 'ABCZF', 'SWGHF', 'BFFTF', 'RAIN', 'AKUMQ', 'BIOE', 'SIOX', 'XTXXF', 'SKYI', 'GBCS', 'FZMD', 'LNDZF', 'NHWK', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'CLYYF', 'IGEX', 'NAVB', 'CANQF', 'ABMT', 'REMI', 'ARAV', 'MCOA', 'DMK', 'GPFT', 'HSTO', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'GENN', 'SNNC', 'TOMDF', 'KGKG', 'EVLO', 'WCUI', 'ENDV', 'VIVE', 'MYMX', 'PHBI', 'CBGL', 'SCPS', 'CALA', 'CENBF', 'EVIO', 'CLCS', 'PHCG', 'NLBS', 'GRYN', 'EWLL', 'NPHC', 'TAUG', 'CPMD', 'CMXC', 'NBRVF', 'SSTC', 'MDNC']
-###
-
-###NEW Finance
-# finrecaplist = ['V', 'IBN', 'ANZGY', 'NU', 'ARES', 'BSBR', 'CM',]
-#                ### 'PPERY', 'CRARY', 'BDORY', 'GWLIF', 'ERIE', 'SMPNY', 'PTBRY', 'RYAN', 'JBAXY', 'DSEEY', 'ASXFY', 'EGFEY', 'CBSH', 'CRCBY', 'HLNE', 'PDI', 'OZK', 'CADE', 'THG', 'ACT', 'AB', 'PJT', 'MC', 'AMTD', 'NEA', 'DNP', 'NAD', 'NVG', 'CSQ', 'EXG', 'ADX', 'NZF', 'UTF', 'PTY', 'ETY', 'UTG', 'GDV', 'NUV', 'BIGZ', 'USA', 'GOF', 'DWAC', 'BBUC', 'NWLI', 'EVT', 'CLM', 'RVT', 'RQI', 'NAC', 'GAB', 'TY', 'BTT', 'ETV', 'BDJ', 'KYN', 'STEW', 'BSTZ', 'HYT', 'BXMX', 'ETG', 'DSL', 'BST', 'OXLC', 'NFJ', 'EVV', 'QQQX', 'JFR', 'FSCO', 'NMZ', 'CET', 'GAM', 'MUC', 'FPF', 'PTA', 'BBN', 'EOS', 'BTZ', 'SCRM', 'CVII', 'RNP', 'PFBC', 'NRK', 'SII', 'CHY', 'AWF', 'MQY', 'ETW', 'CII', 'MUI', 'HQH', 'AOD', 'CHI', 'THQ', 'CRF', 'ECC', 'MYI', 'NOAH', 'JPC', 'PHK', 'EIM', 'BCX', 'JQC', 'RA', 'EOI', 'IGR', 'GHIX', 'NXP', 'FFC', 'HTD', 'PCN', 'FAX', 'HUT', 'AACT', 'PAXS', 'VMO', 'VVR', 'PFN', 'BOE', 'MHD', 'MUJ', 'NIE', 'BME', 'IFN', 'BHK', 'BIT', 'GGN', 'PML', 'CCD', 'IIM', 'MMU', 'BTO', 'ETJ', 'STK', 'NKX', 'EMD', 'BGY', 'CEM', 'VGM', 'PDT', 'SAGA', 'DIAX', 'VKQ', 'DSU', 'WIW', 'PEO', 'BGB', 'BLE', 'IQI', 'NXJ', 'MYD', 'BLW', 'THW', 'DGICA', 'GHY', 'HPS', 'BUI', 'NBB', 'VCV', 'MMD', 'ALCC', 'HFRO', 'BFK', 'MVF', 'FRA', 'EMO', 'RMT', 'NQP', 'SLAM', 'HPI', 'ISD', 'JPI', 'MUA', 'NPFD', 'AVK', 'GUT', 'EVN', 'IGD', 'ETO', 'EAD', 'NETD', 'MYN', 'GBAB', 'CHW', 'ETB', 'FSD', 'FEI', 'EFR', 'VKI', 'GHI', 'HIO', 'MCI', 'DFP', 'LEO', 'HQL', 'FFA', 'NML', 'PPT', 'BFZ', 'RRAC', 'KTF', 'ACP', 'KIO', 'ANSC', 'EFT', 'HPF', 'PMO', 'BGR', 'NAN', 'SVII', 'SOR', 'DPG', 'MIY', 'PFL', 'IPXX', 'MHN', 'TYG', 'FOF', 'AWP', 'JRI', 'MIN', 'RFI', 'BRW', 'ASG', 'ARDC', 'AFB', 'IVCB', 'EDD', 'HYAC', 'NBH', 'HIX', 'JWSM', 'RMM', 'NCV', 'NPCT', 'OIA', 'BYM', 'NCA', 'JGH', 'SKGR', 'PMM', 'DSM', 'BGH', 'RCS', 'BGT', 'TWN', 'ASA', 'MXF', 'SPXX', 'FEN', 'HYI', 'CAF', 'MCR', 'PRLH', 'ERC', 'EOT', 'MMT', 'EMLD', 'DBL', 'LCAA', 'FCT', 'BNY', 'FTF', 'BKT', 'TDF', 'PLAO', 'CTR', 'PMX', 'AEF', 'RIV', 'FIF', 'PMF', 'TEI', 'NUW', 'SCD', 'VPV', 'APTM', 'RLTY', 'ACV', 'PSF', 'AGD', 'EVM', 'MQT', 'IIF', 'FUND', 'TSI', 'MVT', 'CNDA', 'NCZ', 'USCB', 'CONX', 'MUE', 'JCE', 'JRS', 'PHT', 'JOF', 'SABA', 'MFM', 'SBXC', 'AFT', 'NHS', 'GLO', 'PHYT', 'CFFS', 'AIF', 'VTN', 'DHY', 'BKN', 'LGI', 'NFYS', 'MHI', 'SEDA', 'MCAA', 'NPV', 'HIE', 'OPP', 'MNTN', 'ETX', 'EOD', 'MAV', 'WIA', 'DMB', 'GDO', 'PCK', 'PEGR', 'IGI', 'NTG', 'VBF', 'IVCA', 'PCQ', 'ENX', 'TRIS', 'BSL', 'EMF', 'APCA', 'INSI', 'HYB', 'DHF', 'PZC', 'GAQ', 'MPV', 'LCW', 'EHI', 'BRKH', 'FT', 'GRX', 'PIM', 'HCMA', 'CIK', 'CBH', 'NRO', 'NNY', 'ALCY', 'FPL', 'EIC', 'MPA', 'HHLA', 'FLC', 'TEAF', 'BGX', 'IDE', 'ESHA', 'ROSS', 'BFAC', 'GGT', 'IFIN', 'NSTD', 'KRNL', 'MCN', 'BMN', 'NSTC', 'BCSA', 'TLGY', 'EVG', 'MSD', 'AVBH', 'FLME', 'GF', 'MHF', 'LCA', 'WNNR', 'VCXB', 'BWG', 'BTA', 'DMF', 'ISRL', 'LYBC', 'IRRX', 'SPE', 'EDF', 'CNDB', 'IGA', 'NNAG', 'VMCA', 'BANX', 'DHCA', 'WEA', 'DMO', 'PFD', 'ACAH', 'ZLS', 'JHS', 'FMN', 'OAKC', 'HEQ', 'NAZ', 'GATE', 'VFL', 'DSAQ', 'NPAB', 'KCGI', 'PLMI', 'EVGR', 'NSTB', 'PPYA', 'PHD', 'GLQ', 'CPTK', 'BOCN', 'IXAQ', 'JHI', 'PAI', 'TCOA', 'PCF', 'ARRW', 'PGSS', 'CXE', 'NIM', 'TOP', 'CDAQ', 'KF', 'OCCI', 'IAF', 'COOL', 'SBI', 'CITE', 'TGAA', 'CHAA', 'ECF', 'CBRG', 'DPCS', 'PFO', 'EVF', 'MCAC', 'PORT', 'BMBN', 'MITA', 'MDBH', 'MGF', 'SWZ', 'SPKL', 'FNVT', 'GGZ', 'PCM', 'NMT', 'CNGL', 'GAMC', 'PWUP', 'LATG', 'GDL', 'KSM', 'QDRO', 'CGO', 'CCIF', 'IHD', 'CHN', 'NMI', 'HNW', 'OSI', 'WEL', 'PFX', 'JLS', 'GLAC', 'NXG', 'BLEU', 'ALTU', 'BCV', 'EAC', 'AACI', 'ARYD', 'VGI', 'WRAC', 'TMTC', 'USCT', 'IVCP', 'SRBK', 'GLST', 'XFIN', 'PNI', 'NXC', 'PGP', 'CMU', 'FICV', 'TPZ', 'RCAC', 'JEQ', 'ERH', 'BACA', 'GNT', 'AEAE', 'OAKU', 'LIBY', 'GLU', 'ASCB', 'RFAC', 'GGAAF', 'DTF', 'IRAA', 'SRV', 'CEV', 'INAQ', 'SWIN', 'FEXD', 'TRON', 'TETE', 'BWAQ', 'UNIB', 'FORL', 'GCV', 'APAC', 'DWNX', 'FCO', 'GLV', 'VLT', 'QFTA', 'PGZ', 'MAQC', 'IAE', 'KYCH', 'DMA', 'RGT', 'NMS', 'PNF', 'FAM', 'MFD', 'AFAR', 'CXH', 'REDW', 'CEE', 'ACAC', 'PTWO', 'ASCA', 'HAIA', 'EEA', 'TTP', 'JMM', 'HTY', 'PEPL', 'KSBI', 'CLRC', 'VSAC', 'FGB', 'FMY', 'MXE', 'AQU', 'WTMA', 'NDP', 'NXN', 'INTE', 'KWAC', 'CUBA', 'TGVC', 'PFTA', 'CPBI', 'TURN', 'WBQNL', 'EGF', 'GRF', 'PYN', 'INFT', 'DECA', 'CIF', 'PBAX', 'OAKV', 'MFV', 'PPHP', 'BTM', 'CWD', 'NOM', 'OGGIF', 'EQS', 'BHV', 'RBNK', 'MSBB', 'FRCB', 'RCG', 'FXBY', 'CDSG', 'TDCB', 'BMNM', 'DEFG', 'SIPN', 'SFIO', 'LGCP', 'GSBX', 'GEGP', 'BNCM', 'DXF', 'TLIF', 'KEGS', 'AMLH', 'GMZP', 'RINO', 'CBBB', 'BISA', 'SCGX', 'SMCE', 'VTXB', 'SFCO', 'BNPQF', 'ATH-PA', 'DEFTF', 'OFSTF', 'CMHF', 'TETAA', 'CBTC', 'GYGC', 'AERS', 'FAVO', 'AQUI', 'FIGP']
-# finmissingincomerevenue = ['GS', 'TFC', 'BSBR', 'DFS', 'RKT', 'FCNCA', 'SYF', 'BAM', 'ARCC', 'CBSH', 'PNFP', 'SSB', 'PB', 'OBDC', 'FSK', 'BOKF', 'OMF', 'BXSL', 'HOMB', 
-#                             'FNB', 'FFIN', 'SLM', 'VLY', 'UMBF', 'MAIN', 'AB', 'TFSL', 'MC', 'HWC', 'SFBS', 'IBOC', 'ABCB', 'BANF', 'FIBK', 'GBDC', 'HTGC', 'AUB', 'BOH', 
-#                             'PSEC', 'CVBF', 'CBU', 'PPBI', 'INDB', 'SFNC', 'PRK', 'FFBC', 'SBCF', 'FRME', 'AGM', 'TSLX',]
-                            ### 'IBTX', 'CLBK', 'TFIN', 'DWAC', 'RNST', 'MBIN', 
-                            # 'WSBC', 'FBK', 'LOB', 'GSBD', 'TRMK', 'OCSL', 'BANR', 'FNMA', 'NWBI', 'EFSC', 'FCF', 'STEL', 'NMFC', 'HOPE', 'BUSE', 'SRCE', 'STBA', 'WABC', 
-                            # 'NIC', 'VBTX', 'SASR', 'SCRM', 'CVII', 'BCSF', 'BBDC', 'GABC', 'OCFC', 'OBK', 'PBAJ', 'SBSI', 'BY', 'MFIC', 'GHLD', 'BRKL', 'BFC', 'LDI', 'SLRC', 
-                            # 'CNOB', 'CGBD', 'FBMS', 'AMTB', 'AMAL', 'FMCB', 'FMBH', 'CTBI', 'PFC', 'GHIX', 'FMCC', 'EGBN', 'PFLT', 'AACT', 'TRIN', 'TCPC', 'HFWA', 'FCBC', 
-                            # 'HBT', 'OSBC', 'MBWM', 'HBIA', 'NBBK', 'CION', 'CCAP', 'GSBC', 'MCBS', 'RWAY', 'HBNC', 'FDUS', 'SAGA', 'TRST', 'MSBI', 'VEL', 'CATC', 'FMNB', 
-                            # 'CCB', 'EQBK', 'GAIN', 'CCBG', 'HONE', 'AMNB', 'LBC', 'SMBC', 'ALCC', 'HAFC', 'THFF', 'ALRS', 'PNNT', 'HRZN', 'SLAM', 'GLAD', 'CCNE', 'SPFI', 
-                            # 'BHRB', 'AROW', 'BETR', 'FSBC', 'NETD', 'TPVG', 'ESQ', 'HCVI', 'MOFG', 'SMBK', 'OPFI', 'RRAC', 'RRBI', 'ANSC', 'MPB', 'MCBC', 'GNTY', 'SVII', 
-                            # 'EBTC', 'BWB', 'IPXX', 'RENE', 'SAR', 'ACNB', 'SCM', 'IVCB', 'HYAC', 'JWSM', 'FRST', 'HBCP', 'WTBA', 'SKGR', 'WHF', 'FISI', 'CZNC', 'CBNK', 'FBIZ', 
-                            # 'BCAL', 'PFIS', 'FMAO', 'BMRC', 'TRTL', 'BSRR', 'NEWT', 'BKCC', 'UNTY', 'PRLH', 'FDBC', 'EMLD', 'FNLC', 'LCAA', 'TCBX', 'LNKB', 'WSBF', 'BSVN', 
-                            # 'PLAO', 'JMSB', 'OBT', 'APTM', 'MFIN', 'BCML', 'CNDA', 'USCB', 'NECB', 'CONX', 'BLFY', 'TSBK', 'PDLB', 'CVLY', 'SBXC', 'CHMG', 'PHYT', 'CFFS', 
-                            # 'OVLY', 'PKBK', 'CVCY', 'CBAN', 'NFYS', 'KVAC', 'BPRN', 'SEDA', 'CALB', 'MBCN', 'COFS', 'MCAA', 'MNTN', 'XPDB', 'PEGR', 'IVCA', 'ESSA', 'TRIS', 
-                            # 'OXSQ', 'PTMN', 'APCA', 'BCBP', 'PVBC', 'VAQC', 'HWBK', 'EVE', 'ISTR', 'GAQ', 'CFNB', 'LCW', 'BRKH', 'ATLO', 'HCMA', 'VABK', 'MRCC', 'HHLA', 'OFS', 
-                            # 'ESHA', 'ROSS', 'BFAC', 'IFIN', 'NSTD', 'KRNL', 'PEBK', 'TWLV', 'NSTC', 'BCSA', 'BVFL', 'CNF', 'TLGY', 'FLME', 'LCA', 'WNNR', 'VCXB', 'FGBI', 'CFBK', 
-                            # 'FLFV', 'ALSA', 'ISRL', 'IRRX', 'CNDB', 'ATEK', 'FINW', 'NNAG', 'VMCA', 'DHCA', 'HNVR', 'UNB', 'ACAH', 'ZLS', 'FNRN', 'RMGC', 'FRAF', 'FIAC', 'GATE', 
-                            # 'DSAQ', 'NPAB', 'OVBC', 'KCGI', 'PLMI', 'EVGR', 'NSTB', 'CCFN', 'CZWI', 'PPYA', 'ECBK', 'CPTK', 'BOCN', 'RCFA', 'IXAQ', 'RMBI', 'TCOA', 'ARRW', 'PGSS', 
-                            # 'BYNO', 'APXI', 'EMYB', 'CDAQ', 'WMPN', 'SHAP', 'TWOA', 'CMCA', 'COOL', 'CITE', 'TGAA', 'CHAA', 'CBRG', 'LARK', 'AFBI', 'BSBK', 'DPCS', 'SLAC', 'BLUA', 
-                            # 'MCAC', 'PORT', 'SBFG', 'MITA', 'MDBH', 'CSLM', 'GPAC', 'SZZL', 'RVSB', 'EBMT', 'THCP', 'SPKL', 'FNWD', 'FNVT', 'LVPA', 'CSBB', 'FTII', 'SFBC', 'ATMV', 
-                            # 'PROV', 'MARX', 'CNGL', 'GAMC', 'TENK', 'PWUP', 'LATG', 'HMNF', 'PMGM', 'QDRO', 'BOWN', 'FKYS', 'BLAC', 'RWOD', 'TBMC', 'ESAC', 'GODN', 'CMTV', 'HSPO', 
-                            # 'OSI', 'WEL', 'PFX', 'QNBC', 'SSSS', 'BITE', 'FOTB', 'BLEU', 'ALTU', 'EMCG', 'PSBQ', 'EAC', 'GLLI', 'AACI', 'ARYD', 'WRAC', 'ONYX', 'NRAC', 'ENBP', 
-                            # 'USCT', 'IVCP', 'ACAB', 'SRBK', 'GLST', 'XFIN', 'IMAQ', 'BHAC', 'DUET', 'FICV', 'OCAX', 'RCAC', 'AITR', 'SFDL', 'GDST', 'BACA', 'PUCK', 'BUJA', 'AEAE', 
-                            # 'LIBY', 'CETU', 'ASCB', 'GECC', 'MGYR', 'CULL', 'GBBK', 'RFAC', 'GTAC', 'FHLT', 'GGAAF', 'VHAQ', 'IRAA', 'INAQ', 'FEXD', 'FRLA', 'ATMC', 'TRON', 'PMHG', 
-                            # 'PFBX', 'SWSS', 'TETE', 'BWAQ', 'FORL', 'PBHC', 'MSSA', 'APAC', 'GMFI', 'NVAC', 'UBCP', 'DIST', 'LGST', 'QFTA', 'MAQC', 'DMYY', 'CLOE', 'KYCH', 'PMVC', 
-                            # 'FMBM', 'ROCL', 'AFAR', 'NBST', 'SLBK', 'SEPA', 'ENCP', 'TCBC', 'JUVF', 'IGTA', 'ACAC', 'PTWO', 'LRFC', 'ASCA', 'BNIX', 'HAIA', 'MBTC', 'SUND', 'ARIZ', 
-                            # 'IROQ', 'CLST', 'CHEA', 'CCTS', 'HHGC', 'PEPL', 'RACY', 'PLTN', 'BRAC', 'UWHR', 'BAFN', 'CLRC', 'KACL', 'VSAC', 'ICMB', 'AQU', 'BREZ', 'WTMA', 'CFSB', 
-                            # 'BCOW', 'HUDA', 'AOGO', 'WINV', 'TCBS', 'INTE', 'KWAC', 'MCAF', 'FSEA', 'AIB', 'ADOC', 'MACA', 'YOTA', 'TGVC', 'NOVV', 'PFTA', 'DHAC', 'ACBA', 'LBBB', 
-                            # 'QOMO', 'BCTF', 'WAVS', 'ADRT', 'RAND', 'MCAG', 'AVHI', 'DECA', 'VWFB', 'PBAX', 'OPHC', 'QNTO', 'WRPT', 'PPHP', 'BTM', 'GNRV', 'YTFD', 'RMCO', 'GLBZ', 
-                            # 'MDWK', 'PNBK', 'PFSB', 'PMIN', 'FMFG', 'MSBB', 'GOVB', 'HNRA', 'SLTN', 'WNFT', 'PCMC', 'DHCC', 'WLYW', 'OOGI', 'GPLL', 'BEGI', 'ATYG', 'VCOR', 'HGYN', 
-                            # 'VHLD', 'BZRD', 'WWSG', 'IROH', 'BDVC', 'FSUN', 'WBHC', 'RVRF', 'BKSC', 'ODTC', 'OFED', 'FFBW', 'CIZN', 'MBBC', 'TBBA', 'WVFC', 'ERKH', 'SICP', 'SVVC', 'SHGI', 'RBRXF', 'MSCF']
-# finmissingincomenetIncome = ['PFX']
-# finmissingincomeopCF =  ['ATMV', 'ATMC']
-# finmissingincomecapEx =  ['JPM', 'BAC', 'WFC', 'MS', 'RY', 'TD', 'CB', 'UBS', 'USB', 'APO', 'PNC', 'BNS', 'MET', 'TRV', 'NU', 'AFL', 'CM', 'MFC', 'IBKR', 'PRU', 'IX', 'PFG', 'RF', 'TPG', 'SYF', 'BAM', 'EG', 'CRBG', 'RNR', 'ARCC', 'EQH', 'ALLY', 'AFG', 'ORI', 'CMA', 'WAL', 'FG', 'OBDC', 'FSK', 'OMF', 'BXSL', 'AXS', 'AGO', 'LNC', 'SLM', 'ESGR', 'ACT', 'JXN', 'WTM', 'MAIN', 'AB', 'BHF', 'ASB', 'CNO', 'LU', 'GNW', 'FIBK', 'GBDC', 'FULT', 'AUB', 'EBC', 'PSEC', 'SBCF', 'FRME', 'SPNT', 'AGM', 'TSLX', 'NAVI', 'DWAC', 'CCYC', 'GSBD', 'OCSL', 'AHL-PC', 'FNMA', 'HMN', 'NMFC', 'BRDG', 'BBAR', 'SCRM', 'CVII', 'BCSF', 'BBDC', 'PBAJ', 'BSIG', 'MFIC', 'HG', 'SLRC', 'CGBD', 'AMBC', 'AC', 'GHIX', 'FMCC', 'PFLT', 'AACT', 'TRIN', 'TCPC', 'PVNC', 'MBWM', 'CION', 'CCAP', 'RWAY', 'UFCS', 'FDUS', 'SAGA', 'GAIN', 'ALCC', 'PNNT', 'HRZN', 'SLAM', 'GLAD', 'BETR', 'GBLI', 'NETD', 'TPVG', 'HCVI', 'NOTR', 'RRAC', 'ANSC', 'SUPV', 'SVII', 'IPXX', 'RENE', 'SAR', 'SCM', 'IVCB', 'HYAC', 'JWSM', 'SKGR', 'WHF', 'TRTL', 'BKCC', 'PRLH', 'EMLD', 'LCAA', 'PLAO', 'APTM', 'MFIN', 'CNDA', 'CONX', 'SBXC', 'PHYT', 'CFFS', 'NFYS', 'KVAC', 'SEDA', 'MCAA', 'MNTN', 'XPDB', 'PEGR', 'IVCA', 'TRIS', 'OXSQ', 'PTMN', 'APCA', 'VAQC', 'EVE', 'VERY', 'GAQ', 'CFNB', 'LCW', 'BRKH', 'HCMA', 'SVMB', 'MRCC', 'HHLA', 'OFS', 'ESHA', 'ROSS', 'BFAC', 'IFIN', 'NSTD', 'KRNL', 'TWLV', 'NSTC', 'BCSA', 'TLGY', 'FLME', 'LCA', 'WNNR', 'VCXB', 'FLFV', 'ALSA', 'ISRL', 'IRRX', 'LGVC', 'CNDB', 'ATEK', 'NNAG', 'VMCA', 'DHCA', 'ACAH', 'ZLS', 'LGYV', 'RMGC', 'FIAC', 'GATE', 'DSAQ', 'NPAB', 'KCGI', 'PLMI', 'EVGR', 'NSTB', 'PPYA', 'CPTK', 'BOCN', 'RCFA', 'IXAQ', 'TCOA', 'ARRW', 'PGSS', 'BYNO', 'APXI', 'CDAQ', 'SHAP', 'TWOA', 'CMCA', 'COOL', 'CITE', 'TGAA', 'CHAA', 'CBRG', 'DPCS', 'SLAC', 'BLUA', 'MCAC', 'PORT', 'MITA', 'CSLM', 'GPAC', 'SZZL', 'THCP', 'SPKL', 'FNVT', 'LVPA', 'FTII', 'ATMV', 'MARX', 'CNGL', 'GAMC', 'TENK', 'PWUP', 'LATG', 'PMGM', 'QDRO', 'BOWN', 'BLAC', 'BFGX', 'GIA', 'RWOD', 'NPFC', 'TBMC', 'ESAC', 'GODN', 'HSPO', 'OSI', 'WEL', 'PFX', 'QNBC', 'SSSS', 'BITE', 'FOTB', 'BLEU', 'ALTU', 'EMCG', 'EAC', 'GLLI', 'AACI', 'ARYD', 'WRAC', 'ONYX', 'NRAC', 'USCT', 'IVCP', 'ACAB', 'GLST', 'XFIN', 'IMAQ', 'BHAC', 'DUET', 'FICV', 'OCAX', 'RCAC', 'AITR', 'GDST', 'BACA', 'PUCK', 'BUJA', 'AVNI', 'AEAE', 'LIBY', 'TGLO', 'CETU', 'ASCB', 'GECC', 'GBBK', 'RFAC', 'GTAC', 'FHLT', 'GGAAF', 'VHAQ', 'IRAA', 'INAQ', 'FEXD', 'FRLA', 'ATMC', 'TRON', 'SWSS', 'TETE', 'BWAQ', 'FORL', 'MSSA', 'APAC', 'GMFI', 'NVAC', 'DIST', 'LGST', 'QFTA', 'MAQC', 'DMYY', 'CLOE', 'KYCH', 'PMVC', 'ROCL', 'AFAR', 'NBST', 'SDIG', 'SEPA', 'ENCP', 'JUVF', 'IGTA', 'ACAC', 'PTWO', 'LRFC', 'ASCA', 'BNIX', 'HAIA', 'MBTC', 'SUND', 'ARIZ', 'CHEA', 'CCTS', 'HHGC', 'PEPL', 'RACY', 'PLTN', 'BRAC', 'CLRC', 'KACL', 'ASRV', 'VSAC', 'ICMB', 'AQU', 'MATH', 'OWVI', 'BREZ', 'WTMA', 'BCOW', 'HUDA', 'AOGO', 'WINV', 'INTE', 'KWAC', 'MCAF', 'AIB', 'ADOC', 'MACA', 'YOTA', 'TGVC', 'NOVV', 'PFTA', 'DHAC', 'ACBA', 'LBBB', 'MGLD', 'QOMO', 'WAVS', 'ADRT', 'RAND', 'ABTS', 'MCAG', 'AVHI', 'DECA', 'GREE', 'PBAX', 'WRPT', 'PPHP', 'BTM', 'PIAC', 'ILUS', 'CAHO', 'WNLV', 'LOGQ', 'YTFD', 'XITO', 'RMCO', 'MDWK', 'MEGL', 'MCVT', 'NFTN', 'TGGI', 'PWM', 'HNRA', 'SLTN', 'BWMY', 'FDCT', 'WNFT', 'PCMC', 'DHCC', 'WLYW', 'OOGI', 'NLSC', 'ECGR', 'SITS', 'LGHL', 'WHLT', 'ALDA', 'LSMG', 'NCPL', 'STQN', 'FSTJ', 'GPLL', 'BEGI', 'GMPW', 'ATYG', 'CLOW', 'YBCN', 'FCIC', 'KATX', 'RDGA', 'VCOR', 'BFYW', 'EMAX', 'BOTH', 'VHLD', 'CONC', 'BZRD', 'WWSG', 'NIMU', 'SDON', 'MMMM', 'PARG', 'MUSS', 'IROH', 'ATH-PA', 'TKCM', 'BDVC', 'GAMI', 'FIGI', 'BQST', 'BLYQ', 'SVVC', 'PUGE', 'SHGI', 'APSI', 'RBRXF', 'BABL', 'EXCL', 'MSCF', 'SSRT']        
-# finmissingincomenetCF = ['HYAC', 'LVPA', 'BFGX', 'ATMC', 'OOGI', 'AASP', 'ATYG', 'HGYN', 'PMPG']
-# finmissingincomedepreNAmor = ['JPM', 'BX', 'AXP', 'HSBC', 'RY', 'PGR', 'TD', 'C', 'CB', 'UBS', 'SMFG', 'ITUB', 'BMO', 'BN', 'USB', 'SAN', 'BBVA', 'BNS', 'AJG', 'MET', 'AIG', 'TFC', 'NU', 'ING', 'ALL', 'ARES', 'BSBR', 'BK', 'CM', 'MFC', 'IBKR', 'LYG', 'ACGL', 'SLF', 'PUK', 'BCS', 'DB', 'TROW', 'NWG', 'OWL', 'FRFHF', 'FITB', 'BRO', 'STT', 'KB', 'MKL', 'CINF', 'SHG', 'RF', 'NTRS', 'BAM', 'EG', 'CRBG', 'CFG', 'XP', 'BAP', 'RNR', 'GL', 'ARCC', 'BCH', 'RYAN', 'ALLY', 'AEG', 'AFG', 'AIZ', 'SEIC', 'BSAC', 'WF', 'CIB', 'ORI', 'SF', 'CACC', 'CBSH', 'RLI', 'SIGI', 'OBDC', 'FSK', 'FCFS', 'BXSL', 'MTG', 'AXS', 'BMA', 'AGO', 'UBSI', 'BNRE', 'LNC', 'FFIN', 'SLM', 'ACT', 'GBCI', 'JXN', 'MAIN', 'KMPR', 'AB', 'AMTD', 'BHF', 'IBOC', 'UCBI', 'AVAL', 'NYCB', 'LU', 'IFS', 'GNW', 'GGAL', 'GBDC', 'WSFS', 'AUB', 'PSEC', 'INTR', 'MCY', 'PAX', 'SBCF', 'SPNT', 'AGM', 'TSLX', 'NAVI', 'IBTX', 'WAFD', 'TFIN', 'DWAC', 'BBUC', 'CCYC', 'OFG', 'GSBD', 'TRMK', 'CUBI', 'OCSL', 'BRP', 'FNMA', 'FIHL', 'PUYI', 'CHCO', 'FBNC', 'NTB', 'FCF', 'CASH', 'NMFC', 'NBHC', 'SKWD', 'JMKJ', 'TCBK', 'NIC', 'PX', 'BBAR', 'SCRM', 'PEBO', 'CVII', 'BCSF', 'QCRH', 'AMSF', 'BBDC', 'SII', 'OBK', 'PBAJ', 'BY', 'MFIC', 'BLX', 'HG', 'SLRC', 'BITF', 'CGBD', 'WRLD', 'FMBH', 'AMBC', 'GHIX', 'FMCC', 'ABIT', 'PFLT', 'AACT', 'CFB', 'TRIN', 'BETS', 'TCPC', 'HFWA', 'PVNC', 'IGIC', 'MBWM', 'HBIA', 'CION', 'CCAP', 'GSBC', 'VINP', 'UVSP', 'MCBS', 'RWAY', 'FDUS', 'SAGA', 'TRST', 'GAIN', 'CCBG', 'AMNB', 'SMBC', 'ALCC', 'DHIL', 'GCBC', 'PNNT', 'QDMI', 'HRZN', 'SLAM', 'GLAD', 'PGC', 'KRNY', 'BETR', 'GLRE', 'SMMF', 'NETD', 'TPVG', 'HCVI', 'WDH', 'NOTR', 'RRAC', 'RRBI', 'ANSC', 'SUPV', 'MPB', 'MCBC', 'GNTY', 'IREN', 'SVII', 'EBTC', 'IPXX', 'FANH', 'ITIC', 'RENE', 'SAR', 'MBI', 'ACNB', 'SCM', 'IVCB', 'HYAC', 'JWSM', 'HIVE', 'WTBA', 'SKGR', 'WHF', 'VBNK', 'CBNK', 'FBIZ', 'BCAL', 'PFIS', 'TRTL', 'BKCC', 'UNTY', 'INBK', 'PRLH', 'FDBC', 'EMLD', 'LCAA', 'TCBX', 'FDOC', 'LNKB', 'BSVN', 'PLAO', 'FLIC', 'JMSB', 'OBT', 'CZFS', 'APTM', 'SSBK', 'PCB', 'CNDA', 'NECB', 'CONX', 'NWFL', 'SBXC', 'CHMG', 'PHYT', 'CFFS', 'OVLY', 'FVCB', 'CBAN', 'NFYS', 'KVAC', 'BPRN', 'SEDA', 'CALB', 'MBCN', 'COFS', 'MCAA', 'MNTN', 'XPDB', 'PEGR', 'IVCA', 'TRIS', 'OXSQ', 'PTMN', 'APCA', 'BCBP', 'VAQC', 'NKSH', 'HWBK', 'EVE', 'VERY', 'GAQ', 'CFNB', 'LCW', 'BRKH', 'ATLO', 'EVBN', 'HCMA', 'MRCC', 'HHLA', 'OFS', 'ESHA', 'ROSS', 'BFAC', 'IFIN', 'NSTD', 'KRNL', 'PEBK', 'TWLV', 'NSTC', 'BCSA', 'BVFL', 'FUNC', 'TLGY', 'FLME', 'LCA', 'WNNR', 'VCXB', 'FGBI', 'CFBK', 'FLFV', 'ALSA', 'ISRL', 'IRRX', 'CIA', 'LGVC', 'CNDB', 'ATEK', 'NNAG', 'VMCA', 'DHCA', 'FCCO', 'UNB', 'ACAH', 'ZLS', 'LGYV', 'RMGC', 'FIAC', 'GATE', 'DSAQ', 'NPAB', 'UBFO', 'KCGI', 'PLMI', 'ARBK', 'EVGR', 'NSTB', 'CZWI', 'PPYA', 'CPTK', 'BOCN', 'RCFA', 'SRL', 'IXAQ', 'TCOA', 'ARRW', 'PGSS', 'OPRT', 'BYNO', 'TOP', 'APXI', 'CDAQ', 'WMPN', 'SHAP', 'TWOA', 'CMCA', 'COOL', 'CITE', 'TGAA', 'CHAA', 'CBRG', 'LARK', 'AFBI', 'BSBK', 'ROOT', 'DPCS', 'SLAC', 'BLUA', 'MCAC', 'PORT', 'EFSI', 'MITA', 'CSLM', 'GPAC', 'SZZL', 'RVSB', 'THCP', 'SPKL', 'FNVT', 'LVPA', 'FTII', 'RBKB', 'ATMV', 'MARX', 'CNGL', 'GAMC', 'TENK', 'PWUP', 'LATG', 'PMGM', 'QDRO', 'BOWN', 'BLAC', 'UTGN', 'GIA', 'RWOD', 'NPFC', 'TBMC', 'ESAC', 'GODN', 'HSPO', 'OSI', 'WEL', 'PFX', 'SSSS', 'BITE', 'BLEU', 'ALTU', 'EMCG', 'EAC', 'GLLI', 'AACI', 'ARYD', 'WRAC', 'ONYX', 'NRAC', 'ENBP', 'OPOF', 'USCT', 'IVCP', 'ACAB', 'SRBK', 'GLST', 'XFIN', 'IMAQ', 'BHAC', 'DUET', 'FICV', 'OCAX', 'RCAC', 'AITR', 'GDST', 'BACA', 'PUCK', 'BUJA', 'AEAE', 'LIBY', 'TGLO', 'CETU', 'ASCB', 'GECC', 'MGYR', 'GBBK', 'RFAC', 'GTAC', 'FHLT', 'GGAAF', 'VHAQ', 'IRAA', 'INAQ', 'FEXD', 'FRLA', 'ATMC', 'TRON', 'SWSS', 'TETE', 'BWAQ', 'FORL', 'MSSA', 'APAC', 'GMFI', 'NVAC', 'DIST', 'LGST', 'QFTA', 'MAQC', 'DMYY', 'CLOE', 'LSBK', 'KYCH', 'PMVC', 'ROCL', 'AFAR', 'NBST', 'SDIG', 'SLBK', 'SEPA', 'PPBN', 'ENCP', 'JUVF', 'IGTA', 'ACAC', 'PTWO', 'LRFC', 'ASCA', 'BNIX', 'NWPP', 'HAIA', 'MBTC', 'SUND', 'ARIZ', 'IROQ', 'BYFC', 'CLST', 'CHEA', 'CCTS', 'HHGC', 'PEPL', 'RACY', 'CBKM', 'PLTN', 'BRAC', 'CLRC', 'KACL', 'NICK', 'VSAC', 'NSTS', 'ICMB', 'AAME', 'AQU', 'OWVI', 'BREZ', 'ICCH', 'WTMA', 'BCOW', 'HUDA', 'AOGO', 'WINV', 'TCBS', 'INTE', 'KWAC', 'MCAF', 'FSEA', 'AIB', 'ADOC', 'MACA', 'YOTA', 'TGVC', 'NOVV', 'PFTA', 'DHAC', 'HFBL', 'ACBA', 'LBBB', 'QOMO', 'WAVS', 'ADRT', 'ABTS', 'MCAG', 'AVHI', 'DECA', 'VWFB', 'PBAX', 'OPHC', 'WRPT', 'PPHP', 'BTM', 'PIAC', 'ILUS', 'AGBA', 'CAHO', 'GBNY', 'GNRV', 'TCRI', 'LOGQ', 'YTFD', 'XITO', 'RMCO', 'GLBZ', 'MDWK', 'STLY', 'MEGL', 'PFSB', 'CURO', 'NFTN', 'FGF', 'GOVB', 'PWM', 'PAPL', 'HNRA', 'SLTN', 'BWMY', 'OLKR', 'CARV', 'GFOO', 'WNFT', 'PCMC', 'DHCC', 'NHMD', 'WLYW', 'OOGI', 'AIHS', 'NLSC', 'ECGR', 'TRXA', 'WHLT', 'ALDA', 'LSMG', 'MGTI', 'TMIN', 'NCPL', 'STQN', 'FSTJ', 'GPLL', 'BEGI', 'GMPW', 'ATYG', 'DXF', 'WINSF', 'YBCN', 'FCIC', 'KATX', 'EEGI', 'RDGA', 'VCOR', 'EMAX', 'BOTH', 'VHLD', 'CONC', 'BZRD', 'CWNOF', 'WWSG', 'SDON', 'MMMM', 'PLYN', 'EQOSQ', 'PMPG', 'PARG', 'MUSS', 'IROH', 'CILJF', 'WEBNF', 'ATH-PA', 'TKCM', 'CIXXF', 'BDVC', 'GWIN', 'FFBW', 'OSBK', 'MBBC', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'SICP', 'FBDS', 'BLYQ', 'SVVC', 'IMPM', 'MGHL', 'PUGE', 'SHGI', 'JMTM', 'RBRXF', 'EXCL', 'MSCF', 'SSRT', 'STGC']
-# finmissingdivintPaid = ['AMP', 'PUK', 'PFG', 'XP', 'HLI', 'AGLY', 'CRVL', 'CNS', 'PIPR', 'HGTY', 'GSBD', 'FIHL', 'LMND', 'JMKJ', 'QD', 'GAIN', 'DHIL', 'GLAD', 'VALU', 'BETR', 
-#                           'HCVI', 'WDH', 'ITIC', 'RENE', 'NODK', 'TRTL', 'BTBT', 'HIPO', 'KVAC', 'XPDB', 'XYF', 'VAQC', 'EVE', 'TWLV', 'FLFV', 'CIA', 'LGVC', 'ATEK', 'RMGC', 'FIAC', 
-#                           'RCFA', 'OPRT', 'BYNO', 'TOP', 'APXI', 'SHAP', 'TWOA', 'CMCA', 'WHG', 'SLAC', 'BLUA', 'SZZL', 'THCP', 'LVPA', 'ATMV', 'MARX', 'TENK', 'PMGM', 'BOWN', 'BLAC', 'RWOD', 
-#                           'TBMC', 'ESAC', 'GODN', 'HSPO', 'BITE', 'EMCG', 'ONYX', 'NRAC', 'ACAB', 'IMAQ', 'BHAC', 'DUET', 'OCAX', 'AITR', 'GDST', 'PUCK', 'BUJA', 'CETU', 'GBBK', 'GTAC', 'FHLT', 
-#                           'FRLA', 'ATMC', 'SWSS', 'GMFI', 'NVAC', 'DIST', 'LGST', 'DMYY', 'CLOE', 'PMVC', 'ROCL', 'NBST', 'SEPA', 'ENCP', 'IGTA', 'BNIX', 'MBTC', 'CHEA', 'CCTS', 'HHGC', 'RACY', 
-#                           'PLTN', 'KACL', 'OWVI', 'BREZ', 'AOGO', 'WINV', 'MCAF', 'AIB', 'MACA', 'YOTA', 'ACBA', 'LBBB', 'QOMO', 'WAVS', 'HYW', 'MCAG', 'AVHI', 'BMNR', 'WRPT', 'ILUS', 'CRMZ', 
-#                           'TCJH', 'SAI', 'RMCO', 'ARGC', 'PT', 'MEGL', 'JT', 'PMIN', 'NFTN', 'FGF', 'TGGI', 'HNRA', 'ATIF', 'FDCT', 'OXBR', 'OOGI', 'NLSC', 'IWSH', 'WHLT', 'RELI', 'STQN', 'FSTJ', 'GPLL', 'ATYG', 'STRG', 'KATX', 'VCOR', 'BFYW', 'HGYN', 'CONC', 'BZRD', 'UNAM', 'SDON', 'IROH', 'UMAC', 'ODTC', 'ENDI', 'BLYQ', 'SVVC', 'MGHL', 'SHGI', 'RBRXF', 'EXCL', 'SSRT', 'STGC']
-# finmissingdivtotalPaid =  []
-# finmissingdivshares =  []
-# finmissingroictotalequity =  ['LVPA', 'TGLO', 'MCVT', 'SLTN', 'OOGI']
-# finmissingincomeyears =  ['ITUB', 'BBD', 'TW', 'JEF', 'COOP', 'JMKJ', 'CSWC', 'LC', 'MFIC', 'AMBC', 'WULF', 'QDMI', 'FDOC', 'CCFN', 'FOA', 'PPBN', 'SUND', 'BCTF', 'ILUS', 'WNLV', 'MCVT', 'NFTN', 'GFOO', 'WNFT', 'NHMD', 'WLYW', 'YBCN', 'FOMC', 'HGYN', 'WWSG', 'CDIX', 'TKCM', 'BQST', 'ADMG', 'FGCO', 'FBDS', 'BOPO', 'PUGE', 'APSI']
-# finmissingdivyears = ['ITUB', 'BBD', 'TW', 'JEF', 'FRHC', 'COOP', 'JMKJ', 'CSWC', 'LC', 'MFIC', 'AMBC', 'WULF', 'QDMI', 'FDOC', 'CCFN', 'OCAX', 'FOA', 'PPBN', 'SUND', 'AIB', 'BCTF', 'BTCS', 'WNLV', 'MCVT', 'NFTN', 'GFOO', 'WNFT', 'NHMD', 'WLYW', 'STQN', 'FCIC', 'FOMC', 'HGYN', 'WWSG', 'CDIX', 'TKCM', 'BQST', 'ADMG', 'FGCO', 'FBDS', 'BOPO', 'SVVC', 'PUGE', 'APSI']
-# finmissingroicyears = ['ITUB', 'BBD', 'JEF', 'JMKJ', 'CSWC', 'AMBC', 'QDMI', 'FDOC', 'CCFN', 'PPBN', 'BCTF', 'ILUS', 'MCVT', 'NFTN', 'GFOO', 'WNFT', 'NHMD', 'WLYW', 'YBCN', 'FOMC', 'HGYN', 'WWSG', 'CDIX', 'BQST', 'ADMG', 'FBDS', 'BOPO', 'PUGE', 'SHGI', 'APSI']
-
-# finwrongincomeendyear =  ['HDB', 'MUFG', 'ITUB', 'NU', 'MFG', 'BBD', 'IX', 'KB', 'SHG', 'NMR', 'XP', 'BAP', 'BCH', 'HLI', 'WF', 'FUTU', 'HLNE', 'BMA', 'FRHC', 'CRVL', 'STEP', 'AMTD', 'AVAL', 'LU', 'IFS', 'GGAL', 'QFIN', 'INTR', 'PAX', 'FINV', 'BBAR', 'CSWC', 'BLX', 'NOAH', 'WRLD', 'AMBC', 'ABIT', 'PVNC', 'IGIC', 'APLD', 'TIGR', 'VINP', 'RILY', 'SAGA', 'QD', 'GAIN', 'LBC', 'QDMI', 'VALU', 'YRD', 'BETR', 'WDH', 'SUPV', 'FANH', 'VADP', 'SAR', 'IVCB', 'JWSM', 'FRST', 'HIVE', 'LX', 'PRLH', 'LCAA', 'APTM', 'PHYT', 'NFYS', 'SEDA', 'MCAA', 'MNTN', 'MFH', 'XYF', 'PEGR', 'IVCA', 'TRIS', 'VAQC', 'EVE', 'CFNB', 'BRKH', 'HCMA', 'SVMB', 'HHLA', 'ROSS', 'NSTD', 'TWLV', 'NSTC', 'BCSA', 'CNF', 'LCA', 'VCXB', 'ALSA', 'IRRX', 'ATEK', 'ACAH', 'ZLS', 'RMGC', 'FIAC', 'CWBC', 'ARBK', 'NSTB', 'CPTK', 'RCFA', 'SRL', 'TCOA', 'APXI', 'SHAP', 'CMCA', 'CHAA', 'SLAC', 'SZZL', 'RVSB', 'LVPA', 'ATMV', 'CNGL', 'TENK', 'LATG', 'PMGM', 'QDRO', 'BLAC', 'RWOD', 'NPFC', 'OSI', 'FOTB', 'BLEU', 'ALTU', 'EMCG', 'PSBQ', 'EAC', 'WRAC', 'NRAC', 'BUUZ', 'USCT', 'IMAQ', 'BHAC', 'FICV', 'RCAC', 'GDST', 'BACA', 'PUCK', 'AEAE', 'LIBY', 'BENF', 'GBBK', 'RFAC', 'VHAQ', 'IRAA', 'INAQ', 'FEXD', 'ATMC', 'SWSS', 'MSSA', 'APAC', 'GMFI', 'DIST', 'LGST', 'QFTA', 'SIEB', 'MAQC', 'KYCH', 'NBST', 'SEPA', 'PPBN', 'ENCP', 'BNIX', 'HAIA', 'MBTC', 'SUND', 'BYFC', 'CHEA', 'CCTS', 'PEPL', 'RACY', 'PLTN', 'NICK', 'VSAC', 'AQU', 'MATH', 'OWVI', 'WTMA', 'HUDA', 'AOGO', 'WINV', 'INTE', 'KWAC', 'MCAF', 'ADOC', 'YOTA', 'TGVC', 'PFTA', 'DHAC', 'LBBB', 'QOMO', 'WAVS', 'ADRT', 'ABTS', 'HUIZ', 'MCAG', 'GREE', 'PPHP', 'BTM', 'ILUS', 'CAHO', 'GNRV', 'WNLV', 'TCRI', 'TCJH', 'LOGQ', 'QMCI', 'XITO', 'SAI', 'RMCO', 'MDWK', 'ARGC', 'PT', 'NISN', 'MEGL', 'JT', 'TNBI', 'CURO', 'TGGI', 'HNRA', 'SLTN', 'CARV', 'SIVBQ', 'FDCT', 'SNTG', 'TNRG', 'NHMD', 'OOGI', 'AIHS', 'NLSC', 'ECGR', 'SITS', 'LGHL', 'ADAD', 'WHLT', 'MGTI', 'FRBK', 'NCPL', 'GLAE', 'TIRX', 'BEGI', 'JPPYY', 'GMPW', 'ATYG', 'DXF', 'STRG', 'YBCN', 'FCIC', 'FOMC', 'KATX', 'EEGI', 'MTLK', 'VCOR', 'BFYW', 'HGYN', 'COSG', 'RAHGF', 'BOTH', 'PLTYF', 'CONC', 'BZRD', 'CWNOF', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'PARG', 'MUSS', 'CILJF', 'CIXXF', 'BDVC', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ADMG', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'CNGT', 'JMTM', 'RBRXF', 'BABL', 'EXCL', 'STGC']
-# finwrongdivendyear =  ['HDB', 'MUFG', 'SMFG', 'ITUB', 'MFG', 'BBD', 'IX', 'KB', 'SHG', 'XP', 'BAP', 'BCH', 'HLI', 'WF', 'FUTU', 'BMA', 'FRHC', 'CRVL', 'STEP', 'AVAL', 'LU', 'HGTY', 'IFS', 'GGAL', 'QFIN', 'INTR', 'PAX', 'FINV', 'BBAR', 'CSWC', 'BLX', 'WRLD', 'AMBC', 'ABIT', 'PVNC', 'APLD', 'TIGR', 'VINP', 'RILY', 'QD', 'GAIN', 'LBC', 'QDMI', 'VALU', 'YRD', 'BETR', 'HCVI', 'WDH', 'NOTR', 'SUPV', 'FANH', 'VADP', 'RENE', 'FRST', 'HIVE', 'LX', 'TRTL', 'XPDB', 'MFH', 'XYF', 'VAQC', 'EVE', 'CFNB', 'SVMB', 'TWLV', 'CNF', 'ALSA', 'LGVC', 'ATEK', 'RMGC', 'FIAC', 'CWBC', 'ARBK', 'RCFA', 'SRL', 'BYNO', 'TOP', 'APXI', 'SHAP', 'TWOA', 'CMCA', 'SLAC', 'BLUA', 'GPAC', 'SZZL', 'RVSB', 'THCP', 'LVPA', 'ATMV', 'MARX', 'TENK', 'PMGM', 'BLAC', 'RWOD', 'NPFC', 'ESAC', 'FOTB', 'EMCG', 'PSBQ', 'ONYX', 'NRAC', 'BUUZ', 'ACAB', 'IMAQ', 'BHAC', 'DUET', 'GDST', 'PUCK', 'BENF', 'GBBK', 'GTAC', 'FHLT', 'VHAQ', 'FRLA', 'ATMC', 'SWSS', 'MSSA', 'GMFI', 'DIST', 'LGST', 'SIEB', 'CLOE', 'PMVC', 'NBST', 'SEPA', 'PPBN', 'ENCP', 'BNIX', 'MBTC', 'SUND', 'BYFC', 'CHEA', 'CCTS', 'HHGC', 'RACY', 'PLTN', 'NICK', 'MATH', 'OWVI', 'HUDA', 'AOGO', 'WINV', 'MCAF', 'ADOC', 'MACA', 'YOTA', 'DHAC', 'LBBB', 'QOMO', 'WAVS', 'ADRT', 'ABTS', 'HUIZ', 'MCAG', 'GREE', 'WRPT', 'ILUS', 'CAHO', 'GNRV', 'WNLV', 'TCRI', 'TCJH', 'LOGQ', 'QMCI', 'XITO', 'SAI', 'RMCO', 'MDWK', 'ARGC', 'PT', 'NISN', 'MEGL', 'JT', 'TNBI', 'CURO', 'NFTN', 'TGGI', 'HNRA', 'SLTN', 'CARV', 'SIVBQ', 'FDCT', 'SNTG', 'TNRG', 'NHMD', 'OOGI', 'AIHS', 'NLSC', 'ECGR', 'SITS', 'LGHL', 'ADAD', 'TRXA', 'WHLT', 'LSMG', 'MGTI', 'FRBK', 'NCPL', 'GLAE', 'FSTJ', 'TIRX', 'BEGI', 'JPPYY', 'GMPW', 'ATYG', 'DXF', 'STRG', 'YBCN', 'FCIC', 'FOMC', 'KATX', 'EEGI', 'MTLK', 'VCOR', 'BFYW', 'HGYN', 'COSG', 'RAHGF', 'BOTH', 'PLTYF', 'CONC', 'BZRD', 'CWNOF', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'PARG', 'MUSS', 'CILJF', 'TKCM', 'CIXXF', 'BDVC', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ADMG', 'ERKH', 'SICP', 'FGCO', 'BLYQ', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'CNGT', 'JMTM', 'RBRXF', 'BABL', 'EXCL', 'STGC']
-# finwrongroicendyear =  ['HDB', 'MUFG', 'SMFG', 'ITUB', 'MFG', 'BBD', 'KB', 'SHG', 'NMR', 'XP', 'BAP', 'BCH', 'HLI', 'WF', 'FUTU', 'BMA', 'FRHC', 'CRVL', 'STEP', 'AVAL', 'LU', 'IFS', 'GGAL', 'QFIN', 'INTR', 'PAX', 'FINV', 'BBAR', 'CSWC', 'BLX', 'WRLD', 'AMBC', 'ABIT', 'PVNC', 'IGIC', 'APLD', 'TIGR', 'VINP', 'RILY', 'QD', 'GAIN', 'LBC', 'QDMI', 'VALU', 'YRD', 'BETR', 'WDH', 'SUPV', 'FANH', 'VADP', 'SAR', 'FRST', 'HIVE', 'LX', 'MFH', 'XYF', 'VAQC', 'EVE', 'CFNB', 'SVMB', 'TWLV', 'CNF', 'ALSA', 'ATEK', 'RMGC', 'FIAC', 'CWBC', 'ARBK', 'RCFA', 'SRL', 'APXI', 'SHAP', 'CMCA', 'SLAC', 'SZZL', 'RVSB', 'LVPA', 'ATMV', 'TENK', 'PMGM', 'BLAC', 'RWOD', 'NPFC', 'FOTB', 'EMCG', 'PSBQ', 'NRAC', 'BUUZ', 'IMAQ', 'BHAC', 'GDST', 'PUCK', 'BENF', 'GBBK', 'VHAQ', 'ATMC', 'SWSS', 'MSSA', 'GMFI', 'DIST', 'LGST', 'SIEB', 'NBST', 'SEPA', 'PPBN', 'ENCP', 'BNIX', 'MBTC', 'SUND', 'BYFC', 'CHEA', 'CCTS', 'RACY', 'PLTN', 'NICK', 'MATH', 'OWVI', 'HUDA', 'AOGO', 'WINV', 'MCAF', 'ADOC', 'YOTA', 'DHAC', 'LBBB', 'QOMO', 'WAVS', 'ADRT', 'ABTS', 'HUIZ', 'MCAG', 'GREE', 'ILUS', 'CAHO', 'GNRV', 'WNLV', 'TCRI', 'TCJH', 'LOGQ', 'QMCI', 'XITO', 'SAI', 'RMCO', 'MDWK', 'ARGC', 'PT', 'NISN', 'MEGL', 'JT', 'TNBI', 'CURO', 'TGGI', 'HNRA', 'SLTN', 'CARV', 'SIVBQ', 'FDCT', 'SNTG', 'TNRG', 'NHMD', 'OOGI', 'AIHS', 'NLSC', 'ECGR', 'SITS', 'LGHL', 'ADAD', 'WHLT', 'MGTI', 'FRBK', 'NCPL', 'GLAE', 'TIRX', 'BEGI', 'JPPYY', 'GMPW', 'ATYG', 'STRG', 'YBCN', 'FCIC', 'FOMC', 'KATX', 'EEGI', 'MTLK', 'VCOR', 'BFYW', 'HGYN', 'COSG', 'RAHGF', 'BOTH', 'PLTYF', 'CONC', 'BZRD', 'CWNOF', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'PARG', 'MUSS', 'CILJF', 'CIXXF', 'BDVC', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ADMG', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'CNGT', 'JMTM', 'RBRXF', 'BABL', 'EXCL', 'STGC']
-###
-
-####NEW UTIL
-# recap list: 
-# ['OEZVY', 'BEP', 'BIP', 'SBS', 'RDEIY', 'CMS-PB', 'UELMO', 'CIG', 'BIPC', 'BEPC', 'AILIH', 'EDN', 'ALCE', 'CLNV', 'UGEIF', 'ELIQ', 'CNTHP']
-# missing income revenue
-# ['MGEE', 'ALCE', 'VGAS', 'WNDW', 'ELIQ', 'MMMW', 'PPWLM', 'VXIT']
-# missing income netIncome
-# []
-# missing income opCF
-# ['NGG']
-# missing income capEx
-# ['NEE', 'DTE', 'BIPC', 'CWT', 'SJW', 'ALCE', 'GEBRF', 'ADN', 'ASRE', 'ARAO', 'ELIQ']
-# missing income netCF
-# []
-# missing income depreNAmor
-# ['SO', 'NGG', 'CEG', 'PCG', 'XEL', 'EBR', 'PPL', 'AEE', 'BEP', 'BIP', 'SBS', 'KEP', 'ELP', 'CIG', 'BIPC', 'BEPC', 'ENIC', 'OGS', 'NEP', 'RNW', 'PAM', 'MGEE', 'TAC', 'AY', 'ENLT', 'CEPU', 
-#  'KEN', 'EDN', 'AMPS', 'OPAL', 'UTL', 'ARIS', 'ELLO', 'ALCE', 'VGAS', 'GEBRF', 'HTOO', 'ADN', 'BNRG', 'ASRE', 'WAVE', 'ARAO', 'ELIQ', 'CPWR', 'GSFI', 'PPWLM', 'HUNGF', 'VXIT']
-# missing income prop sales
-# []
-# missing div intPaid
-# ['NEE', 'NWN', 'HLGN', 'PWCO']
-# missing div totalPaid
-# []
-# missing div shares
-# []
-# missing roic total equity
-# []
-# missing income years:
-# ['EMRAF', 'GWRS', 'MMMW']
-# missing div years:
-# ['EMRAF', 'VGAS', 'MMMW']
-# missing roic years:
-# ['EMRAF', 'MMMW']
-# wrong income end year
-# ['NGG', 'EBR', 'SBS', 'KEP', 'ELP', 'CIG', 'ENIC', 'RNW', 'PAM', 'CEPU', 'EDN', 'ELLO', 'AZREF', 'ALCE', 'GEBRF', 'HTOO', 'ADN', 'CREG', 'ARAO', 'ELIQ', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'VXIT']
-# wrong div end year
-# ['NGG', 'EBR', 'KEP', 'ELP', 'ENIC', 'RNW', 'PAM', 'CEPU', 'ELLO', 'AZREF', 'GEBRF', 'HTOO', 'ADN', 'CREG', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'VXIT']
-# wrong roic end year
-# ['NGG', 'EBR', 'KEP', 'ELP', 'ENIC', 'RNW', 'PAM', 'CEPU', 'ELLO', 'AZREF', 'GEBRF', 'HTOO', 'ADN', 'CREG', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'VXIT']
-#####
-
-
-
-###NEW RE
-# recap list = ['HLDCY', 'BPYPP', 'HNGKY', 'VTMX', 'SKT', 'HASI', 'ESBA', 'PKST', 'FPH', 'AOMR', 'NEN', 'SDHC', 'AIRE', 'LRHC', 'UCASU', 'MSTO', 'SFRT', 'PVOZ']
-# missing income revenue =  ['NLY', 'AGNC', 'SKT', 'RC', 'LADR', 'TWO', 'CIM', 'EFC', 'ARR', 'RWT', 'DX', 'NYMT', 'KREF', 'ORC', 'TRTX', 'IVR', 'NREF', 'GPMT', 'AOMR', 'AJX', 'LFT', 'CHMI', 'EARN', 'SGD', 'MTPP', 'ABCP', 'MSPC', 'SFRT']
-# missing income netIncome =  ['SKT']
-# missing income opCF =  ['SKT']
-# missing income capEx =  ['DLR', 'ARE', 'WPC', 'REG', 'CPT', 'NLY', 'NNN', 'FR', 'BRX', 'AGNC', 'STWD', 'TRNO', 'RITM', 'PECO', 'MAC', 'CUZ', 'BXMT', 'SBRA', 'TCN', 'DOC', 'SITC', 'SKT', 'HIW', 'ABR', 'EQC', 'MPW', 'JBGS', 'NXRT', 'RC', 'VRE', 'ARI', 'NTST', 'CMTG', 'TWO', 'PMT', 'DEA', 'ALX', 'PGRE', 'AHH', 'CIM', 'FBRT', 'ARR', 'RWT', 'BDN', 'DX', 'KREF', 'GMRE', 'FPI', 'REAX', 'SRG', 'CLDT', 'GOOD', 'LAND', 'LSEA', 'OLP', 'ORC', 'STRW', 'IVR', 'NLCP', 'NLOP', 'NREF', 'BRT', 'REFI', 'ONL', 'GPMT', 'AOMR', 'NXDT', 'NEN', 'AFCG', 'OZ', 'CIO', 'MITT', 'SEVN', 'NHHS', 'STHO', 'LFT', 'MDV', 'CHMI', 'EARN', 'SELF', 'HWTR', 'CMRF', 'LEJU', 'SQFT', 'CRDV', 'MTPP', 'ABCP', 'NIHK', 'AOXY', 'MYCB', 'MSPC', 'SFRT']
-# missing income netCF =  ['SKT']
-# missing income depreNAmor =  ['AMT', 'CCI', 'VICI', 'AVB', 'SBAC', 'EQR', 'INVH', 'BEKE', 'ELS', 'NLY', 'AGNC', 'BXMT', 'TCN', 'SKT', 'NHI', 'CMTG', 
-#                               'TWO', 'CIM', 'EFC', 'UMH', 'ARR', 'DX', 'KREF', 'IRS', 'REAX', 'ORC', 'TRTX', 'IVR', 'REFI', 'AOMR', 'AFCG', 'STRS', 'SACH', 
-#                               'AJX', 'FREVS', 'CHMI', 'EARN', 'CPTP', 'FGNV', 'LOAN', 'IHT', 'SGD', 'CRDV', 'GGE', 'ABCP', 'NIHK', 'AOXY', 'MYCB', 'HCDIQ', 'MSPC', 'SFRT']
-# missing income prop sales = []
-# missing div intPaid = ['DEA', 'RMR', 'BRT', 'DOUG', 'SACH', 'STHO', 'AWCA', 'KANP', 'BHM', 'LOAN', 'MTPP', 'DUO']
-# missing div totalPaid = []
-# missingdivshares =  []
-# missingroictotalequity = []
-# missingincomeyears= ['GRP-UN', 'FOR', 'CBL', 'GMRE', 'NXDT', 'AWCA', 'MHPC', 'TPHS', 'ZDPY', 'ACAN', 'MAA']
-# missingdivyears = ['GRP-UN', 'FOR', 'CSR', 'CBL', 'GMRE', 'NXDT', 'AWCA', 'MHPC', 'TPHS', 'ZDPY', 'MYCB', 'MAA']
-# missingroicyears=  ['HST', 'GRP-UN', 'FOR', 'AWCA', 'SRRE', 'MHPC', 'TPHS', 'ZDPY', 'ACAN', 'MAA']
-# wrongincomeendyear = ['BEKE', 'SKT', 'NTPIF', 'AXR', 'FGNV', 'HWTR', 'SRRE', 'OMH', 'GIPR', 'LEJU', 'XIN', 'MDJH', 'SQFT', 'GYRO', 'IHT', 'MHPC', 'CRDV', 'WEWKQ', 'ILAL', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'HBUV', 'UK', 'NIHK', 'DPWW', 'SRC', 'MSPC', 'SFRT']
-# wrongdendyear =  ['BEKE', 'NTPIF', 'AXR', 'FGNV', 'HWTR', 'SRRE', 'OMH', 'GIPR', 'LEJU', 'XIN', 'MDJH', 'SQFT', 'GYRO', 'IHT', 'MHPC', 'CRDV', 'WEWKQ', 'ILAL', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'HBUV', 'UK', 'NIHK', 'DPWW', 'SRC', 'SGIC', 'MSPC']
-# wrongrendyear =  ['BEKE', 'NTPIF', 'AXR', 'FGNV', 'HWTR', 'SRRE', 'OMH', 'GIPR', 'LEJU', 'XIN', 'MDJH', 'SQFT', 'GYRO', 'IHT', 'MHPC', 'CRDV', 'WEWKQ', 'ILAL', 'ALBT', 'CORR', 'VINO', 'WETH', 'DUO', 'PDNLA', 'HBUV', 'UK', 'NIHK', 'DPWW', 'SRC', 'MSPC']
-####
 
 # print(set(wrong).difference(REincwrongendyear))
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
-
-##Tech
-# techrecap2 = ['TOELY', 'MRAAY', 'DSCSY', 'NTDTY', 'OMRNY', 'ROHCY', 'CNXC', 'ASMVY', 'VERX', 'SRAD', 'ODD', 'BELFA', 'GB', 'RDZN', 'ABXXF', 'WBX', 'OPTX', 'EAXR', 'FEBO', 'SPPL', 'GRRR', 'NVNI', 'YIBO', 'DGHI', 'BTQQF', 'LVER', 'MMTIF', 'MRT', 'ITMSF', 'MAPPF', 'CXAI', 'SYNX', 'NOWG', 'HLRTF', 'MCLDF', 'MHUBF', 'PKKFF', 'CAUD', 'VJET', 'SSCC', 'AWIN', 'IMTE', 'VSOLF', 'YQAI', 'VPER', 'SRMX', 'TPPM', 'ASFT', 'GBUX', 'CMCZ', 'ZICX', 'FLXT', 'BCNN', 'FERN', 'SMXT', 'XYLB', 'SELX', 'ATCH', 'WONDF', 'MTMV', 'SWISF', 'DCSX', 'RONN']
-# # print(len(techrecap2))
-# techwrongendyearincome = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'GB', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'RDZN', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'OPTX', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'GRRR', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'DGHI', 'KPLT', 'STIX', 'APGT', 'LVER', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'MRT', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'CXAI', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MCLDF', 'MINM', 'VSMR', 'CAUD', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'AWIN', 'VIDE', 'SOPA', 'IMTE', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
-# techwrongdivendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'YOU', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'HSTA', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'VJET', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'NUGN', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'VS', 'KCRD', 'FRGT', 'CIIT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'ASFT', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'FCCN', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'SYTA', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'FLXT', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
-# techwrongroicendyear = ['TSM', 'ORCL', 'SONY', 'INFY', 'ADSK', 'MCHP', 'ATEYY', 'WIT', 'GFS', 'CAJPY', 'SPLK', 'PCRFY', 'UMC', 'NTAP', 'DIDIY', 'DT', 'GEN', 'LOGI', 'ESTC', 'QRVO', 'FLEX', 'NXT', 'YMM', 'ALGM', 'STNE', 'CRUS', 'KD', 'PAGS', 'CVLT', 'DXC', 'CRDO', 'LPL', 'AI', 'WNS', 'RAMP', 'VSAT', 'AGYS', 'SIMO', 'LSPD', 'PLUS', 'NTCT', 'CSIQ', 'JKS', 'DQ', 'INFN', 'ETWO', 'GDS', 'TUYA', 'IMOS', 'FORTY', 'WALD', 'HKD', 'KARO', 'YALA', 'MEI', 'DDD', 'KC', 'MTWO', 'SPWR', 'MGIC', 'CGNT', 'ITRN', 'MLAB', 'AEHR', 'VNET', 'NVEC', 'APPS', 'AMSWA', 'CAN', 'QIWI', 'DAKT', 'EGHT', 'MTLS', 'MTC', 'TGAN', 'NUKK', 'API', 'LUNA', 'MAXN', 'ITI', 'MIXT', 'WEWA', 'WRAP', 'VOXX', 'TROO', 'SQNS', 'TIO', 'MAPS', 'AIXI', 'LTCH', 'ARAT', 'MYNA', 'RELL', 'ALOT', 'PWFL', 'ALYA', 'BEEM', 'VUZI', 'WHEN', 'FEIM', 'SOL', 'SOTK', 'ZENV', 'OCFT', 'SYT', 'NA', 'ZEPP', 'MOBX', 'EBIXQ', 'PXDT', 'ALLT', 'BCRD', 'GWSO', 'MLGO', 'KWIK', 'SPRU', 'RAASY', 'EBON', 'DZSI', 'EGIO', 'GSIT', 'KPLT', 'STIX', 'APGT', 'RCAT', 'BTCM', 'AGMH', 'MOGO', 'DSWL', 'QMCO', 'SODI', 'SWVL', 'JFU', 'AVAI', 'SOS', 'CASA', 'NXPL', 'MFON', 'UTSI', 'WKEY', 'AITX', 'SEAV', 'JG', 'SGMA', 'SPI', 'TSRI', 'HWNI', 'GOLQ', 'VIAO', 'MVLA', 'EBZT', 'FTFT', 'CISO', 'MARK', 'KULR', 'HUBC', 'MINM', 'VSMR', 'MSN', 'AIAD', 'LKCO', 'OLB', 'UPYY', 'HTCR', 'INPX', 'ISUN', 'IFBD', 'DPLS', 'WRNT', 'MIND', 'IONI', 'WETG', 'NAHD', 'QH', 'ELWS', 'SUIC', 'NXTP', 'VIDE', 'SOPA', 'KCRD', 'FRGT', 'MICS', 'WDLF', 'CAMP', 'SUNW', 'LGIQ', 'VEII', 'MWRK', 'LYT', 'WTO', 'SRCO', 'IRNTQ', 'RKFL', 'SASI', 'DUSYF', 'LZGI', 'TAOP', 'SING', 'XALL', 'UCLE', 'BRQSF', 'ATDS', 'CHJI', 'EDGM', 'CUEN', 'CTKYY', 'AEY', 'ZRFY', 'GAHC', 'MLRT', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'PSWW', 'TTCM', 'IGEN', 'TPTW', 'LAAB', 'GIGA', 'WDDD', 'DCLT', 'ITOX', 'PTOS', 'CRCW', 'MAPT', 'MCCX', 'NOGNQ', 'AGILQ', 'IINX', 'RDAR', 'GAXY', 'NIRLQ', 'KBNT', 'GTCH', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'PBTS', 'LCHD', 'AATC', 'EXEO', 'AKOM', 'WSTL', 'IEHC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'IPTK', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'ANDR', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'DUUO', 'ABCE', 'BTZI', 'MJDS', 'SMIT', 'SEII', 'XDSL', 'TRIRF', 'SANP', 'ADGO', 'TKLS', 'MAXD', 'SDVI', 'DIGAF', 'GDLG', 'HMELF']
-
-# techmissingincomeyears = ['INST', 'LPL', 'WNS', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'MTBL', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'INTV', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'ONCI', 'PTOS', 'CRCW', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
-# techmissingdivyears =['INST', 'LPL', 'WNS', 'RPAY', 'BBAI', 'ARAT', 'SURG', 'ZFOX', 'RELL', 'LINK', 'AKTS', 'DPSI', 'FCUV', 'CPTN', 'ALMU', 'INVU', 'SODI', 'AITX', 'HWNI', 'ONEI', 'CYCA', 'APYP', 'BLBX', 'SLNH', 'FWFW', 'SUIC', 'INTV', 'VEII', 'CHJI', 'CUEN', 'TTCM', 'CYAP', 'PTOS', 'CRCW', 'GAXY', 'MJDS']
-# techmissingroicyears = ['EPAM', 'LPL', 'WNS', 'ARAT', 'LINK', 'AKTS', 'DPSI', 'CPTN', 'ALMU', 'SODI', 'AITX', 'ONEI', 'FTFT', 'CYCA', 'APYP', 'SLNH', 'FWFW', 'NUGN', 'VEII', 'LZGI', 'MYSZ', 'CHJI', 'CUEN', 'PTOS', 'MCCX', 'GAXY', 'IMCI', 'BTZI', 'MJDS']
-
-# techmissingrev = ['RDZN', 'NUKK', 'OPTX', 'MOBX', 'XBP', 'HYSR', 'MRT', 'AVAI', 'CXAI', 'MVLA', 'VSMR', 'CAUD', 'AWIN', 'NEWH', 'SMME', 'NIRLQ', 'CATG', 'GSPT', 'SANP']
-# techmissingnetincome = ['MMTIF']
-# techmissingincomecapEx = ['GRAB', 'LYFT', 'DAVA', 'BMBL', 'AVDX', 'PLUS', 'CRCT', 'BIGC', 'KC', 'MTWO', 'STEM', 'RDZN', 'NUKK', 'BKSY', 'RPMT', 'SQNS', 'OPTX', 'MOBX', 'LVER', 'APCX', 'HSTA', 'ALMU', 'AISP', 'MRT', 'ULY', 'SEAV', 'SGMA', 'CXAI', 'GOLQ', 'MVLA', 'ONEI', 'CLOQ', 'CYCA', 'SOBR', 'VSMR', 'CAUD', 'BOXL', 'FWFW', 'AWIN', 'VMNT', 'DTSS', 'CIIT', 'WDLF', 'LGIQ', 'MWRK', 'OVTZ', 'LZGI', 'XALL', 'ALDS', 'SMME', 'PSWW', 'LAAB', 'VISM', 'FLXT', 'WDDD', 'ITOX', 'PTOS', 'NIRLQ', 'CDAY', 'WBSR', 'IPTK', 'GSPT', 'DROP', 'EHVVF', 'MJDS', 'SANP', 'ADGO', 'SDVI', 'DIGAF', 'GDLG', 'TFLM', 'ANKM', 'TRSO']
-
-# techmissingincomeopCF = ['BCAN']
-# techmissingincomenetCF = ['VSMR', 'EXEO']
-
-# techmissdivpaid = []
-# techmissingdivshares = []
-# techmissingroictotalequity = ['VSMR']
-# techmissingdivintPaid =['SNOW', 'MPWR', 'ZM', 'CHKP', 'IOT', 'EPAM', 'NTNX', 'PATH', 'GTLB', 'DBX', 'MNDY', 'CYBR', 'FFIV', 'CFLT', 'PCTY', 'MSTR', 'NXT', 'DUOL', 'UI', 'FRSH', 'CGNX', 'BRZE', 'AUR', 'HCP', 'FROG', 'BOX', 'CRDO', 'RUN', 'AI', 'ALRM', 'MQ', 'YOU', 'QTWO', 'NABL', 'BMBL', 'APPN', 'AMBA', 'SWI', 'PAY', 'EVCM', 'CLBT', 'PAYO', 'SEMR', 'AMPL', 'VZIO', 'DCBO', 'PDFS', 'TUYA', 'WKME', 'BTDR', 'RSKD', 'PGY', 'RDWR', 'DMRC', 'YALA', 'CORZ', 'LASR', 'VMEO', 'SCWX', 'ITRN', 'CEVA', 'LAW', 'XPER', 'DOMO', 'NVEC', 'AMSWA', 'EGHT', 'NUKK', 'API', 'CLMB', 'KOPN', 'EGAN', 'VLN', 'AEVA', 'ITI', 'IMMR', 'MAPS', 'AIXI', 'ARBE', 'ZFOX', 'AXTI', 'UEIC', 'WHEN', 'PXPC', 'MKTW', 'SYT', 'NA', 'LINK', 'MOBX', 'ALLT', 'GWSO', 'GSIT', 'DSWL', 'AWRE', 'GUER', 'REFR', 'JFU', 'VHC', 'MSAI', 'SEAV', 'BNZI', 'GOLQ', 'MVLA', 'EBZT', 'INRD', 'JNVR', 'SGN', 'HMBL', 'QURT', 'WLDS', 'MITQ', 'LEDS', 'WETG', 'LIDR', 'NAHD', 'AMST', 'KCRD', 'WDLF', 'ELST', 'FCCN', 'CTKYY', 'WOWI', 'NIRLQ', 'THPTF', 'FALC', 'GSPT', 'TCCO', 'BTZI', 'MJDS', 'SANP', 'SDVI', 'GDLG', 'HMELF', 'TFLM', 'ANKM']
-
 
 #################
 # harvestMasterCSVs(consStaples)  #comms #
