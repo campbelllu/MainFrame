@@ -20,6 +20,10 @@ import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
 # import gc
+from currency_converter import CurrencyConverter
+curConvert = CurrencyConverter(fallback_on_missing_rate=True)
+### Documentation: https://pypi.org/project/CurrencyConverter/ 
+from datetime import date
 
 import csv_modules as csv
 
@@ -302,6 +306,9 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
         #                 # print(data)
         #                 company_data = pd.concat([company_data, data], ignore_index = True)
 
+
+### amazing resource to check what each element is: https://www.calcbench.com/element/WeightedAverageNumberOfSharesIssuedBasic 
+### LUKE THIS WILL TEACH YOU MUCH I THINK: https://xbrl.us/guidance/specific-non-controlling-interest-elements/ 
 #organizing data titles into variable lists
 # altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
 # cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
@@ -314,20 +321,25 @@ operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFrom
                     'NetCashProvidedByUsedInContinuingOperations', 'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations','CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
 investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
 financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
+
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
-            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','RetainedEarnings','GrossInvestmentIncomeOperating','RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating
-netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
+            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','GrossInvestmentIncomeOperating','RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating #totally not revenue how?!? 'RetainedEarnings',
+netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', #'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', this is just wrong how did it get in here?!
                 'ProfitLossAttributableToOwnersOfParent','ProfitLoss']
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
+
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense','FinanceCosts','InterestExpenseDebt','InterestAndDebtExpense','InterestIncomeExpenseNet','InterestIncomeExpenseNonoperatingNet',
                 'FinancingInterestExpense','InterestPaidNet','InterestRevenueExpense']
-incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations']
+
+incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations'] #LUKE never used?
+
 shortTermDebt = ['LongTermDebtCurrent','ShorttermBorrowings']
 longTermDebt1 = ['LongTermDebtNoncurrent','NoncurrentPortionOfNoncurrentBondsIssued']#,'LongTermDebt']
 longTermDebt2 = ['OperatingLeaseLiabilityNoncurrent','NoncurrentPortionOfNoncurrentLoansReceived']
 longTermDebt3 = ['NoncurrentLeaseLiabilities']
 longTermDebt4 = ['LongtermBorrowings']
+
 totalAssets = ['Assets','LiabilitiesAndStockholdersEquity']
 currentAssets = ['CurrentAssets']
 nonCurrentAssets = ['NoncurrentAssets']
@@ -343,14 +355,18 @@ capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAn
         'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets','PaymentsToAcquireProductiveAssets',
         'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets','PaymentsToDevelopRealEstateAssets',
         'PurchaseOfAvailableforsaleFinancialAssets','PaymentsToAcquireAndDevelopRealEstate'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
+
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
                             'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities',
-                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares'] #DividendsPaid could be useful later
+                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares'] 
 declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid','InvestmentCompanyDistributionToShareholdersPerShare',
                                         'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit']
+
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
-                           'WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted', 'NumberOfSharesIssued']
+                            'NumberOfSharesIssued']
+dilutedSharesOutstanding = ['WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted']
+
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes',
                     'GainsLossesOnSalesOfInvestmentRealEstate']
 deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','DepreciationAmortizationAndAccretionNet','AmortizationOfIntangibleAssets',
@@ -364,12 +380,12 @@ ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shor
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
                 investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
-                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue ]
+                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue, dilutedSharesOutstanding ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
                 'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
-                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue']
+                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -400,8 +416,6 @@ def harvestMasterCSVs(sectorTarget): #edit version as necessary!
     except Exception as err:
         print("harvestMasters error: ")
         print(err)
-
-
 
 #Begin data cleaning process
 def get_Only_10k_info(df):
@@ -598,7 +612,6 @@ def orderAttributeDF(df):
         return filtered_data
 
 def dropDuplicatesInDF(df):
-    
     try:
         # filtered_data = pd.DataFrame()
         # print('pre drop dupes')
@@ -637,6 +650,7 @@ def dropDuplicatesInDF(df):
             
             filtered_data['startYear'] = 0#filtered_data['start']#'0000-00-00' #this one
             # endMonthCheck = [9,10,11,12]
+            filtered_data['year7'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 5)
             filtered_data['year8'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 6)
             filtered_data['year9'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 7)
             filtered_data['year10'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 8)
@@ -647,6 +661,7 @@ def dropDuplicatesInDF(df):
 
 
             filtered_data['year'] = filtered_data['year8'].fillna(filtered_data['year9'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year7'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year10'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year11'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year12'])#.infer_objects(copy=False)
@@ -654,6 +669,7 @@ def dropDuplicatesInDF(df):
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year14'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['yearMinusOne'])
          
+            filtered_data = filtered_data.drop('year7',axis=1)
             filtered_data = filtered_data.drop('year8',axis=1)
             filtered_data = filtered_data.drop('year9',axis=1)
             filtered_data = filtered_data.drop('year10',axis=1)
@@ -845,12 +861,14 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print(returned_data.shape)
         
         # print('pre drop fy records')
-        # print(returned_data.to_string())
+        # print(returned_data)#.to_string())
         # print(returned_data.shape)
+        # print(returned_data['start'].min())
+        # print(returned_data['end'].min())
         
         returned_data = dropAllExceptFYRecords(returned_data) #was held data
         # print('post drop fy records pre order')
-        # print(returned_data.to_string())
+        # print(returned_data)#.to_string())
         # print(returned_data.shape)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
         # print('post order pre drop  dupes')
@@ -921,17 +939,68 @@ def grManualCalc(df_col):
         print("grManualCalc error: ")
         print(err)
 
+def cleanUnits(df):
+    try:
+        df_col_added = df
+        origRev = df_col_added['val'].tolist()
+        unitsFrom = df_col_added['Units'].tolist()
+        datesFrom = df_col_added['year'].tolist()
+        # unitsTo
+        conRev = []
+        # print(len(origRev))
+        # print(len(unitsFrom))
+        for i in range(len(origRev)):
+            conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
+        df_col_added['newVal'] = conRev
+        df_col_added['Units'] = 'USD'
+    
+        df_col_added['val'] = df_col_added['newVal']
+        df_col_added = df_col_added.drop('newVal',axis=1)
+        #     print(x + ', ' + y)
+        # df_col_added['convRev'] = curConvert.convert(df_col_added['revenue'], df_col_added['Units'], 'USD')
+        # print('did it convert?')
+        # print(df_col_added)
+
+        # growthCol = grManualCalc(df_col_added['revenue'])
+        # df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
+    
+        
+
+    except Exception as err:
+        print("clean Units error: ")
+        print(err)
+    finally:
+        return df_col_added
+
 def cleanRevenue(df):
     try:
         # print('df')
         # print(df)
-        df_col_added = df.rename(columns={'val':'revenue'})
+
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'revenue'})
+        # df_col_added = df.rename(columns={'val':'revenue'})
         if df_col_added.empty:
             return df_col_added
         else:
             # if df_col_added['revenue'].empty:
             #     df_col_added['revenueGrowthRate'] = np.NaN
             # else:
+            # origRev = df_col_added['revenue'].tolist()
+            # unitsFrom = df_col_added['Units'].tolist()
+            # datesFrom = df_col_added['year'].tolist()
+            # # unitsTo
+            # conRev = []
+            # # print(len(origRev))
+            # # print(len(unitsFrom))
+            # for i in range(len(origRev)):
+            #     conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
+            # df_col_added['newRev'] = conRev
+            #     print(x + ', ' + y)
+            # df_col_added['convRev'] = curConvert.convert(df_col_added['revenue'], df_col_added['Units'], 'USD')
+            # print('did it convert?')
+            # print(df_col_added)
+
             growthCol = grManualCalc(df_col_added['revenue'])
             df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
         # df_col_added['year'] = df_col_added.end.str[:4]
@@ -955,16 +1024,20 @@ def cleanRevenue(df):
     #         df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
     #         df_col_added['year'] = df_col_added.end.str[:4]
        
-            return df_col_added
+            
 
     except Exception as err:
         print("cleanRevenue error: ")
         print(err)
         # print(df_col_added)
+    finally:
+        return df_col_added
 
 def cleanNetIncome(df):
     try:
-        df_col_added = df.rename(columns={'val':'netIncome'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'netIncome'})
+        # df_col_added = df.rename(columns={'val':'netIncome'})
         if df_col_added.empty:
             return df_col_added
         else:
@@ -974,15 +1047,19 @@ def cleanNetIncome(df):
 
             # df_col_added = df_col_added.drop(columns=['start','end']) 
 
-            return df_col_added
+            
 
     except Exception as err:
         print("cleanNetIncome error: ")
         print(err)
+    finally:
+        return df_col_added
 
 def cleanOperatingCashFlow(df):
     try:
-        df_col_added = df.rename(columns={'val':'operatingCashFlow'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'operatingCashFlow'})
+        # df_col_added = df.rename(columns={'val':'operatingCashFlow'})
         # if df_col_added['operatingCashFlow'].isnull().any():
         #     df_col_added['operatingCashFlow'] = df_col_added['operatingCashFlow'].ffill()
         if df_col_added.empty:
@@ -1003,7 +1080,9 @@ def cleanOperatingCashFlow(df):
 
 def cleanInvestingCashFlow(df):
     try:
-        df_col_added = df.rename(columns={'val':'investingCashFlow'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'investingCashFlow'})
+        # df_col_added = df.rename(columns={'val':'investingCashFlow'})
         # if df_col_added['investingCashFlow'].isnull().any():
         #     df_col_added['investingCashFlow'] = df_col_added['investingCashFlow'].ffill()
         if df_col_added.empty:
@@ -1023,7 +1102,9 @@ def cleanInvestingCashFlow(df):
 
 def cleanFinancingCashFlow(df):
     try:
-        df_col_added = df.rename(columns={'val':'financingCashFlow'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'financingCashFlow'})
+        # df_col_added = df.rename(columns={'val':'financingCashFlow'})
         # if df_col_added['financingCashFlow'].isnull().any():
         #     df_col_added['financingCashFlow'] = df_col_added['financingCashFlow'].ffill()
         if df_col_added.empty:
@@ -1043,7 +1124,9 @@ def cleanFinancingCashFlow(df):
 
 def cleanNetCashFlow(df):
     try:
-        df_col_added = df.rename(columns={'val':'netCashFlow'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'netCashFlow'})
+        # df_col_added = df.rename(columns={'val':'netCashFlow'})
         # if df_col_added['netCashFlowe'].empty:
         #     df_col_added['netCashFlowGrowthRate'] = np.NaN
         # else:
@@ -1064,7 +1147,9 @@ def cleanNetCashFlow(df):
 
 def cleanCapEx(df):
     try:
-        df_col_added = df.rename(columns={'val':'capEx'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'capEx'})
+        # df_col_added = df.rename(columns={'val':'capEx'})
         if df_col_added.empty:
             return df_col_added
         else:
@@ -1135,7 +1220,9 @@ def cleanOperatingIncome(df):
     try:
         # print('df')
         # print(df)
-        df_col_added = df.rename(columns={'val':'operatingIncome'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
+        # df_col_added = df.rename(columns={'val':'operatingIncome'})
         # print('renamed df')
         # print(df_col_added)
         if df_col_added.empty:
@@ -1158,6 +1245,8 @@ def cleanOperatingIncome(df):
 
 def cleanTaxRate(df):
     try:
+        # df_col_added = cleanUnits(df)
+        # df_col_added = df_col_added.rename(columns={'val':'taxRate'})
         df_col_added = df.rename(columns={'val':'taxRate'})
         # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
         # df_col_added['year'] = df_col_added.end.str[:4]
@@ -1194,7 +1283,12 @@ def cleanDebt(short, long1, long2, long3, long4):
         # print(long3)
         # print('printing long4')
         # print(long4)
-        
+        short = cleanUnits(short)
+        long1 = cleanUnits(long1)
+        long2 = cleanUnits(long2)
+        long3 = cleanUnits(long3)
+        long4 = cleanUnits(long4)
+        # df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
 
         shortNlong1 = pd.merge(short, long1, on=['year','Ticker','CIK','Units'], how='outer')
         shortNlong1['val_x'] = shortNlong1['val_x'].fillna(0)
@@ -1252,6 +1346,10 @@ def cleanAssets(nonCurrent, current):
         # nonCurrent = nonCurrent.drop(columns=['start','end'])
         # current = current.drop(columns=['start','end'])
 
+        nonCurrent = cleanUnits(nonCurrent)
+        current = cleanUnits(current)
+        # df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
+
         anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
         anl['val'] = anl['val_x'] + anl['val_y']
         anl = anl.drop(['val_x','val_y'],axis=1) 
@@ -1268,6 +1366,9 @@ def cleanLiabilities(nonCurrent, current):
 
         # nonCurrent = nonCurrent.drop(columns=['start','end'])
         # current = current.drop(columns=['start','end'])
+
+        nonCurrent = cleanUnits(nonCurrent)
+        current = cleanUnits(current)
 
         anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
         anl['val'] = anl['val_x'] + anl['val_y']
@@ -1291,9 +1392,15 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         # print(reportedEquity)
         if assets.empty:
             assets = cleanAssets(ncA, cuA)
+        else:
+            assets = cleanUnits(assets)
+        
 
         if liabilities.empty:
             liabilities = cleanLiabilities(ncL, cuL)
+        else:
+            liabilities = cleanUnits(liabilities)
+        
         # print('liabilities?!?')
         # print(liabilities)
         # print('assets?')
@@ -1328,7 +1435,9 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
 
 def cleanDeprNAmor(df):
     try:
-        df_col_added = df.rename(columns={'val':'depreNAmor'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'depreNAmor'})
+        # df_col_added = df.rename(columns={'val':'depreNAmor'})
         # df_col_added['year'] = df_col_added.end.str[:4]
 
         # df_col_added = df_col_added.drop(columns=['start','end'])
@@ -1340,11 +1449,15 @@ def cleanDeprNAmor(df):
 
 def cleanDeprNAmor2(df1,df2):
     try:
-        df_col_added = df1.rename(columns={'val':'depreNAmor1'})
+        df_col_added = cleanUnits(df1)
+        df_col_added = df_col_added.rename(columns={'val':'depreNAmor1'})
+        # df_col_added = df1.rename(columns={'val':'depreNAmor1'})
         # df_col_added['year'] = df_col_added.end.str[:4]
         # df_col_added = df_col_added.drop(columns=['start','end'])
 
+        df2 = cleanUnits(df2)
         df2 = df2.rename(columns={'val':'depreNAmor2'})
+        # df2 = df2.rename(columns={'val':'depreNAmor2'})
         # df2['year'] = df2.end.str[:4]
         # df2 = df2.drop(columns=['start','end'])
 
@@ -1361,7 +1474,9 @@ def cleanDeprNAmor2(df1,df2):
 
 def cleanGainSaleProp(df):
     try:
-        df_col_added = df.rename(columns={'val':'gainSaleProp'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'gainSaleProp'})
+        # df_col_added = df.rename(columns={'val':'gainSaleProp'})
         # df_col_added['year'] = df_col_added.end.str[:4]
 
         # df_col_added = df_col_added.drop(columns=['start','end'])
@@ -1373,7 +1488,9 @@ def cleanGainSaleProp(df):
 
 def cleanInterestPaid(df):
     try:
-        df_col_added = df.rename(columns={'val':'interestPaid'})
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'interestPaid'})
+        # df_col_added = df.rename(columns={'val':'interestPaid'})
         # df_col_added['year'] = df_col_added.end.str[:4]
 
         # df_col_added = df_col_added.drop(columns=['start','end'])
@@ -1385,13 +1502,23 @@ def cleanInterestPaid(df):
         print(err)
 
 #ASML case study: shares are working. per share works, but throws off data as nulls are filled because total paid loads fine, but then we try to fill nulls both ways and make a bunch of nulls.
-def cleanDividends(total, perShare, shares): 
+def cleanDividends(total, perShare, shares, dilutedShares): 
 
     try:
         # shares['year'] = shares.end.str[:4]
         shares = shares.rename(columns={'val':'shares'})
         shares = shares.drop(columns=['Units'])
+        # print('what about shares?')
+        # print(shares)
+        # print('before dilutedShares is scrubbed')
+        # print(dilutedShares)
+        dilutedShares = dilutedShares.rename(columns={'val':'dilutedShares'})
+        dilutedShares = dilutedShares.drop(columns=['Units'])
+        # print('do we have any diluted share?')
+        # print(dilutedShares)
         # total['year'] = total.end.str[:4]
+        total = cleanUnits(total)
+        #  = df_col_added.rename(columns={'val':'interestPaid'})
         total = total.rename(columns={'val':'totalDivsPaid'})
         # perShare['year'] = perShare.end.str[:4]
         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
@@ -1407,6 +1534,7 @@ def cleanDividends(total, perShare, shares):
         # print(perShare)
         df_col_added = pd.merge(total, perShare, on=['year','Ticker','CIK'], how='outer')
         df_col_added = pd.merge(shares, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        df_col_added = pd.merge(dilutedShares, df_col_added, on=['year','Ticker','CIK'], how='outer')
         # print('tot and pshare pre temps')
         # print(df_col_added)
         
@@ -1452,11 +1580,14 @@ def cleanDividends(total, perShare, shares):
             # print('total + shares + per share: ')
             # print(df_col_added)
         df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
+        df_col_added['dilutedShares'] = df_col_added['dilutedShares'].ffill().bfill()
         # if df_col_added['shares'].empty:
         #     df_col_added['sharesGrowthRate'] = np.NaN
         # else:
         growthCol = grManualCalc(df_col_added['shares'])
         df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
+        # growthCol1 = grManualCalc(df_col_added['dilutedShares'])
+        # df_col_added['dilutedSharesGrowthRate'] = growthCol1
         # df_col_added['sharesGrowthRate'] = df_col_added['sharesGrowthRate'].replace(np.nan,0) #fill in null values so later filter doesn't break dataset
 
         
@@ -1480,6 +1611,8 @@ def cleanDividends(total, perShare, shares):
         
         # print('average growth rate: ')
         # print(df_col_added['divGrowthRate'].mean())
+        # print('whats it look like end of clean divs')
+        # print(df_col_added)
 
         # return df_col_added
     except Exception as err:
@@ -1908,6 +2041,9 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         #     # netInc_df = netInc_df.drop(columns=['start','end']) 
 
         ## this nested in else
+        # print(len(rev_df['Units'].unique()))
+        # print(len(netInc_df['Units'].unique()))
+        #
         revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
         # revNinc['units'] = revNinc['Units_x']
         # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
@@ -2066,7 +2202,8 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
         # print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
-                                    consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
+                                    consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
+                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False))
         # print('divsdf: ')
         # print(divs_df)
         if divs_df['year'][0] == -1:
@@ -2197,7 +2334,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
-                                    consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False))
+                                    consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
+                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False))
         # print('divsdf: ')
         # print(divs_df)
         # if divs_df['year'][0] == -1:
@@ -3071,49 +3209,35 @@ lickit = ['CNI']
 # checkYearsIntegrityList(lickit)
 
 
-#NKE roce years off one year early. big table has nan's in it
-#'TCOM' years are all messed up
-#DIS years
+ #luke start here
+
+#crc 2020 roic table, https://stockanalysis.com/stocks/crc/financials/
+#DIS years, netincome, shares check them all
+#tdw, no 2017 dividend or income data,  
+# argx roic 2016 2017 repeats, 
+#check acad's shares: it's all making sense, except some values are missing some zeroes. maybe implement a process of .where() so it fills values up to being over 1M
+#test your generic tests below
+#SHW weird 2008 repeat on mega table. check out where it's getting weird!
+
 #in the fill growth rate calcs, add functions to fill in net cash flow if you have blanks and the others cash flows to provide values. do for all fields
-#SHW weird 2008 repeat
-#CX weird repeat 2018 roic and income, years are right tho!
-#dvn bad roic years, crc too, tdw, argx
-                        
-ticker12 = 'TCOM' #ABR
-print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
-# write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
-year12 = '2024'
-version12 = '2'
-print(ticker12 + ' income:')
-print(makeIncomeTableEntry(ticker12,'2024',version12,False))
-print(ticker12 + ' divs:')
-print(makeDividendTableEntry(ticker12,'2024',version12,False))
-# print(ticker12 + ' divs and roic table: ')
-# print(makeConsolidatedTableEntry(ticker12, year12, version12, False).iloc[:, 0:12])
-print(ticker12 + ' roic: ')
-print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
-# print(ticker12 + ' divs and roic table: ')
-# print(makeConsolidatedTableEntry(ticker12, year12, version12, False)['ReportedTotalEquity'])
+#add eps and calculated eps to table too
+#add netassetvalue to big table
 
-
-
-ticker235 = 'HRL' 
+ticker235 = 'ACAD' 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
 version235 = '2'
-# print(ticker235 + ' income:')
-# print(makeIncomeTableEntry(ticker235,year235,version235,False))
-# print(ticker235 + ' divs:')
-# print(makeDividendTableEntry(ticker235,year235,version235,False))
-# print(ticker235 + '  roic: ')
-# print(makeROICtableEntry(ticker235,year235,version235,False))
+print(ticker235 + ' income:')
+print(makeIncomeTableEntry(ticker235,year235,version235,False))
+print(ticker235 + ' divs:')
+print(makeDividendTableEntry(ticker235,year235,version235,False))
+print(ticker235 + '  roic: ')
+print(makeROICtableEntry(ticker235,year235,version235,False)) #['ReportedTotalEquity']
 # print(ticker235 + ' divs and roic table: ')
 # print(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
-
-
-# print(consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False))
+# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False)) #netIncome
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
 # totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
@@ -3135,6 +3259,22 @@ version235 = '2'
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
 
+ticker12 = 'TCOM' #ABR
+# print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
+# write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
+year12 = '2024'
+version12 = '2'
+# print(ticker12 + ' income:')
+# print(makeIncomeTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs:')
+# print(makeDividendTableEntry(ticker12,'2024',version12,False))
+# print(ticker12 + ' divs and roic table: ')
+# print(makeConsolidatedTableEntry(ticker12, year12, version12, False).iloc[:, 0:12])
+# print(ticker12 + ' roic: ')
+# print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
+# print(ticker12 + ' divs and roic table: ')
+# print(makeConsolidatedTableEntry(ticker12, year12, version12, False)['ReportedTotalEquity'])
+
 #################
 
 
@@ -3144,7 +3284,8 @@ version100 = '2'
 # print(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False))
 # print(cleanDividends(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False), 
 #                                     consolidateSingleAttribute(ticker100, year100, version100, declaredORPaidCommonStockDivsPerShare, False),
-#                                     consolidateSingleAttribute(ticker100, year100, version100, basicSharesOutstanding, False)))
+#                                     consolidateSingleAttribute(ticker100, year100, version100, basicSharesOutstanding, False),
+#                                       consolidateSingleAttribute(ticker100, year100, version100, dilutedSharesOutstanding, False)))
 
 # print(cleanDebt(consolidateSingleAttribute(ticker100, year100, version100, shortTermDebt, False), 
 #                                     consolidateSingleAttribute(ticker100, year100, version100, longTermDebt1, False), consolidateSingleAttribute(ticker100, year100, version100, longTermDebt2, False),
@@ -3175,7 +3316,7 @@ version12 = '2'
 # print(ticker12 + ' divs:')
 # print(makeDividendTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' roic: ')
-# print(makeROICtableEntry(ticker12,'2024','0',False))
+# print(makeROICtableEntry(ticker12,'2024',version12,False))
 
 ticker14 = 'O' #EGP
 year14 = '2024'
