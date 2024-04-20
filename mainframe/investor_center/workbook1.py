@@ -324,8 +324,10 @@ financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedB
 
 revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
             'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','GrossInvestmentIncomeOperating','RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating #totally not revenue how?!? 'RetainedEarnings',
-netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', #'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', this is just wrong how did it get in here?!
-                'ProfitLossAttributableToOwnersOfParent','ProfitLoss']
+
+netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic']
+netIncomeNCI = ['ProfitLoss', 'ProfitLossAttributableToOwnersOfParent']
+
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
 
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
@@ -354,13 +356,15 @@ exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',
         'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets','PaymentsToAcquireProductiveAssets',
         'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets','PaymentsToDevelopRealEstateAssets',
-        'PurchaseOfAvailableforsaleFinancialAssets','PaymentsToAcquireAndDevelopRealEstate'] #NetCashProvidedByUsedInInvestingActivities # possible addition, questionable
+        'PurchaseOfAvailableforsaleFinancialAssets','PaymentsToAcquireAndDevelopRealEstate'] 
 
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
                             'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities',
-                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares'] 
+                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares','DividendsPaidClassifiedAsOperatingActivities','PaymentsOfOrdinaryDividends'] 
 declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid','InvestmentCompanyDistributionToShareholdersPerShare',
-                                        'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit']
+                                        'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit','DividendsPaidOrdinarySharesPerShare']
+returnOfCapitalPerShare = ['InvestmentCompanyTaxReturnOfCapitalDistributionPerShare']
+totalReturnOfCapital = [' InvestmentCompanyTaxReturnOfCapitalDistribution']
 
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
@@ -374,18 +378,20 @@ deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','Deprecia
 deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
 deprecAndAmor3 = ['DepreciationAndAmortization']
 
-netAssetValue = ['NetAssetValuePerShare'] #Luke don't forget to add this into a table somewhere
+netAssetValue = ['NetAssetValuePerShare'] 
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
                 investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
-                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue, dilutedSharesOutstanding ]
+                deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue, dilutedSharesOutstanding, netIncomeNCI, 
+                returnOfCapitalPerShare, totalReturnOfCapital ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
                 'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
-                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding']
+                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding', 'netIncomeNCI', 
+                'returnOfCapitalPerShare', 'totalReturnOfCapital']
 # removedFromUltList = [netCashFlow, cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
@@ -748,7 +754,7 @@ def dropDuplicatesInDF(df):
             endYearStrings = list(filtered_data['endYear'])
             endYearStrings = [str(x) for x in endYearStrings]
             filtered_data['endYear'] = endYearStrings
-            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 5)) #changed here from 6; Luke wtf records wtf
+            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 5)) #changed here from 6
             filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 5))
             # print('all three applied')
             # print(filtered_data)
@@ -855,6 +861,8 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
             # if 'PerShare' in x:
             #     print('in consolidate')
             #     print(returned_data)
+        # print(returned_data['Tag'].unique())
+        # print(returned_data)
         returned_data = get_Only_10k_info(returned_data)
         # print('10k data')
         # print(returned_data)
@@ -863,6 +871,7 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
         # print('pre drop fy records')
         # print(returned_data)#.to_string())
         # print(returned_data.shape)
+        # print(returned_data['Tag'].unique())
         # print(returned_data['start'].min())
         # print(returned_data['end'].min())
         
@@ -1055,6 +1064,28 @@ def cleanNetIncome(df):
     finally:
         return df_col_added
 
+def cleanNetIncomeNCI(df):
+    try:
+        df_col_added = cleanUnits(df)
+        df_col_added = df_col_added.rename(columns={'val':'netIncomeNCI'})
+        # df_col_added = df.rename(columns={'val':'netIncome'})
+        if df_col_added.empty:
+            return df_col_added
+        else:
+            growthCol = grManualCalc(df_col_added['netIncomeNCI'])
+            df_col_added['netIncomeNCIGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
+            # df_col_added['year'] = df_col_added.end.str[:4]
+
+            # df_col_added = df_col_added.drop(columns=['start','end']) 
+
+            
+
+    except Exception as err:
+        print("cleanNetIncomeNCI error: ")
+        print(err)
+    finally:
+        return df_col_added
+
 def cleanOperatingCashFlow(df):
     try:
         df_col_added = cleanUnits(df)
@@ -1167,21 +1198,41 @@ def cleanCapEx(df):
 
 def cleanEPS(df):
     try:
-        df_col_added = df.rename(columns={'val':'eps'})
-        if df_col_added.empty:
-            return df_col_added
-        else:
-            growthCol = grManualCalc(df_col_added['eps'])
-            df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
+        df_col_added = df.rename(columns={'val':'reportedEPS'})
+        growthCol = grManualCalc(df_col_added['reportedEPS'])
+        df_col_added['reportedEPSGrowthRate'] = growthCol
+        df_col_added = df_col_added.drop('Units', axis=1)
+        # returned_data = targetdf
 
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
+        # if df_col_added.empty:
+        #     return df_col_added
+        # else:
+        #     growthCol = grManualCalc(df_col_added['eps'])
+        #     df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
+        #     # df_col_added['year'] = df_col_added.end.str[:4]
 
-            return df_col_added
+        #     # df_col_added = df_col_added.drop(columns=['start','end']) 
+
+        #     return df_col_added
 
     except Exception as err:
         print("clean eps error: ")
         print(err)
+    finally:
+        return df_col_added
+
+def cleanNAV(df):
+    try:
+        df_col_added = df.rename(columns={'val':'nav'})
+        growthCol = grManualCalc(df_col_added['nav'])
+        df_col_added['navGrowthRate'] = growthCol
+        df_col_added = df_col_added.drop('Units', axis=1)
+
+    except Exception as err:
+        print("clean nav error: ")
+        print(err)
+    finally:
+        return df_col_added
 
 def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
     try:
@@ -1393,14 +1444,25 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         if assets.empty:
             assets = cleanAssets(ncA, cuA)
         else:
+            # print('clean equity assets not empty else')
+            # print(assets)
             assets = cleanUnits(assets)
+
+        # print('clean equity assets not empty else post clean')
+        # print(assets)
         
 
         if liabilities.empty:
             liabilities = cleanLiabilities(ncL, cuL)
         else:
+            # print('clean equity lias not empty else pre clean')
+            # print(liabilities)
             liabilities = cleanUnits(liabilities)
+
+        reportedEquity = cleanUnits(reportedEquity)
         
+        # print('clean equity lias not empty else post clean')
+        # print(liabilities)
         # print('liabilities?!?')
         # print(liabilities)
         # print('assets?')
@@ -1408,8 +1470,9 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time. LUKE RETHINK THIS
         assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK','Units'], how='outer')
         
-        # print('post merge')
+        # print('post merge ass and lias')
         # print(assAndLies)
+
         assAndLies['assets'] = assAndLies['val_x']
         assetsMean = assAndLies['assets'].mean() #/ ((len(assAndLies['assets'])/2)+1)
         assAndLies['assets'] = assAndLies['assets'].fillna(assetsMean)
@@ -1417,7 +1480,13 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         liaMean = assAndLies['liabilities'].mean() #/ ((len(assAndLies['liabilities'])/2)+1)
         assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
         assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
+
+        # print('post fill and drop ass and lias')
+        # print(assAndLies)
+
         assAndLies = pd.merge(assAndLies, reportedEquity, on=['Units','year','Ticker','CIK'], how='outer')
+        # print('post merge ass and lias and total equity')
+        # print(assAndLies)
 
         assAndLies['ReportedTotalEquity'] = assAndLies['val']
         assAndLies = assAndLies.drop(['val'],axis=1)
@@ -1502,7 +1571,7 @@ def cleanInterestPaid(df):
         print(err)
 
 #ASML case study: shares are working. per share works, but throws off data as nulls are filled because total paid loads fine, but then we try to fill nulls both ways and make a bunch of nulls.
-def cleanDividends(total, perShare, shares, dilutedShares): 
+def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal): 
 
     try:
         # shares['year'] = shares.end.str[:4]
@@ -1514,27 +1583,61 @@ def cleanDividends(total, perShare, shares, dilutedShares):
         # print(dilutedShares)
         dilutedShares = dilutedShares.rename(columns={'val':'dilutedShares'})
         dilutedShares = dilutedShares.drop(columns=['Units'])
+
+        while shares['shares'].min() < 1000000:
+            shares['shares'] = (shares['shares'] * 1000).where(shares['shares'] < 1000000)
+        while dilutedShares['dilutedShares'].min() < 1000000:
+            dilutedShares['dilutedShares'] = (dilutedShares['dilutedShares'] * 1000).where(dilutedShares['dilutedShares'] < 1000000)
         # print('do we have any diluted share?')
         # print(dilutedShares)
         # total['year'] = total.end.str[:4]
         total = cleanUnits(total)
         #  = df_col_added.rename(columns={'val':'interestPaid'})
         total = total.rename(columns={'val':'totalDivsPaid'})
+        if total['Units'].isnull().all():
+            total = total.drop(columns=['Units'])
+        # print(total)
+        total['totalDivsPaid'] = (total['totalDivsPaid'] * (-1)).where(total['totalDivsPaid'] < 0, other=total['totalDivsPaid'])
+        # print(total)
         # perShare['year'] = perShare.end.str[:4]
         perShare = perShare.rename(columns={'val':'divsPaidPerShare'})
         perShare = perShare.drop(columns=['Units'])
-
+        perShare['divsPaidPerShare'] = (perShare['divsPaidPerShare'] * (-1)).where(perShare['divsPaidPerShare'] < 0, other=perShare['divsPaidPerShare'])
         # shares = shares.drop(columns=['start','end'])
         # total = total.drop(columns=['start','end'])
         # perShare = perShare.drop(columns=['start','end'])
+
+        
+        rocps = cleanUnits(rocps)
+        rocps = rocps.rename(columns={'val':'ROCperShare'})
+        if rocps['Units'].isnull().all():
+            rocps = rocps.drop(columns=['Units'])
+        roctotal = cleanUnits(roctotal)
+        roctotal = roctotal.rename(columns={'val':'ROCTotal'})
+        if roctotal['Units'].isnull().all():
+            roctotal = roctotal.drop(columns=['Units'])
+        
 
         # print('shares, total, pershare: ')
         # print(shares)
         # print(total)
         # print(perShare)
         df_col_added = pd.merge(total, perShare, on=['year','Ticker','CIK'], how='outer')
+        # print('1')
+        # print(df_col_added)
         df_col_added = pd.merge(shares, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        # print('2')
+        # print(df_col_added)
         df_col_added = pd.merge(dilutedShares, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        # print('3')
+        # print(df_col_added)
+        df_col_added = pd.merge(rocps, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        # print('4')
+        # print(df_col_added)
+        df_col_added = pd.merge(roctotal, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        # print('5')
+        # print(df_col_added)
+
         # print('tot and pshare pre temps')
         # print(df_col_added)
         
@@ -1546,7 +1649,7 @@ def cleanDividends(total, perShare, shares, dilutedShares):
                 nanList.append(x)
                 # print('nans found: ' + x)
         #How to handle those empty values in each column
-        df_col_added['tempPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
+        df_col_added['calcDivsPerShare'] = df_col_added['totalDivsPaid'] / df_col_added['shares']
         df_col_added['tempTotalDivs'] = df_col_added['divsPaidPerShare'] * df_col_added['shares']
         df_col_added['tempShares'] = df_col_added['totalDivsPaid'] / df_col_added['divsPaidPerShare']
         # print('tot and pshare post temps')
@@ -1554,14 +1657,14 @@ def cleanDividends(total, perShare, shares, dilutedShares):
 
         for x in nanList: #Values in ex-US currencies seem weird versus common stock analysis sites. Could be an exchange rate issue I haven't accounted for in the exchange to USD.
             if x == 'divsPaidPerShare':
-                df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['tempPerShare'])
+                df_col_added['divsPaidPerShare'] = df_col_added['divsPaidPerShare'].fillna(df_col_added['calcDivsPerShare']) #'tempPerShare',
                 # growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
                 # df_col_added['divGrowthRate'] = growthCol1 
             elif x == 'totalDivsPaid':
                 df_col_added['totalDivsPaid'] = df_col_added['totalDivsPaid'].fillna(df_col_added['tempTotalDivs'])
                 # growthCol1 = grManualCalc(df_col_added['divsPaidPerShare'])
                 # df_col_added['divGrowthRate'] = growthCol1 
-        df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempPerShare','tempShares'])
+        df_col_added = df_col_added.drop(columns=['tempTotalDivs','tempShares']) #'tempPerShare',
         # print('tot and pshare post fills and drops')
         # print(df_col_added)
         
@@ -1602,8 +1705,18 @@ def cleanDividends(total, perShare, shares, dilutedShares):
 
         growthCol1 = grManualCalc(df_col_added['totalDivsPaid'])
         df_col_added['divGrowthRateBOT'] = growthCol1 
+
         growthCol2 = grManualCalc(df_col_added['divsPaidPerShare'])
-        df_col_added['divGrowthRateBOPS'] = growthCol2
+        df_col_added['divGrowthRateBORPS'] = growthCol2
+
+        growthCol3 = grManualCalc(df_col_added['ROCperShare'])
+        df_col_added['ROCperShareGrowthRate'] = growthCol3
+
+        growthCol4 = grManualCalc(df_col_added['ROCTotal'])
+        df_col_added['ROCTotalGrowthRate'] = growthCol4
+
+        growthCol5 = grManualCalc(df_col_added['calcDivsPerShare'])
+        df_col_added['divGrowthRateBOCPS'] = growthCol5
         
         # if df_col_added['divsPaidPerShares'].empty:
         #     df_col_added['divGrowthRate'] = np.NaN
@@ -1625,9 +1738,13 @@ def cleanDividends(total, perShare, shares, dilutedShares):
 
 def fillEmptyIncomeGrowthRates(df):
     try:
-        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
         df_filled = df
         fixTracker = 0
+
+        if df_filled['netCashFlow'].isnull().any():
+            df_filled['netCashFlow'] = df_filled['netCashFlow'].fillna(df_filled['operatingCashFlow'] + df_filled['investingCashFlow'] + df_filled['financingCashFlow'])
+
+        tarList = ['revenue','netIncome','netIncomeNCI','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
         for x in tarList:
             tarGrowthRate = x + 'GrowthRate'
             # meanReplacement = df_filled[x].mean()
@@ -1647,14 +1764,7 @@ def fillEmptyIncomeGrowthRates(df):
             # else:
             #     fixTracker += 1
 
-        
-        # if df_filled['depreNAmor'].isnull().any():
-        #     percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
-        #     if percentNull > 0.4:
-        #         fixTracker += 1
-        #     # fixTracker += 1  
-        #     # print('it was shares')
-        #     df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
+        df_filled = df_filled.drop(columns=['depreNAmorGrowthRate'])
 
         if df_filled['Units'].isnull().all():
             # print('they all empty')
@@ -1663,16 +1773,31 @@ def fillEmptyIncomeGrowthRates(df):
             # print('filling empties')
             df_filled['Units'] = df_filled['Units'].ffill().bfill()
 
+        df_filled = cleanfcf(df_filled)
+        df_filled = cleanfcfMargin(df_filled)
+        
+        df_filled['gainSaleProp'] = df_filled['gainSaleProp'].replace(np.nan,0)
+        df_filled['ffo'] = df_filled['netIncome'] + df_filled['depreNAmor'] - df_filled['gainSaleProp']
+        growthCol1 = grManualCalc(df_filled['ffo'])
+        df_filled['ffoGrowthRate'] = growthCol1
+
+        #eps growth rate, and eps filled in
+        #calculated eps from net income and shares
+        #calculated reit eps from ffo and shares #Luke start here you got this!
+
+
         if fixTracker > 4:
             df_filled['INCintegrityFlag'] = 'NeedsWork'
         elif fixTracker == 0: 
             df_filled['INCintegrityFlag'] = 'Good'
         else:
             df_filled['INCintegrityFlag'] = 'Acceptable'
-        return df_filled
+        
     except Exception as err:
         print("fill empty inc GR error: ")
         print(err)
+    finally:
+        return df_filled
 
 def fillEmptyDivsGrowthRates(df):
     try:
@@ -1713,7 +1838,8 @@ def fillEmptyDivsGrowthRates(df):
             # print('it was shares')
             df_filled['shares'] = df_filled['shares'].ffill().bfill() 
 
-
+        df_filled['ROCperShare'] = df_filled['ROCperShare'].replace(np.NaN, 0)
+        df_filled['ROCTotal'] = df_filled['ROCTotal'].replace(np.NaN, 0)
 
         # print('pre shares and div GR')
         # print(df_filled)
@@ -1734,10 +1860,27 @@ def fillEmptyDivsGrowthRates(df):
             # print('div GR')
             # print(df_filled)
 
-        if df_filled['divGrowthRateBOPS'].isnull().any():
+        if df_filled['divGrowthRateBORPS'].isnull().any():
             growthCol = grManualCalc(df_filled['divsPaidPerShare'])
             df_filled['temp3'] = growthCol
-            df_filled['divGrowthRateBOPS'] = df_filled['divGrowthRateBOPS'].fillna(df_filled.pop('temp3'))#['temp2'])
+            df_filled['divGrowthRateBORPS'] = df_filled['divGrowthRateBORPS'].fillna(df_filled.pop('temp3'))#['temp2'])
+
+        if df_filled['divGrowthRateBOCPS'].isnull().any():
+            growthCol = grManualCalc(df_filled['calcDivsPerShare'])
+            df_filled['temp4'] = growthCol
+            df_filled['divGrowthRateBOCPS'] = df_filled['divGrowthRateBOCPS'].fillna(df_filled.pop('temp4'))#['temp2'])
+
+        if df_filled['ROCperShareGrowthRate'].isnull().any():
+            growthCol = grManualCalc(df_filled['ROCperShare'])
+            df_filled['temp5'] = growthCol
+            df_filled['ROCperShareGrowthRate'] = df_filled['ROCperShareGrowthRate'].fillna(df_filled.pop('temp5'))#['temp2'])
+        
+        if df_filled['ROCTotalGrowthRate'].isnull().any():
+            growthCol = grManualCalc(df_filled['ROCTotal'])
+            df_filled['temp6'] = growthCol
+            df_filled['ROCTotalGrowthRate'] = df_filled['ROCTotalGrowthRate'].fillna(df_filled.pop('temp6'))#['temp2'])
+
+
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
             # print(df_filled)
@@ -1784,85 +1927,10 @@ def fillEmptyROICGrowthRates(df):
     try:
         df_filled = df
         fixTracker = 0
-        tarList = ['operatingIncome','netIncome']
-        tDebt = 'TotalDebt'
-        equityParts = ['assets','liabilities']
-        equityFlag = 0
-
-        for x in tarList:
-            tarGrowthRate = x + 'GrowthRate'
-            # meanReplacement = df_filled[x].mean()
-            savedCol = df_filled[x]
-            df_filled[x] = df_filled[x].ffill().bfill()
-
-            growthCol = grManualCalc(df_filled[x])
-            df_filled[tarGrowthRate] = growthCol
-
-            if savedCol.equals(df_filled[x]):
-                continue
-            else:
-                fixTracker += 1
-        df_filled = df_filled.drop(columns=['netIncomeGrowthRate'])
-
-        if df_filled['TotalDebt'].isnull().any():
-            percentNull = df_filled['TotalDebt'].isnull().sum() / len(df_filled['TotalDebt'])
-            if percentNull > 0.4:
-                fixTracker += 1
-            # print('it was int paid')
-            df_filled['TotalDebt'] = df_filled['TotalDebt'].replace(np.NaN, 0)
-        if df_filled['assets'].isnull().any():
-            percentNull = df_filled['assets'].isnull().sum() / len(df_filled['assets'])
-            if df_filled['assets'].isnull().sum() > 1:
-                equityFlag = 1
-            if percentNull > 0.4:
-                fixTracker += 1
-            # print('it was int paid')
-            df_filled['assets'] = df_filled['assets'].ffill().bfill()
-        if df_filled['liabilities'].isnull().any():
-            percentNull = df_filled['liabilities'].isnull().sum() / len(df_filled['liabilities'])
-            if df_filled['liabilities'].isnull().sum() > 1:
-                equityFlag = 1
-            if percentNull > 0.4:
-                fixTracker += 1
-            # print('it was int paid')
-            df_filled['liabilities'] = df_filled['liabilities'].ffill().bfill()
-        # if equityFlag == 1:
-        df_filled['TotalEquity'] = df_filled['TotalEquity'].fillna(df_filled['assets'] - df_filled['liabilities'])
-
-        if df_filled['Units'].isnull().all():
-            # print('they all empty')
-            df_filled = df_filled.drop('Units',axis=1)
-        else:
-            # print('filling empties')
-            df_filled['Units'] = df_filled['Units'].ffill().bfill()
-
-        if fixTracker > 4:
-            df_filled['ROICintegrityFlag'] = 'NeedsWork'
-        elif fixTracker == 0: 
-            df_filled['ROICintegrityFlag'] = 'Good'
-        else:
-            df_filled['ROICintegrityFlag'] = 'Acceptable'
-
-        # print('ppost int flag added')
-        # print(df_filled)
-
-    except Exception as err:
-        print("fill empty ROIC GR error: ")
-        print(err)
-
-    finally:
-        # print('in finally df filled')
-        # print(df_filled)
-        return df_filled
-
-def fillEmptyROICGrowthRates2(df): #LUKE make an ulti-fill function for the combined tables! you got this!
-    try:
-        df_filled = df
-        fixTracker = 0
         tarList = ['operatingIncome']#,'netIncome']
         tDebt = 'TotalDebt'
         equityParts = ['assets','liabilities']
-        equityFlag = 0
+        # equityFlag = 0
 
         for x in tarList:
             tarGrowthRate = x + 'GrowthRate'
@@ -1887,16 +1955,16 @@ def fillEmptyROICGrowthRates2(df): #LUKE make an ulti-fill function for the comb
             df_filled['TotalDebt'] = df_filled['TotalDebt'].replace(np.NaN, 0)
         if df_filled['assets'].isnull().any():
             percentNull = df_filled['assets'].isnull().sum() / len(df_filled['assets'])
-            if df_filled['assets'].isnull().sum() > 1:
-                equityFlag = 1
+            # if df_filled['assets'].isnull().sum() > 1:
+            #     equityFlag = 1
             if percentNull > 0.4:
                 fixTracker += 1
             # print('it was int paid')
             df_filled['assets'] = df_filled['assets'].ffill().bfill()
         if df_filled['liabilities'].isnull().any():
             percentNull = df_filled['liabilities'].isnull().sum() / len(df_filled['liabilities'])
-            if df_filled['liabilities'].isnull().sum() > 1:
-                equityFlag = 1
+            # if df_filled['liabilities'].isnull().sum() > 1:
+            #     equityFlag = 1
             if percentNull > 0.4:
                 fixTracker += 1
             # print('it was int paid')
@@ -1910,6 +1978,20 @@ def fillEmptyROICGrowthRates2(df): #LUKE make an ulti-fill function for the comb
         else:
             # print('filling empties')
             df_filled['Units'] = df_filled['Units'].ffill().bfill()
+
+        df_filled['nopat'] = df_filled['operatingIncome'] * (1 - df_filled['taxRate'])
+        df_filled['investedCapital'] = df_filled['TotalEquity'] + df_filled['TotalDebt']
+        df_filled['roic'] = df_filled['nopat'] / df_filled['investedCapital'] * 100
+        df_filled['adjRoic'] = df_filled['netIncome'] / df_filled['investedCapital'] * 100
+        df_filled['reportedAdjRoic'] = df_filled['netIncome'] / (df_filled['ReportedTotalEquity'] + df_filled['TotalDebt']) * 100
+        df_filled['calculatedRoce'] = df_filled['netIncome'] / df_filled['TotalEquity'] * 100
+        df_filled['reportedRoce'] = df_filled['netIncome'] / df_filled['ReportedTotalEquity'] * 100
+        df_filled['calcBookValue'] = df_filled['TotalEquity'] / df_filled['shares']
+        growthCol1 = grManualCalc(df_filled['calcBookValue'])
+        df_filled['calcBookValueGrowthRate'] = growthCol1
+        df_filled['reportedBookValue'] = df_filled['ReportedTotalEquity'] / df_filled['shares']
+        growthCol2 = grManualCalc(df_filled['reportedBookValue'])
+        df_filled['reportedBookValueGrowthRate'] = growthCol2
 
         if fixTracker > 4:
             df_filled['ROICintegrityFlag'] = 'NeedsWork'
@@ -2007,6 +2089,9 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
         # print('netInc_df df: ')
         # print(netInc_df)
+        netIncNCI_df = cleanNetIncomeNCI(consolidateSingleAttribute(ticker, year, version, netIncomeNCI, False))
+        # print('netIncNCI_df df: ')
+        # print(netIncNCI_df)
         opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
         # print('opcf_df df: ')
         # print(opcf_df)
@@ -2044,7 +2129,8 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         # print(len(rev_df['Units'].unique()))
         # print(len(netInc_df['Units'].unique()))
         #
-        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer')
         # revNinc['units'] = revNinc['Units_x']
         # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
         # print('revNinc: ')
@@ -2094,7 +2180,7 @@ def makeIncomeTableEntry(ticker, year, version, index_flag):
         
         addfcfMargin = cleanfcfMargin(addfcf)
         #Clean sales of property
-        addfcfMargin['gainSaleProp']=addfcfMargin['gainSaleProp'].replace(np.nan,0)
+        addfcfMargin['gainSaleProp'] = addfcfMargin['gainSaleProp'].replace(np.nan,0)
         # print('addfcfMargin: ')
         # print(addfcfMargin)
 
@@ -2139,7 +2225,7 @@ def makeROICtableEntry(ticker, year, version, index_flag):
     
 
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
-        # print('opIncNtax')
+        # print('opIncNtax pre if statement')
         # print(opIncNtax)
         if opIncNtax['Units'].isnull().any():
             opIncNtax = opIncNtax.drop(columns=['Units'], axis=1)
@@ -2157,9 +2243,10 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         # print('opincntax df after if')
         # print(opIncNtaxNinc)
         # print(opIncNtax)
-
+        opIncNtaxNinc['Units'] = opIncNtaxNinc['Units'].ffill().bfill()
         
         plustDebt = pd.merge(opIncNtaxNinc, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
+        plustDebt['Units'] = plustDebt['Units'].ffill().bfill()
         # print('plusdebt df')
         # print(plustDebt)
         # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
@@ -2167,6 +2254,10 @@ def makeROICtableEntry(ticker, year, version, index_flag):
         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
+
+        # print('plustequity prefill gr')
+        # print(plustEquity)
+
         plustEquity = fillEmptyROICGrowthRates(plustEquity)
 
 
@@ -2203,7 +2294,10 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
-                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False))
+                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False),
+                                    consolidateSingleAttribute(ticker, year, version, returnOfCapitalPerShare, False),
+                                    consolidateSingleAttribute(ticker, year, version, totalReturnOfCapital, False))
+                                    
         # print('divsdf: ')
         # print(divs_df)
         if divs_df['year'][0] == -1:
@@ -2246,12 +2340,18 @@ def makeDividendTableEntry(ticker, year, version, index_flag):
 
 def makeConsolidatedTableEntry(ticker, year, version, index_flag):
     try:
+        ### INCOME TABLE START
         rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
         # print('rev df: ')
         # print(rev_df)
         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
         # print('netInc_df df: ')
         # print(netInc_df)
+        netIncNCI_df = cleanNetIncomeNCI(consolidateSingleAttribute(ticker, year, version, netIncomeNCI, False))
+        # print('netIncNCI_df df: ')
+        # print(netIncNCI_df)
+        eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
+
         opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
         # print('opcf_df df: ')
         # print(opcf_df)
@@ -2275,18 +2375,10 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
         # print('gainSaleProp_df: ')
         # print(gainSaleProp_df)
-        #Merge all these DF's!
-        # if rev_df['start'].isnull().any():
-        #     print('in the if')
-        #     rev_df = rev_df.drop(columns=['start'])
-        #     revNinc = pd.merge(rev_df, netInc_df, on=['year','end','Ticker','CIK','Units'], how='outer')
-        # else:
-        #     print('in the else')
-        #     # rev_df = rev_df.drop(columns=['start','end']) 
-        #     # netInc_df = netInc_df.drop(columns=['start','end']) 
-
-        ## this nested in else
-        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        
+        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer') 
+        revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
         # revNinc['units'] = revNinc['Units_x']
         # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
         # print('revNinc: ')
@@ -2327,16 +2419,19 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(plusSaleProp['investingCashFlowGrowthRate'])
 
         plusSaleProp = fillUnits(plusSaleProp)
+        ### INCOME TABLE END
 
-
+        ### DIVS TABLE START
         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
         # print('intpaid: ')
         # print(intPaid_df)
         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
-                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False))
-        # print('divsdf: ')
+                                    consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False),
+                                    consolidateSingleAttribute(ticker, year, version, returnOfCapitalPerShare, False),
+                                    consolidateSingleAttribute(ticker, year, version, totalReturnOfCapital, False))
+        # print('divsdf con: ')
         # print(divs_df)
         # if divs_df['year'][0] == -1:
         #     df_dunce = pd.DataFrame(columns=['Ticker'])
@@ -2363,11 +2458,14 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         #     print(intNdivs)
         # print('post ifelse merge intdivs')
         # print(intNdivs)
-        # print('pre fill intndivs: ')
+        # print('pre fill intndivs con: ')
         # print(intNdivs)
         intNdivs = fillUnits(intNdivs)
+        # print('post fill intndivs con: ')
+        # print(intNdivs)
+        ### DIVS TABLE END
         
-
+        ### ROIC TABLE START
         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
         # print('opinc df')
         # print(opIncome_df)
@@ -2389,8 +2487,10 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
                                     
         # print('TEquity df')
         # print(totalEquity_df)
+        nav_df = cleanNAV(consolidateSingleAttribute(ticker, year, version, netAssetValue, False))
 
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
+        opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
         # print('opIncNtax')
         # print(opIncNtax)
         
@@ -2412,125 +2512,63 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(opIncNtax)
         
         plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
+        plustDebt['Units'] = plustDebt['Units'].ffill().bfill()
         # print('plusdebt df')
         # print(plustDebt)
         # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
         # plustDebt = plustDebt.drop(['start_y'],axis=1)
         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
+        plustEquity = pd.merge(plustEquity , nav_df, on=['year','Ticker','CIK'], how='outer')
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
 
         plustEquity = fillUnits(plustEquity)
-
-        # print('pre GR fill equity')
-        # print(plustEquity)
-
-        
-
-        # print('post fill intndivs: ')
-        # print(intNdivs)
+        ### ROIC TABLE END
         
         ###INCOME TABLE IS plusSaleProp
         ###Dividends table is intNdivs
         ###ROIC TABLE is plustEquity
         divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('divs n roic con')
+        # print(divsPlusROIC)
         incDivsROIC = pd.merge(divsPlusROIC,plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('all con')
+        # print(incDivsROIC)
+
+        incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC) 
         
-
-        incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC)
-
-        
-
-        
-
+        #Finish the Income Table Entries
         incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
-        incDivsROIC = incDivsROIC.drop(columns=['depreNAmorGrowthRate'])
-        incDivsROIC = cleanfcf(incDivsROIC)
 
-        incDivsROIC = cleanfcfMargin(incDivsROIC)
-        # #Clean sales of property
-        incDivsROIC['gainSaleProp'] = incDivsROIC['gainSaleProp'].replace(np.nan,0)
-        incDivsROIC['ffo'] = incDivsROIC['netIncome'] + incDivsROIC['depreNAmor'] - incDivsROIC['gainSaleProp']
-        growthCol = grManualCalc(incDivsROIC['ffo'])
-        incDivsROIC['ffoGrowthRate'] = growthCol
+        #moved into above function. fingers crossed!
+        # incDivsROIC = incDivsROIC.drop(columns=['depreNAmorGrowthRate'])
+        # incDivsROIC = cleanfcf(incDivsROIC)
+        # incDivsROIC = cleanfcfMargin(incDivsROIC)
+        # # #Clean sales of property
+        # incDivsROIC['gainSaleProp'] = incDivsROIC['gainSaleProp'].replace(np.nan,0)
+        # incDivsROIC['ffo'] = incDivsROIC['netIncome'] + incDivsROIC['depreNAmor'] - incDivsROIC['gainSaleProp']
+        # growthCol = grManualCalc(incDivsROIC['ffo'])
+        # incDivsROIC['ffoGrowthRate'] = growthCol
 
+        #Finish the ROIC Table Entries
         incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC)
-        incDivsROIC['nopat'] = incDivsROIC['operatingIncome'] * (1 - incDivsROIC['taxRate'])
-        incDivsROIC['investedCapital'] = incDivsROIC['TotalEquity'] + incDivsROIC['TotalDebt']
-        incDivsROIC['roic'] = incDivsROIC['nopat'] / incDivsROIC['investedCapital'] * 100
-        incDivsROIC['adjRoic'] = incDivsROIC['netIncome'] / incDivsROIC['investedCapital'] * 100
-        incDivsROIC['reportedAdjRoic'] = incDivsROIC['netIncome'] / (incDivsROIC['ReportedTotalEquity'] + incDivsROIC['TotalDebt']) * 100
-        incDivsROIC['calculatedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['TotalEquity'] * 100
-        incDivsROIC['reportedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['ReportedTotalEquity'] * 100
 
+        #moved into above function. fingers crossed!
+        # incDivsROIC['nopat'] = incDivsROIC['operatingIncome'] * (1 - incDivsROIC['taxRate'])
+        # incDivsROIC['investedCapital'] = incDivsROIC['TotalEquity'] + incDivsROIC['TotalDebt']
+        # incDivsROIC['roic'] = incDivsROIC['nopat'] / incDivsROIC['investedCapital'] * 100
+        # incDivsROIC['adjRoic'] = incDivsROIC['netIncome'] / incDivsROIC['investedCapital'] * 100
+        # incDivsROIC['reportedAdjRoic'] = incDivsROIC['netIncome'] / (incDivsROIC['ReportedTotalEquity'] + incDivsROIC['TotalDebt']) * 100
+        # incDivsROIC['calculatedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['TotalEquity'] * 100
+        # incDivsROIC['reportedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['ReportedTotalEquity'] * 100
 
-        ### EQUITY/ROIC TABLE AT END
-        # incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC) #one or two?!?! LUKE
-        # print('post GR fill equity')
-        # print(plustEquity)
-
-        # plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
-        # plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
-        # plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
-        # plustEquity['adjRoic'] = addfcfMargin['netIncome'] / plustEquity['investedCapital'] * 100
-        # plustEquity['reportedAdjRoic'] = addfcfMargin['netIncome'] / (plustEquity['ReportedTotalEquity'] + plustEquity['TotalDebt']) * 100
-        # plustEquity['calculatedRoce'] = addfcfMargin['netIncome'] / plustEquity['TotalEquity'] * 100
-        # plustEquity['reportedRoce'] = addfcfMargin['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
-
-        ###
-
-        ### DIV CLEANING AT THE END
-        # print('pre GR fill divs')
-        # print(intNdivs)
-        # incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC)
-        # print('post GR fill divs')
-        # print(intNdivs)
-
-        ###
-        ### INCOME CLEANING AT THE END
-        #CLEAN column empty values here before adding FFO calculations 
-        # incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
-        # plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
-        
-        # addfcf = cleanfcf(plusSaleProp)
-        # # print('addfcf: ')
-        # # print(addfcf)
-        
-        # addfcfMargin = cleanfcfMargin(addfcf)
-        # #Clean sales of property
-        # addfcfMargin['gainSaleProp']=addfcfMargin['gainSaleProp'].replace(np.nan,0)
-        # # print('addfcfMargin: ')
-        # # print(addfcfMargin)
-
-        # addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
-        # growthCol = grManualCalc(addfcfMargin['ffo'])
-        # addfcfMargin['ffoGrowthRate'] = growthCol
-
-        ###
-
-        # print('income')
-        # print(plusSaleProp)
-        # print('altogether inc')
-        # print(incDivsROIC.iloc[:, 20:35])
-        # print('divs')
-        # print(intNdivs)
-        # print('altogether divs')
-        # print(incDivsROIC.iloc[:, :11])
-        # print('eq roic')
-        # print(plustEquity)
-        # # print('divs plus eq')
-        # # print(divsPlusROIC)
-        # print('altogether roic')
-        # print(incDivsROIC.iloc[:, 36:50])
-        # print(incDivsROIC.shape)
-        # for z in incDivsROIC:
-        #     print(z)
-        
-        return incDivsROIC
+        # return incDivsROIC
     
     except Exception as err:
         print("makeDividendAndROIC table error: ")
         print(err)
+    finally:
+        return incDivsROIC
 
 def checkYearsIntegritySector(sector,begNum,endNum):
     try:
@@ -3201,43 +3239,44 @@ def checkYearsIntegrityList(sectorList):
         
 
 
-lickit = ['CNI']
-# checkYearsIntegritySector(materials,0,50)
-
-# for x in lickit:
-#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
-# checkYearsIntegrityList(lickit)
 
 
- #luke start here
 
-#crc 2020 roic table, https://stockanalysis.com/stocks/crc/financials/
-#DIS years, netincome, shares check them all
-#tdw, no 2017 dividend or income data,  
-# argx roic 2016 2017 repeats, 
-#check acad's shares: it's all making sense, except some values are missing some zeroes. maybe implement a process of .where() so it fills values up to being over 1M
-#test your generic tests below
-#SHW weird 2008 repeat on mega table. check out where it's getting weird!
 
-#in the fill growth rate calcs, add functions to fill in net cash flow if you have blanks and the others cash flows to provide values. do for all fields
-#add eps and calculated eps to table too
-#add netassetvalue to big table
 
-ticker235 = 'ACAD' 
+ticker235 = 'ARCC'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
 version235 = '2'
-print(ticker235 + ' income:')
-print(makeIncomeTableEntry(ticker235,year235,version235,False))
-print(ticker235 + ' divs:')
-print(makeDividendTableEntry(ticker235,year235,version235,False))
-print(ticker235 + '  roic: ')
-print(makeROICtableEntry(ticker235,year235,version235,False)) #['ReportedTotalEquity']
+# print(ticker235 + ' income:')
+# t235INC = makeIncomeTableEntry(ticker235,year235,version235,False)
+# print(ticker235 + ' divs:')
+# t235DIVS = makeDividendTableEntry(ticker235,year235,version235,False)
+# print(ticker235 + '  roic: ')
+# t235ROIC = makeROICtableEntry(ticker235,yea
+# r235,version235,False) #['ReportedTotalEquity']
 # print(ticker235 + ' divs and roic table: ')
-# print(makeConsolidatedTableEntry(ticker235, year235, version235, False))
+t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
+# print(t235CON)
+# for x in t235CON:
+#     print(x)
+# print(t235CON)
+# divTests = ['shares', 'totalDivsPaid', 'divsPaidPerShare','divGrowthRateBORPS']
+# for x in divTests:
+#     if t235CON[x].equals(t235DIVS[x]):
+#         pass
+#     else:
+#         print(x + ' did not match.')
+        # print('con:')
+        # print(t235CON[x])
+        # print('divs:')
+        # print(t235DIVS[x])
+# for x in t235CON:
+#     print(x)
 
-# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False)) #netIncome
+# print(cleanNAV(consolidateSingleAttribute(ticker235, year235, version235, netAssetValue, False)))
+# print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
 # totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
@@ -3259,7 +3298,14 @@ print(makeROICtableEntry(ticker235,year235,version235,False)) #['ReportedTotalEq
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
 
-ticker12 = 'TCOM' #ABR
+lickit = ['CNI']
+# checkYearsIntegritySector(materials,0,50)
+
+# for x in lickit:
+#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
+# checkYearsIntegrityList(lickit)
+
+ticker12 = 'CLMT' #ABR
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
@@ -3514,7 +3560,7 @@ def uploadToDB(table, df):
 # loopCheck(ultimateList)
 
 ##drop all except fy records notes
-###luke this worked, trying to automate above
+### this worked, trying to automate above
         # held_data126 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-06-')==True)]
         # held_data127 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-07-')==True)]
         # held_data1211 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)]
@@ -3571,7 +3617,7 @@ def uploadToDB(table, df):
 #         print(total)
 #         print(perShare)
         
-#         if shares.empty:# and total.empty and perShare.empty: #LUKE maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
+#         if shares.empty:# and total.empty and perShare.empty: #maybe think about how to fill the shares dataframe. could be a useful tactic. maybe yahoo has a way?
 #             cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
 #                      'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
 #             # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
