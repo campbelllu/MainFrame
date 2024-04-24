@@ -1227,12 +1227,16 @@ def cleanNAV(df):
         growthCol = grManualCalc(df_col_added['nav'])
         df_col_added['navGrowthRate'] = growthCol
         df_col_added = df_col_added.drop('Units', axis=1)
+        # print(df_col_added)
 
     except Exception as err:
         print("clean nav error: ")
         print(err)
     finally:
-        return df_col_added
+        if df_col_added['Ticker'].isnull().any(): #Ticker will never be null if NAV exists. 
+            return pd.DataFrame()
+        else:
+            return df_col_added
 
 def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
     try:
@@ -2028,56 +2032,37 @@ def fillUnits(df):
         print("fill Units error: ")
         print(err)
 
-def fillAllEmptyGrowthRates(df):
+def fillPrice(df):
     try:
-        tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
+        # data1 = yf.download(ticker235, '2020-12-30','2020-12-31')
+        # print(df['Ticker'].loc[0])
+        ticker = df['Ticker'].loc[0]
         df_filled = df
-        fixTracker = 0
-        for x in tarList:
-            tarGrowthRate = x + 'GrowthRate'
-            # meanReplacement = df_filled[x].mean()
-            savedCol = df_filled[x]
-            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
-            df_filled[x] = df_filled[x].ffill().bfill()
-
-            growthCol = grManualCalc(df_filled[x])
-            df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
-
-            if savedCol.isnull().any():
-                percentNull = savedCol.isnull().sum() / len(savedCol)
-                if percentNull > 0.4:
-                    fixTracker += 1
-            # if savedCol.equals(df_filled[x]):
-            #     continue
+        yearList = df_filled['year'].tolist()
+        priceList = []
+        # print(yearList)
+        df_filled['price'] = 0 #maybe not needed
+        for x in yearList:
+            # print(type(x))
+            # print(x)
+            # if int(x) <= 2012:
+            #     pass
             # else:
-            #     fixTracker += 1
-
+            priceData = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close']
+            priceList.append(priceData[-1])
+            #LUKE YOU'RE UP HERE FIGURING OUT HOW TO ADD PRICE TO CONSOLIDATED TABLE MAN
+        # print(priceList)
+        # print(df_filled['price'])
+        # df_filled['price'] = yf.download(ticker, df['year'] + '-12-30', df['year'] + '-12-31')['Close'][0]
         
-        # if df_filled['depreNAmor'].isnull().any():
-        #     percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
-        #     if percentNull > 0.4:
-        #         fixTracker += 1
-        #     # fixTracker += 1  
-        #     # print('it was shares')
-        #     df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
-
-        # if df_filled['Units'].isnull().all():
-        #     # print('they all empty')
-        #     df_filled = df_filled.drop('Units',axis=1)
-        # else:
-        #     # print('filling empties')
-        #     df_filled['Units'] = df_filled['Units'].ffill().bfill()
-
-        if fixTracker > 4:
-            df_filled['INCintegrityFlag'] = 'NeedsWork'
-        elif fixTracker == 0: 
-            df_filled['INCintegrityFlag'] = 'Good'
-        else:
-            df_filled['INCintegrityFlag'] = 'Acceptable'
-        return df_filled
     except Exception as err:
-        print("fill empty inc GR error: ")
+        print("fill price error: ")
         print(err)
+    finally:
+        # return df_filled
+        # print(df_filled['price'])
+        # print(df_filled['year'])
+        print(priceList)
         
 #Making tables for DB insertion
 def makeIncomeTableEntry(ticker, year, version, index_flag): 
@@ -2488,6 +2473,10 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print('TEquity df')
         # print(totalEquity_df)
         nav_df = cleanNAV(consolidateSingleAttribute(ticker, year, version, netAssetValue, False))
+        # print('nav df')
+        # print(nav_df)
+        # print(nav_df.empty)
+        # print(nav_df.isnull().any())
 
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
@@ -2518,16 +2507,32 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
         # plustDebt = plustDebt.drop(['start_y'],axis=1)
         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
-        plustEquity = pd.merge(plustEquity , nav_df, on=['year','Ticker','CIK'], how='outer')
+        # print('plustequity pre first merge')
+        # print(plustEquity)
+        if nav_df.empty:
+            plustEquity['nav'] = np.NaN
+            plustEquity['navGrowthRate'] = np.NaN
+        else:
+            plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
+        
+
+        print('plustequity post merge')
+        print(plustEquity)
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
 
+        # print('plustequity pre fill')
+        # print(plustEquity)
         plustEquity = fillUnits(plustEquity)
         ### ROIC TABLE END
         
         ###INCOME TABLE IS plusSaleProp
         ###Dividends table is intNdivs
         ###ROIC TABLE is plustEquity
+        # print('intNdivs')
+        # print(intNdivs)
+        # print('plustequity after fill')
+        # print(plustEquity)
         divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
         # print('divs n roic con')
         # print(divsPlusROIC)
@@ -3244,7 +3249,7 @@ def checkYearsIntegrityList(sectorList):
 
 
 
-ticker235 = 'ARCC'  #agnc, wmb, 
+ticker235 = 'O'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
@@ -3257,8 +3262,11 @@ version235 = '2'
 # t235ROIC = makeROICtableEntry(ticker235,yea
 # r235,version235,False) #['ReportedTotalEquity']
 # print(ticker235 + ' divs and roic table: ')
-t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
+t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
+
+# t235CON = (makeConsolidatedTableEntry(ticker235, year235, version235, False))
 # print(t235CON)
+
 # for x in t235CON:
 #     print(x)
 # print(t235CON)
@@ -3274,6 +3282,9 @@ t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
         # print(t235DIVS[x])
 # for x in t235CON:
 #     print(x)
+
+# data1 = yf.download(ticker235, '2012-12-1','2012-12-31')['Close']
+# print(data1)
 
 # print(cleanNAV(consolidateSingleAttribute(ticker235, year235, version235, netAssetValue, False)))
 # print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
@@ -3558,6 +3569,58 @@ def uploadToDB(table, df):
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+
+#unused idea
+# def fillAllEmptyGrowthRates(df):
+#     try:
+#         tarList = ['revenue','netIncome','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
+#         df_filled = df
+#         fixTracker = 0
+#         for x in tarList:
+#             tarGrowthRate = x + 'GrowthRate'
+#             # meanReplacement = df_filled[x].mean()
+#             savedCol = df_filled[x]
+#             # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
+#             df_filled[x] = df_filled[x].ffill().bfill()
+
+#             growthCol = grManualCalc(df_filled[x])
+#             df_filled[tarGrowthRate] = growthCol#df_filled[x].pct_change(fill_method=None)*100
+
+#             if savedCol.isnull().any():
+#                 percentNull = savedCol.isnull().sum() / len(savedCol)
+#                 if percentNull > 0.4:
+#                     fixTracker += 1
+#             # if savedCol.equals(df_filled[x]):
+#             #     continue
+#             # else:
+#             #     fixTracker += 1
+
+        
+#         # if df_filled['depreNAmor'].isnull().any():
+#         #     percentNull = df_filled['depreNAmor'].isnull().sum() / len(df_filled['depreNAmor'])
+#         #     if percentNull > 0.4:
+#         #         fixTracker += 1
+#         #     # fixTracker += 1  
+#         #     # print('it was shares')
+#         #     df_filled['depreNAmor'] = df_filled['depreNAmor'].ffill().bfill() 
+
+#         # if df_filled['Units'].isnull().all():
+#         #     # print('they all empty')
+#         #     df_filled = df_filled.drop('Units',axis=1)
+#         # else:
+#         #     # print('filling empties')
+#         #     df_filled['Units'] = df_filled['Units'].ffill().bfill()
+
+#         if fixTracker > 4:
+#             df_filled['INCintegrityFlag'] = 'NeedsWork'
+#         elif fixTracker == 0: 
+#             df_filled['INCintegrityFlag'] = 'Good'
+#         else:
+#             df_filled['INCintegrityFlag'] = 'Acceptable'
+#         return df_filled
+#     except Exception as err:
+#         print("fill empty inc GR error: ")
+#         print(err)
 
 ##drop all except fy records notes
 ### this worked, trying to automate above
