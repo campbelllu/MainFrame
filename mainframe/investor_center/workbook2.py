@@ -3255,7 +3255,7 @@ def checkYearsIntegrityList(sectorList):
 
 
 
-ticker235 = 'MSFT'  #agnc, wmb, 
+ticker235 = 'O'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'

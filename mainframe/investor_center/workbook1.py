@@ -2051,6 +2051,10 @@ def fillPrice(df):
             priceData = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close']
             priceList.append(priceData[-1])
             #LUKE YOU'RE UP HERE FIGURING OUT HOW TO ADD PRICE TO CONSOLIDATED TABLE MAN
+
+        df_filled['price'] = priceList
+        growthCol = grManualCalc(df_filled['price'])
+        df_filled['priceGrowthRate'] = growthCol
         # print(priceList)
         # print(df_filled['price'])
         # df_filled['price'] = yf.download(ticker, df['year'] + '-12-30', df['year'] + '-12-31')['Close'][0]
@@ -2516,8 +2520,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
             plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
         
 
-        print('plustequity post merge')
-        print(plustEquity)
+        # print('plustequity post merge')
+        # print(plustEquity)
         # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
         # plustEquity = plustEquity.drop(['start_y'],axis=1)
 
@@ -2539,6 +2543,11 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         incDivsROIC = pd.merge(divsPlusROIC,plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
         # print('all con')
         # print(incDivsROIC)
+        print('pre price')
+        print(incDivsROIC)
+        incDivsROIC = fillPrice(incDivsROIC) 
+        print('incDivsROIC post fillprice')
+        print(incDivsROIC['price'])
 
         incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC) 
         
@@ -3262,10 +3271,11 @@ version235 = '2'
 # t235ROIC = makeROICtableEntry(ticker235,yea
 # r235,version235,False) #['ReportedTotalEquity']
 # print(ticker235 + ' divs and roic table: ')
-t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
+# t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
-# t235CON = (makeConsolidatedTableEntry(ticker235, year235, version235, False))
-# print(t235CON)
+t235CON = (makeConsolidatedTableEntry(ticker235, year235, version235, False))
+print(t235CON['price'])
+print(t235CON['year'])
 
 # for x in t235CON:
 #     print(x)
