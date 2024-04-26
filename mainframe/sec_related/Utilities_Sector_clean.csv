@@ -1,0 +1,132 @@
+Ticker,Company Name,CIK,Sector,Industry
+NEE,NEXTERA ENERGY INC,0000753308,Utilities,Utilities - Regulated Electric
+SO,SOUTHERN CO,0000092122,Utilities,Utilities - Regulated Electric
+DUK,Duke Energy CORP,0001326160,Utilities,Utilities - Regulated Electric
+NGG,NATIONAL GRID PLC,0001004315,Utilities,Utilities - Regulated Electric
+SRE,SEMPRA,0001032208,Utilities,Utilities - Diversified
+CEG,Constellation Energy Corp,0001868275,Utilities,Utilities - Renewable
+PCG,PG&E Corp,0001004980,Utilities,Utilities - Regulated Electric
+AEP,AMERICAN ELECTRIC POWER CO INC,0000004904,Utilities,Utilities - Regulated Electric
+D,"DOMINION ENERGY, INC",0000715957,Utilities,Utilities - Regulated Electric
+EXC,EXELON CORP,0001109357,Utilities,Utilities - Regulated Electric
+XEL,XCEL ENERGY INC,0000072903,Utilities,Utilities - Regulated Electric
+ED,CONSOLIDATED EDISON INC,0001047862,Utilities,Utilities - Regulated Electric
+PEG,PUBLIC SERVICE ENTERPRISE GROUP INC,0000788784,Utilities,Utilities - Regulated Electric
+OEZVY,OSTERREICHISCHE ELEKTRIZITATSWIRTSCHAFTS /FI,0001021020,Utilities,Utilities - Renewable
+EIX,EDISON INTERNATIONAL,0000827052,Utilities,Utilities - Regulated Electric
+WEC,"WEC ENERGY GROUP, INC.",0000783325,Utilities,Utilities - Regulated Electric
+AWK,"American Water Works Company, Inc.",0001410636,Utilities,Utilities - Regulated Water
+DTE,DTE ENERGY CO,0000936340,Utilities,Utilities - Regulated Electric
+ETR,ENTERGY CORP /DE/,0000065984,Utilities,Utilities - Regulated Electric
+FE,FIRSTENERGY CORP,0001031296,Utilities,Utilities - Regulated Electric
+EBR,BRAZILIAN ELECTRIC POWER CO,0001439124,Utilities,Utilities - Renewable
+FTS,Fortis Inc.,0001666175,Utilities,Utilities - Regulated Electric
+PPL,PPL Corp,0000922224,Utilities,Utilities - Regulated Electric
+ES,EVERSOURCE ENERGY,0000072741,Utilities,Utilities - Regulated Electric
+AEE,AMEREN CORP,0001002910,Utilities,Utilities - Regulated Electric
+CNP,CENTERPOINT ENERGY INC,0001130310,Utilities,Utilities - Regulated Electric
+ATO,ATMOS ENERGY CORP,0000731802,Utilities,Utilities - Regulated Gas
+CMS,CMS ENERGY CORP,0000811156,Utilities,Utilities - Regulated Electric
+BEP,Brookfield Renewable Partners L.P.,0001533232,Utilities,Utilities - Renewable
+VST,Vistra Corp.,0001692819,Utilities,Utilities - Independent Power Producers
+BIP,Brookfield Infrastructure Partners L.P.,0001406234,Utilities,Utilities - Diversified
+LNT,ALLIANT ENERGY CORP,0000352541,Utilities,Utilities - Regulated Electric
+NRG,"NRG ENERGY, INC.",0001013871,Utilities,Utilities - Independent Power Producers
+AGR,"Avangrid, Inc.",0001634997,Utilities,Utilities - Regulated Electric
+EVRG,"Evergy, Inc.",0001711269,Utilities,Utilities - Regulated Electric
+AES,AES CORP,0000874761,Utilities,Utilities - Diversified
+SBS,COMPANHIA DE SANEAMENTO BASICO DO ESTADO DE SAO PAULO-SABESP,0001170858,Utilities,Utilities - Regulated Water
+NI,NISOURCE INC.,0001111711,Utilities,Utilities - Regulated Gas
+KEP,KOREA ELECTRIC POWER CORP,0000887225,Utilities,Utilities - Regulated Electric
+WTRG,"Essential Utilities, Inc.",0000078128,Utilities,Utilities - Regulated Water
+EMRAF,EMERA INC,0001127248,Utilities,Utilities - Regulated Electric
+RDEIY,Red Electrica Corporacion SA/ADR,0001438654,Utilities,Utilities—Regulated Electric
+PNW,PINNACLE WEST CAPITAL CORP,0000764622,Utilities,Utilities—Regulated Electric
+CMS-PB,CONSUMERS ENERGY CO,0000201533,Utilities,Utilities—Regulated Electric
+NFE,New Fortress Energy Inc.,0001749723,Utilities,Utilities—Regulated Gas
+OGE,OGE ENERGY CORP.,0001021635,Utilities,Utilities—Regulated Electric
+UELMO,UNION ELECTRIC CO,0000100826,Utilities,Utilities—Regulated Electric
+ELP,ENERGY CO OF PARANA,0001041792,Utilities,Utilities—Diversified
+CIG,ENERGY CO OF MINAS GERAIS,0001157557,Utilities,Utilities—Diversified
+UGI,UGI CORP /PA/,0000884614,Utilities,Utilities—Regulated Gas
+BIPC,Brookfield Infrastructure Corp,0001788348,Utilities,Utilities—Regulated Gas
+BEPC,Brookfield Renewable Corp,0001791863,Utilities,Utilities—Renewable
+CWEN,"Clearway Energy, Inc.",0001567683,Utilities,Utilities—Renewable
+IDA,IDACORP INC,0001057877,Utilities,Utilities—Regulated Electric
+SWX,"Southwest Gas Holdings, Inc.",0001692115,Utilities,Utilities—Regulated Gas
+NJR,NEW JERSEY RESOURCES CORP,0000356309,Utilities,Utilities—Regulated Gas
+AQN,ALGONQUIN POWER & UTILITIES CORP.,0001174169,Utilities,Utilities—Renewable
+POR,PORTLAND GENERAL ELECTRIC CO /OR/,0000784977,Utilities,Utilities—Regulated Electric
+OTTR,Otter Tail Corp,0001466593,Utilities,Utilities—Diversified
+ENIC,Enel Chile S.A.,0001659939,Utilities,Utilities—Regulated Electric
+FLNC,"Fluence Energy, Inc.",0001868941,Utilities,Utilities—Renewable
+ORA,"ORMAT TECHNOLOGIES, INC.",0001296445,Utilities,Utilities—Renewable
+BKH,BLACK HILLS CORP /SD/,0001130464,Utilities,Utilities—Regulated Gas
+ALE,ALLETE INC,0000066756,Utilities,Utilities—Diversified
+OGS,"ONE Gas, Inc.",0001587732,Utilities,Utilities—Regulated Gas
+SR,SPIRE INC,0001126956,Utilities,Utilities—Regulated Gas
+PNM,PNM RESOURCES INC,0001108426,Utilities,Utilities—Regulated Electric
+NWE,"NorthWestern Energy Group, Inc.",0001993004,Utilities,Utilities—Diversified
+AWR,AMERICAN STATES WATER CO,0001056903,Utilities,Utilities—Regulated Water
+CWT,CALIFORNIA WATER SERVICE GROUP,0001035201,Utilities,Utilities—Regulated Water
+NEP,"NEXTERA ENERGY PARTNERS, LP",0001603145,Utilities,Utilities—Renewable
+AVA,AVISTA CORP,0000104918,Utilities,Utilities—Diversified
+RNW,ReNew Energy Global plc,0001848763,Utilities,Utilities—Renewable
+PAM,Pampa Energy Inc.,0001469395,Utilities,Utilities—Independent Power Producers
+MGEE,MGE ENERGY INC,0001161728,Utilities,Utilities—Regulated Electric
+CPK,CHESAPEAKE UTILITIES CORP,0000019745,Utilities,Utilities—Regulated Gas
+TAC,TRANSALTA CORP,0001144800,Utilities,Utilities—Independent Power Producers
+AY,Atlantica Sustainable Infrastructure plc,0001601072,Utilities,Utilities—Renewable
+ENLT,Enlight Renewable Energy Ltd.,0001922641,Utilities,Utilities—Renewable
+CEPU,CENTRAL PUERTO S.A.,0001717161,Utilities,Utilities—Regulated Electric
+SJW,SJW GROUP,0000766829,Utilities,Utilities—Regulated Water
+AILIH,Ameren Illinois Co,0000018654,Utilities,Utilities—Regulated Electric
+HE,HAWAIIAN ELECTRIC INDUSTRIES INC,0000354707,Utilities,Utilities—Regulated Electric
+NWN,Northwest Natural Holding Co,0001733998,Utilities,Utilities—Regulated Gas
+KEN,Kenon Holdings Ltd.,0001611005,Utilities,Utilities—Independent Power Producers
+SPH,SUBURBAN PROPANE PARTNERS LP,0001005210,Utilities,Utilities—Regulated Gas
+EDN,EDENOR,0001395213,Utilities,Utilities—Regulated Electric
+MSEX,MIDDLESEX WATER CO,0000066004,Utilities,Utilities—Regulated Water
+AMPS,"Altus Power, Inc.",0001828723,Utilities,Utilities—Renewable
+MNTK,"Montauk Renewables, Inc.",0001826600,Utilities,Utilities—Diversified
+OPAL,OPAL Fuels Inc.,0001842279,Utilities,Utilities—Regulated Gas
+UTL,UNITIL CORP,0000755001,Utilities,Utilities—Diversified
+GNE,Genie Energy Ltd.,0001528356,Utilities,Utilities—Regulated Electric
+YORW,YORK WATER CO,0000108985,Utilities,Utilities—Regulated Water
+ARIS,"Aris Water Solutions, Inc.",0001865187,Utilities,Utilities—Regulated Water
+CWCO,Consolidated Water Co. Ltd.,0000928340,Utilities,Utilities—Regulated Water
+ARTNA,ARTESIAN RESOURCES CORP,0000863110,Utilities,Utilities—Regulated Water
+GWRS,"Global Water Resources, Inc.",0001434728,Utilities,Utilities—Regulated Water
+PCYO,PURE CYCLE CORP,0000276720,Utilities,Utilities—Regulated Water
+NRGV,"Energy Vault Holdings, Inc.",0001828536,Utilities,Utilities—Renewable
+ELLO,Ellomay Capital Ltd.,0000946394,Utilities,Utilities—Renewable
+RGCO,RGC RESOURCES INC,0001069533,Utilities,Utilities—Regulated Gas
+CDZI,CADIZ INC,0000727273,Utilities,Utilities—Regulated Water
+VIA,"Via Renewables, Inc.",0001606268,Utilities,Utilities—Regulated Electric
+AZREF,Azure Power Global Ltd,0001633438,Utilities,Utilities—Renewable
+ALCE,"Alternus Clean Energy, Inc.",0001883984,Utilities,Utilities—Renewable
+CETI,"Cyber Enviro-Tech, Inc.",0001935092,Utilities,Utilities—Regulated Water
+VGAS,"Verde Clean Fuels, Inc.",0001841425,Utilities,Utilities—Renewable
+CLNV,Clean Vision Corp,0001391426,Utilities,Utilities—Renewable
+GEBRF,Greenbriar Sustainable Living Inc.,0001570843,Utilities,Utilities—Renewable
+WNDW,"SolarWindow Technologies, Inc.",0001071840,Utilities,Utilities—Renewable
+UGEIF,UGE International Ltd.,0001638298,Utilities,Utilities—Renewable
+HTOO,Fusion Fuel Green PLC,0001819794,Utilities,Utilities—Renewable
+ADN,"ADVENT TECHNOLOGIES HOLDINGS, INC.",0001744494,Utilities,Utilities—Renewable
+BNRG,Brenmiller Energy Ltd.,0001901215,Utilities,Utilities—Renewable
+CREG,Smart Powerr Corp.,0000721693,Utilities,Utilities—Renewable
+ASRE,"Astra Energy, Inc.",0001231339,Utilities,Utilities—Renewable
+HLGN,"Heliogen, Inc.",0001840292,Utilities,Utilities—Renewable
+WAVE,Eco Wave Power Global AB (publ),0001846715,Utilities,Utilities—Renewable
+ARAO,"AuraSource, Inc.",0001083922,Utilities,Utilities—Diversified
+ELIQ,"Electriq Power Holdings, Inc.",0001827871,Utilities,Utilities—Renewable
+CPWR,Ocean Thermal Energy Corp,0000827099,Utilities,Utilities—Renewable
+MMMW,MASS MEGAWATTS WIND POWER INC,0001117228,Utilities,Utilities—Renewable
+GSFI,Green Stream Holdings Inc.,0001437476,Utilities,Utilities—Renewable
+VENG,VISION ENERGY Corp,0001676580,Utilities,Utilities—Renewable
+PPWLM,PACIFICORP /OR/,0000075594,Utilities,Utilities—Regulated Electric
+HRNNF,Hydro One Ltd,0001712356,Utilities,Utilities—Regulated Electric
+HUNGF,HUANENG POWER INTERNATIONAL INC,0000929058,Utilities,Utilities—Independent Power Producers
+CNTHP,CONNECTICUT LIGHT & POWER CO,0000023426,Utilities,Utilities—Regulated Electric
+PWCO,"PwrCor, Inc.",0000733337,Utilities,Utilities—Renewable
+VXIT,"VirExit Technologies, Inc.",0001591615,Utilities,Utilities—Renewable

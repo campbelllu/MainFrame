@@ -1,0 +1,362 @@
+Ticker,Company Name,CIK,Sector,Industry
+GOOGL,Alphabet Inc.,0001652044,Communication Services,Internet Content & Information
+META,"Meta Platforms, Inc.",0001326801,Communication Services,Internet Content & Information
+NFLX,NETFLIX INC,0001065280,Communication Services,Entertainment
+DIS,Walt Disney Co,0001744489,Communication Services,Entertainment
+TMUS,"T-Mobile US, Inc.",0001283699,Communication Services,Telecom Services
+VZ,VERIZON COMMUNICATIONS INC,0000732712,Communication Services,Telecom Services
+CMCSA,COMCAST CORP,0001166691,Communication Services,Telecom Services
+T,AT&T INC.,0000732717,Communication Services,Telecom Services
+NTES,"NetEase, Inc.",0001110646,Communication Services,Electronic Gaming & Multimedia
+AMX,AMERICA MOVIL SAB DE CV/,0001129137,Communication Services,Telecom Services
+SPOT,Spotify Technology S.A.,0001639920,Communication Services,Internet Content & Information
+DASH,"DoorDash, Inc.",0001792789,Communication Services,Internet Content & Information
+CHTR,"CHARTER COMMUNICATIONS, INC. /MO/",0001091667,Communication Services,Telecom Services
+EA,ELECTRONIC ARTS INC.,0000712515,Communication Services,Electronic Gaming & Multimedia
+BIDU,"Baidu, Inc.",0001329099,Communication Services,Internet Content & Information
+BCE,BCE INC,0000718940,Communication Services,Telecom Services
+ORAN,ORANGE,0001038143,Communication Services,Telecom Services
+TLGPY,Telstra Group Ltd,0001947542,Communication Services,Telecom Services
+CHT,CHUNGHWA TELECOM CO LTD,0001132924,Communication Services,Telecom Services
+TTWO,TAKE TWO INTERACTIVE SOFTWARE INC,0000946581,Communication Services,Electronic Gaming & Multimedia
+PINS,"PINTEREST, INC.",0001506293,Communication Services,Internet Content & Information
+RBLX,Roblox Corp,0001315098,Communication Services,Electronic Gaming & Multimedia
+PUBGY,PUBLICIS GROUPE SA,0001050952,Communication Services,Advertising Agencies
+TLK,PERUSAHAAN PERSEROAN PERSERO PT TELEKOMUNIKASI INDONESIA TBK,0001001807,Communication Services,Telecom Services
+TU,TELUS CORP,0000868675,Communication Services,Telecom Services
+RCI,ROGERS COMMUNICATIONS INC,0000733099,Communication Services,Telecom Services
+WBD,"Warner Bros. Discovery, Inc.",0001437107,Communication Services,Entertainment
+VOD,VODAFONE GROUP PUBLIC LTD CO,0000839923,Communication Services,Telecom Services
+TEF,TELEFONICA S A,0000814052,Communication Services,Telecom Services
+LYV,"Live Nation Entertainment, Inc.",0001335258,Communication Services,Entertainment
+SIRI,SIRIUS XM HOLDINGS INC.,0000908937,Communication Services,Entertainment
+WMG,Warner Music Group Corp.,0001319161,Communication Services,Entertainment
+SNAP,Snap Inc,0001564408,Communication Services,Internet Content & Information
+VIV,TELEFONICA BRASIL S.A.,0001066119,Communication Services,Telecom Services
+OMC,OMNICOM GROUP INC.,0000029989,Communication Services,Advertising Agencies
+TME,Tencent Music Entertainment Group,0001744676,Communication Services,Internet Content & Information
+NWSA,NEWS CORP,0001564708,Communication Services,Entertainment
+KKPNY,KONINKLIJKE KPN N V,0001001474,Communication Services,Telecom Services
+ROKU,"ROKU, INC",0001428439,Communication Services,Entertainment
+ZG,"ZILLOW GROUP, INC.",0001617640,Communication Services,Internet Content & Information
+FOXA,Fox Corp,0001754301,Communication Services,Entertainment
+TWLO,TWILIO INC,0001447669,Communication Services,Internet Content & Information
+IPG,"INTERPUBLIC GROUP OF COMPANIES, INC.",0000051644,Communication Services,Advertising Agencies
+VIVHY,VIVENDI,0001127055,Communication Services,Entertainment
+WPP,WPP plc,0000806968,Communication Services,Advertising Agencies
+LSXMA,Liberty Media Corp,0001560385,Communication Services,Broadcasting
+MTCH,"Match Group, Inc.",0000891103,Communication Services,Internet Content & Information
+VDMCY,Vodacom Group Ltd / ADR,0001468608,Communication Services,Telecom Services
+TIMB,TIM S.A.,0001826168,Communication Services,Telecom Services
+PARA,Paramount Global,0000813828,Communication Services,Entertainment
+LBRDA,Liberty Broadband Corp,0001611983,Communication Services,Telecom Services
+CSXXY,carsales.com Limited/ADR,0001541309,Communication Services,Internet Content & Information
+PSO,PEARSON PLC,0000938323,Communication Services,Publishing
+SKM,SK TELECOM CO LTD,0001015650,Communication Services,Telecom Services
+LBTYA,Liberty Global Ltd.,0001570585,Communication Services,Telecom Services
+EDR,"Endeavor Group Holdings, Inc.",0001766363,Communication Services,Entertainment
+NYT,NEW YORK TIMES CO,0000071691,Communication Services,Publishing
+TKO,"TKO Group Holdings, Inc.",0001973266,Communication Services,Entertainment
+KT,KT CORP,0000892450,Communication Services,Telecom Services
+YNDX,Yandex N.V.,0001513845,Communication Services,Internet Content & Information
+FYBR,"Frontier Communications Parent, Inc.",0000020520,Communication Services,Telecom Services
+NXST,"NEXSTAR MEDIA GROUP, INC.",0001142417,Communication Services,Entertainment
+PHI,PLDT Inc.,0000078150,Communication Services,Telecom Services
+TKC,TURKCELL ILETISIM HIZMETLERI A S,0001071321,Communication Services,Telecom Services
+MSGS,Madison Square Garden Sports Corp.,0001636519,Communication Services,Entertainment
+IAC,IAC Inc.,0001800227,Communication Services,Internet Content & Information
+IRDM,Iridium Communications Inc.,0001418819,Communication Services,Telecom Services
+BILI,Bilibili Inc.,0001723690,Communication Services,Electronic Gaming & Multimedia
+CCOI,"COGENT COMMUNICATIONS HOLDINGS, INC.",0001158324,Communication Services,Telecom Services
+USM,UNITED STATES CELLULAR CORP,0000821130,Communication Services,Telecom Services
+MANU,Manchester United plc,0001549107,Communication Services,Entertainment
+IIJIY,INTERNET INITIATIVE JAPAN INC,0001090633,Communication Services,Telecom Services
+TEO,TELECOM ARGENTINA SA,0000932470,Communication Services,Telecom Services
+IQ,"iQIYI, Inc.",0001722608,Communication Services,Entertainment
+ATHM,Autohome Inc.,0001527636,Communication Services,Internet Content & Information
+GSAT,"Globalstar, Inc.",0001366868,Communication Services,Telecom Services
+YELP,YELP INC,0001345016,Communication Services,Internet Content & Information
+ZD,"ZIFF DAVIS, INC.",0001084048,Communication Services,Advertising Agencies
+TGNA,TEGNA INC,0000039899,Communication Services,Broadcasting
+TIGO,MILLICOM INTERNATIONAL CELLULAR SA,0000912958,Communication Services,Telecom Services
+HMNTY,Hemnet Group AB/ADR,0001915760,Communication Services,Internet Content & Information
+CABO,"Cable One, Inc.",0001632127,Communication Services,Telecom Services
+PLTK,Playtika Holding Corp.,0001828016,Communication Services,Electronic Gaming & Multimedia
+BATRA,"Atlanta Braves Holdings, Inc.",0001958140,Communication Services,Entertainment
+IAS,INTEGRAL AD SCIENCE HOLDING CORP.,0001842718,Communication Services,Advertising Agencies
+LGF-A,LIONS GATE ENTERTAINMENT CORP /CN/,0000929351,Communication Services,Entertainment
+PLAY,"Dave & Buster's Entertainment, Inc.",0001525769,Communication Services,Entertainment
+CMPR,CIMPRESS plc,0001262976,Communication Services,Advertising Agencies
+WB,WEIBO Corp,0001595761,Communication Services,Internet Content & Information
+TDS,TELEPHONE & DATA SYSTEMS INC /DE/,0001051512,Communication Services,Telecom Services
+YY,JOYY Inc.,0001530238,Communication Services,Internet Content & Information
+ROVR,"ROVER GROUP, INC.",0001826018,Communication Services,Internet Content & Information
+GETY,"Getty Images Holdings, Inc.",0001898496,Communication Services,Internet Content & Information
+WLY,"JOHN WILEY & SONS, INC.",0000107140,Communication Services,Publishing
+CNK,"Cinemark Holdings, Inc.",0001385280,Communication Services,Entertainment
+CRTO,Criteo S.A.,0001576427,Communication Services,Advertising Agencies
+STGW,Stagwell Inc,0000876883,Communication Services,Advertising Agencies
+TV,"GRUPO TELEVISA, S.A.B.",0000912892,Communication Services,Telecom Services
+SSTK,"Shutterstock, Inc.",0001549346,Communication Services,Internet Content & Information
+VEON,VEON Ltd.,0001468091,Communication Services,Telecom Services
+GENI,Genius Sports Ltd,0001834489,Communication Services,Internet Content & Information
+LUMN,"Lumen Technologies, Inc.",0000018926,Communication Services,Telecom Services
+SPHR,Sphere Entertainment Co.,0001795250,Communication Services,Entertainment
+TBLA,Taboola.com Ltd.,0001840502,Communication Services,Internet Content & Information
+LILA,Liberty Latin America Ltd.,0001712184,Communication Services,Telecom Services
+ADV,Advantage Solutions Inc.,0001776661,Communication Services,Advertising Agencies
+GOGO,Gogo Inc.,0001537054,Communication Services,Telecom Services
+MGNI,"MAGNITE, INC.",0001595974,Communication Services,Advertising Agencies
+ANGI,Angi Inc.,0001705110,Communication Services,Internet Content & Information
+PERI,Perion Network Ltd.,0001338940,Communication Services,Internet Content & Information
+SEAT,Vivid Seats Inc.,0001856031,Communication Services,Internet Content & Information
+NRDS,"NERDWALLET, INC.",0001625278,Communication Services,Internet Content & Information
+SCHL,SCHOLASTIC CORP,0000866729,Communication Services,Publishing
+MOMO,Hello Group Inc.,0001610601,Communication Services,Internet Content & Information
+FVRR,Fiverr International Ltd.,0001762301,Communication Services,Internet Content & Information
+AMC,"AMC ENTERTAINMENT HOLDINGS, INC.",0001411579,Communication Services,Entertainment
+IHS,IHS Holding Ltd,0001876183,Communication Services,Telecom Services
+OPRA,Opera Ltd,0001737450,Communication Services,Internet Content & Information
+SHEN,SHENANDOAH TELECOMMUNICATIONS CO/VA/,0000354963,Communication Services,Telecom Services
+TTGT,TechTarget Inc,0001293282,Communication Services,Internet Content & Information
+ATUS,"Altice USA, Inc.",0001702780,Communication Services,Telecom Services
+MAX,"MediaAlpha, Inc.",0001818383,Communication Services,Internet Content & Information
+DLX,DELUXE CORP,0000027996,Communication Services,Advertising Agencies
+SBGI,"Sinclair, Inc.",0001971213,Communication Services,Entertainment
+IDT,IDT CORP,0001005731,Communication Services,Telecom Services
+CCO,"Clear Channel Outdoor Holdings, Inc.",0001334978,Communication Services,Advertising Agencies
+QNST,"QUINSTREET, INC",0001117297,Communication Services,Advertising Agencies
+IMAX,IMAX CORP,0000921582,Communication Services,Entertainment
+AMCX,AMC Networks Inc.,0001514991,Communication Services,Entertainment
+THRY,"Thryv Holdings, Inc.",0001556739,Communication Services,Internet Content & Information
+GTN,GRAY TELEVISION INC,0000043196,Communication Services,Broadcasting
+HUYA,HUYA Inc.,0001728190,Communication Services,Entertainment
+KIND,"Nextdoor Holdings, Inc.",0001846069,Communication Services,Internet Content & Information
+GRPN,"Groupon, Inc.",0001490281,Communication Services,Internet Content & Information
+ATEX,Anterix Inc.,0001304492,Communication Services,Telecom Services
+FUBO,fuboTV Inc. /FL,0001484769,Communication Services,Broadcasting
+RBBN,Ribbon Communications Inc.,0001708055,Communication Services,Telecom Services
+PGRU,PROPERTYGURU GROUP LTD,0001873331,Communication Services,Internet Content & Information
+ATNI,"ATN International, Inc.",0000879585,Communication Services,Telecom Services
+CNSL,"Consolidated Communications Holdings, Inc.",0001304421,Communication Services,Telecom Services
+SSP,E.W. SCRIPPS Co,0000832428,Communication Services,Broadcasting
+EVER,"EverQuote, Inc.",0001640428,Communication Services,Internet Content & Information
+BOC,BOSTON OMAHA Corp,0001494582,Communication Services,Advertising Agencies
+GRVY,"GRAVITY Co., Ltd.",0001313310,Communication Services,Electronic Gaming & Multimedia
+GDEV,GDEV Inc.,0001848739,Communication Services,Electronic Gaming & Multimedia
+DDI,"DoubleDown Interactive Co., Ltd.",0001799567,Communication Services,Electronic Gaming & Multimedia
+MCS,MARCUS CORP,0000062234,Communication Services,Entertainment
+ZH,Zhihu Inc.,0001835724,Communication Services,Internet Content & Information
+EVC,ENTRAVISION COMMUNICATIONS CORP,0001109116,Communication Services,Advertising Agencies
+RSVR,"Reservoir Media, Inc.",0001824403,Communication Services,Entertainment
+EEX,"Emerald Holding, Inc.",0001579214,Communication Services,Advertising Agencies
+NEXN,Nexxen International Ltd.,0001849396,Communication Services,Advertising Agencies
+NCMI,"National CineMedia, Inc.",0001377630,Communication Services,Advertising Agencies
+TRUE,"TrueCar, Inc.",0001327318,Communication Services,Internet Content & Information
+GCI,"Gannett Co., Inc.",0001579684,Communication Services,Publishing
+SOHU,Sohu.com Ltd,0001734107,Communication Services,Electronic Gaming & Multimedia
+LDSN,Luduson G Inc.,0001737193,Communication Services,Entertainment
+IHRT,"iHeartMedia, Inc.",0001400891,Communication Services,Broadcasting
+MYPS,"PLAYSTUDIOS, Inc.",0001823878,Communication Services,Electronic Gaming & Multimedia
+WOW,"WideOpenWest, Inc.",0001701051,Communication Services,Telecom Services
+JFIN,Jiayin Group Inc.,0001743102,Communication Services,Internet Content & Information
+OOMA,OOMA INC,0001327688,Communication Services,Telecom Services
+CCG,Cheche Group Inc.,0001965473,Communication Services,Internet Content & Information
+CDLX,"Cardlytics, Inc.",0001666071,Communication Services,Advertising Agencies
+SIFY,SIFY TECHNOLOGIES LTD,0001094324,Communication Services,Telecom Services
+ADTH,"AdTheorent Holding Company, Inc.",0001838672,Communication Services,Advertising Agencies
+DOYU,DouYu International Holdings Ltd,0001762417,Communication Services,Internet Content & Information
+OB,Outbrain Inc.,0001454938,Communication Services,Internet Content & Information
+CTV,Innovid Corp.,0001835378,Communication Services,Advertising Agencies
+DRCT,"Direct Digital Holdings, Inc.",0001880613,Communication Services,Advertising Agencies
+TSQ,"Townsquare Media, Inc.",0001499832,Communication Services,Advertising Agencies
+KNIT,KINETIC GROUP INC.,0001696195,Communication Services,Telecom Services
+TRVG,trivago N.V.,0001683825,Communication Services,Internet Content & Information
+UONE,"URBAN ONE, INC.",0001041657,Communication Services,Broadcasting
+CXDO,"Crexendo, Inc.",0001075736,Communication Services,Telecom Services
+RDCM,RADCOM LTD,0001016838,Communication Services,Telecom Services
+SGA,SAGA COMMUNICATIONS INC,0000886136,Communication Services,Broadcasting
+LVO,"LiveOne, Inc.",0001491419,Communication Services,Entertainment
+SKLZ,Skillz Inc.,0001801661,Communication Services,Electronic Gaming & Multimedia
+MVNC,Marvion Inc.,0001439264,Communication Services,Entertainment
+GOAI,Eva Live Inc,0001983736,Communication Services,Entertainment
+BRAG,Bragg Gaming Group Inc.,0001867834,Communication Services,Electronic Gaming & Multimedia
+GMGI,"Golden Matrix Group, Inc.",0001437925,Communication Services,Electronic Gaming & Multimedia
+TZOO,TRAVELZOO,0001133311,Communication Services,Advertising Agencies
+FNGR,"FingerMotion, Inc.",0001602409,Communication Services,Telecom Services
+HAO,Haoxi Health Technology Ltd,0001954594,Communication Services,Advertising Agencies
+XNET,Xunlei Ltd,0001510593,Communication Services,Advertising Agencies
+WIMI,WiMi Hologram Cloud Inc.,0001770088,Communication Services,Advertising Agencies
+SCOR,"COMSCORE, INC.",0001158172,Communication Services,Internet Content & Information
+BBUZ,"Engage Mobility, Inc.",0001547521,Communication Services,Internet Content & Information
+LTRPA,"Liberty TripAdvisor Holdings, Inc.",0001606745,Communication Services,Internet Content & Information
+EZOO,Ezagoo Ltd,0001752372,Communication Services,Advertising Agencies
+AENT,ALLIANCE ENTERTAINMENT HOLDING CORP,0001823584,Communication Services,Entertainment
+GAIA,"GAIA, INC",0001089872,Communication Services,Entertainment
+BODY,"Beachbody Company, Inc.",0001826889,Communication Services,Internet Content & Information
+KORE,"KORE Group Holdings, Inc.",0001855457,Communication Services,Telecom Services
+CMLS,CUMULUS MEDIA INC,0001058623,Communication Services,Broadcasting
+SCGY,"SCIENTIFIC ENERGY, INC",0001276531,Communication Services,Internet Content & Information
+RDI,READING INTERNATIONAL INC,0000716634,Communication Services,Entertainment
+NUVR,"Nuvera Communications, Inc.",0000071557,Communication Services,Telecom Services
+LEE,"LEE ENTERPRISES, Inc",0000058361,Communication Services,Publishing
+CMCM,Cheetah Mobile Inc.,0001597835,Communication Services,Internet Content & Information
+MCHX,MARCHEX INC,0001224133,Communication Services,Advertising Agencies
+BHAT,Blue Hat Interactive Entertainment Technology,0001759136,Communication Services,Electronic Gaming & Multimedia
+KUKE,Kuke Music Holding Ltd,0001809158,Communication Services,Entertainment
+STCN,"Steel Connect, Inc.",0000914712,Communication Services,Advertising Agencies
+INUV,"Inuvo, Inc.",0000829323,Communication Services,Advertising Agencies
+ZDGE,"Zedge, Inc.",0001667313,Communication Services,Internet Content & Information
+UCL,uCloudlink Group Inc.,0001775898,Communication Services,Telecom Services
+VPLM,Voip-pal.com Inc,0001410738,Communication Services,Telecom Services
+ABLV,Able View Global Inc.,0001957489,Communication Services,Advertising Agencies
+AGAE,Allied Gaming & Entertainment Inc.,0001708341,Communication Services,Entertainment
+IQST,iQSTEL Inc,0001527702,Communication Services,Telecom Services
+LPTV,"Loop Media, Inc.",0001643988,Communication Services,Broadcasting
+TOON,"Kartoon Studios, Inc.",0001355848,Communication Services,Entertainment
+PODC,"PodcastOne, Inc.",0001940177,Communication Services,Internet Content & Information
+FLNT,"Fluent, Inc.",0001460329,Communication Services,Advertising Agencies
+RSTN,"RDE, Inc.",0001760233,Communication Services,Internet Content & Information
+ICLK,iClick Interactive Asia Group Ltd,0001697818,Communication Services,Advertising Agencies
+TRFE,Trustfeed Corp.,0001265521,Communication Services,Internet Content & Information
+KTEL,"KonaTel, Inc.",0000845819,Communication Services,Telecom Services
+MNY,MoneyHero Ltd,0001974044,Communication Services,Internet Content & Information
+SNAL,"Snail, Inc.",0001886894,Communication Services,Electronic Gaming & Multimedia
+SJ,Scienjoy Holding Corp,0001753673,Communication Services,Broadcasting
+IZEA,"IZEA Worldwide, Inc.",0001495231,Communication Services,Internet Content & Information
+AAQL,Antiaging Quantum Living Inc.,0001672571,Communication Services,Advertising Agencies
+MMV,MultiMetaVerse Holdings Ltd,0001874074,Communication Services,Entertainment
+AREN,"Arena Group Holdings, Inc.",0000894871,Communication Services,Internet Content & Information
+NCTY,The9 LTD,0001296774,Communication Services,Electronic Gaming & Multimedia
+BZFD,"BuzzFeed, Inc.",0001828972,Communication Services,Internet Content & Information
+SWAG,"Stran & Company, Inc.",0001872525,Communication Services,Advertising Agencies
+ANGH,Anghami Inc,0001871983,Communication Services,Entertainment
+DLPN,"Dolphin Entertainment, Inc.",0001282224,Communication Services,Advertising Agencies
+QYOUF,QYOU Media Inc.,0001650287,Communication Services,Entertainment
+CURI,CuriosityStream Inc.,0001776909,Communication Services,Broadcasting
+BBGI,BEASLEY BROADCAST GROUP INC,0001099160,Communication Services,Broadcasting
+HRYU,"Hanryu Holdings, Inc.",0001911545,Communication Services,Internet Content & Information
+UPXI,"UPEXI, INC.",0001775194,Communication Services,Internet Content & Information
+CRGE,"Charge Enterprises, Inc.",0001277250,Communication Services,Telecom Services
+CHR,"Cheer Holding, Inc.",0001738758,Communication Services,Advertising Agencies
+STBX,Starbox Group Holdings Ltd.,0001914818,Communication Services,Internet Content & Information
+DALN,DallasNews Corp,0001413898,Communication Services,Publishing
+HOFV,Hall of Fame Resort & Entertainment Co,0001708176,Communication Services,Entertainment
+EGLXF,Enthusiast Gaming Holdings Inc. / Canada,0001854233,Communication Services,Internet Content & Information
+ELRE,Yinfu Gold Corp.,0001438461,Communication Services,Internet Content & Information
+GAME,"GameSquare Holdings, Inc.",0001714562,Communication Services,Electronic Gaming & Multimedia
+KRKR,36Kr Holdings Inc.,0001779476,Communication Services,Internet Content & Information
+CNVS,Cineverse Corp.,0001173204,Communication Services,Entertainment
+BMTM,"Bright Mountain Media, Inc.",0001568385,Communication Services,Internet Content & Information
+TRUG,"TruGolf Holdings, Inc.",0001857086,Communication Services,Electronic Gaming & Multimedia
+FENG,Phoenix New Media Ltd,0001509646,Communication Services,Internet Content & Information
+HMMR,HAMMER FIBER OPTICS HOLDINGS CORP,0001539680,Communication Services,Telecom Services
+GIGM,GIGAMEDIA Ltd,0001105101,Communication Services,Electronic Gaming & Multimedia
+EDUC,EDUCATIONAL DEVELOPMENT CORP,0000031667,Communication Services,Publishing
+FHLD,"Freedom Holdings, Inc.",0001386044,Communication Services,Broadcasting
+GDC,GD Culture Group Ltd,0001641398,Communication Services,Electronic Gaming & Multimedia
+MDIA,Mediaco Holding Inc.,0001784254,Communication Services,Broadcasting
+FAZE,FaZe Holdings Inc.,0001839360,Communication Services,Internet Content & Information
+BREA,Brera Holdings PLC,0001939965,Communication Services,Entertainment
+LEBGF,Legible Inc.,0001935688,Communication Services,Publishing
+XESP,"Electronic Servitor Publication Network, Inc.",0001709542,Communication Services,Internet Content & Information
+FDIT,"FINDIT, INC.",0001593184,Communication Services,Internet Content & Information
+MIMO,Airspan Networks Holdings Inc.,0001823882,Communication Services,Telecom Services
+DMSL,"Digital Media Solutions, Inc.",0001725134,Communication Services,Advertising Agencies
+SALM,"SALEM MEDIA GROUP, INC. /DE/",0001050606,Communication Services,Broadcasting
+CNFN,CFN Enterprises Inc.,0001352952,Communication Services,Advertising Agencies
+KDOZF,KIDOZ INC.,0001318482,Communication Services,Advertising Agencies
+SPTY,"SPECIFICITY, INC.",0001840102,Communication Services,Advertising Agencies
+SLE,"Super League Enterprise, Inc.",0001621672,Communication Services,Internet Content & Information
+DROR,"Dror Ortho-Design, Inc.",0001282980,Communication Services,Electronic Gaming & Multimedia
+LCFY,Locafy Ltd,0001875547,Communication Services,Internet Content & Information
+HHSE,"Hannover House, Inc.",0001069680,Communication Services,Entertainment
+VSME,VS MEDIA Holdings Ltd,0001951294,Communication Services,Advertising Agencies
+ASST,Asset Entities Inc.,0001920406,Communication Services,Internet Content & Information
+LDWY,"LENDWAY, INC.",0000875355,Communication Services,Advertising Agencies
+BAOS,Baosheng Media Group Holdings Ltd,0001811216,Communication Services,Advertising Agencies
+MSGM,Motorsport Games Inc.,0001821175,Communication Services,Electronic Gaming & Multimedia
+ADD,"Color Star Technology Co., Ltd.",0001747661,Communication Services,Entertainment
+CNET,ZW Data Action Technologies Inc.,0001376321,Communication Services,Advertising Agencies
+CSSE,"Chicken Soup for the Soul Entertainment, Inc.",0001679063,Communication Services,Entertainment
+TLLYF,Trilogy International Partners Inc.,0001689382,Communication Services,Telecom Services
+DGLY,"DIGITAL ALLY, INC.",0001342958,Communication Services,Internet Content & Information
+MGAM,"Mobile Global Esports, Inc.",0001886362,Communication Services,Electronic Gaming & Multimedia
+MGOL,MGO Global Inc.,0001902794,Communication Services,Advertising Agencies
+DTGI,"Digerati Technologies, Inc.",0001014052,Communication Services,Telecom Services
+ABQQ,AB INTERNATIONAL GROUP CORP.,0001605331,Communication Services,Entertainment
+CPOP,"Pop Culture Group Co., Ltd",0001807389,Communication Services,Entertainment
+FULO,FULLNET COMMUNICATIONS INC,0001092570,Communication Services,Telecom Services
+CNNN,ConneXionONE Corp.,0001182731,Communication Services,Internet Content & Information
+SNPW,Sun Pacific Holding Corp.,0001343465,Communication Services,Advertising Agencies
+VYBE,Limitless X Holdings Inc.,0001803977,Communication Services,Advertising Agencies
+MMND,"MASTERMIND, INC.",0001088638,Communication Services,Advertising Agencies
+TC,TuanChe Ltd,0001743340,Communication Services,Internet Content & Information
+LBUY,"LEAFBUYER TECHNOLOGIES, INC.",0001643721,Communication Services,Internet Content & Information
+ANTE,AIRNET TECHNOLOGY INC.,0001413745,Communication Services,Advertising Agencies
+VRVR,VIRTUAL INTERACTIVE TECHNOLOGIES CORP.,0001536089,Communication Services,Electronic Gaming & Multimedia
+ONFO,"Onfolio Holdings, Inc",0001825452,Communication Services,Internet Content & Information
+VNUE,"VNUE, Inc.",0001376804,Communication Services,Entertainment
+TRKAQ,"Troika Media Group, Inc.",0001021096,Communication Services,Advertising Agencies
+DBMM,"Digital Brand Media & Marketing Group, Inc.",0001127475,Communication Services,Advertising Agencies
+FMHS,"FARMHOUSE, INC. /NV",0001811999,Communication Services,Internet Content & Information
+NUGL,"NUGL, INC.",0001096768,Communication Services,Internet Content & Information
+GTRL,"Get Real USA, Inc.",0001762546,Communication Services,Advertising Agencies
+CMGR,"Clubhouse Media Group, Inc.",0001389518,Communication Services,Advertising Agencies
+MOBQ,"Mobiquity Technologies, Inc.",0001084267,Communication Services,Advertising Agencies
+SONG,Music Licensing Inc.,0001671132,Communication Services,Entertainment
+GROM,"Grom Social Enterprises, Inc.",0001662574,Communication Services,Internet Content & Information
+COMS,COMSovereign Holding Corp.,0001178727,Communication Services,Telecom Services
+CMGO,"CMG HOLDINGS GROUP, INC.",0001346655,Communication Services,Advertising Agencies
+QTTOY,Qutoutiao Inc.,0001733298,Communication Services,Internet Content & Information
+NWCN,NETWORK CN INC,0000934796,Communication Services,Advertising Agencies
+FRZT,"Freeze Tag, Inc.",0001485074,Communication Services,Electronic Gaming & Multimedia
+SLDC,"Telco Cuba, Inc.",0001427644,Communication Services,Telecom Services
+CBIA,"Blue Heaven Coffee, Inc.",0001404356,Communication Services,Advertising Agencies
+BOTY,"LINGERIE FIGHTING CHAMPIONSHIPS, INC.",0001407704,Communication Services,Entertainment
+GFMH,Goliath Film & Media Holdings,0000820771,Communication Services,Entertainment
+TAMG,"Transnational Group, Inc.",0001158702,Communication Services,Entertainment
+MRNJ,"METATRON APPS, INC.",0001607004,Communication Services,Internet Content & Information
+ROI,"RiskOn International, Inc.",0001437491,Communication Services,Internet Content & Information
+UVSS,UNIVERSAL SYSTEMS INC,0001286768,Communication Services,Entertainment
+SNMN,SNM Global Holdings,0001706907,Communication Services,Entertainment
+SRAX,"SRAX, Inc.",0001538217,Communication Services,Advertising Agencies
+HMLA,"HIMALAYA TECHNOLOGIES, INC",0001409624,Communication Services,Internet Content & Information
+AUDAQ,"AUDACY, INC.",0001067837,Communication Services,Broadcasting
+TMGI,"Marquie Group, Inc.",0001434601,Communication Services,Broadcasting
+CCCP,Crona Corp.,0001696411,Communication Services,Entertainment
+MDEX,Madison Technologies Inc.,0001318268,Communication Services,Broadcasting
+EMDF,"E Med Future, Inc.",0000894552,Communication Services,Entertainment
+WTKN,CLStv Corp.,0001456453,Communication Services,Broadcasting
+SNWR,Sanwire Corp,0001096759,Communication Services,Entertainment
+WINR,SIMPLICITY ESPORTS & GAMING Co,0001708410,Communication Services,Electronic Gaming & Multimedia
+VOCL,"Creatd, Inc.",0001357671,Communication Services,Internet Content & Information
+MLFB,MAJOR LEAGUE FOOTBALL INC,0001308569,Communication Services,Entertainment
+GTOR,"GGTOOR, INC.",0001499855,Communication Services,Entertainment
+CLIS,ClickStream Corp,0001393548,Communication Services,Electronic Gaming & Multimedia
+XFCI,"XTREME FIGHTING CHAMPIONSHIPS, INC.",0001379043,Communication Services,Entertainment
+FRFR,Fritzy Tech Inc.,0001622408,Communication Services,Internet Content & Information
+YVRLF,Liquid Media Group Ltd.,0000884247,Communication Services,Electronic Gaming & Multimedia
+AFOM,ALL FOR ONE MEDIA CORP.,0001286459,Communication Services,Entertainment
+NTTYY,NIPPON TELEGRAPH & TELEPHONE CORP,0000769594,Communication Services,Telecom Services
+QBCRF,QUEBECOR MEDIA INC,0001156831,Communication Services,Telecom Services
+CELJF,Cellcom Israel Ltd.,0001385145,Communication Services,Telecom Services
+OIBRQ,OI S.A. - In Judicial Reorganization,0001160846,Communication Services,Telecom Services
+TZUP,THUMZUP MEDIA Corp,0001853825,Communication Services,Advertising Agencies
+ILLMF,illumin Holdings Inc.,0001861233,Communication Services,Advertising Agencies
+IDWM,"IDW MEDIA HOLDINGS, INC.",0001463833,Communication Services,Publishing
+CAPV,CABO VERDE CAPITAL INC.,0001127007,Communication Services,Entertainment
+EMWPF,Eros Media World PLC,0001532981,Communication Services,Entertainment
+LTES,Leet Technology Inc.,0001586495,Communication Services,Entertainment
+BYOC,"Beyond Commerce, Inc.",0001386049,Communication Services,Advertising Agencies
+MIKP,"Mike the Pike Productions, Inc.",0001550222,Communication Services,Entertainment
+MOCI,"Energy Holdings, Inc.",0001325950,Communication Services,Entertainment
+PSRU,"Valiant Eagle, Inc.",0001415306,Communication Services,Broadcasting
+GZIC,GZ6G Technologies Corp.,0001286648,Communication Services,Telecom Services
+TOWTF,TOWER ONE WIRELESS CORP.,0001579026,Communication Services,Telecom Services
+BTIM,BOATIM INC.,0001622231,Communication Services,Internet Content & Information
+BRQL,"brooqLy, Inc.",0001854526,Communication Services,Internet Content & Information
+MACT,"MachTen, Inc.",0001957783,Communication Services,Telecom Services
+PTNRF,PARTNER COMMUNICATIONS CO LTD,0001096691,Communication Services,Telecom Services
+MEDE,Medies,0001918694,Communication Services,Entertainment
+LOVLQ,Spark Networks SE,0001705338,Communication Services,Internet Content & Information

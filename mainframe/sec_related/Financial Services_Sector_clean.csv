@@ -1,0 +1,1646 @@
+Ticker,Company Name,CIK,Sector,Industry
+BRK-B,BERKSHIRE HATHAWAY INC,0001067983,Financial Services,Insurance - Diversified
+V,VISA INC.,0001403161,Financial Services,Credit Services
+JPM,JPMORGAN CHASE & CO,0000019617,Financial Services,Banks - Diversified
+MA,Mastercard Inc,0001141391,Financial Services,Credit Services
+BAC,BANK OF AMERICA CORP /DE/,0000070858,Financial Services,Banks - Diversified
+WFC,WELLS FARGO & COMPANY/MN,0000072971,Financial Services,Banks - Diversified
+BX,Blackstone Inc.,0001393818,Financial Services,Asset Management
+AXP,AMERICAN EXPRESS CO,0000004962,Financial Services,Credit Services
+HSBC,HSBC HOLDINGS PLC,0001089113,Financial Services,Banks - Diversified
+MS,MORGAN STANLEY,0000895421,Financial Services,Capital Markets
+SPGI,S&P Global Inc.,0000064040,Financial Services,Financial Data & Stock Exchanges
+HDB,HDFC BANK LTD,0001144967,Financial Services,Banks - Regional
+RY,ROYAL BANK OF CANADA,0001000275,Financial Services,Banks - Diversified
+GS,GOLDMAN SACHS GROUP INC,0000886982,Financial Services,Capital Markets
+BLK,BlackRock Inc.,0001364742,Financial Services,Asset Management
+SCHW,SCHWAB CHARLES CORP,0000316709,Financial Services,Capital Markets
+MUFG,MITSUBISHI UFJ FINANCIAL GROUP INC,0000067088,Financial Services,Banks - Diversified
+PGR,PROGRESSIVE CORP/OH/,0000080661,Financial Services,Insurance - Property & Casualty
+TD,TORONTO DOMINION BANK,0000947263,Financial Services,Banks - Diversified
+C,CITIGROUP INC,0000831001,Financial Services,Banks - Diversified
+CB,Chubb Ltd,0000896159,Financial Services,Insurance - Property & Casualty
+MMC,"MARSH & MCLENNAN COMPANIES, INC.",0000062709,Financial Services,Insurance Brokers
+UBS,UBS Group AG,0001610520,Financial Services,Banks - Diversified
+KKR,KKR & Co. Inc.,0001404912,Financial Services,Asset Management
+IBN,ICICI BANK LTD,0001103838,Financial Services,Banks - Regional
+ICE,"Intercontinental Exchange, Inc.",0001571949,Financial Services,Financial Data & Stock Exchanges
+CME,CME GROUP INC.,0001156375,Financial Services,Financial Data & Stock Exchanges
+MCO,MOODYS CORP /DE/,0001059556,Financial Services,Financial Data & Stock Exchanges
+SMFG,"SUMITOMO MITSUI FINANCIAL GROUP, INC.",0001022837,Financial Services,Banks - Diversified
+ITUB,Itau Unibanco Holding S.A.,0001132597,Financial Services,Banks - Regional
+BMO,BANK OF MONTREAL /CAN/,0000927971,Financial Services,Banks - Diversified
+BN,BROOKFIELD Corp /ON/,0001001085,Financial Services,Asset Management
+USB,US BANCORP \DE\,0000036104,Financial Services,Banks - Regional
+SAN,"Banco Santander, S.A.",0000891478,Financial Services,Banks - Diversified
+APO,"Apollo Global Management, Inc.",0001858681,Financial Services,Asset Management
+AON,Aon plc,0000315293,Financial Services,Insurance Brokers
+PYPL,"PayPal Holdings, Inc.",0001633917,Financial Services,Credit Services
+PNC,"PNC FINANCIAL SERVICES GROUP, INC.",0000713676,Financial Services,Banks - Regional
+BBVA,"BANCO BILBAO VIZCAYA ARGENTARIA, S.A.",0000842180,Financial Services,Banks - Diversified
+BNS,BANK OF NOVA SCOTIA,0000009631,Financial Services,Banks - Diversified
+ANZGY,ANZ GROUP HOLDINGS LIMITED/ADR,0001947559,Financial Services,Banks - Diversified
+AJG,Arthur J. Gallagher & Co.,0000354190,Financial Services,Insurance Brokers
+COF,CAPITAL ONE FINANCIAL CORP,0000927628,Financial Services,Credit Services
+MET,METLIFE INC,0001099219,Financial Services,Insurance - Life
+TRV,"TRAVELERS COMPANIES, INC.",0000086312,Financial Services,Insurance - Property & Casualty
+AIG,"AMERICAN INTERNATIONAL GROUP, INC.",0000005272,Financial Services,Insurance - Diversified
+TFC,TRUIST FINANCIAL CORP,0000092230,Financial Services,Banks - Regional
+MSCI,MSCI Inc.,0001408198,Financial Services,Financial Data & Stock Exchanges
+NU,Nu Holdings Ltd.,0001691493,Financial Services,Banks - Regional
+MFG,MIZUHO FINANCIAL GROUP INC,0001335730,Financial Services,Banks - Regional
+AFL,AFLAC INC,0000004977,Financial Services,Insurance - Life
+ING,ING GROEP NV,0001039765,Financial Services,Banks - Diversified
+ALL,ALLSTATE CORP,0000899051,Financial Services,Insurance - Property & Casualty
+ARES,Ares Management Corp,0001176948,Financial Services,Asset Management
+BSBR,Banco Santander (Brasil) S.A.,0001471055,Financial Services,Banks - Regional
+BK,Bank of New York Mellon Corp,0001390777,Financial Services,Asset Management
+CM,CANADIAN IMPERIAL BANK OF COMMERCE /CAN/,0001045520,Financial Services,Banks - Diversified
+PPERY,PT Bank Mandiri (Persero) Tbk / ADR,0001461748,Financial Services,Banks - Regional
+MFC,MANULIFE FINANCIAL CORP,0001086888,Financial Services,Insurance - Life
+CRARY,CREDIT AGRICOLE S A,0001279967,Financial Services,Banks - Regional
+IBKR,"Interactive Brokers Group, Inc.",0001381197,Financial Services,Capital Markets
+AMP,AMERIPRISE FINANCIAL INC,0000820027,Financial Services,Asset Management
+PRU,PRUDENTIAL FINANCIAL INC,0001137774,Financial Services,Insurance - Life
+BDORY,BANCO DO BRASIL S.A.,0001433913,Financial Services,Banks - Regional
+LYG,Lloyds Banking Group plc,0001160106,Financial Services,Banks - Regional
+NDAQ,"NASDAQ, INC.",0001120193,Financial Services,Financial Data & Stock Exchanges
+BBD,BANK BRADESCO,0001160330,Financial Services,Banks - Regional
+COIN,"Coinbase Global, Inc.",0001679788,Financial Services,Financial Data & Stock Exchanges
+ACGL,ARCH CAPITAL GROUP LTD.,0000947484,Financial Services,Insurance - Diversified
+SLF,SUN LIFE FINANCIAL INC,0001097362,Financial Services,Insurance - Diversified
+GWLIF,GREAT-WEST LIFECO INC.,0000850918,Financial Services,Insurance - Life
+PUK,PRUDENTIAL PLC,0001116578,Financial Services,Insurance - Life
+BCS,BARCLAYS PLC,0000312069,Financial Services,Banks - Diversified
+WTW,WILLIS TOWERS WATSON PLC,0001140536,Financial Services,Insurance Brokers
+DFS,Discover Financial Services,0001393612,Financial Services,Credit Services
+HIG,"HARTFORD FINANCIAL SERVICES GROUP, INC.",0000874766,Financial Services,Insurance - Property & Casualty
+DB,DEUTSCHE BANK AKTIENGESELLSCHAFT,0001159508,Financial Services,Banks - Regional
+TROW,PRICE T ROWE GROUP INC,0001113169,Financial Services,Asset Management
+NWG,NatWest Group plc,0000844150,Financial Services,Banks - Regional
+TW,Tradeweb Markets Inc.,0001758730,Financial Services,Capital Markets
+RJF,RAYMOND JAMES FINANCIAL INC,0000720005,Financial Services,Capital Markets
+IX,ORIX CORP,0001070304,Financial Services,Credit Services
+OWL,BLUE OWL CAPITAL INC.,0001823945,Financial Services,Asset Management
+FRFHF,FAIRFAX FINANCIAL HOLDINGS LTD/ CAN,0000915191,Financial Services,Insurance - Property & Casualty
+FITB,FIFTH THIRD BANCORP,0000035527,Financial Services,Banks - Regional
+RKT,"Rocket Companies, Inc.",0001805284,Financial Services,Mortgage Finance
+BRO,"BROWN & BROWN, INC.",0000079282,Financial Services,Insurance Brokers
+MTB,M&T BANK CORP,0000036270,Financial Services,Banks - Regional
+STT,STATE STREET CORP,0000093751,Financial Services,Asset Management
+UWMC,UWM Holdings Corp,0001783398,Financial Services,Mortgage Finance
+FCNCA,FIRST CITIZENS BANCSHARES INC /DE/,0000798941,Financial Services,Banks - Regional
+WRB,BERKLEY W R CORP,0000011544,Financial Services,Insurance - Property & Casualty
+CBOE,"Cboe Global Markets, Inc.",0001374310,Financial Services,Financial Data & Stock Exchanges
+KB,KB Financial Group Inc.,0001445930,Financial Services,Banks - Regional
+MKL,MARKEL GROUP INC.,0001096343,Financial Services,Insurance - Property & Casualty
+PFG,PRINCIPAL FINANCIAL GROUP INC,0001126328,Financial Services,Asset Management
+ERIE,ERIE INDEMNITY CO,0000922621,Financial Services,Insurance Brokers
+LPLA,LPL Financial Holdings Inc.,0001397911,Financial Services,Capital Markets
+FDS,FACTSET RESEARCH SYSTEMS INC,0001013237,Financial Services,Financial Data & Stock Exchanges
+HBAN,HUNTINGTON BANCSHARES INC /MD/,0000049196,Financial Services,Banks - Regional
+SMPNY,"Sompo Japan Nipponkoa Holdings, Inc./ADR",0001669414,Financial Services,Insurance - Property & Casualty
+CINF,CINCINNATI FINANCIAL CORP,0000020286,Financial Services,Insurance - Property & Casualty
+SHG,SHINHAN FINANCIAL GROUP CO LTD,0001263043,Financial Services,Banks - Regional
+RF,REGIONS FINANCIAL CORP,0001281761,Financial Services,Banks - Regional
+CG,Carlyle Group Inc.,0001527166,Financial Services,Asset Management
+NMR,NOMURA HOLDINGS INC,0001163653,Financial Services,Capital Markets
+NTRS,NORTHERN TRUST CORP,0000073124,Financial Services,Asset Management
+L,LOEWS CORP,0000060086,Financial Services,Insurance - Property & Casualty
+TPG,TPG Inc.,0001880661,Financial Services,Asset Management
+SYF,Synchrony Financial,0001601712,Financial Services,Credit Services
+PTBRY,PT Bank Negara Indonesia (Persero) Tbk/ADR,0001504122,Financial Services,Banks - Regional
+BAM,Brookfield Asset Management Ltd.,0001937926,Financial Services,Asset Management
+EG,"EVEREST GROUP, LTD.",0001095073,Financial Services,Insurance - Reinsurance
+CRBG,"Corebridge Financial, Inc.",0001889539,Financial Services,Asset Management
+CFG,CITIZENS FINANCIAL GROUP INC/RI,0000759944,Financial Services,Banks - Regional
+BEN,FRANKLIN RESOURCES INC,0000038777,Financial Services,Asset Management
+FNF,"Fidelity National Financial, Inc.",0001331875,Financial Services,Insurance - Specialty
+XP,XP Inc.,0001787425,Financial Services,Capital Markets
+KEY,KEYCORP /NEW/,0000091576,Financial Services,Banks - Regional
+CNA,CNA FINANCIAL CORP,0000021175,Financial Services,Insurance - Property & Casualty
+BAP,CREDICORP LTD,0001001290,Financial Services,Banks - Regional
+RNR,RENAISSANCERE HOLDINGS LTD,0000913144,Financial Services,Insurance - Reinsurance
+MORN,"Morningstar, Inc.",0001289419,Financial Services,Financial Data & Stock Exchanges
+GL,GLOBE LIFE INC.,0000320335,Financial Services,Insurance - Life
+ARCC,ARES CAPITAL CORP,0001287750,Financial Services,Asset Management
+BCH,BANK OF CHILE,0001161125,Financial Services,Banks - Regional
+RYAN,"RYAN SPECIALTY HOLDINGS, INC.",0001849253,Financial Services,Insurance - Specialty
+EQH,"Equitable Holdings, Inc.",0001333986,Financial Services,Insurance - Diversified
+RGA,REINSURANCE GROUP OF AMERICA INC,0000898174,Financial Services,Insurance - Reinsurance
+ALLY,Ally Financial Inc.,0000040729,Financial Services,Credit Services
+JBAXY,Julius Baer Group Ltd.,0001475011,Financial Services,Asset Management
+AEG,AEGON LTD.,0000769218,Financial Services,Insurance - Diversified
+AFG,AMERICAN FINANCIAL GROUP INC,0001042046,Financial Services,Insurance - Property & Casualty
+HOOD,"Robinhood Markets, Inc.",0001783879,Financial Services,Capital Markets
+EWBC,EAST WEST BANCORP INC,0001069157,Financial Services,Banks - Diversified
+DSEEY,Daiwa Securities Group Inc.,0001481045,Financial Services,Capital Markets
+KNSL,"Kinsale Capital Group, Inc.",0001669162,Financial Services,Insurance - Property & Casualty
+UNM,Unum Group,0000005513,Financial Services,Insurance - Life
+AIZ,"ASSURANT, INC.",0001267238,Financial Services,Insurance - Specialty
+HLI,"HOULIHAN LOKEY, INC.",0001302215,Financial Services,Capital Markets
+SEIC,SEI INVESTMENTS CO,0000350894,Financial Services,Asset Management
+MKTX,MARKETAXESS HOLDINGS INC,0001278021,Financial Services,Capital Markets
+BSAC,BANCO SANTANDER CHILE,0001027552,Financial Services,Banks - Regional
+JEF,Jefferies Financial Group Inc.,0000096223,Financial Services,Capital Markets
+ASXFY,ASX Ltd.,0001449003,Financial Services,Financial Data & Stock Exchanges
+WF,WOORI FINANCIAL GROUP INC.,0001264136,Financial Services,Banks—Regional
+PRI,"Primerica, Inc.",0001475922,Financial Services,Insurance—Life
+SOFI,"SoFi Technologies, Inc.",0001818874,Financial Services,Credit Services
+WBS,WEBSTER FINANCIAL CORP,0000801337,Financial Services,Banks—Regional
+CIB,BANCOLOMBIA SA,0001071371,Financial Services,Banks—Regional
+ORI,OLD REPUBLIC INTERNATIONAL CORP,0000074260,Financial Services,Insurance—Diversified
+SF,STIFEL FINANCIAL CORP,0000720672,Financial Services,Capital Markets
+FHN,FIRST HORIZON CORP,0000036966,Financial Services,Banks—Regional
+EGFEY,EFG Eurobank Ergasias S.A./ADR,0001437178,Financial Services,Banks—Regional
+IVZ,Invesco Ltd.,0000914208,Financial Services,Asset Management
+VOYA,"Voya Financial, Inc.",0001535929,Financial Services,Financial Conglomerates
+CACC,CREDIT ACCEPTANCE CORP,0000885550,Financial Services,Credit Services
+FUTU,Futu Holdings Ltd,0001754581,Financial Services,Capital Markets
+CMA,COMERICA INC /NEW/,0000028412,Financial Services,Banks—Regional
+EVR,Evercore Inc.,0001360901,Financial Services,Capital Markets
+CBSH,COMMERCE BANCSHARES INC /MO/,0000022356,Financial Services,Banks—Regional
+CFR,"CULLEN/FROST BANKERS, INC.",0000039263,Financial Services,Banks—Regional
+WAL,WESTERN ALLIANCE BANCORPORATION,0001212545,Financial Services,Banks—Regional
+CRCBY,"Chongqing Rural Commercial Bank Co., Ltd./ADR",0001553915,Financial Services,Banks—Regional
+AGLY,Atlantis Glory Inc.,0001673504,Financial Services,Shell Companies
+HLNE,Hamilton Lane INC,0001433642,Financial Services,Asset Management
+RLI,RLI CORP,0000084246,Financial Services,Insurance—Property & Casualty
+PNFP,PINNACLE FINANCIAL PARTNERS INC,0001115055,Financial Services,Banks—Regional
+SSB,SouthState Corp,0000764038,Financial Services,Banks—Regional
+FAF,First American Financial Corp,0001472787,Financial Services,Insurance—Specialty
+BPOP,"POPULAR, INC.",0000763901,Financial Services,Banks—Regional
+ZION,"ZIONS BANCORPORATION, NATIONAL ASSOCIATION /UT/",0000109380,Financial Services,Banks—Regional
+SIGI,SELECTIVE INSURANCE GROUP INC,0000230557,Financial Services,Insurance—Property & Casualty
+PB,PROSPERITY BANCSHARES INC,0001068851,Financial Services,Banks—Regional
+FG,"F&G Annuities & Life, Inc.",0001934850,Financial Services,Insurance—Life
+OBDC,Blue Owl Capital Corp,0001655888,Financial Services,Credit Services
+ESNT,Essent Group Ltd.,0001448893,Financial Services,Insurance—Specialty
+WTFC,WINTRUST FINANCIAL CORP,0001015328,Financial Services,Banks—Regional
+FSK,FS KKR Capital Corp,0001422183,Financial Services,Asset Management
+BOKF,BOK FINANCIAL CORP,0000875357,Financial Services,Banks—Regional
+PDI,PIMCO Dynamic Income Fund,0001510599,Financial Services,Asset Management
+OMF,"OneMain Holdings, Inc.",0001584207,Financial Services,Credit Services
+FCFS,"FirstCash Holdings, Inc.",0000840489,Financial Services,Credit Services
+BXSL,Blackstone Secured Lending Fund,0001736035,Financial Services,Asset Management
+AMG,"AFFILIATED MANAGERS GROUP, INC.",0001004434,Financial Services,Asset Management
+SNV,SYNOVUS FINANCIAL CORP,0000018349,Financial Services,Banks—Regional
+MTG,MGIC INVESTMENT CORP,0000876437,Financial Services,Insurance—Specialty
+JHG,JANUS HENDERSON GROUP PLC,0001274173,Financial Services,Asset Management
+AXS,AXIS CAPITAL HOLDINGS LTD,0001214816,Financial Services,Insurance—Specialty
+BMA,Macro Bank Inc.,0001347426,Financial Services,Banks—Regional
+DNB,"Dun & Bradstreet Holdings, Inc.",0001799208,Financial Services,Financial Data & Stock Exchanges
+FRHC,Freedom Holding Corp.,0000924805,Financial Services,Capital Markets
+OZK,Bank OZK,0001569650,Financial Services,Banks—Regional
+HOMB,HOME BANCSHARES INC,0001331520,Financial Services,Banks—Regional
+MARA,"MARATHON DIGITAL HOLDINGS, INC.",0001507605,Financial Services,Capital Markets
+AGO,ASSURED GUARANTY LTD,0001273813,Financial Services,Insurance—Specialty
+CADE,Cadence Bank,0001299939,Financial Services,Banks—Regional
+UBSI,UNITED BANKSHARES INC/WV,0000729986,Financial Services,Banks—Regional
+FNB,FNB CORP/PA/,0000037808,Financial Services,Banks—Regional
+ONB,OLD NATIONAL BANCORP /IN/,0000707179,Financial Services,Banks—Regional
+THG,"HANOVER INSURANCE GROUP, INC.",0000944695,Financial Services,Insurance—Property & Casualty
+BNRE,Brookfield Reinsurance Ltd.,0001837429,Financial Services,Insurance—Reinsurance
+PFSI,"PennyMac Financial Services, Inc.",0001745916,Financial Services,Mortgage Finance
+LNC,LINCOLN NATIONAL CORP,0000059558,Financial Services,Insurance—Life
+FFIN,FIRST FINANCIAL BANKSHARES INC,0000036029,Financial Services,Banks—Regional
+COOP,Mr. Cooper Group Inc.,0000933136,Financial Services,Mortgage Finance
+AEL,AMERICAN EQUITY INVESTMENT LIFE HOLDING CO,0001039828,Financial Services,Insurance—Life
+SLM,SLM Corp,0001032033,Financial Services,Credit Services
+ESGR,Enstar Group LTD,0001363829,Financial Services,Insurance—Diversified
+ACT,"Enact Holdings, Inc.",0001823529,Financial Services,Insurance—Specialty
+WU,Western Union CO,0001365135,Financial Services,Credit Services
+RDN,RADIAN GROUP INC,0000890926,Financial Services,Insurance—Specialty
+GBCI,"GLACIER BANCORP, INC.",0000868671,Financial Services,Banks—Regional
+VLY,VALLEY NATIONAL BANCORP,0000714310,Financial Services,Banks—Regional
+CRVL,CORVEL CORP,0000874866,Financial Services,Insurance Brokers
+JXN,Jackson Financial Inc.,0001822993,Financial Services,Insurance—Life
+WTM,WHITE MOUNTAINS INSURANCE GROUP LTD,0000776867,Financial Services,Insurance—Property & Casualty
+COLB,"COLUMBIA BANKING SYSTEM, INC.",0000887343,Financial Services,Banks—Regional
+STEP,StepStone Group Inc.,0001796022,Financial Services,Asset Management
+UMBF,UMB FINANCIAL CORP,0000101382,Financial Services,Banks—Regional
+MAIN,Main Street Capital CORP,0001396440,Financial Services,Asset Management
+KMPR,KEMPER Corp,0000860748,Financial Services,Insurance—Property & Casualty
+AB,ALLIANCEBERNSTEIN HOLDING L.P.,0000825313,Financial Services,Asset Management
+PJT,PJT Partners Inc.,0001626115,Financial Services,Capital Markets
+TFSL,TFS Financial CORP,0001381668,Financial Services,Banks—Regional
+MC,Moelis & Co,0001596967,Financial Services,Capital Markets
+BGC,"BGC Group, Inc.",0001094831,Financial Services,Capital Markets
+HWC,HANCOCK WHITNEY CORP,0000750577,Financial Services,Banks—Regional
+AMTD,AMTD IDEA GROUP,0001769731,Financial Services,Asset Management
+LAZ,"Lazard, Inc.",0001311370,Financial Services,Capital Markets
+CNS,"COHEN & STEERS, INC.",0001284812,Financial Services,Asset Management
+BHF,"Brighthouse Financial, Inc.",0001685040,Financial Services,Insurance—Life
+NNI,NELNET INC,0001258602,Financial Services,Credit Services
+SFBS,"ServisFirst Bancshares, Inc.",0001430723,Financial Services,Banks—Regional
+NEA,Nuveen AMT-Free Quality Municipal Income Fund,0001195737,Financial Services,Asset Management
+IBOC,INTERNATIONAL BANCSHARES CORP,0000315709,Financial Services,Banks—Regional
+ABCB,Ameris Bancorp,0000351569,Financial Services,Banks—Regional
+UCBI,UNITED COMMUNITY BANKS INC,0000857855,Financial Services,Banks—Regional
+WD,"Walker & Dunlop, Inc.",0001497770,Financial Services,Mortgage Finance
+DNP,DNP SELECT INCOME FUND INC,0000806628,Financial Services,Asset Management
+BUR,Burford Capital Ltd,0001714174,Financial Services,Asset Management
+AVAL,Grupo Aval Acciones Y Valores S.A.,0001504764,Financial Services,Banks—Regional
+GSHD,"Goosehead Insurance, Inc.",0001726978,Financial Services,Insurance—Diversified
+NYCB,NEW YORK COMMUNITY BANCORP INC,0000910073,Financial Services,Banks—Regional
+FHI,"FEDERATED HERMES, INC.",0001056288,Financial Services,Asset Management
+ASB,ASSOCIATED BANC-CORP,0000007789,Financial Services,Banks—Regional
+CNO,"CNO Financial Group, Inc.",0001224608,Financial Services,Insurance—Life
+UPST,"Upstart Holdings, Inc.",0001647639,Financial Services,Credit Services
+APAM,Artisan Partners Asset Management Inc.,0001517302,Financial Services,Asset Management
+AX,"Axos Financial, Inc.",0001299709,Financial Services,Banks—Regional
+BANF,BANCFIRST CORP /OK/,0000760498,Financial Services,Banks—Regional
+CATY,CATHAY GENERAL BANCORP,0000861842,Financial Services,Banks—Regional
+PIPR,PIPER SANDLER COMPANIES,0001230245,Financial Services,Capital Markets
+TCBI,TEXAS CAPITAL BANCSHARES INC/TX,0001077428,Financial Services,Banks—Regional
+FBP,FIRST BANCORP /PR/,0001057706,Financial Services,Banks—Regional
+LU,Lufax Holding Ltd,0001816007,Financial Services,Credit Services
+HGTY,"Hagerty, Inc.",0001840776,Financial Services,Insurance—Property & Casualty
+IFS,Intercorp Financial Services Inc.,0001615903,Financial Services,Banks—Regional
+GNW,GENWORTH FINANCIAL INC,0001276520,Financial Services,Insurance—Life
+GGAL,GRUPO FINANCIERO GALICIA SA,0001114700,Financial Services,Banks—Regional
+FHB,"FIRST HAWAIIAN, INC.",0000036377,Financial Services,Banks—Regional
+RIOT,"Riot Platforms, Inc.",0001167419,Financial Services,Capital Markets
+VIRT,"Virtu Financial, Inc.",0001592386,Financial Services,Capital Markets
+FIBK,FIRST INTERSTATE BANCSYSTEM INC,0000860413,Financial Services,Banks—Regional
+NAD,Nuveen Quality Municipal Income Fund,0001083839,Financial Services,Asset Management
+GBDC,"GOLUB CAPITAL BDC, Inc.",0001476765,Financial Services,Asset Management
+HTGC,"Hercules Capital, Inc.",0001280784,Financial Services,Asset Management
+NVG,Nuveen AMT-Free Municipal Credit Income Fund,0001090116,Financial Services,Asset Management
+CSQ,CALAMOS STRATEGIC TOTAL RETURN FUND,0001275214,Financial Services,Asset Management
+WSFS,WSFS FINANCIAL CORP,0000828944,Financial Services,Banks—Regional
+FULT,FULTON FINANCIAL CORP,0000700564,Financial Services,Banks—Regional
+AUB,Atlantic Union Bankshares Corp,0000883948,Financial Services,Banks—Regional
+NMIH,"NMI Holdings, Inc.",0001547903,Financial Services,Insurance—Specialty
+BOH,BANK OF HAWAII CORP,0000046195,Financial Services,Banks—Regional
+EXG,Eaton Vance Tax-Managed Global Diversified Equity Income Fund,0001379438,Financial Services,Asset Management
+EBC,"Eastern Bankshares, Inc.",0001810546,Financial Services,Banks—Regional
+PSEC,PROSPECT CAPITAL CORP,0001287032,Financial Services,Asset Management
+CVBF,CVB FINANCIAL CORP,0000354647,Financial Services,Banks—Regional
+QFIN,"Qifu Technology, Inc.",0001741530,Financial Services,Credit Services
+CBU,"COMMUNITY BANK SYSTEM, INC.",0000723188,Financial Services,Banks—Regional
+AMK,"AssetMark Financial Holdings, Inc.",0001591587,Financial Services,Asset Management
+ADX,"ADAMS DIVERSIFIED EQUITY FUND, INC.",0000002230,Financial Services,Asset Management
+INTR,"Inter & Co, Inc.",0001864163,Financial Services,Banks—Regional
+VCTR,"Victory Capital Holdings, Inc.",0001570827,Financial Services,Asset Management
+PPBI,PACIFIC PREMIER BANCORP INC,0001028918,Financial Services,Banks—Regional
+NZF,Nuveen Municipal Credit Income Fund,0001137887,Financial Services,Asset Management
+TBBK,"Bancorp, Inc.",0001295401,Financial Services,Banks—Regional
+INDB,INDEPENDENT BANK CORP,0000776901,Financial Services,Banks—Regional
+SFNC,SIMMONS FIRST NATIONAL CORP,0000090498,Financial Services,Banks—Regional
+MCY,MERCURY GENERAL CORP,0000064996,Financial Services,Insurance—Property & Casualty
+BANC,"BANC OF CALIFORNIA, INC.",0001169770,Financial Services,Banks—Regional
+PAX,Patria Investments Ltd,0001825570,Financial Services,Asset Management
+UTF,COHEN & STEERS INFRASTRUCTURE FUND INC,0001275617,Financial Services,Asset Management
+PRK,PARK NATIONAL CORP /OH/,0000805676,Financial Services,Banks—Regional
+FFBC,FIRST FINANCIAL BANCORP /OH/,0000708955,Financial Services,Banks—Regional
+SBCF,SEACOAST BANKING CORP OF FLORIDA,0000730708,Financial Services,Banks—Regional
+CLSK,"CLEANSPARK, INC.",0000827876,Financial Services,Capital Markets
+PTY,PIMCO CORPORATE & INCOME OPPORTUNITY FUND,0001190935,Financial Services,Asset Management
+ETY,Eaton Vance Tax-Managed Diversified Equity Income Fund,0001340736,Financial Services,Asset Management
+SNEX,StoneX Group Inc.,0000913760,Financial Services,Capital Markets
+FRME,FIRST MERCHANTS CORP,0000712534,Financial Services,Banks—Regional
+UTG,REAVES UTILITY INCOME FUND,0001263994,Financial Services,Asset Management
+HTH,Hilltop Holdings Inc.,0001265131,Financial Services,Banks—Regional
+SPNT,SiriusPoint Ltd,0001576018,Financial Services,Insurance—Reinsurance
+GDV,GABELLI DIVIDEND & INCOME TRUST,0001260729,Financial Services,Asset Management
+AGM,FEDERAL AGRICULTURAL MORTGAGE CORP,0000845877,Financial Services,Credit Services
+BKU,"BankUnited, Inc.",0001504008,Financial Services,Banks—Regional
+TSLX,"Sixth Street Specialty Lending, Inc.",0001508655,Financial Services,Asset Management
+DFIN,"Donnelley Financial Solutions, Inc.",0001669811,Financial Services,Capital Markets
+NAVI,NAVIENT CORP,0001593538,Financial Services,Credit Services
+IBTX,"Independent Bank Group, Inc.",0001564618,Financial Services,Banks—Regional
+NUV,NUVEEN MUNICIPAL VALUE FUND INC,0000812801,Financial Services,Asset Management
+BIGZ,BlackRock Innovation & Growth Term Trust,0001836057,Financial Services,Asset Management
+CLBK,"Columbia Financial, Inc.",0001723596,Financial Services,Banks—Regional
+WAFD,WAFD INC,0000936528,Financial Services,Banks—Regional
+USA,LIBERTY ALL STAR EQUITY FUND,0000799195,Financial Services,Asset Management
+GOF,GUGGENHEIM STRATEGIC OPPORTUNITIES FUND,0001380936,Financial Services,Asset Management
+TFIN,"Triumph Financial, Inc.",0001539638,Financial Services,Banks—Regional
+DWAC,Digital World Acquisition Corp.,0001849635,Financial Services,Shell Companies
+BBUC,Brookfield Business Corp,0001871130,Financial Services,Asset Management
+NWLI,"National Western Life Group, Inc.",0001635984,Financial Services,Insurance—Life
+RNST,RENASANT CORP,0000715072,Financial Services,Banks—Regional
+BFH,"BREAD FINANCIAL HOLDINGS, INC.",0001101215,Financial Services,Credit Services
+CCYC,BRILLIANT N.E.V. CORP.,0001681769,Financial Services,Shell Companies
+MBIN,Merchants Bancorp,0001629019,Financial Services,Banks—Regional
+OFG,OFG BANCORP,0001030469,Financial Services,Banks—Regional
+WSBC,WESBANCO INC,0000203596,Financial Services,Banks—Regional
+VRTS,"VIRTUS INVESTMENT PARTNERS, INC.",0000883237,Financial Services,Asset Management
+FBK,FB Financial Corp,0001649749,Financial Services,Banks—Regional
+LOB,"Live Oak Bancshares, Inc.",0001462120,Financial Services,Banks—Regional
+EVT,EATON VANCE TAX ADVANTAGED DIVIDEND INCOME FUND,0001253327,Financial Services,Asset Management
+LKFN,LAKELAND FINANCIAL CORP,0000721994,Financial Services,Banks—Regional
+GSBD,"Goldman Sachs BDC, Inc.",0001572694,Financial Services,Asset Management
+CLM,CORNERSTONE STRATEGIC VALUE FUND INC,0000814083,Financial Services,Asset Management
+TRMK,TRUSTMARK CORP,0000036146,Financial Services,Banks—Regional
+GCMG,GCM Grosvenor Inc.,0001819796,Financial Services,Asset Management
+STC,STEWART INFORMATION SERVICES CORP,0000094344,Financial Services,Insurance—Property & Casualty
+RVT,"ROYCE VALUE TRUST, INC.",0000804116,Financial Services,Asset Management
+RQI,COHEN & STEERS QUALITY INCOME REALTY FUND INC,0001157842,Financial Services,Asset Management
+ENVA,"Enova International, Inc.",0001529864,Financial Services,Credit Services
+NBTB,NBT BANCORP INC,0000790359,Financial Services,Banks—Regional
+NAC,Nuveen California Quality Municipal Income Fund,0001074952,Financial Services,Asset Management
+CUBI,"Customers Bancorp, Inc.",0001488813,Financial Services,Banks—Regional
+GAB,GABELLI EQUITY TRUST INC,0000794685,Financial Services,Asset Management
+TY,TRI-CONTINENTAL CORP,0000099614,Financial Services,Asset Management
+OCSL,Oaktree Specialty Lending Corp,0001414932,Financial Services,Credit Services
+AHL-PC,ASPEN INSURANCE HOLDINGS LTD,0001267395,Financial Services,Insurance—Property & Casualty
+BANR,BANNER CORP,0000946673,Financial Services,Banks—Regional
+BRP,"BRP Group, Inc.",0001781755,Financial Services,Insurance Brokers
+FNMA,FEDERAL NATIONAL MORTGAGE ASSOCIATION FANNIE MAE,0000310522,Financial Services,Mortgage Finance
+FIHL,Fidelis Insurance Holdings Ltd,0001636639,Financial Services,Insurance—Diversified
+BTT,BlackRock Municipal 2030 Target Term Trust,0001528437,Financial Services,Asset Management
+NWBI,"Northwest Bancshares, Inc.",0001471265,Financial Services,Banks—Regional
+HMN,HORACE MANN EDUCATORS CORP /DE/,0000850141,Financial Services,Insurance—Property & Casualty
+ETV,Eaton Vance Tax-Managed Buy-Write Opportunities Fund,0001322436,Financial Services,Asset Management
+BDJ,BlackRock Enhanced Equity Dividend Trust,0001332283,Financial Services,Asset Management
+PLMR,"Palomar Holdings, Inc.",0001761312,Financial Services,Insurance—Property & Casualty
+PUYI,"PUYI, INC.",0001750264,Financial Services,Asset Management
+CHCO,CITY HOLDING CO,0000726854,Financial Services,Banks—Regional
+EFSC,ENTERPRISE FINANCIAL SERVICES CORP,0001025835,Financial Services,Banks—Regional
+KYN,"Kayne Anderson Energy Infrastructure Fund, Inc.",0001293613,Financial Services,Asset Management
+FBNC,FIRST BANCORP /NC/,0000811589,Financial Services,Banks—Regional
+HTLF,HEARTLAND FINANCIAL USA INC,0000920112,Financial Services,Banks—Regional
+NTB,Bank of N.T. Butterfield & Son Ltd,0001653242,Financial Services,Banks—Diversified
+STEW,"SRH Total Return Fund, Inc.",0000102426,Financial Services,Asset Management
+BSTZ,BlackRock Science & Technology Term Trust,0001768666,Financial Services,Asset Management
+HYT,"BLACKROCK CORPORATE HIGH YIELD FUND, INC.",0001222401,Financial Services,Asset Management
+BXMX,Nuveen S&P 500 BuyWrite Income Fund,0001298699,Financial Services,Asset Management
+SYBT,"Stock Yards Bancorp, Inc.",0000835324,Financial Services,Banks—Regional
+ETG,EATON VANCE TAX ADVANTAGED GLOBAL DIVIDEND INCOME FUND,0001270523,Financial Services,Asset Management
+FCF,FIRST COMMONWEALTH FINANCIAL CORP /PA/,0000712537,Financial Services,Banks—Regional
+FINV,FinVolution Group,0001691445,Financial Services,Credit Services
+DSL,DoubleLine Income Solutions Fund,0001566388,Financial Services,Asset Management
+STEL,"Stellar Bancorp, Inc.",0001473844,Financial Services,Banks—Regional
+CASH,"PATHWARD FINANCIAL, INC.",0000907471,Financial Services,Banks—Regional
+NMFC,New Mountain Finance Corp,0001496099,Financial Services,Asset Management
+NBHC,National Bank Holdings Corp,0001475841,Financial Services,Banks—Regional
+HOPE,HOPE BANCORP INC,0001128361,Financial Services,Banks—Regional
+BUSE,FIRST BUSEY CORP /NV/,0000314489,Financial Services,Banks—Regional
+BST,BlackRock Science & Technology Trust,0001616678,Financial Services,Asset Management
+TRUP,"TRUPANION, INC.",0001371285,Financial Services,Insurance—Specialty
+SRCE,1ST SOURCE CORP,0000034782,Financial Services,Banks—Regional
+SAFT,SAFETY INSURANCE GROUP INC,0001172052,Financial Services,Insurance—Property & Casualty
+SKWD,"Skyward Specialty Insurance Group, Inc.",0001519449,Financial Services,Insurance—Property & Casualty
+STBA,S&T BANCORP INC,0000719220,Financial Services,Banks—Regional
+BRDG,Bridge Investment Group Holdings Inc.,0001854401,Financial Services,Asset Management
+WABC,WESTAMERICA BANCORPORATION,0000311094,Financial Services,Banks—Regional
+OXLC,Oxford Lane Capital Corp.,0001495222,Financial Services,Asset Management
+ECPG,ENCORE CAPITAL GROUP INC,0001084961,Financial Services,Mortgage Finance
+NFJ,"Virtus Dividend, Interest & Premium Strategy Fund",0001260563,Financial Services,Asset Management
+EVV,EATON VANCE LTD DURATION INCOME FUND,0001222922,Financial Services,Asset Management
+QQQX,Nuveen NASDAQ 100 Dynamic Overwrite Fund,0001608741,Financial Services,Asset Management
+JFR,NUVEEN FLOATING RATE INCOME FUND,0001276533,Financial Services,Asset Management
+FSCO,FS Credit Opportunities Corp.,0001568194,Financial Services,Asset Management
+PFS,PROVIDENT FINANCIAL SERVICES INC,0001178970,Financial Services,Banks—Regional
+LMND,"Lemonade, Inc.",0001691421,Financial Services,Insurance—Property & Casualty
+JMKJ,"Coretag Holdings, Inc.",0001624140,Financial Services,Shell Companies
+TCBK,TRICO BANCSHARES /,0000356171,Financial Services,Banks—Regional
+NIC,NICOLET BANKSHARES INC,0001174850,Financial Services,Banks—Regional
+NMZ,NUVEEN MUNICIPAL HIGH INCOME OPPORTUNITY FUND,0001266585,Financial Services,Asset Management
+CET,CENTRAL SECURITIES CORP,0000018748,Financial Services,Asset Management
+PX,"P10, Inc.",0001841968,Financial Services,Asset Management
+VBTX,"Veritex Holdings, Inc.",0001501570,Financial Services,Banks—Regional
+PWP,Perella Weinberg Partners,0001777835,Financial Services,Capital Markets
+GAM,GENERAL AMERICAN INVESTORS CO INC,0000040417,Financial Services,Asset Management
+MUC,"BLACKROCK MUNIHOLDINGS CALIFORNIA QUALITY FUND, INC.",0001051004,Financial Services,Asset Management
+EIG,"Employers Holdings, Inc.",0001379041,Financial Services,Insurance—Specialty
+BBAR,Banco BBVA Argentina S.A.,0000913059,Financial Services,Banks—Regional
+FPF,First Trust Intermediate Duration Preferred & Income Fund,0001567569,Financial Services,Asset Management
+PTA,Cohen & Steers Tax-Advantaged Preferred Securities & Income Fund,0001793882,Financial Services,Asset Management
+BBN,BlackRock Taxable Municipal Bond Trust,0001493683,Financial Services,Asset Management
+EOS,Eaton Vance Enhanced Equity Income Fund II,0001308335,Financial Services,Asset Management
+WT,"WisdomTree, Inc.",0000880631,Financial Services,Asset Management
+CSWC,CAPITAL SOUTHWEST CORP,0000017313,Financial Services,Asset Management
+SASR,SANDY SPRING BANCORP INC,0000824410,Financial Services,Banks—Regional
+BTZ,BLACKROCK CREDIT ALLOCATION INCOME TRUST,0001379384,Financial Services,Asset Management
+SCRM,Screaming Eagle Acquisition Corp.,0001893325,Financial Services,Shell Companies
+PEBO,PEOPLES BANCORP INC,0000318300,Financial Services,Banks—Regional
+BHLB,BERKSHIRE HILLS BANCORP INC,0001108134,Financial Services,Banks—Regional
+CVII,Churchill Capital Corp VII,0001828248,Financial Services,Shell Companies
+RNP,COHEN & STEERS REIT & PREFERRED & INCOME FUND INC,0001224450,Financial Services,Asset Management
+BCSF,"Bain Capital Specialty Finance, Inc.",0001655050,Financial Services,Asset Management
+LC,LendingClub Corp,0001409970,Financial Services,Credit Services
+PFBC,Preferred Bank,0001492165,Financial Services,Banks—Regional
+RBCAA,REPUBLIC BANCORP INC /KY/,0000921557,Financial Services,Banks—Regional
+QCRH,QCR HOLDINGS INC,0000906465,Financial Services,Banks—Regional
+NRK,NUVEEN NEW YORK AMT-FREE QUALITY MUNICIPAL INCOME FUND,0001195739,Financial Services,Asset Management
+AMSF,AMERISAFE INC,0001018979,Financial Services,Insurance—Specialty
+BBDC,"Barings BDC, Inc.",0001379785,Financial Services,Asset Management
+GABC,"GERMAN AMERICAN BANCORP, INC.",0000714395,Financial Services,Banks—Regional
+OCFC,OCEANFIRST FINANCIAL CORP,0001004702,Financial Services,Banks—Regional
+SII,SPROTT INC.,0001512920,Financial Services,Asset Management
+OBK,"Origin Bancorp, Inc.",0001516912,Financial Services,Banks—Regional
+CHY,CALAMOS CONVERTIBLE & HIGH INCOME FUND,0001222719,Financial Services,Asset Management
+PRAA,PRA GROUP INC,0001185348,Financial Services,Credit Services
+HCI,"HCI Group, Inc.",0001400810,Financial Services,Insurance—Property & Casualty
+PBAJ,"PETRO USA, INC.",0000745543,Financial Services,Shell Companies
+SBSI,SOUTHSIDE BANCSHARES INC,0000705432,Financial Services,Banks—Regional
+BSIG,BrightSphere Investment Group Inc.,0001748824,Financial Services,Asset Management
+BY,"BYLINE BANCORP, INC.",0001702750,Financial Services,Banks—Regional
+AWF,ALLIANCEBERNSTEIN GLOBAL HIGH INCOME FUND INC,0000906013,Financial Services,Asset Management
+MFIC,MidCap Financial Investment Corp,0001278752,Financial Services,Asset Management
+GHLD,Guild Holdings Co,0001821160,Financial Services,Mortgage Finance
+LPRO,Open Lending Corp,0001806201,Financial Services,Credit Services
+MQY,"BLACKROCK MUNIYIELD QUALITY FUND, INC.",0000890196,Financial Services,Asset Management
+BRKL,BROOKLINE BANCORP INC,0001049782,Financial Services,Banks—Regional
+ETW,Eaton Vance Tax-Managed Global Buy-Write Opportunities Fund,0001322435,Financial Services,Asset Management
+BFC,Bank First Corp,0001746109,Financial Services,Banks—Regional
+CII,"BLACKROCK ENHANCED CAPITAL & INCOME FUND, INC.",0001278895,Financial Services,Asset Management
+BLX,"FOREIGN TRADE BANK OF LATIN AMERICA, INC.",0000890541,Financial Services,Banks—Regional
+MUI,"BLACKROCK MUNICIPAL INCOME FUND, INC.",0001232860,Financial Services,Asset Management
+HQH,abrdn Healthcare Investors,0000805267,Financial Services,Asset Management
+AOD,abrdn Total Dynamic Dividend Fund,0001379400,Financial Services,Asset Management
+LDI,"loanDepot, Inc.",0001831631,Financial Services,Mortgage Finance
+HG,"Hamilton Insurance Group, Ltd.",0001593275,Financial Services,Insurance—Reinsurance
+CHI,CALAMOS CONVERTIBLE OPPORTUNITIES & INCOME FUND,0001171471,Financial Services,Asset Management
+SLRC,SLR Investment Corp.,0001418076,Financial Services,Asset Management
+BITF,Bitfarms Ltd,0001812477,Financial Services,Capital Markets
+CFFN,"Capitol Federal Financial, Inc.",0001490906,Financial Services,Banks—Regional
+THQ,abrdn Healthcare Opportunities Fund,0001604522,Financial Services,Asset Management
+ABL,"Abacus Life, Inc.",0001814287,Financial Services,Insurance—Life
+CNOB,"ConnectOne Bancorp, Inc.",0000712771,Financial Services,Banks—Regional
+LBAI,LAKELAND BANCORP INC,0000846901,Financial Services,Banks—Regional
+CRF,CORNERSTONE TOTAL RETURN FUND INC,0000033934,Financial Services,Asset Management
+ECC,Eagle Point Credit Co Inc.,0001604174,Financial Services,Asset Management
+MYI,"BLACKROCK MUNIYIELD QUALITY FUND III, INC.",0000883412,Financial Services,Asset Management
+CGBD,"Carlyle Secured Lending, Inc.",0001544206,Financial Services,Asset Management
+FBMS,FIRST BANCSHARES INC /MS/,0000947559,Financial Services,Banks—Regional
+NOAH,Noah Holdings Ltd,0001499543,Financial Services,Asset Management
+AMTB,Amerant Bancorp Inc.,0001734342,Financial Services,Banks—Regional
+JPC,Nuveen Preferred & Income Opportunities Fund,0001216583,Financial Services,Asset Management
+WRLD,WORLD ACCEPTANCE CORP,0000108385,Financial Services,Credit Services
+DCOM,"Dime Community Bancshares, Inc. /NY/",0000846617,Financial Services,Banks—Regional
+PHK,PIMCO HIGH INCOME FUND,0001219360,Financial Services,Asset Management
+AMAL,Amalgamated Financial Corp.,0001823608,Financial Services,Banks—Regional
+EIM,EATON VANCE MUNICIPAL BOND FUND,0001176984,Financial Services,Asset Management
+BCX,BlackRock Resources & Commodities Strategy Trust,0001506289,Financial Services,Asset Management
+FMCB,FARMERS & MERCHANTS BANCORP,0001085913,Financial Services,Banks—Regional
+FMBH,"FIRST MID BANCSHARES, INC.",0000700565,Financial Services,Banks—Regional
+JQC,Nuveen Credit Strategies Income Fund,0001227476,Financial Services,Asset Management
+CIFR,Cipher Mining Inc.,0001819989,Financial Services,Capital Markets
+RA,Brookfield Real Assets Income Fund Inc.,0001655099,Financial Services,Asset Management
+EOI,Eaton Vance Enhanced Equity Income Fund,0001300391,Financial Services,Asset Management
+CTBI,COMMUNITY TRUST BANCORP INC /KY/,0000350852,Financial Services,Banks—Regional
+IGR,CBRE GLOBAL REAL ESTATE INCOME FUND,0001268884,Financial Services,Asset Management
+AMBC,AMBAC FINANCIAL GROUP INC,0000874501,Financial Services,Insurance—Specialty
+PFC,PREMIER FINANCIAL CORP,0000946647,Financial Services,Banks—Regional
+AC,"Associated Capital Group, Inc.",0001642122,Financial Services,Asset Management
+GHIX,"Gores Holdings IX, Inc.",0001894630,Financial Services,Shell Companies
+TMP,TOMPKINS FINANCIAL CORP,0001005817,Financial Services,Banks—Regional
+FMCC,FEDERAL HOME LOAN MORTGAGE CORP,0001026214,Financial Services,Mortgage Finance
+NXP,NUVEEN SELECT TAX FREE INCOME PORTFOLIO,0000883618,Financial Services,Asset Management
+EGBN,EAGLE BANCORP INC,0001050441,Financial Services,Banks—Regional
+FFC,Flaherty & Crumrine PREFERRED & INCOME SECURITIES FUND INC,0001174164,Financial Services,Asset Management
+ABIT,Athena Bitcoin Global,0001095146,Financial Services,Capital Markets
+HTD,JOHN HANCOCK TAX-ADVANTAGED DIVIDEND INCOME FUND,0001260041,Financial Services,Asset Management
+PCN,PIMCO CORPORATE & INCOME STRATEGY FUND,0001160990,Financial Services,Asset Management
+PFLT,PennantPark Floating Rate Capital Ltd.,0001504619,Financial Services,Asset Management
+FAX,"ABRDN ASIA-PACIFIC INCOME FUND, INC.",0000790500,Financial Services,Asset Management
+PRA,PROASSURANCE CORP,0001127703,Financial Services,Insurance—Property & Casualty
+ALTI,"AlTi Global, Inc.",0001838615,Financial Services,Asset Management
+HUT,Hut 8 Corp.,0001964789,Financial Services,Capital Markets
+AACT,Ares Acquisition Corp II,0001853138,Financial Services,Shell Companies
+PAXS,PIMCO Access Income Fund,0001886878,Financial Services,Asset Management
+CFB,"CROSSFIRST BANKSHARES, INC.",0001458412,Financial Services,Banks—Regional
+VMO,Invesco Municipal Opportunity Trust,0000884152,Financial Services,Asset Management
+TRIN,Trinity Capital Inc.,0001786108,Financial Services,Asset Management
+BETS,Bit Brother Ltd,0001543268,Financial Services,Capital Markets
+TCPC,BlackRock TCP Capital Corp.,0001370755,Financial Services,Asset Management
+VVR,Invesco Senior Income Trust,0001059386,Financial Services,Asset Management
+PFN,PIMCO Income Strategy Fund II,0001296250,Financial Services,Asset Management
+BOE,BlackRock Enhanced Global Dividend Trust,0001320375,Financial Services,Asset Management
+HFWA,HERITAGE FINANCIAL CORP /WA/,0001046025,Financial Services,Banks—Regional
+MHD,"BLACKROCK MUNIHOLDINGS FUND, INC.",0001034665,Financial Services,Asset Management
+AMRK,"A-Mark Precious Metals, Inc.",0001591588,Financial Services,Capital Markets
+MUJ,"BLACKROCK MUNIHOLDINGS NEW JERSEY QUALITY FUND, INC.",0001053988,Financial Services,Asset Management
+PVNC,"Apple iSports Group, Inc.",0001134982,Financial Services,Shell Companies
+NIE,Virtus Equity & Convertible Income Fund,0001383441,Financial Services,Asset Management
+FCBC,FIRST COMMUNITY BANKSHARES INC /VA/,0000859070,Financial Services,Banks—Regional
+TIPT,TIPTREE INC.,0001393726,Financial Services,Insurance—Specialty
+IGIC,International General Insurance Holdings Ltd.,0001794338,Financial Services,Insurance—Diversified
+APLD,Applied Digital Corp.,0001144879,Financial Services,Capital Markets
+HBT,"HBT Financial, Inc.",0000775215,Financial Services,Banks—Regional
+OSBC,OLD SECOND BANCORP INC,0000357173,Financial Services,Banks—Regional
+MBWM,MERCANTILE BANK CORP,0001042729,Financial Services,Banks—Regional
+HBIA,HILLS BANCORPORATION,0000732417,Financial Services,Banks—Regional
+NBBK,"NB Bancorp, Inc.",0001979330,Financial Services,Banks—Regional
+BME,BlackRock Health Sciences Trust,0001314966,Financial Services,Asset Management
+CION,CION Investment Corp,0001534254,Financial Services,Asset Management
+CCAP,"Crescent Capital BDC, Inc.",0001633336,Financial Services,Asset Management
+IFN,"INDIA FUND, INC.",0000917100,Financial Services,Asset Management
+TIGR,UP Fintech Holding Ltd,0001756699,Financial Services,Capital Markets
+CRD-A,CRAWFORD & CO,0000025475,Financial Services,Insurance Brokers
+GSBC,"GREAT SOUTHERN BANCORP, INC.",0000854560,Financial Services,Banks—Regional
+BHK,BLACKROCK CORE BOND TRUST,0001160864,Financial Services,Asset Management
+BIT,BlackRock Multi-Sector Income Trust,0001562818,Financial Services,Asset Management
+GGN,"GAMCO Global Gold, Natural Resources & Income Trust",0001313510,Financial Services,Asset Management
+VINP,Vinci Partners Investments Ltd.,0001826286,Financial Services,Asset Management
+UVSP,UNIVEST FINANCIAL Corp,0000102212,Financial Services,Banks—Regional
+RILY,"B. Riley Financial, Inc.",0001464790,Financial Services,Financial Conglomerates
+MCBS,"MetroCity Bankshares, Inc.",0001747068,Financial Services,Banks—Regional
+PML,PIMCO MUNICIPAL INCOME FUND II,0001170299,Financial Services,Asset Management
+CCD,Calamos Dynamic Convertible & Income Fund,0001602584,Financial Services,Asset Management
+IIM,Invesco Value Municipal Income Trust,0000885601,Financial Services,Asset Management
+MMU,WESTERN ASSET MANAGED MUNICIPALS FUND INC.,0000886043,Financial Services,Asset Management
+EZPW,EZCORP INC,0000876523,Financial Services,Credit Services
+BTO,JOHN HANCOCK FINANCIAL OPPORTUNITIES FUND,0000925683,Financial Services,Asset Management
+ETJ,Eaton Vance Risk-Managed Diversified Equity Income Fund,0001395325,Financial Services,Asset Management
+STK,"Columbia Seligman Premium Technology Growth Fund, Inc.",0001471420,Financial Services,Asset Management
+NKX,NUVEEN CALIFORNIA AMT-FREE QUALITY MUNICIPAL INCOME FUND,0001195738,Financial Services,Asset Management
+RWAY,Runway Growth Finance Corp.,0001653384,Financial Services,Credit Services
+EMD,WESTERN ASSET EMERGING MARKETS DEBT FUND INC.,0001227862,Financial Services,Asset Management
+HBNC,HORIZON BANCORP INC /IN/,0000706129,Financial Services,Banks—Regional
+UFCS,UNITED FIRE GROUP INC,0000101199,Financial Services,Insurance—Property & Casualty
+BFST,"Business First Bancshares, Inc.",0001624322,Financial Services,Banks—Regional
+BGY,BlackRock Enhanced International Dividend Trust,0001393299,Financial Services,Asset Management
+FDUS,FIDUS INVESTMENT Corp,0001513363,Financial Services,Asset Management
+CEM,ClearBridge MLP & Midstream Fund Inc.,0001488775,Financial Services,Asset Management
+VGM,Invesco Trust for Investment Grade Municipals,0000880892,Financial Services,Asset Management
+PDT,JOHN HANCOCK PREMIUM DIVIDEND FUND,0000855886,Financial Services,Asset Management
+SAGA,Sagaliam Acquisition Corp,0001855351,Financial Services,Shell Companies
+DIAX,Nuveen Dow 30sm Dynamic Overwrite Fund,0001608742,Financial Services,Asset Management
+VKQ,Invesco Municipal Trust,0000877463,Financial Services,Asset Management
+DSU,"BLACKROCK DEBT STRATEGIES FUND, INC.",0001051003,Financial Services,Asset Management
+WIW,WESTERN ASSET INFLATION-LINKED OPPORTUNITIES & INCOME FUND,0001267902,Financial Services,Asset Management
+TRST,TRUSTCO BANK CORP N Y,0000357301,Financial Services,Banks—Regional
+MSBI,"Midland States Bancorp, Inc.",0001466026,Financial Services,Banks—Regional
+PEO,"ADAMS NATURAL RESOURCES FUND, INC.",0000216851,Financial Services,Asset Management
+VEL,"Velocity Financial, Inc.",0001692376,Financial Services,Mortgage Finance
+CATC,CAMBRIDGE BANCORP,0000711772,Financial Services,Banks—Regional
+BGB,Blackstone Strategic Credit 2027 Term Fund,0001546429,Financial Services,Asset Management
+FMNB,FARMERS NATIONAL BANC CORP /OH/,0000709337,Financial Services,Banks—Regional
+BLE,BLACKROCK MUNICIPAL INCOME TRUST II,0001176194,Financial Services,Asset Management
+CPF,CENTRAL PACIFIC FINANCIAL CORP,0000701347,Financial Services,Banks—Regional
+IQI,Invesco Quality Municipal Income Trust,0000885125,Financial Services,Asset Management
+CCB,COASTAL FINANCIAL CORP,0001437958,Financial Services,Banks—Regional
+HTBK,HERITAGE COMMERCE CORP,0001053352,Financial Services,Banks—Regional
+IBCP,INDEPENDENT BANK CORP /MI/,0000039311,Financial Services,Banks—Regional
+NXJ,NUVEEN NEW JERSEY QUALITY MUNICIPAL INCOME FUND,0001087786,Financial Services,Asset Management
+MYD,"BLACKROCK MUNIYIELD FUND, INC.",0000879361,Financial Services,Asset Management
+ACIC,AMERICAN COASTAL INSURANCE Corp,0001401521,Financial Services,Insurance—Property & Casualty
+QD,Qudian Inc.,0001692705,Financial Services,Credit Services
+EQBK,EQUITY BANCSHARES INC,0001227500,Financial Services,Banks—Regional
+BLW,BLACKROCK Ltd DURATION INCOME TRUST,0001233681,Financial Services,Asset Management
+GAIN,GLADSTONE INVESTMENT CORPORATIONDE,0001321741,Financial Services,Asset Management
+THW,abrdn World Healthcare Fund,0001635977,Financial Services,Asset Management
+WULF,TERAWULF INC.,0001083301,Financial Services,Capital Markets
+DGICA,DONEGAL GROUP INC,0000800457,Financial Services,Insurance—Property & Casualty
+GHY,"PGIM Global High Yield Fund, Inc.",0001554697,Financial Services,Asset Management
+HPS,JOHN HANCOCK PREFERRED INCOME FUND III,0001215913,Financial Services,Asset Management
+NFBK,"Northfield Bancorp, Inc.",0001493225,Financial Services,Banks—Regional
+CCBG,CAPITAL CITY BANK GROUP INC,0000726601,Financial Services,Banks—Regional
+HONE,"HarborOne Bancorp, Inc.",0001769617,Financial Services,Banks—Regional
+BUI,"BlackRock Utilities, Infrastructure & Power Opportunities Trust",0001528988,Financial Services,Asset Management
+AMNB,AMERICAN NATIONAL BANKSHARES INC.,0000741516,Financial Services,Banks—Regional
+LBC,Luther Burbank Corp,0001475348,Financial Services,Banks—Regional
+NBB,Nuveen Taxable Municipal Income Fund,0001478888,Financial Services,Asset Management
+ATLC,Atlanticus Holdings Corp,0001464343,Financial Services,Credit Services
+VCV,Invesco California Value Municipal Income Trust,0000895531,Financial Services,Asset Management
+CAC,CAMDEN NATIONAL CORP,0000750686,Financial Services,Banks—Regional
+SMBC,"SOUTHERN MISSOURI BANCORP, INC.",0000916907,Financial Services,Banks—Regional
+UVE,"UNIVERSAL INSURANCE HOLDINGS, INC.",0000891166,Financial Services,Insurance—Property & Casualty
+MMD,MainStay MacKay DefinedTerm Municipal Opportunities Fund,0001518557,Financial Services,Asset Management
+ALCC,AltC Acquisition Corp.,0001849056,Financial Services,Shell Companies
+DHIL,DIAMOND HILL INVESTMENT GROUP INC,0000909108,Financial Services,Asset Management
+HFRO,HIGHLAND OPPORTUNITIES & INCOME FUND,0001710680,Financial Services,Asset Management
+FFWM,First Foundation Inc.,0001413837,Financial Services,Banks—Regional
+HAFC,HANMI FINANCIAL CORP,0001109242,Financial Services,Banks—Regional
+MCB,Metropolitan Bank Holding Corp.,0001476034,Financial Services,Banks—Regional
+BFK,BLACKROCK MUNICIPAL INCOME TRUST,0001137393,Financial Services,Asset Management
+MVF,"BLACKROCK MUNIVEST FUND, INC.",0000835948,Financial Services,Asset Management
+FRA,"BLACKROCK FLOATING RATE INCOME STRATEGIES FUND, INC.",0001259708,Financial Services,Asset Management
+EMO,ClearBridge Energy Midstream Opportunity Fund Inc.,0001517518,Financial Services,Asset Management
+HTBI,"HomeTrust Bancshares, Inc.",0001538263,Financial Services,Banks—Regional
+RMT,"ROYCE MICRO-CAP TRUST, INC.",0000912147,Financial Services,Asset Management
+GDOT,GREEN DOT CORP,0001386278,Financial Services,Credit Services
+THFF,FIRST FINANCIAL CORP /IN/,0000714562,Financial Services,Banks—Regional
+GCBC,GREENE COUNTY BANCORP INC,0001070524,Financial Services,Banks—Regional
+ALRS,ALERUS FINANCIAL CORP,0000903419,Financial Services,Banks—Regional
+PNNT,PENNANTPARK INVESTMENT CORP,0001383414,Financial Services,Asset Management
+QDMI,QDM International Inc.,0001094032,Financial Services,Insurance Brokers
+HRZN,Horizon Technology Finance Corp,0001487428,Financial Services,Asset Management
+NQP,NUVEEN PENNSYLVANIA QUALITY MUNICIPAL INCOME FUND,0000870780,Financial Services,Asset Management
+WASH,WASHINGTON TRUST BANCORP INC,0000737468,Financial Services,Banks—Regional
+TREE,"LendingTree, Inc.",0001434621,Financial Services,Financial Conglomerates
+SLAM,Slam Corp.,0001838162,Financial Services,Shell Companies
+GLAD,GLADSTONE CAPITAL CORP,0001143513,Financial Services,Asset Management
+HPI,JOHN HANCOCK PREFERRED INCOME FUND,0001176199,Financial Services,Asset Management
+VALU,VALUE LINE INC,0000717720,Financial Services,Financial Data & Stock Exchanges
+ISD,"PGIM High Yield Bond Fund, Inc.",0001534880,Financial Services,Asset Management
+CCNE,CNB FINANCIAL CORP/PA,0000736772,Financial Services,Banks—Regional
+SPFI,"SOUTH PLAINS FINANCIAL, INC.",0001163668,Financial Services,Banks—Regional
+JPI,Nuveen Preferred & Income Term Fund,0001547994,Financial Services,Asset Management
+PGC,PEAPACK GLADSTONE FINANCIAL CORP,0001050743,Financial Services,Banks—Regional
+HNOI,"HNO International, Inc.",0001342916,Financial Services,Financial Data & Stock Exchanges
+BHRB,Burke & Herbert Financial Services Corp.,0001964333,Financial Services,Banks—Regional
+MUA,"BLACKROCK MUNIASSETS FUND, INC.",0000901243,Financial Services,Asset Management
+NPFD,Nuveen Variable Rate Preferred & Income Fund,0001865389,Financial Services,Asset Management
+YRD,Yiren Digital Ltd.,0001631761,Financial Services,Credit Services
+AROW,ARROW FINANCIAL CORP,0000717538,Financial Services,Banks—Regional
+AVK,ADVENT CONVERTIBLE & INCOME FUND,0001219120,Financial Services,Asset Management
+KRNY,Kearny Financial Corp.,0001617242,Financial Services,Banks—Regional
+GUT,GABELLI UTILITY TRUST,0001080720,Financial Services,Asset Management
+EVN,EATON VANCE MUNICIPAL INCOME TRUST,0001074540,Financial Services,Asset Management
+IGD,Voya GLOBAL EQUITY DIVIDEND & PREMIUM OPPORTUNITY FUND,0001285890,Financial Services,Asset Management
+BETR,Better Home & Finance Holding Co,0001835856,Financial Services,Mortgage Finance
+GLRE,"GREENLIGHT CAPITAL RE, LTD.",0001385613,Financial Services,Insurance—Reinsurance
+GBLI,"Global Indemnity Group, LLC",0001494904,Financial Services,Insurance—Property & Casualty
+FSBC,FIVE STAR BANCORP,0001275168,Financial Services,Banks—Regional
+ETO,Eaton Vance Tax-Advantaged Global Dividend Opportunities Fund,0001281926,Financial Services,Asset Management
+EAD,ALLSPRING INCOME OPPORTUNITIES FUND,0001210123,Financial Services,Asset Management
+SMMF,"SUMMIT FINANCIAL GROUP, INC.",0000811808,Financial Services,Banks—Regional
+NETD,Nabors Energy Transition Corp. II,0001975218,Financial Services,Shell Companies
+OPY,OPPENHEIMER HOLDINGS INC,0000791963,Financial Services,Capital Markets
+MYN,"BLACKROCK MUNIYIELD NEW YORK QUALITY FUND, INC.",0000882150,Financial Services,Asset Management
+TPVG,TriplePoint Venture Growth BDC Corp.,0001580345,Financial Services,Asset Management
+GBAB,Guggenheim Taxable Municipal Bond & Investment Grade Debt Trust,0001495825,Financial Services,Asset Management
+CHW,Calamos Global Dynamic Income Fund,0001396277,Financial Services,Asset Management
+ESQ,"Esquire Financial Holdings, Inc.",0001531031,Financial Services,Banks—Regional
+ETB,Eaton Vance Tax-Managed Buy-Write Income Fund,0001308927,Financial Services,Asset Management
+FSD,FIRST TRUST HIGH INCOME LONG/SHORT FUND,0001494530,Financial Services,Asset Management
+HCVI,Hennessy Capital Investment Corp. VI,0001842937,Financial Services,Shell Companies
+FEI,FIRST TRUST MLP & ENERGY INCOME FUND,0001556336,Financial Services,Asset Management
+FFIC,FLUSHING FINANCIAL CORP,0000923139,Financial Services,Banks—Regional
+WDH,Waterdrop Inc.,0001823986,Financial Services,Insurance—Diversified
+EFR,EATON VANCE SENIOR FLOATING RATE TRUST,0001258623,Financial Services,Asset Management
+VKI,Invesco Advantage Municipal Income Trust II,0000908993,Financial Services,Asset Management
+GHI,Greystone Housing Impact Investors LP,0001059142,Financial Services,Mortgage Finance
+BHB,BAR HARBOR BANKSHARES,0000743367,Financial Services,Banks—Regional
+HIO,WESTERN ASSET HIGH INCOME OPPORTUNITY FUND INC.,0000910068,Financial Services,Asset Management
+MCI,BARINGS CORPORATE INVESTORS,0000275694,Financial Services,Asset Management
+MOFG,"MidWestOne Financial Group, Inc.",0001412665,Financial Services,Banks—Regional
+DFP,Flaherty & Crumrine Dynamic Preferred & Income Fund Inc,0001559991,Financial Services,Asset Management
+LEO,"BNY MELLON STRATEGIC MUNICIPALS, INC.",0000818972,Financial Services,Asset Management
+HQL,abrdn Life Sciences Investors,0000884121,Financial Services,Asset Management
+FFA,FIRST TRUST ENHANCED EQUITY INCOME FUND,0001291334,Financial Services,Asset Management
+NOTR,Nowtransit Inc,0001784440,Financial Services,Shell Companies
+SMBK,SMARTFINANCIAL INC.,0001038773,Financial Services,Banks—Regional
+NML,Neuberger Berman Energy Infrastructure & Income Fund Inc.,0001562051,Financial Services,Asset Management
+SHBI,SHORE BANCSHARES INC,0001035092,Financial Services,Banks—Regional
+CSTR,"CapStar Financial Holdings, Inc.",0001676479,Financial Services,Banks—Regional
+PPT,PUTNAM PREMIER INCOME TRUST,0000827773,Financial Services,Asset Management
+OPFI,OppFi Inc.,0001818502,Financial Services,Credit Services
+BFZ,BLACKROCK CALIFORNIA MUNICIPAL INCOME TRUST,0001137391,Financial Services,Asset Management
+RRAC,Rigel Resource Acquisition Corp.,0001860879,Financial Services,Shell Companies
+RRBI,RED RIVER BANCSHARES INC,0001071236,Financial Services,Banks—Regional
+KTF,DWS MUNICIPAL INCOME TRUST,0000839533,Financial Services,Asset Management
+ACP,abrdn Income Credit Strategies Fund,0001503290,Financial Services,Asset Management
+KIO,KKR Income Opportunities Fund,0001515940,Financial Services,Asset Management
+ANSC,Agriculture & Natural Solutions Acquisition Corp,0001854149,Financial Services,Shell Companies
+EFT,Eaton Vance Floating-Rate Income Trust,0001288992,Financial Services,Asset Management
+HPF,JOHN HANCOCK PREFERRED INCOME FUND II,0001189740,Financial Services,Asset Management
+SUPV,Grupo Supervielle S.A.,0001517399,Financial Services,Banks—Regional
+MPB,MID PENN BANCORP INC,0000879635,Financial Services,Banks—Regional
+MCBC,MACATAWA BANK CORP,0001053584,Financial Services,Banks—Regional
+JRVR,"James River Group Holdings, Ltd.",0001620459,Financial Services,Insurance—Specialty
+PMO,PUTNAM MUNICIPAL OPPORTUNITIES TRUST,0000900422,Financial Services,Asset Management
+BGR,BlackRock Energy & Resources Trust,0001306550,Financial Services,Asset Management
+NAN,NUVEEN NEW YORK QUALITY MUNICIPAL INCOME FUND,0001074769,Financial Services,Asset Management
+GNTY,GUARANTY BANCSHARES INC /TX/,0001058867,Financial Services,Banks—Regional
+IREN,Iris Energy Ltd,0001878848,Financial Services,Capital Markets
+SVII,Spring Valley Acquisition Corp. II,0001843477,Financial Services,Shell Companies
+SOR,SOURCE CAPITAL INC /DE/,0000091847,Financial Services,Asset Management
+DPG,Duff & Phelps Utility & Infrastructure Fund Inc.,0001515671,Financial Services,Asset Management
+MIY,"BLACKROCK MUNIYIELD MICHIGAN QUALITY FUND, INC.",0000890393,Financial Services,Asset Management
+EBTC,ENTERPRISE BANCORP INC /MA/,0001018399,Financial Services,Banks—Regional
+BWB,Bridgewater Bancshares Inc,0001341317,Financial Services,Banks—Regional
+PFL,PIMCO INCOME STRATEGY FUND,0001244183,Financial Services,Asset Management
+IPXX,Inflection Point Acquisition Corp. II,0001970622,Financial Services,Shell Companies
+FANH,FANHUA INC.,0001413855,Financial Services,Insurance Brokers
+RBB,RBB Bancorp,0001499422,Financial Services,Banks—Regional
+MHN,"BLACKROCK MUNIHOLDINGS NEW YORK QUALITY FUND, INC.",0001038186,Financial Services,Asset Management
+TYG,TORTOISE ENERGY INFRASTRUCTURE CORP,0001268533,Financial Services,Asset Management
+ITIC,INVESTORS TITLE CO,0000720858,Financial Services,Insurance—Specialty
+VADP,Vado Corp.,0001700849,Financial Services,Shell Companies
+RENE,Cartesian Growth Corp II,0001889112,Financial Services,Shell Companies
+FOF,"Cohen & Steers Closed-End Opportunity Fund, Inc.",0001375340,Financial Services,Asset Management
+AWP,abrdn Global Premier Properties Fund,0001390195,Financial Services,Asset Management
+JRI,Nuveen Real Asset Income & Growth Fund,0001539337,Financial Services,Asset Management
+MIN,MFS INTERMEDIATE INCOME TRUST,0000826735,Financial Services,Asset Management
+RFI,COHEN & STEERS TOTAL RETURN REALTY FUND INC,0000891290,Financial Services,Asset Management
+BRW,Saba Capital Income & Opportunities Fund,0000826020,Financial Services,Asset Management
+ASG,LIBERTY ALL STAR GROWTH FUND INC.,0000786035,Financial Services,Asset Management
+ARDC,"Ares Dynamic Credit Allocation Fund, Inc.",0001515324,Financial Services,Asset Management
+SAR,SARATOGA INVESTMENT CORP.,0001377936,Financial Services,Asset Management
+MBI,MBIA INC,0000814585,Financial Services,Insurance—Specialty
+CARE,"Carter Bankshares, Inc.",0001829576,Financial Services,Banks—Regional
+AFB,ALLIANCEBERNSTEIN NATIONAL MUNICIPAL INCOME FUND,0001162027,Financial Services,Asset Management
+ACNB,ACNB CORP,0000715579,Financial Services,Banks—Regional
+SCM,Stellus Capital Investment Corp,0001551901,Financial Services,Asset Management
+IVCB,Investcorp Europe Acquisition Corp I,0001857410,Financial Services,Shell Companies
+EDD,"Morgan Stanley Emerging Markets Domestic Debt Fund, Inc.",0001388141,Financial Services,Asset Management
+HYAC,Haymaker Acquisition Corp. 4,0001970509,Financial Services,Shell Companies
+NBH,NEUBERGER BERMAN MUNICIPAL FUND INC.,0001178839,Financial Services,Asset Management
+HIX,WESTERN ASSET HIGH INCOME FUND II INC.,0001058239,Financial Services,Asset Management
+JWSM,Jaws Mustang Acquisition Corp,0001831359,Financial Services,Shell Companies
+FRST,Primis Financial Corp.,0001325670,Financial Services,Banks—Regional
+HBCP,"HOME BANCORP, INC.",0001436425,Financial Services,Banks—Regional
+RMM,"RiverNorth Managed Duration Municipal Income Fund, Inc.",0001771226,Financial Services,Asset Management
+NCV,Virtus Convertible & Income Fund,0001214935,Financial Services,Asset Management
+NPCT,Nuveen Core Plus Impact Fund,0001835068,Financial Services,Asset Management
+OIA,Invesco Municipal Income Opportunities Trust,0000835333,Financial Services,Asset Management
+BYM,BLACKROCK MUNICIPAL INCOME QUALITY TRUST,0001181187,Financial Services,Asset Management
+HIVE,HIVE Digital Technologies Ltd.,0001720424,Financial Services,Capital Markets
+NCA,NUVEEN CALIFORNIA MUNICIPAL VALUE FUND,0000818851,Financial Services,Asset Management
+JGH,Nuveen Global High Income Fund,0001615905,Financial Services,Asset Management
+WTBA,WEST BANCORPORATION INC,0001166928,Financial Services,Banks—Regional
+SKGR,SK Growth Opportunities Corp,0001912461,Financial Services,Shell Companies
+WHF,"WhiteHorse Finance, Inc.",0001552198,Financial Services,Asset Management
+FISI,FINANCIAL INSTITUTIONS INC,0000862831,Financial Services,Banks—Regional
+CZNC,CITIZENS & NORTHERN CORP,0000810958,Financial Services,Banks—Regional
+VBNK,VersaBank,0001690639,Financial Services,Banks—Regional
+PMM,PUTNAM MANAGED MUNICIPAL INCOME TRUST,0000844790,Financial Services,Asset Management
+CBNK,Capital Bancorp Inc,0001419536,Financial Services,Banks—Regional
+FBIZ,"FIRST BUSINESS FINANCIAL SERVICES, INC.",0001521951,Financial Services,Banks—Regional
+BCAL,Southern California Bancorp \ CA,0001795815,Financial Services,Banks—Regional
+DSM,"BNY MELLON STRATEGIC MUNICIPAL BOND FUND, INC.",0000855887,Financial Services,Asset Management
+LX,LexinFintech Holdings Ltd.,0001708259,Financial Services,Credit Services
+PFIS,PEOPLES FINANCIAL SERVICES CORP.,0001056943,Financial Services,Banks—Regional
+BGH,BARINGS GLOBAL SHORT DURATION HIGH YIELD FUND,0001521404,Financial Services,Asset Management
+FMAO,FARMERS & MERCHANTS BANCORP INC,0000792966,Financial Services,Banks—Regional
+RCS,"PIMCO STRATEGIC INCOME FUND, INC",0000916183,Financial Services,Asset Management
+BGT,BLACKROCK FLOATING RATE INCOME TRUST,0001287480,Financial Services,Asset Management
+TWN,TAIWAN FUND INC,0000804123,Financial Services,Asset Management
+BMRC,Bank of Marin Bancorp,0001403475,Financial Services,Banks—Regional
+NODK,"NI Holdings, Inc.",0001681206,Financial Services,Insurance—Property & Casualty
+GOCO,"GoHealth, Inc.",0001808220,Financial Services,Insurance Brokers
+ASA,ASA Gold & Precious Metals Ltd,0001230869,Financial Services,Asset Management
+MXF,MEXICO FUND INC,0000065433,Financial Services,Asset Management
+SPXX,Nuveen S&P 500 Dynamic Overwrite Fund,0001338561,Financial Services,Asset Management
+TRTL,TortoiseEcofin Acquisition Corp. III,0001847112,Financial Services,Shell Companies
+ORRF,ORRSTOWN FINANCIAL SERVICES INC,0000826154,Financial Services,Banks—Regional
+FEN,FIRST TRUST ENERGY INCOME & GROWTH FUND,0001284940,Financial Services,Asset Management
+BSRR,SIERRA BANCORP,0001130144,Financial Services,Banks—Regional
+HYI,Western Asset High Yield Defined Opportunity Fund Inc.,0001497186,Financial Services,Asset Management
+NEWT,"NewtekOne, Inc.",0001587987,Financial Services,Banks—Regional
+CAF,"Morgan Stanley China A Share Fund, Inc.",0001368493,Financial Services,Asset Management
+MVBF,MVB FINANCIAL CORP,0001277902,Financial Services,Banks—Regional
+MCR,MFS CHARTER INCOME TRUST,0000851170,Financial Services,Asset Management
+BKCC,BlackRock Capital Investment Corp,0001326003,Financial Services,Asset Management
+UNTY,UNITY BANCORP INC /NJ/,0000920427,Financial Services,Banks—Regional
+INBK,First Internet Bancorp,0001562463,Financial Services,Banks—Regional
+SFST,SOUTHERN FIRST BANCSHARES INC,0001090009,Financial Services,Banks—Regional
+PRLH,Pearl Holdings Acquisition Corp,0001856161,Financial Services,Shell Companies
+ERC,ALLSPRING MULTI-SECTOR INCOME FUND,0001227073,Financial Services,Asset Management
+FDBC,FIDELITY D & D BANCORP INC,0001098151,Financial Services,Banks—Regional
+EOT,Eaton Vance National Municipal Opportunities Trust,0001454741,Financial Services,Asset Management
+MMT,MFS MULTIMARKET INCOME TRUST,0000809173,Financial Services,Asset Management
+SBT,"Sterling Bancorp, Inc.",0001680379,Financial Services,Banks—Regional
+EMLD,FTAC Emerald Acquisition Corp.,0001889123,Financial Services,Shell Companies
+FNLC,"First Bancorp, Inc /ME/",0000765207,Financial Services,Banks—Regional
+DBL,DoubleLine Opportunistic Credit Fund,0001525201,Financial Services,Asset Management
+LCAA,L Catterton Asia Acquisition Corp,0001841024,Financial Services,Shell Companies
+FCT,FIRST TRUST SENIOR FLOATING RATE INCOME FUND II,0001282850,Financial Services,Asset Management
+TCBX,"Third Coast Bancshares, Inc.",0001781730,Financial Services,Banks—Regional
+FDOC,"FUEL DOCTOR HOLDINGS, INC.",0001459188,Financial Services,Shell Companies
+BNY,BLACKROCK NEW YORK MUNICIPAL INCOME TRUST,0001137390,Financial Services,Asset Management
+FSBW,"FS Bancorp, Inc.",0001530249,Financial Services,Banks—Regional
+FTF,FRANKLIN LTD DURATION INCOME TRUST,0001233087,Financial Services,Asset Management
+LNKB,"LINKBANCORP, Inc.",0001756701,Financial Services,Banks—Regional
+BKT,"BLACKROCK INCOME TRUST, INC.",0000832327,Financial Services,Asset Management
+WSBF,"Waterstone Financial, Inc.",0001569994,Financial Services,Banks—Regional
+CIVB,"CIVISTA BANCSHARES, INC.",0000944745,Financial Services,Banks—Regional
+BSVN,Bank7 Corp.,0001746129,Financial Services,Banks—Regional
+NRIM,NORTHRIM BANCORP INC,0001163370,Financial Services,Banks—Regional
+TDF,TEMPLETON DRAGON FUND INC,0000919893,Financial Services,Asset Management
+PLAO,Patria Latin American Opportunity Acquisition Corp.,0001849737,Financial Services,Shell Companies
+FLIC,FIRST OF LONG ISLAND CORP,0000740663,Financial Services,Banks—Regional
+JMSB,"John Marshall Bancorp, Inc.",0001710482,Financial Services,Banks—Regional
+CTR,ClearBridge MLP & Midstream Total Return Fund Inc.,0001547341,Financial Services,Asset Management
+PMX,PIMCO MUNICIPAL INCOME FUND III,0001181506,Financial Services,Asset Management
+AEF,"ABRDN EMERGING MARKETS EQUITY INCOME FUND, INC.",0000846676,Financial Services,Asset Management
+RIV,"RIVERNORTH OPPORTUNITIES FUND, INC.",0001501072,Financial Services,Asset Management
+FIF,FIRST TRUST ENERGY INFRASTRUCTURE FUND,0001513789,Financial Services,Asset Management
+PMF,PIMCO MUNICIPAL INCOME FUND,0001140392,Financial Services,Asset Management
+TEI,TEMPLETON EMERGING MARKETS INCOME FUND,0000909112,Financial Services,Asset Management
+NUW,Nuveen AMT-Free Municipal Value Fund,0001450445,Financial Services,Asset Management
+BTBT,"Bit Digital, Inc",0001710350,Financial Services,Capital Markets
+PBFS,"Pioneer Bancorp, Inc./MD",0001769663,Financial Services,Banks—Regional
+OBT,"Orange County Bancorp, Inc. /DE/",0001754226,Financial Services,Banks—Regional
+CZFS,CITIZENS FINANCIAL SERVICES INC,0000739421,Financial Services,Banks—Regional
+SCD,LMP CAPITAL & INCOME FUND INC.,0001270131,Financial Services,Asset Management
+VPV,Invesco Pennsylvania Value Municipal Income Trust,0000895528,Financial Services,Asset Management
+APTM,Plum Acquisition Corp. III,0001845550,Financial Services,Shell Companies
+HMST,"HomeStreet, Inc.",0001518715,Financial Services,Banks—Regional
+MFIN,MEDALLION FINANCIAL CORP,0001000209,Financial Services,Credit Services
+RLTY,Cohen & Steers Real Estate Opportunities & Income Fund,0001866874,Financial Services,Asset Management
+ACV,Virtus Diversified Income & Convertible Fund,0001636289,Financial Services,Asset Management
+SEZL,Sezzle Inc.,0001662991,Financial Services,Credit Services
+PSF,"Cohen & Steers Select Preferred & Income Fund, Inc.",0001498612,Financial Services,Asset Management
+AGD,abrdn Global Dynamic Dividend Fund,0001362481,Financial Services,Asset Management
+EVM,EATON VANCE CALIFORNIA MUNICIPAL BOND FUND,0001177161,Financial Services,Asset Management
+BCML,BayCom Corp,0001730984,Financial Services,Banks—Regional
+MQT,"BLACKROCK MUNIYIELD QUALITY FUND II, INC.",0000887394,Financial Services,Asset Management
+IIF,"MORGAN STANLEY INDIA INVESTMENT FUND, INC.",0000916618,Financial Services,Asset Management
+SSBK,"Southern States Bancshares, Inc.",0001689731,Financial Services,Banks—Regional
+FUND,SPROTT FOCUS TRUST INC.,0000825202,Financial Services,Asset Management
+TSI,TCW STRATEGIC INCOME FUND INC,0000809559,Financial Services,Asset Management
+PCB,PCB BANCORP,0001423869,Financial Services,Banks—Regional
+MVT,"BLACKROCK MUNIVEST FUND II, INC.",0000897269,Financial Services,Asset Management
+CNDA,Concord Acquisition Corp II,0001851959,Financial Services,Shell Companies
+HIPO,Hippo Holdings Inc.,0001828105,Financial Services,Insurance—Specialty
+NCZ,Virtus Convertible & Income Fund II,0001227857,Financial Services,Asset Management
+USCB,"USCB FINANCIAL HOLDINGS, INC.",0001901637,Financial Services,Banks—Regional
+NECB,"NorthEast Community Bancorp, Inc./MD/",0001847398,Financial Services,Banks—Regional
+CONX,CONX Corp.,0001823000,Financial Services,Shell Companies
+MUE,"BLACKROCK MUNIHOLDINGS QUALITY FUND II, INC.",0001071899,Financial Services,Asset Management
+JCE,Nuveen Core Equity Alpha Fund,0001385763,Financial Services,Asset Management
+RM,Regional Management Corp.,0001519401,Financial Services,Credit Services
+NWFL,NORWOOD FINANCIAL CORP,0001013272,Financial Services,Banks—Regional
+BLFY,Blue Foundry Bancorp,0001846017,Financial Services,Banks—Regional
+OCN,OCWEN FINANCIAL CORP,0000873860,Financial Services,Mortgage Finance
+JRS,NUVEEN REAL ESTATE INCOME FUND,0001158289,Financial Services,Asset Management
+TSBK,TIMBERLAND BANCORP INC,0001046050,Financial Services,Banks—Regional
+PDLB,"Ponce Financial Group, Inc.",0001874071,Financial Services,Banks—Regional
+PHT,"PIONEER HIGH INCOME FUND, INC.",0001166258,Financial Services,Asset Management
+JOF,JAPAN SMALLER CAPITALIZATION FUND INC,0000859796,Financial Services,Asset Management
+SABA,TEMPLETON GLOBAL INCOME FUND,0000828803,Financial Services,Asset Management
+CVLY,CODORUS VALLEY BANCORP INC,0000806279,Financial Services,Banks—Regional
+MFM,MFS MUNICIPAL INCOME TRUST,0000801961,Financial Services,Asset Management
+SBXC,SilverBox Corp III,0001859686,Financial Services,Shell Companies
+AFT,Apollo Senior Floating Rate Fund Inc.,0001502573,Financial Services,Asset Management
+PLBC,PLUMAS BANCORP,0001168455,Financial Services,Banks—Regional
+NHS,Neuberger Berman High Yield Strategies Fund Inc.,0001487610,Financial Services,Asset Management
+GLO,Clough Global Opportunities Fund,0001350869,Financial Services,Asset Management
+CHMG,CHEMUNG FINANCIAL CORP,0000763563,Financial Services,Banks—Regional
+PHYT,Pyrophyte Acquisition Corp.,0001848756,Financial Services,Shell Companies
+PMTS,CPI Card Group Inc.,0001641614,Financial Services,Credit Services
+SWKH,SWK Holdings Corp,0001089907,Financial Services,Asset Management
+CFFS,CF Acquisition Corp. VII,0001839519,Financial Services,Shell Companies
+AIF,Apollo Tactical Income Fund Inc.,0001526697,Financial Services,Asset Management
+VTN,Invesco Trust for Investment Grade New York Municipals,0000883265,Financial Services,Asset Management
+OVLY,Oak Valley Bancorp,0001431567,Financial Services,Banks—Regional
+DHY,CREDIT SUISSE HIGH YIELD BOND FUND,0001061353,Financial Services,Asset Management
+PKBK,"PARKE BANCORP, INC.",0001315399,Financial Services,Banks—Regional
+CVCY,CENTRAL VALLEY COMMUNITY BANCORP,0001127371,Financial Services,Banks—Regional
+BKN,"BLACKROCK INVESTMENT QUALITY MUNICIPAL TRUST, INC.",0000894242,Financial Services,Asset Management
+FVCB,"FVCBankcorp, Inc.",0001675644,Financial Services,Banks—Regional
+LGI,LAZARD GLOBAL TOTAL RETURN & INCOME FUND INC,0001278211,Financial Services,Asset Management
+CBAN,COLONY BANKCORP INC,0000711669,Financial Services,Banks—Regional
+NFYS,Enphys Acquisition Corp.,0001850502,Financial Services,Shell Companies
+KVAC,Keen Vision Acquisition Corp.,0001889983,Financial Services,Shell Companies
+BWFG,"Bankwell Financial Group, Inc.",0001505732,Financial Services,Banks—Regional
+MHI,"PIONEER MUNICIPAL HIGH INCOME FUND, INC.",0001223026,Financial Services,Asset Management
+BPRN,"Princeton Bancorp, Inc.",0001913971,Financial Services,Banks—Regional
+SEDA,SDCL EDGE Acquisition Corp,0001846975,Financial Services,Shell Companies
+CALB,California BanCorp,0001752036,Financial Services,Banks—Regional
+MBCN,MIDDLEFIELD BANC CORP,0000836147,Financial Services,Banks—Regional
+COFS,CHOICEONE FINANCIAL SERVICES INC,0000803164,Financial Services,Banks—Regional
+MCAA,Mountain & Co. I Acquisition Corp.,0001856995,Financial Services,Shell Companies
+NPV,NUVEEN VIRGINIA QUALITY MUNICIPAL INCOME FUND,0000897421,Financial Services,Asset Management
+HIE,Miller/Howard High Income Equity Fund,0001519505,Financial Services,Asset Management
+OPP,"RiverNorth/DoubleLine Strategic Opportunity Fund, Inc.",0001678130,Financial Services,Asset Management
+MNTN,Everest Consolidator Acquisition Corp,0001863719,Financial Services,Shell Companies
+ETX,Eaton Vance Municipal Income 2028 Term Trust,0001563696,Financial Services,Asset Management
+EOD,ALLSPRING GLOBAL DIVIDEND OPPORTUNITY FUND,0001386067,Financial Services,Asset Management
+MAV,"PIONEER MUNICIPAL HIGH INCOME ADVANTAGE FUND, INC.",0001258943,Financial Services,Asset Management
+XPDB,Power & Digital Infrastructure Acquisition II Corp.,0001855474,Financial Services,Shell Companies
+SLQT,"SelectQuote, Inc.",0001794783,Financial Services,Insurance Brokers
+MFH,Mercurity Fintech Holding Inc.,0001527762,Financial Services,Capital Markets
+WIA,WESTERN ASSET INFLATION-LINKED INCOME FUND,0001254370,Financial Services,Asset Management
+FFNW,"First Financial Northwest, Inc.",0001401564,Financial Services,Banks—Regional
+DMB,"BNY Mellon Municipal Bond Infrastructure Fund, Inc.",0001565381,Financial Services,Asset Management
+GDO,WESTERN ASSET GLOBAL CORPORATE DEFINED OPPORTUNITY FUND INC.,0001472341,Financial Services,Asset Management
+LCNB,LCNB CORP,0001074902,Financial Services,Banks—Regional
+XYF,X Financial,0001725033,Financial Services,Credit Services
+CPSS,"CONSUMER PORTFOLIO SERVICES, INC.",0000889609,Financial Services,Credit Services
+PCK,PIMCO CALIFORNIA MUNICIPAL INCOME FUND II,0001170300,Financial Services,Asset Management
+PEGR,Project Energy Reimagined Acquisition Corp.,0001847241,Financial Services,Shell Companies
+IGI,Western Asset Investment Grade Defined Opportunity Trust Inc.,0001462586,Financial Services,Asset Management
+EHTH,"eHealth, Inc.",0001333493,Financial Services,Insurance Brokers
+NTG,"Tortoise Midstream Energy Fund, Inc.",0001490286,Financial Services,Asset Management
+VBF,Invesco Bond Fund,0000005094,Financial Services,Asset Management
+SNFCA,SECURITY NATIONAL FINANCIAL CORP,0000318673,Financial Services,Mortgage Finance
+IVCA,Investcorp India Acquisition Corp,0001852889,Financial Services,Shell Companies
+ESSA,"ESSA Bancorp, Inc.",0001382230,Financial Services,Banks—Regional
+PCQ,PIMCO CALIFORNIA MUNICIPAL INCOME FUND,0001140411,Financial Services,Asset Management
+ENX,EATON VANCE NEW YORK MUNICIPAL BOND FUND,0001177162,Financial Services,Asset Management
+TRIS,Tristar Acquisition I Corp.,0001852736,Financial Services,Shell Companies
+OXSQ,Oxford Square Capital Corp.,0001259429,Financial Services,Asset Management
+BSL,Blackstone Senior Floating Rate 2027 Term Fund,0001486298,Financial Services,Asset Management
+EMF,TEMPLETON EMERGING MARKETS FUND,0000809708,Financial Services,Asset Management
+MHLD,"Maiden Holdings, Ltd.",0001412100,Financial Services,Insurance—Reinsurance
+PTMN,Portman Ridge Finance Corp,0001372807,Financial Services,Asset Management
+APCA,AP Acquisition Corp,0001862993,Financial Services,Shell Companies
+BCBP,BCB BANCORP INC,0001228454,Financial Services,Banks—Regional
+PVBC,"Provident Bancorp, Inc. /MD/",0001778784,Financial Services,Banks—Regional
+CFFI,C & F FINANCIAL CORP,0000913341,Financial Services,Banks—Regional
+WNEB,"Western New England Bancorp, Inc.",0001157647,Financial Services,Banks—Regional
+VAQC,Vector Acquisition Corp II,0001842386,Financial Services,Shell Companies
+NKSH,NATIONAL BANKSHARES INC,0000796534,Financial Services,Banks—Regional
+INSI,Insight Select Income Fund,0000030125,Financial Services,Asset Management
+HRTG,"Heritage Insurance Holdings, Inc.",0001598665,Financial Services,Insurance—Property & Casualty
+HYB,NEW AMERICA HIGH INCOME FUND INC,0000825345,Financial Services,Asset Management
+DHF,BNY MELLON HIGH YIELD STRATEGIES FUND,0001057861,Financial Services,Asset Management
+HWBK,"HAWTHORN BANCSHARES, INC.",0000893847,Financial Services,Banks—Regional
+EVE,EVe Mobility Acquisition Corp,0001861121,Financial Services,Shell Companies
+ISTR,Investar Holding Corp,0001602658,Financial Services,Banks—Regional
+PZC,PIMCO CALIFORNIA MUNICIPAL INCOME FUND III,0001181504,Financial Services,Asset Management
+VERY,"Vericity, Inc.",0001575434,Financial Services,Insurance—Life
+GAQ,Generation Asia I Acquisition Ltd,0001852061,Financial Services,Shell Companies
+CFNB,CALIFORNIA FIRST LEASING CORP,0000803016,Financial Services,Credit Services
+MPV,BARINGS PARTICIPATION INVESTORS,0000831655,Financial Services,Asset Management
+LCW,Learn CW Investment Corp,0001847577,Financial Services,Shell Companies
+EHI,WESTERN ASSET GLOBAL HIGH INCOME FUND INC.,0001228509,Financial Services,Asset Management
+BRKH,BurTech Acquisition Corp.,0001871638,Financial Services,Shell Companies
+FT,FRANKLIN UNIVERSAL TRUST,0000833040,Financial Services,Asset Management
+ATLO,AMES NATIONAL CORP,0001132651,Financial Services,Banks—Regional
+GRX,Gabelli Healthcare & WellnessRx Trust,0001391437,Financial Services,Asset Management
+EVBN,EVANS BANCORP INC,0000842518,Financial Services,Banks—Regional
+PIM,PUTNAM MASTER INTERMEDIATE INCOME TRUST,0000830622,Financial Services,Asset Management
+HCMA,HCM Acquisition Corp,0001845368,Financial Services,Shell Companies
+VABK,Virginia National Bankshares Corp,0001572334,Financial Services,Banks—Regional
+CIK,CREDIT SUISSE ASSET MANAGEMENT INCOME FUND INC,0000810766,Financial Services,Asset Management
+CBH,Virtus Convertible & Income 2024 Target Term Fund,0001701809,Financial Services,Asset Management
+NRO,NEUBERGER BERMAN REAL ESTATE SECURITIES INCOME FUND INC,0001261166,Financial Services,Asset Management
+SVMB,"Jingbo Technology, Inc.",0001647822,Financial Services,Shell Companies
+NNY,NUVEEN NEW YORK MUNICIPAL VALUE FUND,0000818850,Financial Services,Asset Management
+MRCC,MONROE CAPITAL Corp,0001512931,Financial Services,Asset Management
+ALCY,Alchemy Investments Acquisition Corp 1,0001901336,Financial Services,Shell Companies
+FPL,FIRST TRUST NEW OPPORTUNITIES MLP & ENERGY FUND,0001589420,Financial Services,Asset Management
+EIC,Eagle Point Income Co Inc.,0001754836,Financial Services,Asset Management
+MPA,BLACKROCK MUNIYIELD PENNSYLVANIA QUALITY FUND,0000891038,Financial Services,Asset Management
+HHLA,HH&L Acquisition Co.,0001824185,Financial Services,Shell Companies
+FLC,FLAHERTY & CRUMRINE TOTAL RETURN FUND INC,0001245648,Financial Services,Asset Management
+SAMG,Silvercrest Asset Management Group Inc.,0001549966,Financial Services,Asset Management
+OFS,OFS Capital Corp,0001487918,Financial Services,Asset Management
+ISBA,ISABELLA BANK Corp,0000842517,Financial Services,Banks—Regional
+TEAF,ECOFIN SUSTAINABLE & SOCIAL IMPACT TERM FUND,0001704299,Financial Services,Asset Management
+BGX,Blackstone Long-Short Credit Income Fund,0001504234,Financial Services,Asset Management
+IDE,"Voya Infrastructure, Industrials & Materials Fund",0001417802,Financial Services,Asset Management
+ESHA,ESH Acquisition Corp.,0001918661,Financial Services,Shell Companies
+ROSS,Ross Acquisition Corp II,0001841610,Financial Services,Shell Companies
+BFAC,Battery Future Acquisition Corp.,0001880441,Financial Services,Shell Companies
+GGT,GABELLI MULTIMEDIA TRUST INC.,0000921671,Financial Services,Asset Management
+IFIN,InFinT Acquisition Corp,0001862935,Financial Services,Shell Companies
+NSTD,Northern Star Investment Corp. IV,0001835814,Financial Services,Shell Companies
+KRNL,"Kernel Group Holdings, Inc.",0001832950,Financial Services,Shell Companies
+PEBK,PEOPLES BANCORP OF NORTH CAROLINA INC,0001093672,Financial Services,Banks—Regional
+MCN,Madison Covered Call & Equity Strategy Fund,0001289868,Financial Services,Asset Management
+PWOD,PENNS WOODS BANCORP INC,0000716605,Financial Services,Banks—Regional
+BMN,BlackRock 2037 Municipal Target Term Trust,0001832871,Financial Services,Asset Management
+TWLV,Twelve Seas Investment Co. II,0001819498,Financial Services,Shell Companies
+OPBK,OP Bancorp,0001722010,Financial Services,Banks—Regional
+NSTC,Northern Star Investment Corp. III,0001835817,Financial Services,Shell Companies
+BCSA,Blockchain Coinvestors Acquisition Corp. I,0001873441,Financial Services,Shell Companies
+BVFL,"BV Financial, Inc.",0001302387,Financial Services,Banks—Regional
+CNF,CNFinance Holdings Ltd.,0001733868,Financial Services,Mortgage Finance
+FUNC,FIRST UNITED CORP/MD/,0000763907,Financial Services,Banks—Regional
+TLGY,TLGY ACQUISITION CORP,0001879814,Financial Services,Shell Companies
+EVG,Eaton Vance Short Duration Diversified Income Fund,0001287498,Financial Services,Asset Management
+MYFW,First Western Financial Inc,0001327607,Financial Services,Banks—Regional
+MSD,MORGAN STANLEY EMERGING MARKETS DEBT FUND INC,0000904112,Financial Services,Asset Management
+AVBH,"Avidbank Holdings, Inc.",0001443575,Financial Services,Banks—Regional
+FLME,Flame Acquisition Corp.,0001831481,Financial Services,Shell Companies
+GF,NEW GERMANY FUND INC,0000858706,Financial Services,Asset Management
+MHF,WESTERN ASSET MUNICIPAL HIGH INCOME FUND INC.,0000830487,Financial Services,Asset Management
+LCA,"Landcadia Holdings IV, Inc.",0001844642,Financial Services,Shell Companies
+WNNR,Andretti Acquisition Corp.,0001843714,Financial Services,Shell Companies
+BBXIA,"BBX Capital, Inc.",0001814974,Financial Services,Asset Management
+VCXB,10X Capital Venture Acquisition Corp. III,0001848948,Financial Services,Shell Companies
+FGBI,"First Guaranty Bancshares, Inc.",0001408534,Financial Services,Banks—Regional
+CFBK,CF BANKSHARES INC.,0001070680,Financial Services,Banks—Regional
+BWG,BrandywineGLOBAL-Global Income Opportunities Fund Inc,0001504545,Financial Services,Asset Management
+FLFV,Feutune Light Acquisition Corp,0001912582,Financial Services,Shell Companies
+BTA,BlackRock Long-Term Municipal Advantage Trust,0001343793,Financial Services,Asset Management
+ALSA,Alpha Star Acquisition Corp,0001865111,Financial Services,Shell Companies
+DMF,"BNY MELLON MUNICIPAL INCOME, INC.",0000839122,Financial Services,Asset Management
+ISRL,Israel Acquisitions Corp,0001915328,Financial Services,Shell Companies
+MNSB,"MainStreet Bancshares, Inc.",0001693577,Financial Services,Banks—Regional
+LYBC,LYONS BANCORP INC,0000816332,Financial Services,Banks—Regional
+IRRX,INTEGRATED RAIL & RESOURCES ACQUISITION CORP,0001854795,Financial Services,Shell Companies
+CIA,"CITIZENS, INC.",0000024090,Financial Services,Insurance—Life
+SPE,"SPECIAL OPPORTUNITIES FUND, INC.",0000897802,Financial Services,Asset Management
+LGVC,LAMF Global Ventures Corp. I,0001879297,Financial Services,Shell Companies
+EDF,Virtus Stone Harbor Emerging Markets Income Fund,0001501103,Financial Services,Asset Management
+CNDB,Concord Acquisition Corp III,0001851961,Financial Services,Shell Companies
+ATEK,Athena Technology Acquisition Corp. II,0001882198,Financial Services,Shell Companies
+FINW,Finwise Bancorp,0001856365,Financial Services,Banks—Regional
+IGA,Voya Global Advantage & Premium Opportunity Fund,0001332943,Financial Services,Asset Management
+NNAG,99 Acquisition Group Inc.,0001950429,Financial Services,Shell Companies
+VMCA,Valuence Merger Corp. I,0001892747,Financial Services,Shell Companies
+BANX,ArrowMark Financial Corp.,0001578987,Financial Services,Asset Management
+DHCA,DHC Acquisition Corp.,0001838163,Financial Services,Shell Companies
+WEA,WESTERN ASSET PREMIER BOND FUND,0001163792,Financial Services,Asset Management
+FCCO,FIRST COMMUNITY CORP /SC/,0000932781,Financial Services,Banks—Regional
+DMO,Western Asset Mortgage Opportunity Fund Inc.,0001478102,Financial Services,Asset Management
+HNVR,"Hanover Bancorp, Inc. /NY",0001828588,Financial Services,Banks—Regional
+UNB,UNION BANKSHARES INC,0000706863,Financial Services,Banks—Regional
+PFD,FLAHERTY & CRUMRINE PREFERRED & INCOME FUND INC,0000868578,Financial Services,Asset Management
+BFIN,BankFinancial CORP,0001303942,Financial Services,Banks—Regional
+ACAH,Atlantic Coastal Acquisition Corp.,0001836274,Financial Services,Shell Companies
+FNWB,First Northwest Bancorp,0001556727,Financial Services,Banks—Regional
+ZLS,Zalatoris II Acquisition Corp,0001853397,Financial Services,Shell Companies
+JHS,JOHN HANCOCK INCOME SECURITIES TRUST,0000759866,Financial Services,Asset Management
+LGYV,LEGACY VENTURES INTERNATIONAL INC.,0001616788,Financial Services,Shell Companies
+FNRN,FIRST NORTHERN COMMUNITY BANCORP,0001114927,Financial Services,Banks—Regional
+FMN,Federated Hermes Premier Municipal Income Fund,0001199004,Financial Services,Asset Management
+RMGC,RMG Acquisition Corp. III,0001838108,Financial Services,Shell Companies
+OAKC,"Oakworth Capital, Inc.",0001588871,Financial Services,Banks—Regional
+FRAF,FRANKLIN FINANCIAL SERVICES CORP /PA/,0000723646,Financial Services,Banks—Regional
+FIAC,Focus Impact Acquisition Corp.,0001854480,Financial Services,Shell Companies
+HEQ,John Hancock Hedged Equity & Income Fund,0001496749,Financial Services,Asset Management
+NAZ,NUVEEN ARIZONA QUALITY MUNICIPAL INCOME FUND,0000892992,Financial Services,Asset Management
+GATE,Marblegate Acquisition Corp.,0001838513,Financial Services,Shell Companies
+VFL,abrdn National Municipal Income Fund,0000895574,Financial Services,Asset Management
+DSAQ,Direct Selling Acquisition Corp.,0001871745,Financial Services,Shell Companies
+NPAB,New Providence Acquisition Corp. II,0001837929,Financial Services,Shell Companies
+UBFO,UNITED SECURITY BANCSHARES,0001137547,Financial Services,Banks—Regional
+OVBC,OHIO VALLEY BANC CORP,0000894671,Financial Services,Banks—Regional
+KCGI,Kensington Capital Acquisition Corp. V,0001865407,Financial Services,Shell Companies
+CWBC,COMMUNITY WEST BANCSHARES /,0001051343,Financial Services,Banks—Regional
+PLMI,Plum Acquisition Corp. I,0001840317,Financial Services,Shell Companies
+ARBK,Argo Blockchain Plc,0001841675,Financial Services,Capital Markets
+EVGR,Evergreen Corp,0001900402,Financial Services,Shell Companies
+NSTB,Northern Star Investment Corp. II,0001834518,Financial Services,Shell Companies
+CCFN,MUNCY COLUMBIA FINANCIAL Corp,0000731122,Financial Services,Banks—Regional
+CZWI,Citizens Community Bancorp Inc.,0001367859,Financial Services,Banks—Regional
+PPYA,Papaya Growth Opportunity Corp. I,0001894057,Financial Services,Shell Companies
+FXNC,FIRST NATIONAL CORP /VA/,0000719402,Financial Services,Banks—Regional
+ECBK,"ECB Bancorp, Inc. /MD/",0001914605,Financial Services,Banks—Regional
+PHD,"Pioneer Floating Rate Fund, Inc.",0001305767,Financial Services,Asset Management
+GLQ,Clough Global Equity Fund,0001316463,Financial Services,Asset Management
+CPTK,Crown PropTech Acquisitions,0001827899,Financial Services,Shell Companies
+BOCN,Blue Ocean Acquisition Corp,0001856961,Financial Services,Shell Companies
+FSFG,"First Savings Financial Group, Inc.",0001435508,Financial Services,Banks—Regional
+RCFA,RCF Acquisition Corp.,0001870143,Financial Services,Shell Companies
+SRL,Scully Royalty Ltd.,0000016859,Financial Services,Capital Markets
+FNCB,"FNCB Bancorp, Inc.",0001035976,Financial Services,Banks—Regional
+IXAQ,IX Acquisition Corp.,0001852019,Financial Services,Shell Companies
+JHI,JOHN HANCOCK INVESTORS TRUST,0000759828,Financial Services,Asset Management
+RMBI,"Richmond Mutual Bancorporation, Inc.",0001767837,Financial Services,Banks—Regional
+CBFV,"CB Financial Services, Inc.",0001605301,Financial Services,Banks—Regional
+PAI,Western Asset Investment Grade Income Fund Inc.,0000075398,Financial Services,Asset Management
+TCOA,Zalatoris Acquisition Corp.,0001846750,Financial Services,Shell Companies
+PCF,HIGH INCOME SECURITIES FUND,0000810943,Financial Services,Asset Management
+ARRW,Arrowroot Acquisition Corp.,0001835972,Financial Services,Shell Companies
+PGSS,Pegasus Digital Mobility Acquisition Corp.,0001861541,Financial Services,Shell Companies
+OPRT,Oportun Financial Corp,0001538716,Financial Services,Credit Services
+CXE,MFS HIGH INCOME MUNICIPAL TRUST,0000845606,Financial Services,Asset Management
+BYNO,byNordic Acquisition Corp,0001801417,Financial Services,Shell Companies
+NIM,NUVEEN SELECT MATURITIES MUNICIPAL FUND,0000890119,Financial Services,Asset Management
+TOP,TOP Financial Group Ltd,0001848275,Financial Services,Capital Markets
+APXI,APx Acquisition Corp. I,0001868573,Financial Services,Shell Companies
+EMYB,"Embassy Bancorp, Inc.",0001449794,Financial Services,Banks—Regional
+CDAQ,Compass Digital Acquisition Corp.,0001851909,Financial Services,Shell Companies
+WMPN,William Penn Bancorporation,0001828376,Financial Services,Banks—Regional
+KF,KOREA FUND INC,0000748691,Financial Services,Asset Management
+OCCI,"OFS Credit Company, Inc.",0001716951,Financial Services,Asset Management
+SHAP,Spree Acquisition Corp. 1 Ltd,0001881462,Financial Services,Shell Companies
+IAF,"ABRDN AUSTRALIA EQUITY FUND, INC.",0000779336,Financial Services,Asset Management
+TWOA,two,0001843988,Financial Services,Shell Companies
+CMCA,Capitalworks Emerging Markets Acquisition Corp,0001865248,Financial Services,Shell Companies
+COOL,Corner Growth Acquisition Corp.,0001829953,Financial Services,Shell Companies
+MRBK,Meridian Corp,0001750735,Financial Services,Banks—Regional
+SBI,WESTERN ASSET INTERMEDIATE MUNI FUND INC.,0000882300,Financial Services,Asset Management
+CITE,Cartica Acquisition Corp,0001848437,Financial Services,Shell Companies
+TGAA,Target Global Acquisition I Corp.,0001847355,Financial Services,Shell Companies
+WHG,WESTWOOD HOLDINGS GROUP INC,0001165002,Financial Services,Asset Management
+CHAA,Catcha Investment Corp,0001838293,Financial Services,Shell Companies
+ECF,ELLSWORTH GROWTH & INCOME FUND LTD,0000793040,Financial Services,Asset Management
+CBRG,Chain Bridge I,0001845149,Financial Services,Shell Companies
+LARK,LANDMARK BANCORP INC,0001141688,Financial Services,Banks—Regional
+AFBI,"Affinity Bancshares, Inc.",0001823406,Financial Services,Banks—Regional
+BSBK,Bogota Financial Corp.,0001787414,Financial Services,Banks—Regional
+ROOT,"Root, Inc.",0001788882,Financial Services,Insurance—Property & Casualty
+DPCS,DP Cap Acquisition Corp I,0001857803,Financial Services,Shell Companies
+PFO,Flaherty & Crumrine PREFERRED & INCOME OPPORTUNITY FUND INC,0000882071,Financial Services,Asset Management
+SLAC,Social Leverage Acquisition Corp I,0001834755,Financial Services,Shell Companies
+BLUA,BlueRiver Acquisition Corp.,0001831006,Financial Services,Shell Companies
+EVF,EATON VANCE SENIOR INCOME TRUST,0001070732,Financial Services,Asset Management
+MCAC,Monterey Capital Acquisition Corp,0001895249,Financial Services,Shell Companies
+PORT,Southport Acquisition Corp,0001865200,Financial Services,Shell Companies
+BMBN,BENCHMARK BANKSHARES INC,0000804563,Financial Services,Banks—Regional
+EFSI,EAGLE FINANCIAL SERVICES INC,0000880641,Financial Services,Banks—Regional
+SBFG,"SB FINANCIAL GROUP, INC.",0000767405,Financial Services,Banks—Regional
+MITA,Coliseum Acquisition Corp.,0001847440,Financial Services,Shell Companies
+MDBH,"MDB Capital Holdings, LLC",0001934642,Financial Services,Capital Markets
+CSLM,CSLM ACQUISITION CORP.,0001875493,Financial Services,Shell Companies
+MGF,MFS GOVERNMENT MARKETS INCOME TRUST,0000811922,Financial Services,Asset Management
+GPAC,Global Partner Acquisition Corp II,0001831979,Financial Services,Shell Companies
+SZZL,Sizzle Acquisition Corp.,0001829322,Financial Services,Shell Companies
+HGBL,Heritage Global Inc.,0000849145,Financial Services,Capital Markets
+RVSB,RIVERVIEW BANCORP INC,0001041368,Financial Services,Banks—Regional
+EBMT,"Eagle Bancorp Montana, Inc.",0001478454,Financial Services,Banks—Regional
+THCP,"Thunder Bridge Capital Partners IV, Inc.",0001843993,Financial Services,Shell Companies
+SWZ,"SWISS HELVETIA FUND, INC.",0000813623,Financial Services,Asset Management
+SPKL,Spark I Acquisition Corp,0001884046,Financial Services,Shell Companies
+FNWD,Finward Bancorp,0000919864,Financial Services,Banks—Regional
+FNVT,Finnovate Acquisition Corp.,0001857855,Financial Services,Shell Companies
+LVPA,LVPAI GROUP Ltd,0000831378,Financial Services,Shell Companies
+CSBB,"CSB Bancorp, Inc.",0000880417,Financial Services,Banks—Regional
+FTII,FutureTech II Acquisition Corp.,0001889450,Financial Services,Shell Companies
+GGZ,Gabelli Global Small & Mid Cap Value Trust,0001585855,Financial Services,Asset Management
+RBKB,"Rhinebeck Bancorp, Inc.",0001751783,Financial Services,Banks—Regional
+SFBC,"Sound Financial Bancorp, Inc.",0001541119,Financial Services,Banks—Regional
+PCM,"PCM FUND, INC.",0000908187,Financial Services,Asset Management
+ATMV,AlphaVest Acquisition Corp.,0001937891,Financial Services,Shell Companies
+NMT,NUVEEN MASSACHUSETTS QUALITY MUNICIPAL INCOME FUND,0000897419,Financial Services,Asset Management
+PROV,PROVIDENT FINANCIAL HOLDINGS INC,0001010470,Financial Services,Banks—Regional
+MARX,Mars Acquisition Corp.,0001892922,Financial Services,Shell Companies
+CNGL,Canna-Global Acquisition Corp,0001867443,Financial Services,Shell Companies
+GAMC,Golden Arrow Merger Corp.,0001841125,Financial Services,Shell Companies
+TENK,TenX Keane Acquisition,0001851484,Financial Services,Shell Companies
+PWUP,PowerUp Acquisition Corp.,0001847345,Financial Services,Shell Companies
+LATG,Chenghe Acquisition I Co.,0001868269,Financial Services,Shell Companies
+GDL,GDL FUND,0001378701,Financial Services,Asset Management
+HMNF,HMN FINANCIAL INC,0000921183,Financial Services,Banks—Regional
+PMGM,Priveterra Acquisition Corp. II,0001821606,Financial Services,Shell Companies
+KSM,DWS STRATEGIC MUNICIPAL INCOME TRUST,0000846596,Financial Services,Asset Management
+QDRO,Quadro Acquisition One Corp.,0001825962,Financial Services,Shell Companies
+BOWN,Bowen Acquisition Corp,0001973056,Financial Services,Shell Companies
+FKYS,FIRST KEYSTONE CORP,0000737875,Financial Services,Banks—Regional
+BLAC,Bellevue Life Sciences Acquisition Corp.,0001840425,Financial Services,Shell Companies
+BFGX,"BANGFU TECHNOLOGY GROUP CO., LTD.",0001741257,Financial Services,Shell Companies
+UTGN,UTG INC,0000832480,Financial Services,Insurance—Life
+CGO,CALAMOS GLOBAL TOTAL RETURN FUND,0001285650,Financial Services,Asset Management
+GIA,"GigCapital5, Inc.",0001844505,Financial Services,Shell Companies
+CCIF,Carlyle Credit Income Fund,0001517767,Financial Services,Asset Management
+RWOD,Redwoods Acquisition Corp.,0001907223,Financial Services,Shell Companies
+NPFC,Newpoint Financial Corp,0001445831,Financial Services,Shell Companies
+IHD,Voya Emerging Markets High Dividend Equity Fund,0001496292,Financial Services,Asset Management
+TBMC,Trailblazer Merger Corp I,0001934945,Financial Services,Shell Companies
+ESAC,ESGEN Acquisition Corp,0001865506,Financial Services,Shell Companies
+CHN,CHINA FUND INC,0000845379,Financial Services,Asset Management
+GODN,Golden Star Acquisition Corp,0001895144,Financial Services,Shell Companies
+NMI,NUVEEN MUNICIPAL INCOME FUND INC,0000830271,Financial Services,Asset Management
+CMTV,COMMUNITY BANCORP /VT,0000718413,Financial Services,Banks—Regional
+HNW,"Pioneer Diversified High Income Fund, Inc.",0001388126,Financial Services,Asset Management
+HSPO,Horizon Space Acquisition I Corp.,0001946021,Financial Services,Shell Companies
+OSI,Osiris Acquisition Corp.,0001832136,Financial Services,Shell Companies
+WEL,Integrated Wellness Acquisition Corp,0001877557,Financial Services,Shell Companies
+FCAP,FIRST CAPITAL INC,0001070296,Financial Services,Banks—Regional
+PFX,PhenixFIN Corp,0001490349,Financial Services,Asset Management
+QNBC,QNB CORP,0000750558,Financial Services,Banks—Regional
+JLS,Nuveen Mortgage & Income Fund/MA/,0001472215,Financial Services,Asset Management
+SSSS,SURO CAPITAL CORP.,0001509470,Financial Services,Asset Management
+BITE,Bite Acquisition Corp.,0001831270,Financial Services,Shell Companies
+GLAC,Global Lights Acquisition Corp,0001897971,Financial Services,Shell Companies
+FOTB,"FIRST OTTAWA BANCSHARES, INC",0001099668,Financial Services,Banks—Regional
+NXG,NXG NextGen Infrastructure Income Fund,0001506488,Financial Services,Asset Management
+BLEU,bleuacacia ltd,0001843370,Financial Services,Shell Companies
+ALTU,Altitude Acquisition Corp.,0001822366,Financial Services,Shell Companies
+EMCG,Embrace Change Acquisition Corp.,0001869601,Financial Services,Shell Companies
+BCV,BANCROFT FUND LTD,0000009521,Financial Services,Asset Management
+PSBQ,PSB HOLDINGS INC /WI/,0000948368,Financial Services,Banks—Regional
+EAC,Edify Acquisition Corp.,0001832765,Financial Services,Shell Companies
+GLLI,GLOBALINK INVESTMENT INC.,0001888734,Financial Services,Shell Companies
+AACI,Armada Acquisition Corp. I,0001844817,Financial Services,Shell Companies
+ARYD,ARYA Sciences Acquisition Corp IV,0001838821,Financial Services,Shell Companies
+VGI,Virtus Global Multi-Sector Income Fund,0001528811,Financial Services,Asset Management
+WRAC,Williams Rowland Acquisition Corp.,0001855168,Financial Services,Shell Companies
+ONYX,Onyx Acquisition Co. I,0001849548,Financial Services,Shell Companies
+NRAC,NORTHERN REVIVAL ACQUISITION Corp,0001831964,Financial Services,Shell Companies
+TMTC,TMT Acquisition Corp.,0001879851,Financial Services,Shell Companies
+BUUZ,"CalEthos, Inc.",0001174891,Financial Services,Shell Companies
+ENBP,ENB Financial Corp,0001437479,Financial Services,Banks—Regional
+OPOF,OLD POINT FINANCIAL CORP,0000740971,Financial Services,Banks—Regional
+USCT,Roth CH Acquisition Co.,0001860514,Financial Services,Shell Companies
+IVCP,Swiftmerge Acquisition Corp.,0001845123,Financial Services,Shell Companies
+ACAB,Atlantic Coastal Acquisition Corp. II,0001893219,Financial Services,Shell Companies
+SRBK,"SR Bancorp, Inc.",0001951276,Financial Services,Banks—Regional
+GLST,Global Star Acquisition Inc.,0001922331,Financial Services,Shell Companies
+XFIN,ExcelFin Acquisition Corp.,0001852749,Financial Services,Shell Companies
+IMAQ,International Media Acquisition Corp.,0001846235,Financial Services,Shell Companies
+PNI,PIMCO NEW YORK MUNICIPAL INCOME FUND II,0001170311,Financial Services,Asset Management
+NXC,NUVEEN CALIFORNIA SELECT TAX FREE INCOME PORTFOLIO,0000885732,Financial Services,Asset Management
+PGP,PIMCO Global StocksPLUS & Income Fund,0001318025,Financial Services,Asset Management
+BHAC,Focus Impact BH3 Acquisition Co,0001851612,Financial Services,Shell Companies
+DUET,DUET Acquisition Corp.,0001890671,Financial Services,Shell Companies
+CMU,MFS HIGH YIELD MUNICIPAL TRUST,0000809844,Financial Services,Asset Management
+FICV,Frontier Investment Corp,0001855693,Financial Services,Shell Companies
+TPZ,TORTOISE POWER & ENERGY INFRASTRUCTURE FUND INC,0001408201,Financial Services,Asset Management
+OCAX,OCA Acquisition Corp.,0001820175,Financial Services,Shell Companies
+TBNK,Territorial Bancorp Inc.,0001447051,Financial Services,Banks—Regional
+RCAC,Revelstone Capital Acquisition Corp.,0001874218,Financial Services,Shell Companies
+AITR,AI Transportation Acquisition Corp,0001966734,Financial Services,Shell Companies
+SFDL,SECURITY FEDERAL CORP,0000818677,Financial Services,Banks—Regional
+GDST,Goldenstone Acquisition Ltd.,0001858007,Financial Services,Shell Companies
+JEQ,"ABRDN JAPAN EQUITY FUND, INC.",0000866095,Financial Services,Asset Management
+ERH,ALLSPRING UTILITIES & HIGH INCOME FUND,0001279014,Financial Services,Asset Management
+BACA,Berenson Acquisition Corp. I,0001869673,Financial Services,Shell Companies
+PUCK,Goal Acquisitions Corp.,0001836100,Financial Services,Shell Companies
+BUJA,Bukit Jalil Global Acquisition 1 Ltd.,0001956055,Financial Services,Shell Companies
+GNT,"GAMCO Natural Resources, Gold & Income Trust",0001438893,Financial Services,Asset Management
+AVNI,ARVANA INC,0001113313,Financial Services,Shell Companies
+AEAE,AltEnergy Acquisition Corp,0001852016,Financial Services,Shell Companies
+OAKU,Oak Woods Acquisition Corp,0001945422,Financial Services,Shell Companies
+LIBY,Liberty Resources Acquisition Corp.,0001880151,Financial Services,Shell Companies
+GLU,GABELLI GLOBAL UTILITY & INCOME TRUST,0001282957,Financial Services,Asset Management
+TGLO,THEGLOBE COM INC,0001066684,Financial Services,Shell Companies
+CETU,Cetus Capital Acquisition Corp.,0001936702,Financial Services,Shell Companies
+ASCB,ASPAC II Acquisition Corp.,0001876716,Financial Services,Shell Companies
+GECC,Great Elm Capital Corp.,0001675033,Financial Services,Asset Management
+BENF,Beneficient,0001775734,Financial Services,Asset Management
+MGYR,"Magyar Bancorp, Inc.",0001337068,Financial Services,Banks—Regional
+CULL,"Cullman Bancorp, Inc. /MD/",0001845799,Financial Services,Banks—Regional
+GBBK,Global Blockchain Acquisition Corp.,0001894951,Financial Services,Shell Companies
+RFAC,RF Acquisition Corp.,0001847607,Financial Services,Shell Companies
+GTAC,Global Technology Acquisition Corp. I,0001848821,Financial Services,Shell Companies
+FHLT,Future Health ESG Corp.,0001851182,Financial Services,Shell Companies
+GGAAF,Genesis Growth Tech Acquisition Corp.,0001865697,Financial Services,Shell Companies
+VHAQ,Viveon Health Acquisition Corp.,0001823857,Financial Services,Shell Companies
+DTF,DTF TAX-FREE INCOME 2028 TERM FUND INC,0000879535,Financial Services,Asset Management
+IRAA,Iris Acquisition Corp,0001831874,Financial Services,Shell Companies
+SRV,NXG Cushing Midstream Energy Fund,0001400897,Financial Services,Asset Management
+CEV,EATON VANCE CALIFORNIA MUNICIPAL INCOME TRUST,0001074692,Financial Services,Asset Management
+INAQ,Insight Acquisition Corp. /DE,0001862463,Financial Services,Shell Companies
+SWIN,"Solowin Holdings, Ltd.",0001959224,Financial Services,Capital Markets
+FEXD,Fintech Ecosystem Development Corp.,0001852407,Financial Services,Shell Companies
+FRLA,Fortune Rise Acquisition Corp,0001849294,Financial Services,Shell Companies
+ATMC,ALPHATIME ACQUISITION CORP,0001889106,Financial Services,Shell Companies
+TRON,CORNER GROWTH ACQUISITION CORP. 2,0001847513,Financial Services,Shell Companies
+PMHG,Prime Meridian Holding Co,0001586454,Financial Services,Banks—Regional
+PFBX,PEOPLES FINANCIAL CORP /MS/,0000770460,Financial Services,Banks—Regional
+SWSS,Clean Energy Special Situations Corp.,0001838000,Financial Services,Shell Companies
+TETE,Technology & Telecommunication Acquisition Corp,0001900679,Financial Services,Shell Companies
+BWAQ,Blue World Acquisition Corp,0001878074,Financial Services,Shell Companies
+UNIB,UNIVERSITY BANCORP INC /DE/,0000811211,Financial Services,Banks—Regional
+FORL,Four Leaf Acquisition Corp,0001936255,Financial Services,Shell Companies
+PBHC,"Pathfinder Bancorp, Inc.",0001609065,Financial Services,Banks—Regional
+FOA,Finance of America Companies Inc.,0001828937,Financial Services,Credit Services
+AUBN,"AUBURN NATIONAL BANCORPORATION, INC",0000750574,Financial Services,Banks—Regional
+GCV,GABELLI CONVERTIBLE & INCOME SECURITIES FUND INC,0000845611,Financial Services,Asset Management
+MSSA,Metal Sky Star Acquisition Corp,0001882464,Financial Services,Shell Companies
+APAC,StoneBridge Acquisition Corp.,0001844981,Financial Services,Shell Companies
+GMFI,Aetherium Acquisition Corp,0001866547,Financial Services,Shell Companies
+DWNX,DELHI BANK CORP,0000927719,Financial Services,Banks—Regional
+FCO,"ABRDN GLOBAL INCOME FUND, INC.",0000876717,Financial Services,Asset Management
+NVAC,NorthView Acquisition Corp,0001859807,Financial Services,Shell Companies
+UBCP,UNITED BANCORP INC /OH/,0000731653,Financial Services,Banks—Regional
+GLV,Clough Global Dividend & Income Fund,0001288795,Financial Services,Asset Management
+DIST,Distoken Acquisition Corp,0001818605,Financial Services,Shell Companies
+VLT,Invesco High Income Trust II,0000846671,Financial Services,Asset Management
+LGST,Semper Paratus Acquisition Corp,0001860871,Financial Services,Shell Companies
+QFTA,Quantum FinTech Acquisition Corp,0001830795,Financial Services,Shell Companies
+SIEB,SIEBERT FINANCIAL CORP,0000065596,Financial Services,Capital Markets
+PGZ,Principal Real Estate Income Fund,0001557523,Financial Services,Asset Management
+MAQC,Maquia Capital Acquisition Corp,0001844419,Financial Services,Shell Companies
+DMYY,"dMY Squared Technology Group, Inc.",0001915380,Financial Services,Shell Companies
+IAE,Voya Asia Pacific High Dividend Equity Income Fund,0001385632,Financial Services,Asset Management
+CLOE,Clover Leaf Capital Corp.,0001849058,Financial Services,Shell Companies
+LSBK,"LAKE SHORE BANCORP, INC.",0001341318,Financial Services,Banks—Regional
+KYCH,Keyarch Acquisition Corp,0001865701,Financial Services,Shell Companies
+DMA,Destra Multi-Alternative Fund,0001523289,Financial Services,Asset Management
+RGT,"ROYCE GLOBAL VALUE TRUST, INC.",0001514490,Financial Services,Asset Management
+NMS,Nuveen Minnesota Quality Municipal Income Fund,0001607997,Financial Services,Asset Management
+PNF,PIMCO NEW YORK MUNICIPAL INCOME FUND,0001140410,Financial Services,Asset Management
+PMVC,PMV Consumer Acquisition Corp.,0001807765,Financial Services,Shell Companies
+FMBM,F&M BANK CORP,0000740806,Financial Services,Banks—Regional
+FAM,FIRST TRUST/ABRDN GLOBAL OPPORTUNITY INCOME FUND,0001302624,Financial Services,Asset Management
+ROCL,Roth CH Acquisition V Co.,0001885998,Financial Services,Shell Companies
+MFD,MACQUARIE/FIRST TRUST GLOBAL INFRASTR/UTIL DIV & INC FUND,0001276469,Financial Services,Asset Management
+AFAR,Aura Fat Projects Acquisition Corp,0001901886,Financial Services,Shell Companies
+NBST,Newbury Street Acquisition Corp,0001831978,Financial Services,Shell Companies
+SDIG,"Stronghold Digital Mining, Inc.",0001856028,Financial Services,Capital Markets
+SLBK,"Skyline Bankshares, Inc.",0001657642,Financial Services,Banks—Regional
+VBFC,Village Bank & Trust Financial Corp.,0001290476,Financial Services,Banks—Regional
+SEPA,SEP Acquisition Corp.,0001849902,Financial Services,Shell Companies
+CXH,MFS INVESTMENT GRADE MUNICIPAL TRUST,0000847411,Financial Services,Asset Management
+PPBN,PINNACLE BANKSHARES CORP,0001031233,Financial Services,Banks—Regional
+ENCP,Energem Corp,0001879373,Financial Services,Shell Companies
+TCBC,"TC Bancshares, Inc.",0001850398,Financial Services,Banks—Regional
+REDW,REDWOOD FINANCIAL INC /MN/,0000942895,Financial Services,Banks—Regional
+CEE,"CENTRAL & EASTERN EUROPE FUND, INC.",0000860489,Financial Services,Asset Management
+JUVF,JUNIATA VALLEY FINANCIAL CORP,0000714712,Financial Services,Banks—Regional
+IGTA,Inception Growth Acquisition Ltd,0001866838,Financial Services,Shell Companies
+ACAC,Acri Capital Acquisition Corp,0001914023,Financial Services,Shell Companies
+PTWO,"Pono Capital Two, Inc.",0001930313,Financial Services,Shell Companies
+LRFC,Logan Ridge Finance Corp.,0001571329,Financial Services,Asset Management
+ASCA,ASPAC I Acquisition Corp.,0001868775,Financial Services,Shell Companies
+FUSB,"FIRST US BANCSHARES, INC.",0000717806,Financial Services,Banks—Regional
+BNIX,Bannix Acquisition Corp.,0001845942,Financial Services,Shell Companies
+NWPP,NEW PEOPLES BANKSHARES INC,0001163389,Financial Services,Banks—Regional
+HAIA,Healthcare AI Acquisition Corp.,0001848861,Financial Services,Shell Companies
+MBTC,Nocturne Acquisition Corp,0001837344,Financial Services,Shell Companies
+SUND,"Sundance Strategies, Inc.",0001171838,Financial Services,Insurance—Diversified
+IOR,INCOME OPPORTUNITY REALTY INVESTORS INC /TX/,0000949961,Financial Services,Mortgage Finance
+EEA,"EUROPEAN EQUITY FUND, INC / MD",0000791718,Financial Services,Asset Management
+ARIZ,Arisz Acquisition Corp.,0001882078,Financial Services,Shell Companies
+TTP,"TORTOISE PIPELINE & ENERGY FUND, INC.",0001526329,Financial Services,Asset Management
+JMM,Nuveen Multi-Market Income Fund,0000838131,Financial Services,Asset Management
+IROQ,"IF Bancorp, Inc.",0001514743,Financial Services,Banks—Regional
+DOMA,"Doma Holdings, Inc.",0001722438,Financial Services,Insurance—Property & Casualty
+BYFC,BROADWAY FINANCIAL CORP DE,0001001171,Financial Services,Banks—Regional
+GEG,"Great Elm Group, Inc.",0001831096,Financial Services,Asset Management
+CLST,"Catalyst Bancorp, Inc.",0001849867,Financial Services,Banks—Regional
+CHEA,Chenghe Acquisition Co.,0001856948,Financial Services,Shell Companies
+CCTS,Cactus Acquisition Corp. 1 Ltd,0001865861,Financial Services,Shell Companies
+HTY,John Hancock Tax-Advantaged Global Shareholder Yield Fund,0001396502,Financial Services,Asset Management
+HHGC,HHG Capital Corp,0001822886,Financial Services,Shell Companies
+PEPL,PepperLime Health Acquisition Corp,0001873324,Financial Services,Shell Companies
+BOTJ,BANK OF THE JAMES FINANCIAL GROUP INC,0001275101,Financial Services,Banks—Regional
+RACY,Relativity Acquisition Corp,0001860484,Financial Services,Shell Companies
+CBKM,CONSUMERS BANCORP INC /OH/,0001006830,Financial Services,Banks—Regional
+PLTN,Plutonian Acquisition Corp.,0001929231,Financial Services,Shell Companies
+KSBI,KS BANCORP INC,0000912764,Financial Services,Banks—Regional
+BRAC,Broad Capital Acquisition Corp,0001865120,Financial Services,Shell Companies
+UWHR,UWHARRIE CAPITAL CORP,0000898171,Financial Services,Banks—Regional
+BAFN,BayFirst Financial Corp.,0001649739,Financial Services,Banks—Regional
+CLRC,ClimateRock,0001903392,Financial Services,Shell Companies
+KACL,Kairous Acquisition Corp. Ltd,0001865468,Financial Services,Shell Companies
+NICK,NICHOLAS FINANCIAL INC,0001000045,Financial Services,Credit Services
+ASRV,AMERISERV FINANCIAL INC /PA/,0000707605,Financial Services,Banks—Regional
+VSAC,VISION SENSING ACQUISITION CORP.,0001883983,Financial Services,Shell Companies
+NSTS,"NSTS Bancorp, Inc.",0001881592,Financial Services,Banks—Regional
+ICMB,"Investcorp Credit Management BDC, Inc.",0001578348,Financial Services,Asset Management
+SHFS,"SHF Holdings, Inc.",0001854963,Financial Services,Banks—Regional
+HNNA,HENNESSY ADVISORS INC,0001145255,Financial Services,Asset Management
+AAME,ATLANTIC AMERICAN CORP,0000008177,Financial Services,Insurance—Life
+FGB,FIRST TRUST SPECIALTY FINANCE & FINANCIAL OPPORTUNITIES FUND,0001392994,Financial Services,Asset Management
+FMY,FIRST TRUST MORTGAGE INCOME FUND,0001319183,Financial Services,Asset Management
+MXE,MEXICO EQUITY & INCOME FUND INC,0000863900,Financial Services,Asset Management
+BRBS,"BLUE RIDGE BANKSHARES, INC.",0000842717,Financial Services,Banks—Regional
+AQU,Aquaron Acquisition Corp.,0001861063,Financial Services,Shell Companies
+MATH,Metalpha Technology Holding Ltd,0001682241,Financial Services,Capital Markets
+OWVI,One World Ventures Inc,0001763657,Financial Services,Asset Management
+BREZ,Breeze Holdings Acquisition Corp.,0001817640,Financial Services,Shell Companies
+ICCH,"ICC Holdings, Inc.",0001681903,Financial Services,Insurance—Specialty
+WTMA,Welsbach Technology Metals Acquisition Corp.,0001866226,Financial Services,Shell Companies
+CFSB,"CFSB Bancorp, Inc. /MA/",0001879103,Financial Services,Banks—Regional
+NDP,"TORTOISE ENERGY INDEPENDENCE FUND, INC.",0001547158,Financial Services,Asset Management
+BCOW,"1895 Bancorp of Wisconsin, Inc. /MD/",0001847360,Financial Services,Banks—Regional
+HUDA,Hudson Acquisition I Corp.,0001853047,Financial Services,Shell Companies
+AOGO,Arogo Capital Acquisition Corp.,0001881741,Financial Services,Shell Companies
+NXN,NUVEEN NEW YORK SELECT TAX -FREE INCOME PORTFOLIO,0000885731,Financial Services,Asset Management
+WINV,WinVest Acquisition Corp.,0001854463,Financial Services,Shell Companies
+TCBS,"Texas Community Bancshares, Inc.",0001849466,Financial Services,Banks—Regional
+MIGI,Mawson Infrastructure Group Inc.,0001218683,Financial Services,Capital Markets
+GROW,U S GLOBAL INVESTORS INC,0000754811,Financial Services,Asset Management
+INTE,Integral Acquisition Corp 1,0001850262,Financial Services,Shell Companies
+KWAC,Kingswood Acquisition Corp.,0001823086,Financial Services,Shell Companies
+MCAF,Mountain Crest Acquisition Corp. IV,0001853774,Financial Services,Shell Companies
+FSEA,"First Seacoast Bancorp, Inc.",0001943802,Financial Services,Banks—Regional
+AIB,AIB Acquisition Corp,0001882963,Financial Services,Shell Companies
+ADOC,Edoc Acquisition Corp.,0001824884,Financial Services,Shell Companies
+MACA,Moringa Acquisition Corp,0001835416,Financial Services,Shell Companies
+CUBA,HERZFELD CARIBBEAN BASIN FUND INC,0000880406,Financial Services,Asset Management
+YOTA,Yotta Acquisition Corp,0001907730,Financial Services,Shell Companies
+TGVC,TG Venture Acquisition Corp.,0001865191,Financial Services,Shell Companies
+NOVV,Nova Vision Acquisition Corp,0001858028,Financial Services,Shell Companies
+PFTA,Perception Capital Corp. III,0001853580,Financial Services,Shell Companies
+DHAC,DIGITAL HEALTH ACQUISITION CORP.,0001864531,Financial Services,Shell Companies
+HFBL,"Home Federal Bancorp, Inc. of Louisiana",0001500375,Financial Services,Banks—Regional
+CPBI,"Central Plains Bancshares, Inc.",0001979332,Financial Services,Shell Companies
+ACBA,Ace Global Business Acquisition Ltd,0001844389,Financial Services,Shell Companies
+TECTP,"Tectonic Financial, Inc.",0001766526,Financial Services,Banks—Regional
+LBBB,Lakeshore Acquisition II Corp.,0001867287,Financial Services,Shell Companies
+TURN,180 DEGREE CAPITAL CORP. /NY/,0000893739,Financial Services,Asset Management
+MGLD,"Marygold Companies, Inc.",0001005101,Financial Services,Asset Management
+QOMO,Qomolangma Acquisition Corp.,0001894210,Financial Services,Shell Companies
+BCTF,"Bancorp 34, Inc.",0001668340,Financial Services,Banks—Regional
+WAVS,Western Acquisition Ventures Corp.,0001868419,Financial Services,Shell Companies
+WBQNL,Woodbridge Liquidation Trust,0001785494,Financial Services,Shell Companies
+EGF,"BlackRock Enhanced Government Fund, Inc.",0001336050,Financial Services,Asset Management
+GRF,"EAGLE CAPITAL GROWTH FUND, INC.",0000850027,Financial Services,Asset Management
+KINS,"KINGSTONE COMPANIES, INC.",0000033992,Financial Services,Insurance—Property & Casualty
+HYW,Hywin Holdings Ltd.,0001785680,Financial Services,Asset Management
+PBBK,"PB Bankshares, Inc.",0001849670,Financial Services,Banks—Regional
+ADRT,Ault Disruptive Technologies Corp,0001864032,Financial Services,Shell Companies
+RAND,RAND CAPITAL CORP,0000081955,Financial Services,Asset Management
+ABTS,Abits Group Inc,0001864055,Financial Services,Capital Markets
+HUIZ,Huize Holding Ltd,0001778982,Financial Services,Insurance Brokers
+PYN,PIMCO NEW YORK MUNICIPAL INCOME FUND III,0001181505,Financial Services,Asset Management
+MCAG,Mountain Crest Acquisition Corp. V,0001859035,Financial Services,Shell Companies
+AVHI,Achari Ventures Holdings Corp. I,0001844507,Financial Services,Shell Companies
+INFT,Infinity Bancorp,0001962911,Financial Services,Banks—Regional
+DECA,Denali Capital Acquisition Corp.,0001913577,Financial Services,Shell Companies
+GREE,Greenidge Generation Holdings Inc.,0001844971,Financial Services,Capital Markets
+CIF,MFS INTERMEDIATE HIGH INCOME FUND,0000833021,Financial Services,Asset Management
+KFFB,Kentucky First Federal Bancorp,0001297341,Financial Services,Banks—Regional
+VWFB,"VWF Bancorp, Inc.",0001913838,Financial Services,Banks—Regional
+PBAX,PHOENIX BIOTECH ACQUISITION CORP.,0001870404,Financial Services,Shell Companies
+OAKV,"Oak View Bankshares, Inc.",0001865429,Financial Services,Banks—Regional
+MFV,MFS SPECIAL VALUE TRUST,0000856128,Financial Services,Asset Management
+OPHC,"OptimumBank Holdings, Inc.",0001288855,Financial Services,Banks—Regional
+BMNR,"BITMINE IMMERSION TECHNOLOGIES, INC.",0001829311,Financial Services,Capital Markets
+QNTO,QUAINT OAK BANCORP INC,0001391933,Financial Services,Banks—Regional
+WRPT,WARPSPEED TAXI INC.,0001842138,Financial Services,Shell Companies
+PPHP,PHP Ventures Acquisition Corp.,0001863460,Financial Services,Shell Companies
+BTM,Bitcoin Depot Inc.,0001901799,Financial Services,Capital Markets
+BTOG,BIT ORIGIN Ltd,0001735556,Financial Services,Capital Markets
+PIAC,PRINCETON CAPITAL CORP,0000845385,Financial Services,Asset Management
+ILUS,Ilustrato Pictures International Inc.,0001496383,Financial Services,Asset Management
+CWD,CaliberCos Inc.,0001627282,Financial Services,Asset Management
+AGBA,AGBA Group Holding Ltd.,0001769624,Financial Services,Capital Markets
+CRMZ,CREDITRISKMONITOR COM INC,0000315958,Financial Services,Capital Markets
+CAHO,Caro Holdings Inc.,0001678105,Financial Services,Shell Companies
+NOM,NUVEEN MISSOURI QUALITY MUNICIPAL INCOME FUND,0000899782,Financial Services,Asset Management
+GBNY,"Generations Bancorp NY, Inc.",0001823365,Financial Services,Banks—Regional
+BTCS,BTCS Inc.,0001436229,Financial Services,Capital Markets
+OGGIF,Web3 Ventures Inc.,0001971260,Financial Services,Asset Management
+GNRV,GRAND RIVER COMMERCE INC,0001418489,Financial Services,Banks—Regional
+WNLV,Winvest Group Ltd,0001558740,Financial Services,Asset Management
+TCRI,"TechCom, Inc.",0001481443,Financial Services,Shell Companies
+TCJH,Top KingWin Ltd,0001938865,Financial Services,Capital Markets
+LOGQ,"Coyni, Inc.",0000768216,Financial Services,Shell Companies
+YTFD,"Yale Transaction Finders, Inc.",0001311673,Financial Services,Shell Companies
+QMCI,QUOTEMEDIA INC,0001101433,Financial Services,Financial Data & Stock Exchanges
+XITO,"Xenous Holdings, Inc.",0001651932,Financial Services,Shell Companies
+SAI,SAI.TECH Global Corp,0001847075,Financial Services,Capital Markets
+RMCO,Royalty Management Holding Corp,0001843656,Financial Services,Asset Management
+EQS,"EQUUS TOTAL RETURN, INC.",0000878932,Financial Services,Asset Management
+GLBZ,GLEN BURNIE BANCORP,0000890066,Financial Services,Banks—Regional
+MDWK,"MDWerks, Inc.",0001295514,Financial Services,Shell Companies
+ARGC,ARION GROUP CORP.,0001698702,Financial Services,Shell Companies
+BHV,BLACKROCK VIRGINIA MUNICIPAL BOND TRUST,0001169034,Financial Services,Asset Management
+PT,Pintec Technology Holdings Ltd,0001716338,Financial Services,Credit Services
+PHIL,PHI GROUP INC,0000704172,Financial Services,Capital Markets
+NISN,"Nisun International Enterprise Development Group Co., Ltd",0001603993,Financial Services,Credit Services
+STLY,"HG Holdings, Inc.",0000797465,Financial Services,Shell Companies
+MEGL,Magic Empire Global Ltd,0001881472,Financial Services,Capital Markets
+JT,Jianpu Technology Inc.,0001713923,Financial Services,Credit Services
+PNBK,PATRIOT NATIONAL BANCORP INC,0001098146,Financial Services,Banks—Regional
+PFSB,"PFS Bancorp, Inc.",0001967656,Financial Services,Banks—Regional
+CNFR,"Conifer Holdings, Inc.",0001502292,Financial Services,Insurance—Property & Casualty
+PMIN,ESG Inc.,0001883835,Financial Services,Shell Companies
+MCVT,"Mill City Ventures III, Ltd",0001425355,Financial Services,Credit Services
+RBNK,RiverBank Holding Co,0001535665,Financial Services,Banks—Regional
+FMFG,"Farmers & Merchants Bancshares, Inc.",0001698022,Financial Services,Banks—Regional
+TNBI,Tanke Biosciences Corp,0001452011,Financial Services,Shell Companies
+CURO,CURO Group Holdings Corp.,0001711291,Financial Services,Credit Services
+NFTN,NFiniTi inc.,0001544400,Financial Services,Shell Companies
+FGF,"FG Financial Group, Inc.",0001591890,Financial Services,Insurance—Diversified
+MSBB,"Mercer Bancorp, Inc.",0001967306,Financial Services,Banks—Regional
+FRCB,FIRST REPUBLIC BANK,0001132979,Financial Services,Banks—Regional
+TGGI,"TRANS GLOBAL GROUP, INC.",0001891791,Financial Services,Shell Companies
+AAMC,Altisource Asset Management Corp,0001555074,Financial Services,Mortgage Finance
+COHN,Cohen & Co Inc.,0001270436,Financial Services,Capital Markets
+GOVB,"Gouverneur Bancorp, Inc./MD/",0001978811,Financial Services,Banks—Regional
+PWM,Prestige Wealth Inc.,0001765850,Financial Services,Asset Management
+SPFX,"STANDARD PREMIUM FINANCE HOLDINGS, INC.",0001807893,Financial Services,Credit Services
+RCG,"RENN Fund, Inc.",0000919567,Financial Services,Asset Management
+PAPL,Pineapple Financial Inc.,0001938109,Financial Services,Mortgage Finance
+HNRA,HNR Acquisition Corp.,0001842556,Financial Services,Shell Companies
+SLTN,"SILVERTON ENERGY, INC.",0001508786,Financial Services,Shell Companies
+BWMY,"BorrowMoney.com, Inc.",0001656501,Financial Services,Credit Services
+OLKR,"OpenLocker Holdings, Inc.",0000924396,Financial Services,Capital Markets
+CARV,CARVER BANCORP INC,0001016178,Financial Services,Banks—Regional
+ATIF,ATIF Holdings Ltd,0001755058,Financial Services,Capital Markets
+SIVBQ,SVB FINANCIAL GROUP,0000719739,Financial Services,Banks—Regional
+FXBY,FOXBY CORP.,0001068897,Financial Services,Asset Management
+AINC,Ashford Inc.,0001604738,Financial Services,Asset Management
+CDSG,"China Dongsheng International, Inc.",0000946112,Financial Services,Shell Companies
+FDCT,"FDCTECH, INC.",0001722731,Financial Services,Capital Markets
+TDCB,THIRD CENTURY BANCORP,0001282847,Financial Services,Banks—Regional
+GFOO,Genufood Energy Enzymes Corp.,0001510518,Financial Services,Shell Companies
+BMNM,"BIMINI CAPITAL MANAGEMENT, INC.",0001275477,Financial Services,Asset Management
+WNFT,Worldwide NFT Inc.,0001528188,Financial Services,Shell Companies
+SNTG,Sentage Holdings Inc.,0001810467,Financial Services,Credit Services
+LMFA,"LM FUNDING AMERICA, INC.",0001640384,Financial Services,Credit Services
+PCMC,PUBLIC CO MANAGEMENT CORP,0001141964,Financial Services,Shell Companies
+TNRG,Thunder Energies Corp,0001524872,Financial Services,Asset Management
+OXBR,OXBRIDGE RE HOLDINGS Ltd,0001584831,Financial Services,Insurance—Reinsurance
+DHCC,DIAMONDHEAD CASINO CORP,0000844887,Financial Services,Shell Companies
+NHMD,NATE'S FOOD CO.,0001409446,Financial Services,Capital Markets
+DEFG,Grayscale Decentralized Finance (DeFi) Fund LLC,0001874907,Financial Services,Asset Management
+SIPN,"SIPP International Industries, Inc.",0001128252,Financial Services,Shell Companies
+WLYW,"Wally World Media, Inc",0001555214,Financial Services,Shell Companies
+OOGI,"C2E ENERGY, INC.",0001160798,Financial Services,Shell Companies
+AIHS,Senmiao Technology Ltd,0001711012,Financial Services,Credit Services
+SFIO,"Starfleet Innotech, Inc.",0001484703,Financial Services,Asset Management
+NLSC,"Namliong SkyCosmos, Inc.",0001342219,Financial Services,Shell Companies
+ECGR,"Bellatora, Inc.",0001945619,Financial Services,Shell Companies
+SITS,"SOUTHERN ITS INTERNATIONAL, INC.",0001468978,Financial Services,Shell Companies
+LGCP,Legion Capital Corp,0001661166,Financial Services,Asset Management
+LGHL,Lion Group Holding Ltd,0001806524,Financial Services,Capital Markets
+ADAD,"Huaizhong Health Group, Inc.",0001593204,Financial Services,Shell Companies
+IWSH,"Wright Investors Service Holdings, Inc.",0001279715,Financial Services,Shell Companies
+GSBX,Golden State Bancorp,0001651166,Financial Services,Banks—Regional
+TRXA,T-REX Acquisition Corp.,0001437750,Financial Services,Shell Companies
+WHLT,CHASE PACKAGING CORP,0001025771,Financial Services,Shell Companies
+ALDA,ATLANTICA INC,0001062506,Financial Services,Shell Companies
+LSMG,Lode-Star Mining Inc.,0001319643,Financial Services,Shell Companies
+GEGP,GOLD ENTERTAINMENT GROUP INC,0001081188,Financial Services,Shell Companies
+MGTI,"MGT CAPITAL INVESTMENTS, INC.",0001001601,Financial Services,Capital Markets
+FRBK,REPUBLIC FIRST BANCORP INC,0000834285,Financial Services,Banks—Regional
+RELI,"Reliance Global Group, Inc.",0001812727,Financial Services,Insurance Brokers
+TMIN,TRENDMAKER INC. LTD.,0001613685,Financial Services,Shell Companies
+NCPL,Netcapital Inc.,0001414767,Financial Services,Capital Markets
+STQN,STRATEGIC ACQUISITIONS INC /NV/,0000847942,Financial Services,Credit Services
+GLAE,"GlassBridge Enterprises, Inc.",0001014111,Financial Services,Asset Management
+FSTJ,First America Resources Corp,0001525306,Financial Services,Shell Companies
+AASP,GLOBAL ACQUISITIONS Corp,0000930245,Financial Services,Shell Companies
+TIRX,TIAN RUIXIANG HOLDINGS LTD,0001782941,Financial Services,Insurance Brokers
+GPLL,"GPL Holdings, Inc.",0001883083,Financial Services,Shell Companies
+BEGI,"BLACKSTAR ENTERPRISE GROUP, INC.",0001483646,Financial Services,Capital Markets
+JPPYY,Jupai Holdings Ltd,0001616291,Financial Services,Asset Management
+GMPW,GIVEMEPOWER CORP,0001064722,Financial Services,Capital Markets
+ATYG,"Saxon Capital Group, Inc./DE",0001093636,Financial Services,Shell Companies
+BNCM,"BOUNCE MOBILE SYSTEMS, INC.",0001384939,Financial Services,Asset Management
+MNTR,"Mentor Capital, Inc.",0001599117,Financial Services,Capital Markets
+CLOW,"Cloudweb, Inc.",0001619227,Financial Services,Shell Companies
+DXF,Dunxin Financial Holdings Ltd,0001499494,Financial Services,Credit Services
+WINSF,Wins Finance Holdings Inc.,0001640251,Financial Services,Credit Services
+STRG,"STARGUIDE GROUP, INC.",0001803096,Financial Services,Shell Companies
+YBCN,Yong Bai Chao New Retail Corp,0001284454,Financial Services,Shell Companies
+FCIC,FCCC INC,0000730669,Financial Services,Shell Companies
+FOMC,"FOMO WORLDWIDE, INC.",0000867028,Financial Services,Asset Management
+KATX,"KAT EXPLORATION, INC.",0001474558,Financial Services,Shell Companies
+EEGI,"Eline Entertainment Group, Inc.",0001043150,Financial Services,Shell Companies
+TLIF,"TOCCA LIFE HOLDINGS, INC.",0001633273,Financial Services,Shell Companies
+RDGA,RIDGEFIELD ACQUISITION CORP,0000812152,Financial Services,Shell Companies
+KEGS,"1812 Brewing Company, Inc.",0000884380,Financial Services,Asset Management
+MTLK,METALINK LTD,0001098462,Financial Services,Shell Companies
+AMLH,"AMERICAN LEISURE HOLDINGS, INC.",0001124197,Financial Services,Shell Companies
+VCOR,VISIBER57 CORP.,0001627041,Financial Services,Shell Companies
+GMZP,GEMZ Corp. NV,0001973160,Financial Services,Shell Companies
+RINO,"JOIN Entertainment Holdings, Inc.",0001394220,Financial Services,Shell Companies
+BFYW,"Better For You Wellness, Inc.",0001852707,Financial Services,Shell Companies
+HGYN,HONG YUAN HOLDING GROUP,0001324759,Financial Services,Shell Companies
+IVBT,Innovation1 Biotech Inc.,0001629205,Financial Services,Shell Companies
+EMAX,"Ecomax, Inc",0001008653,Financial Services,Shell Companies
+COSG,Cosmos Group Holdings Inc.,0001706509,Financial Services,Credit Services
+CBBB,Blue Chip Technologies Corp.,0001477960,Financial Services,Shell Companies
+RAHGF,"Roan Holdings Group Co., Ltd.",0001611852,Financial Services,Credit Services
+BOTH,BIOETHICS LTD,0000894560,Financial Services,Shell Companies
+VHLD,"VECTOR 21 HOLDINGS, INC.",0001916879,Financial Services,Shell Companies
+PLTYF,"Plastec Technologies, Ltd.",0001433309,Financial Services,Shell Companies
+CONC,CONECTISYS CORP,0000790273,Financial Services,Shell Companies
+BISA,BALTIC INTERNATIONAL USA INC,0000918545,Financial Services,Shell Companies
+BZRD,"Blubuzzard, Inc.",0001765826,Financial Services,Capital Markets
+CWNOF,CHINESEWORLDNET COM INC,0001145898,Financial Services,Shell Companies
+SCGX,SAXON CAPITAL GROUP INC,0001277575,Financial Services,Shell Companies
+SMCE,"SMC Entertainment, Inc.",0001497230,Financial Services,Asset Management
+WWSG,WORLDWIDE STRATEGIES INC,0001342792,Financial Services,Shell Companies
+VTXB,Vortex Brands Co.,0001373467,Financial Services,Capital Markets
+UNAM,UNICO AMERICAN CORP,0000100716,Financial Services,Insurance—Property & Casualty
+NIMU,NON INVASIVE MONITORING SYSTEMS INC /FL/,0000720762,Financial Services,Shell Companies
+SDON,SANDSTON CORP,0000892832,Financial Services,Shell Companies
+SFCO,Southern Financial Corp,0001831523,Financial Services,Banks—Regional
+MMMM,"Quad M Solutions, Inc.",0000066600,Financial Services,Insurance—Specialty
+AFHIF,"Atlas Financial Holdings, Inc.",0001539894,Financial Services,Insurance—Property & Casualty
+PLYN,"Palayan Resources, Inc.",0001612851,Financial Services,Shell Companies
+EQOSQ,EQONEX Ltd,0001790515,Financial Services,Capital Markets
+PMPG,"Premier Product Group, Inc.",0001301838,Financial Services,Shell Companies
+SYSX,"Sysorex, Inc.",0001737372,Financial Services,Capital Markets
+LFAP,"LGBTQ Loyalty Holdings, Inc.",0001510247,Financial Services,Capital Markets
+PARG,Power Americas Resource Group Ltd.,0001495648,Financial Services,Shell Companies
+MUSS,"MULTI SOLUTIONS II, INC",0000723733,Financial Services,Shell Companies
+CDIX,Cardiff Lexington Corp,0000811222,Financial Services,Asset Management
+IROH,Iron Horse Acquisitions Corp.,0001901203,Financial Services,Shell Companies
+UMAC,"Unusual Machines, Inc.",0001956955,Financial Services,Shell Companies
+GRYP,Akerna Corp.,0001755953,Financial Services,Capital Markets
+CILJF,CHINA LIFE INSURANCE CO LTD,0001268896,Financial Services,Insurance—Life
+BNPQF,BNP PARIBAS,0000310732,Financial Services,Banks—Regional
+WEBNF,WESTPAC BANKING CORP,0000719245,Financial Services,Banks—Diversified
+ATH-PA,Athene Holding Ltd.,0001527469,Financial Services,Insurance—Diversified
+TKCM,TOKEN COMMUNITIES LTD.,0001683252,Financial Services,Capital Markets
+CIXXF,CI Financial Corp.,0001829948,Financial Services,Asset Management
+BDVC,Franklin BSP Lending Corp,0001490927,Financial Services,Asset Management
+FSUN,FIRSTSUN CAPITAL BANCORP,0001709442,Financial Services,Banks—Regional
+GAMI,"GAMCO INVESTORS, INC. ET AL",0001060349,Financial Services,Asset Management
+WBHC,WILSON BANK HOLDING CO,0000885275,Financial Services,Banks—Regional
+RVRF,River Financial Corp,0001641601,Financial Services,Banks—Regional
+DEFTF,"Defi Technologies, Inc.",0001888274,Financial Services,Capital Markets
+OFSTF,Carbon Streaming Corp,0001875931,Financial Services,Asset Management
+BKSC,BANK OF SOUTH CAROLINA CORP,0001007273,Financial Services,Banks—Regional
+ODTC,"Odonate Therapeutics, Inc.",0001717452,Financial Services,Shell Companies
+GWIN,"GLORYWIN ENTERTAINMENT GROUP, INC.",0001515114,Financial Services,Shell Companies
+OFED,Oconee Federal Financial Corp.,0001501078,Financial Services,Banks—Regional
+UBOH,UNITED BANCSHARES INC/OH,0001087456,Financial Services,Banks—Regional
+FFBW,"FFBW, Inc. /MD/",0001787384,Financial Services,Banks—Regional
+CIZN,CITIZENS HOLDING CO /MS/,0001075706,Financial Services,Banks—Regional
+MSVB,"Mid-Southern Bancorp, Inc.",0001734875,Financial Services,Banks—Regional
+CMHF,"Community Heritage Financial, Inc.",0001792597,Financial Services,Banks—Regional
+ENDI,ENDI Corp.,0001908984,Financial Services,Asset Management
+TETAA,"Teton Advisors, Inc.",0001444874,Financial Services,Asset Management
+OSBK,OCONEE FINANCIAL CORP,0001076691,Financial Services,Banks—Regional
+MBBC,"Marathon Bancorp, Inc. /MD/",0001835385,Financial Services,Banks—Regional
+FIGI,Freedom Internet Group Inc.,0001791325,Financial Services,Asset Management
+BQST,Bioquest Corp,0001568628,Financial Services,Shell Companies
+TBBA,"TEB Bancorp, Inc.",0001751700,Financial Services,Banks—Regional
+WVFC,WVS FINANCIAL CORP,0000910679,Financial Services,Banks—Regional
+ADMG,ADAMANT DRI PROCESSING & MINERALS GROUP,0001171008,Financial Services,Shell Companies
+ERKH,"Eureka Homestead Bancorp, Inc.",0001769725,Financial Services,Banks—Regional
+SFE,SAFEGUARD SCIENTIFICS INC,0000086115,Financial Services,Asset Management
+SICP,Silvergate Capital Corp,0001312109,Financial Services,Banks—Regional
+FGCO,"Financial Gravity Companies, Inc.",0001377167,Financial Services,Financial Conglomerates
+FBDS,Fuss Brands Corp.,0000926844,Financial Services,Shell Companies
+BLYQ,"BALLY, CORP.",0001591565,Financial Services,Shell Companies
+MVCO,"Metavesco, Inc.",0000924095,Financial Services,Capital Markets
+BOPO,Biopower Operations Corp,0001510832,Financial Services,Shell Companies
+SVVC,"Firsthand Technology Value Fund, Inc.",0001495584,Financial Services,Asset Management
+HALL,HALLMARK FINANCIAL SERVICES INC,0000819913,Financial Services,Insurance—Property & Casualty
+IMPM,IMPAC MORTGAGE HOLDINGS INC,0001000298,Financial Services,Mortgage Finance
+MGHL,MORGAN GROUP HOLDING CO,0001162283,Financial Services,Capital Markets
+CBTC,XTRA Bitcoin Inc.,0001429859,Financial Services,Capital Markets
+PUGE,"PUGET TECHNOLOGIES, INC.",0001540615,Financial Services,Shell Companies
+SHGI,"Sparx Holdings Group, Inc.",0001874138,Financial Services,Shell Companies
+GYGC,Guyana Gold Corp,0001983389,Financial Services,Shell Companies
+PLPL,"Plandai Biotechnology, Inc.",0001317880,Financial Services,Shell Companies
+APSI,AQUA POWER SYSTEMS INC.,0001553264,Financial Services,Shell Companies
+AERS,Aerius International Inc.,0001863116,Financial Services,Shell Companies
+FAVO,"Favo Capital, Inc.",0001795851,Financial Services,Credit Services
+CNGT,Cannagistics Inc.,0001304741,Financial Services,Shell Companies
+JMTM,James Maritime Holdings Inc.,0000889353,Financial Services,Shell Companies
+AQUI,Aquarius I Acquisition Corp.,0001863976,Financial Services,Shell Companies
+RBRXF,RHINO BIOTECH Ltd,0001278465,Financial Services,Shell Companies
+BABL,Buildablock Corp.,0001345865,Financial Services,Shell Companies
+EXCL,"Excellerant, Inc.",0001786119,Financial Services,Shell Companies
+MSCF,"MSC INCOME FUND, INC.",0001535778,Financial Services,Asset Management
+SSRT,Streetex Corp.,0001822372,Financial Services,Shell Companies
+STGC,"STARTENGINE CROWDFUNDING, INC.",0001661779,Financial Services,Capital Markets
+FIGP,"Forge Group, Inc.",0001846702,Financial Services,Insurance—Property & Casualty

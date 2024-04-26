@@ -1,0 +1,823 @@
+Ticker,Company Name,CIK,Sector,Industry
+LTMAY,LATAM AIRLINES GROUP S.A.,0001047716,Industrials,Airlines
+CAT,CATERPILLAR INC,0000018230,Industrials,Farm & Heavy Construction Machinery
+GE,GENERAL ELECTRIC CO,0000040545,Industrials,Specialty Industrial Machinery
+UNP,UNION PACIFIC CORP,0000100885,Industrials,Railroads
+EADSY,Airbus SE/ADR,0001378580,Industrials,Aerospace & Defense
+BA,BOEING CO,0000012927,Industrials,Aerospace & Defense
+HON,HONEYWELL INTERNATIONAL INC,0000773840,Industrials,Conglomerates
+UPS,UNITED PARCEL SERVICE INC,0001090727,Industrials,Integrated Freight & Logistics
+RTX,RTX Corp,0000101829,Industrials,Aerospace & Defense
+ETN,Eaton Corp plc,0001551182,Industrials,Specialty Industrial Machinery
+DE,DEERE & CO,0000315189,Industrials,Farm & Heavy Construction Machinery
+LMT,LOCKHEED MARTIN CORP,0000936468,Industrials,Aerospace & Defense
+ADP,AUTOMATIC DATA PROCESSING INC,0000008670,Industrials,Staffing & Employment Services
+CNI,CANADIAN NATIONAL RAILWAY CO,0000016868,Industrials,Railroads
+ABBNY,ABB LTD,0001091587,Industrials,Electrical Equipment & Parts
+CP,CANADIAN PACIFIC KANSAS CITY LTD/CN,0000016875,Industrials,Railroads
+ATLKY,ATLAS COPCO AB,0000748954,Industrials,Specialty Industrial Machinery
+RELX,RELX PLC,0000929869,Industrials,Specialty Business Services
+WM,WASTE MANAGEMENT INC,0000823768,Industrials,Waste Management
+ITW,ILLINOIS TOOL WORKS INC,0000049826,Industrials,Specialty Industrial Machinery
+GD,GENERAL DYNAMICS CORP,0000040533,Industrials,Aerospace & Defense
+CSX,CSX CORP,0000277948,Industrials,Railroads
+TRI,THOMSON REUTERS CORP /CAN/,0001075124,Industrials,Specialty Business Services
+NOC,NORTHROP GRUMMAN CORP /DE/,0001133421,Industrials,Aerospace & Defense
+PH,PARKER HANNIFIN CORP,0000076334,Industrials,Specialty Industrial Machinery
+TDG,TransDigm Group INC,0001260221,Industrials,Aerospace & Defense
+CTAS,CINTAS CORP,0000723254,Industrials,Specialty Business Services
+TT,Trane Technologies plc,0001466258,Industrials,Building Products & Equipment
+FDX,FEDEX CORP,0001048911,Industrials,Integrated Freight & Logistics
+EMR,EMERSON ELECTRIC CO,0000032604,Industrials,Specialty Industrial Machinery
+NSC,NORFOLK SOUTHERN CORP,0000702165,Industrials,Railroads
+PCAR,PACCAR INC,0000075362,Industrials,Farm & Heavy Construction Machinery
+RSG,"REPUBLIC SERVICES, INC.",0001060391,Industrials,Waste Management
+CARR,CARRIER GLOBAL Corp,0001783180,Industrials,Building Products & Equipment
+CPRT,COPART INC,0000900075,Industrials,Specialty Business Services
+MMM,3M CO,0000066740,Industrials,Conglomerates
+ODFL,"OLD DOMINION FREIGHT LINE, INC.",0000878927,Industrials,Trucking
+GWW,"W.W. GRAINGER, INC.",0000277135,Industrials,Industrial Distribution
+BAESY,BAE SYSTEMS PLC /FI/,0000895564,Industrials,Aerospace & Defense
+PAYX,PAYCHEX INC,0000723531,Industrials,Staffing & Employment Services
+URI,"UNITED RENTALS, INC.",0001067701,Industrials,Rental & Leasing Services
+DKILY,Daikin Industries Ltd,0001446519,Industrials,Building Products & Equipment
+WCN,"Waste Connections, Inc.",0001318220,Industrials,Waste Management
+FERG,Ferguson plc,0001832433,Industrials,Industrial Distribution
+LHX,"L3HARRIS TECHNOLOGIES, INC. /DE/",0000202058,Industrials,Aerospace & Defense
+FAST,FASTENAL CO,0000815556,Industrials,Industrial Distribution
+AME,AMETEK INC/,0001037868,Industrials,Specialty Industrial Machinery
+JCI,Johnson Controls International plc,0000833444,Industrials,Building Products & Equipment
+OTIS,Otis Worldwide Corp,0001781335,Industrials,Specialty Industrial Machinery
+CODYY,COMPAGNIE DE SAINT GOBAIN,0001012037,Industrials,Building Products & Equipment
+VRSK,"Verisk Analytics, Inc.",0001442145,Industrials,Consulting Services
+WTKWY,WOLTERS KLUWER N V /FI,0000861967,Industrials,Specialty Business Services
+GPN,GLOBAL PAYMENTS INC,0001123360,Industrials,Specialty Business Services
+CMI,CUMMINS INC,0000026172,Industrials,Specialty Industrial Machinery
+IR,Ingersoll Rand Inc.,0001699150,Industrials,Specialty Industrial Machinery
+RYAAY,RYANAIR HOLDINGS PLC,0001038683,Industrials,Airlines
+ROK,"ROCKWELL AUTOMATION, INC",0001024478,Industrials,Specialty Industrial Machinery
+EFX,EQUIFAX INC,0000033185,Industrials,Consulting Services
+PWR,"QUANTA SERVICES, INC.",0001050915,Industrials,Engineering & Construction
+XYL,Xylem Inc.,0001524472,Industrials,Specialty Industrial Machinery
+DAL,"DELTA AIR LINES, INC.",0000027904,Industrials,Airlines
+FANUY,Fanuc Ltd,0001446596,Industrials,Specialty Industrial Machinery
+SYM,Symbotic Inc.,0001837240,Industrials,Specialty Industrial Machinery
+CJPRY,CENTRAL JAPAN RAILWAY CO,0001334687,Industrials,Railroads
+WAB,WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP,0000943452,Industrials,Railroads
+HWM,Howmet Aerospace Inc.,0000004281,Industrials,Aerospace & Defense
+VRT,Vertiv Holdings Co,0001674101,Industrials,Electrical Equipment & Parts
+BLDR,"Builders FirstSource, Inc.",0001316835,Industrials,Building Products & Equipment
+HEI,HEICO CORP,0000046619,Industrials,Aerospace & Defense
+DOV,DOVER Corp,0000029905,Industrials,Specialty Industrial Machinery
+JBHT,HUNT J B TRANSPORT SERVICES INC,0000728535,Industrials,Integrated Freight & Logistics
+VLTO,Veralto Corp,0001967680,Industrials,Pollution & Treatment Controls
+AXON,"AXON ENTERPRISE, INC.",0001069183,Industrials,Aerospace & Defense
+HUBB,HUBBELL INC,0000048898,Industrials,Electrical Equipment & Parts
+LUV,SOUTHWEST AIRLINES CO,0000092380,Industrials,Airlines
+BAH,Booz Allen Hamilton Holding Corp,0001443646,Industrials,Consulting Services
+EXPD,EXPEDITORS INTERNATIONAL OF WASHINGTON INC,0000746515,Industrials,Integrated Freight & Logistics
+J,JACOBS SOLUTIONS INC.,0000052988,Industrials,Engineering & Construction
+SGSOY,SGS SOCIETE GENERALE DE SURVEILLANCE HOLDING SA /FI,0001069347,Industrials,Consulting Services
+TXT,TEXTRON INC,0000217346,Industrials,Aerospace & Defense
+IEX,IDEX CORP /DE/,0000832101,Industrials,Specialty Industrial Machinery
+CSL,CARLISLE COMPANIES INC,0000790051,Industrials,Building Products & Equipment
+MAS,MASCO CORP /DE/,0000062996,Industrials,Building Products & Equipment
+WSO,WATSCO INC,0000105016,Industrials,Industrial Distribution
+LII,LENNOX INTERNATIONAL INC,0001069202,Industrials,Building Products & Equipment
+CNHI,CNH Industrial N.V.,0001567094,Industrials,Farm & Heavy Construction Machinery
+AER,AerCap Holdings N.V.,0001378789,Industrials,Rental & Leasing Services
+POOL,POOL CORP,0000945841,Industrials,Industrial Distribution
+NDSN,NORDSON CORP,0000072331,Industrials,Specialty Industrial Machinery
+GGG,GRACO INC,0000042888,Industrials,Specialty Industrial Machinery
+SAIA,SAIA INC,0001177702,Industrials,Trucking
+OC,Owens Corning,0001370946,Industrials,Building Products & Equipment
+SNA,Snap-on Inc,0000091440,Industrials,Tools & Accessories
+ZTO,ZTO Express (Cayman) Inc.,0001677250,Industrials,Integrated Freight & Logistics
+XPO,"XPO, Inc.",0001166003,Industrials,Trucking
+SWK,"STANLEY BLACK & DECKER, INC.",0000093556,Industrials,Tools & Accessories
+TRU,TransUnion,0001552033,Industrials,Consulting Services
+UAL,"United Airlines Holdings, Inc.",0000100517,Industrials,Airlines
+BOUYY,Bouygues SA,0001445475,Industrials,Engineering & Construction
+LECO,LINCOLN ELECTRIC HOLDINGS INC,0000059527,Industrials,Tools & Accessories
+GFL,GFL Environmental Inc.,0001780232,Industrials,Waste Management
+TKHVY,Turk Hava Yollari A.O.,0001446444,Industrials,Airlines
+RTO,RENTOKIL INITIAL PLC /FI,0000930157,Industrials,Specialty Business Services
+RBA,RB GLOBAL INC.,0001046102,Industrials,Specialty Business Services
+BLD,TopBuild Corp,0001633931,Industrials,Engineering & Construction
+WMS,"ADVANCED DRAINAGE SYSTEMS, INC.",0001604028,Industrials,Building Products & Equipment
+PNR,PENTAIR plc,0000077360,Industrials,Specialty Industrial Machinery
+TFII,TFI International Inc.,0001588823,Industrials,Trucking
+UHAL,U-Haul Holding Co /NV/,0000004457,Industrials,Rental & Leasing Services
+ACM,AECOM,0000868857,Industrials,Engineering & Construction
+AOS,SMITH A O CORP,0000091142,Industrials,Specialty Industrial Machinery
+ALLE,Allegion plc,0001579241,Industrials,Security & Protection Services
+EME,"EMCOR Group, Inc.",0000105634,Industrials,Engineering & Construction
+HII,"HUNTINGTON INGALLS INDUSTRIES, INC.",0001501585,Industrials,Aerospace & Defense
+NVT,nVent Electric plc,0001720635,Industrials,Electrical Equipment & Parts
+FBIN,"Fortune Brands Innovations, Inc.",0001519751,Industrials,Building Products & Equipment
+TTC,TORO CO,0000737758,Industrials,Tools & Accessories
+RRX,REGAL REXNORD CORP,0000082811,Industrials,Specialty Industrial Machinery
+ITT,ITT INC.,0000216228,Industrials,Specialty Industrial Machinery
+TREX,TREX CO INC,0001069878,Industrials,Building Products & Equipment
+WCC,WESCO INTERNATIONAL INC,0000929008,Industrials,Industrial Distribution
+AAL,American Airlines Group Inc.,0000006201,Industrials,Airlines
+WSC,WillScot Mobile Mini Holdings Corp.,0001647088,Industrials,Rental & Leasing Services
+CLH,CLEAN HARBORS INC,0000822818,Industrials,Waste Management
+KNX,Knight-Swift Transportation Holdings Inc.,0001492691,Industrials,Trucking
+ASR,SOUTHEAST AIRPORT GROUP,0001123452,Industrials,Airports & Air Services
+TTEK,TETRA TECH INC,0000831641,Industrials,Engineering & Construction
+STN,STANTEC INC,0001131383,Industrials,Engineering & Construction
+AGCO,AGCO CORP /DE,0000880266,Industrials,Farm & Heavy Construction Machinery
+ESLT,ELBIT SYSTEMS LTD,0001027664,Industrials,Aerospace & Defense
+CNM,"Core & Main, Inc.",0001856525,Industrials,Industrial Distribution
+CW,CURTISS WRIGHT CORP,0000026324,Industrials,Aerospace & Defense
+CHRW,"C. H. ROBINSON WORLDWIDE, INC.",0001043277,Industrials,Integrated Freight & Logistics
+APG,APi Group Corp,0001796209,Industrials,Engineering & Construction
+RHI,ROBERT HALF INC.,0000315213,Industrials,Staffing & Employment Services
+FIX,COMFORT SYSTEMS USA INC,0001035983,Industrials,Engineering & Construction
+PAC,Pacific Airport Group,0001347557,Industrials,Airports & Air Services
+WWD,"Woodward, Inc.",0000108312,Industrials,Aerospace & Defense
+OUKPY,Outotec OYJ,0001436786,Industrials,Farm & Heavy Construction Machinery
+DCI,DONALDSON Co INC,0000029644,Industrials,Specialty Industrial Machinery
+GNRC,GENERAC HOLDINGS INC.,0001474735,Industrials,Specialty Industrial Machinery
+MIDD,MIDDLEBY Corp,0000769520,Industrials,Specialty Industrial Machinery
+ARMK,Aramark,0001584509,Industrials,Specialty Business Services
+BWXT,"BWX Technologies, Inc.",0001486957,Industrials,Aerospace & Defense
+DLB,"Dolby Laboratories, Inc.",0001308547,Industrials,Specialty Business Services
+RBC,RBC Bearings INC,0001324948,Industrials,Tools & Accessories
+AYI,ACUITY BRANDS INC,0001144215,Industrials,Electrical Equipment & Parts
+OSK,OSHKOSH CORP,0000775158,Industrials,Farm & Heavy Construction Machinery
+KBR,"KBR, INC.",0001357615,Industrials,Engineering & Construction
+SITE,"SiteOne Landscape Supply, Inc.",0001650729,Industrials,Industrial Distribution
+CR,Crane Co,0001944013,Industrials,Specialty Industrial Machinery
+AIT,APPLIED INDUSTRIAL TECHNOLOGIES INC,0000109563,Industrials,Industrial Distribution
+WTS,WATTS WATER TECHNOLOGIES INC,0000795403,Industrials,Specialty Industrial Machinery
+FCN,"FTI CONSULTING, INC",0000887936,Industrials,Consulting Services
+FLR,FLUOR CORP,0001124198,Industrials,Engineering & Construction
+MSA,MSA Safety Inc,0000066570,Industrials,Security & Protection Services
+GXO,"GXO Logistics, Inc.",0001852244,Industrials,Integrated Freight & Logistics
+LSTR,LANDSTAR SYSTEM INC,0000853816,Industrials,Integrated Freight & Logistics
+AZEK,AZEK Co Inc.,0001782754,Industrials,Building Products & Equipment
+CAE,CAE INC,0001173382,Industrials,Aerospace & Defense
+AAON,"AAON, INC.",0000824142,Industrials,Building Products & Equipment
+BZ,Kanzhun Ltd,0001842827,Industrials,Staffing & Employment Services
+ADT,ADT Inc.,0001703056,Industrials,Security & Protection Services
+HXL,HEXCEL CORP /DE/,0000717605,Industrials,Aerospace & Defense
+CAR,"AVIS BUDGET GROUP, INC.",0000723612,Industrials,Rental & Leasing Services
+EBCOY,EBARA CORP /ADR/,0000354518,Industrials,Specialty Industrial Machinery
+TKR,TIMKEN CO,0000098362,Industrials,Tools & Accessories
+ZWS,Zurn Elkay Water Solutions Corp,0001439288,Industrials,Pollution & Treatment Controls
+TNET,"TRINET GROUP, INC.",0000937098,Industrials,Staffing & Employment Services
+MLI,MUELLER INDUSTRIES INC,0000089439,Industrials,Metal Fabrication
+MSM,MSC INDUSTRIAL DIRECT CO INC,0001003078,Industrials,Industrial Distribution
+MTZ,MASTEC INC,0000015615,Industrials,Engineering & Construction
+BECN,BEACON ROOFING SUPPLY INC,0001124941,Industrials,Industrial Distribution
+ATKR,Atkore Inc.,0001666138,Industrials,Electrical Equipment & Parts
+FLS,FLOWSERVE CORP,0000030625,Industrials,Specialty Industrial Machinery
+ESAB,ESAB Corp,0001877322,Industrials,Metal Fabrication
+FTAI,FTAI Aviation Ltd.,0001590364,Industrials,Rental & Leasing Services
+DRS,"Leonardo DRS, Inc.",0001833756,Industrials,Aerospace & Defense
+ATI,ATI INC,0001018963,Industrials,Metal Fabrication
+R,RYDER SYSTEM INC,0000085961,Industrials,Rental & Leasing Services
+SMBMY,SembCorp Marine Ltd.,0001448978,Industrials,Aerospace & Defense
+CWST,CASELLA WASTE SYSTEMS INC,0000911177,Industrials,Waste Management
+GTLS,CHART INDUSTRIES INC,0000892553,Industrials,Specialty Industrial Machinery
+KEX,KIRBY CORP,0000056047,Industrials,Marine Shipping
+LPX,LOUISIANA-PACIFIC CORP,0000060519,Industrials,Building Products & Equipment
+VMI,VALMONT INDUSTRIES INC,0000102729,Industrials,Conglomerates
+SPXC,"SPX Technologies, Inc.",0000088205,Industrials,Building Products & Equipment
+ALSMY,ALSTOM,0001062066,Industrials,Railroads
+MMS,"MAXIMUS, INC.",0001032220,Industrials,Specialty Business Services
+FSS,FEDERAL SIGNAL CORP /DE/,0000277509,Industrials,Pollution & Treatment Controls
+AL,AIR LEASE CORP,0001487712,Industrials,Rental & Leasing Services
+AWI,ARMSTRONG WORLD INDUSTRIES INC,0000007431,Industrials,Building Products & Equipment
+MOG-A,MOOG INC.,0000067887,Industrials,Aerospace & Defense
+ALK,"ALASKA AIR GROUP, INC.",0000766421,Industrials,Airlines
+VIAAY,VIENNA INTERNATIONAL AIRPORT,0000932417,Industrials,Airports & Air Services
+FELE,FRANKLIN ELECTRIC CO INC,0000038725,Industrials,Specialty Industrial Machinery
+SRCL,STERICYCLE INC,0000861878,Industrials,Waste Management
+GATX,GATX CORP,0000040211,Industrials,Rental & Leasing Services
+MSSMY,Misumi Group Inc./ADR,0001710864,Industrials,Tools & Accessories
+TEX,TEREX CORP,0000097216,Industrials,Farm & Heavy Construction Machinery
+HRI,HERC HOLDINGS INC,0001364479,Industrials,Rental & Leasing Services
+SNDR,"Schneider National, Inc.",0001692063,Industrials,Trucking
+CAAP,CORPORACION AMERICA AIRPORTS S.A.,0001717393,Industrials,Airports & Air Services
+CPA,"Copa Holdings, S.A.",0001345105,Industrials,Airlines
+OMAB,Central North Airport Group,0001378239,Industrials,Airports & Air Services
+MATX,"Matson, Inc.",0000003453,Industrials,Marine Shipping
+JOBY,"Joby Aviation, Inc.",0001819848,Industrials,Airports & Air Services
+MDU,MDU RESOURCES GROUP INC,0000067716,Industrials,Conglomerates
+ATS,ATS Corp /ATS,0001394832,Industrials,Specialty Industrial Machinery
+ACA,"Arcosa, Inc.",0001739445,Industrials,Engineering & Construction
+EXPO,EXPONENT INC,0000851520,Industrials,Engineering & Construction
+AEIS,ADVANCED ENERGY INDUSTRIES INC,0000927003,Industrials,Electrical Equipment & Parts
+WIRE,ENCORE WIRE CORP,0000850460,Industrials,Electrical Equipment & Parts
+VRRM,VERRA MOBILITY Corp,0001682745,Industrials,Infrastructure Operations
+ENS,EnerSys,0001289308,Industrials,Electrical Equipment & Parts
+BCO,BRINKS CO,0000078890,Industrials,Security & Protection Services
+NSP,"INSPERITY, INC.",0001000753,Industrials,Staffing & Employment Services
+MAN,ManpowerGroup Inc.,0000871763,Industrials,Staffing & Employment Services
+AVAV,AeroVironment Inc,0001368622,Industrials,Aerospace & Defense
+CSWI,"CSW INDUSTRIALS, INC.",0001624794,Industrials,Specialty Industrial Machinery
+GMS,GMS Inc.,0001600438,Industrials,Building Products & Equipment
+KAI,KADANT INC,0000886346,Industrials,Specialty Industrial Machinery
+SEB,SEABOARD CORP /DE/,0000088121,Industrials,Conglomerates
+GFF,GRIFFON CORP,0000050725,Industrials,Conglomerates
+DY,DYCOM INDUSTRIES INC,0000067215,Industrials,Engineering & Construction
+AFLYY,AIR FRANCE-KLM /FI,0001110452,Industrials,Airlines
+CXT,"Crane NXT, Co.",0000025445,Industrials,Specialty Industrial Machinery
+SPR,"Spirit AeroSystems Holdings, Inc.",0001364885,Industrials,Aerospace & Defense
+GTES,Gates Industrial Corp plc,0001718512,Industrials,Specialty Industrial Machinery
+ENOV,Enovis CORP,0001420800,Industrials,Specialty Industrial Machinery
+NPO,Enpro Inc.,0001164863,Industrials,Specialty Industrial Machinery
+ROYMY,Royal Mail plc/ADR,0001592438,Industrials,Integrated Freight & Logistics
+CBZ,"CBIZ, Inc.",0000944148,Industrials,Specialty Business Services
+JBT,John Bean Technologies CORP,0001433660,Industrials,Specialty Industrial Machinery
+ERJ,EMBRAER S.A.,0001355444,Industrials,Aerospace & Defense
+ARCB,ARCBEST CORP /DE/,0000894405,Industrials,Trucking
+UNF,UNIFIRST CORP,0000717954,Industrials,Specialty Business Services
+MGRC,MCGRATH RENTCORP,0000752714,Industrials,Rental & Leasing Services
+CRS,CARPENTER TECHNOLOGY CORP,0000017843,Industrials,Metal Fabrication
+HI,"Hillenbrand, Inc.",0001417398,Industrials,Specialty Industrial Machinery
+KFY,KORN FERRY,0000056679,Industrials,Staffing & Employment Services
+BRC,BRADY CORP,0000746598,Industrials,Security & Protection Services
+IHICY,IHI Corporation/ADR,0001567526,Industrials,Specialty Industrial Machinery
+WOR,"WORTHINGTON ENTERPRISES, INC.",0000108516,Industrials,Metal Fabrication
+HUBG,"Hub Group, Inc.",0000940942,Industrials,Integrated Freight & Logistics
+HAYW,"Hayward Holdings, Inc.",0001834622,Industrials,Electrical Equipment & Parts
+ROAD,"Construction Partners, Inc.",0001718227,Industrials,Engineering & Construction
+ICFI,"ICF International, Inc.",0001362004,Industrials,Consulting Services
+VSTS,Vestis Corp,0001967649,Industrials,Rental & Leasing Services
+HTZ,"HERTZ GLOBAL HOLDINGS, INC",0001657853,Industrials,Rental & Leasing Services
+WERN,WERNER ENTERPRISES INC,0000793074,Industrials,Trucking
+ALG,ALAMO GROUP INC,0000897077,Industrials,Farm & Heavy Construction Machinery
+ROCK,"GIBRALTAR INDUSTRIES, INC.",0000912562,Industrials,Building Products & Equipment
+BE,Bloom Energy Corp,0001664703,Industrials,Electrical Equipment & Parts
+MYRG,MYR GROUP INC.,0000700923,Industrials,Engineering & Construction
+ABM,ABM INDUSTRIES INC /DE/,0000771497,Industrials,Specialty Business Services
+PLUG,PLUG POWER INC,0001093691,Industrials,Electrical Equipment & Parts
+REZI,"RESIDEO TECHNOLOGIES, INC.",0001740332,Industrials,Security & Protection Services
+STRL,"STERLING INFRASTRUCTURE, INC.",0000874238,Industrials,Engineering & Construction
+RXO,"RXO, Inc.",0001929561,Industrials,Trucking
+SKYW,SKYWEST INC,0000793733,Industrials,Airlines
+UP,Wheels Up Experience Inc.,0001819516,Industrials,Airports & Air Services
+FA,FIRST ADVANTAGE CORP,0001210677,Industrials,Specialty Business Services
+PGTI,"PGT Innovations, Inc.",0001354327,Industrials,Building Products & Equipment
+OSTIY,Osterreichische Post AG ADR,0001570187,Industrials,Integrated Freight & Logistics
+SHZNY,Shenzhen Expressway Co. / ADR,0001454480,Industrials,Infrastructure Operations
+KTOS,"KRATOS DEFENSE & SECURITY SOLUTIONS, INC.",0001069258,Industrials,Aerospace & Defense
+ENR,"ENERGIZER HOLDINGS, INC.",0001632790,Industrials,Electrical Equipment & Parts
+JBI,"Janus International Group, Inc.",0001839839,Industrials,Building Products & Equipment
+GOGL,Golden Ocean Group Ltd,0001029145,Industrials,Marine Shipping
+MWA,"Mueller Water Products, Inc.",0001350593,Industrials,Specialty Industrial Machinery
+AIR,AAR CORP,0000001750,Industrials,Aerospace & Defense
+MIR,"Mirion Technologies, Inc.",0001809987,Industrials,Specialty Industrial Machinery
+TRN,TRINITY INDUSTRIES INC,0000099780,Industrials,Railroads
+DOOR,MASONITE INTERNATIONAL CORP,0000893691,Industrials,Building Products & Equipment
+RKLB,"Rocket Lab USA, Inc.",0001819994,Industrials,Aerospace & Defense
+GVA,GRANITE CONSTRUCTION INC,0000861459,Industrials,Engineering & Construction
+TGH,TEXTAINER GROUP HOLDINGS LTD,0001413159,Industrials,Rental & Leasing Services
+HEES,"H&E Equipment Services, Inc.",0001339605,Industrials,Rental & Leasing Services
+LZ,"LEGALZOOM.COM, INC.",0001286139,Industrials,Specialty Business Services
+PRIM,Primoris Services Corp,0001361538,Industrials,Engineering & Construction
+HNI,HNI CORP,0000048287,Industrials,Business Equipment & Supplies
+HURN,Huron Consulting Group Inc.,0001289848,Industrials,Consulting Services
+SBLK,Star Bulk Carriers Corp.,0001386716,Industrials,Marine Shipping
+JBLU,JETBLUE AIRWAYS CORP,0001158463,Industrials,Airlines
+UPWK,"UPWORK, INC",0001627475,Industrials,Staffing & Employment Services
+KMT,KENNAMETAL INC,0000055242,Industrials,Tools & Accessories
+SXI,STANDEX INTERNATIONAL CORP/DE/,0000310354,Industrials,Specialty Industrial Machinery
+IESC,"IES Holdings, Inc.",0001048268,Industrials,Engineering & Construction
+ATMU,Atmus Filtration Technologies Inc.,0001921963,Industrials,Pollution & Treatment Controls
+TNC,TENNANT CO,0000097134,Industrials,Specialty Industrial Machinery
+ENVX,Enovix Corp,0001828318,Industrials,Electrical Equipment & Parts
+B,BARNES GROUP INC,0000009984,Industrials,Specialty Industrial Machinery
+HLMN,Hillman Solutions Corp.,0001822492,Industrials,Tools & Accessories
+NVEE,"NV5 Global, Inc.",0001532961,Industrials,Engineering & Construction
+EVEX,"Eve Holding, Inc.",0001823652,Industrials,Aerospace & Defense
+CXW,"CoreCivic, Inc.",0001070985,Industrials,Security & Protection Services
+BBU,Brookfield Business Partners L.P.,0001654795,Industrials,Conglomerates
+EPAC,ENERPAC TOOL GROUP CORP,0000006955,Industrials,Specialty Industrial Machinery
+POWL,POWELL INDUSTRIES INC,0000080420,Industrials,Electrical Equipment & Parts
+AZZ,AZZ INC,0000008947,Industrials,Specialty Business Services
+GIC,GLOBAL INDUSTRIAL Co,0000945114,Industrials,Industrial Distribution
+NSSC,"NAPCO SECURITY TECHNOLOGIES, INC",0000069633,Industrials,Security & Protection Services
+CODI,Compass Diversified Holdings,0001345126,Industrials,Conglomerates
+CTOS,"Custom Truck One Source, Inc.",0001709682,Industrials,Rental & Leasing Services
+SFL,SFL Corp Ltd.,0001289877,Industrials,Marine Shipping
+JELD,"JELD-WEN Holding, Inc.",0001674335,Industrials,Building Products & Equipment
+ULCC,"Frontier Group Holdings, Inc.",0001670076,Industrials,Airlines
+HOLI,"Hollysys Automation Technologies, Ltd.",0001357450,Industrials,Electrical Equipment & Parts
+DSGR,"Distribution Solutions Group, Inc.",0000703604,Industrials,Industrial Distribution
+MRCY,MERCURY SYSTEMS INC,0001049521,Industrials,Aerospace & Defense
+XMTR,"Xometry, Inc.",0001657573,Industrials,Specialty Industrial Machinery
+ACHR,Archer Aviation Inc.,0001824502,Industrials,Aerospace & Defense
+MRTN,MARTEN TRANSPORT LTD,0000799167,Industrials,Trucking
+GEO,GEO GROUP INC,0000923796,Industrials,Security & Protection Services
+GBX,GREENBRIER COMPANIES INC,0000923120,Industrials,Railroads
+ZIM,ZIM Integrated Shipping Services Ltd.,0001654126,Industrials,Marine Shipping
+SCS,STEELCASE INC,0001050825,Industrials,Business Equipment & Supplies
+PRG,"PROG Holdings, Inc.",0001808834,Industrials,Rental & Leasing Services
+DAC,Danaos Corp,0001369241,Industrials,Marine Shipping
+LNN,LINDSAY CORP,0000836157,Industrials,Farm & Heavy Construction Machinery
+ALGT,Allegiant Travel CO,0001362468,Industrials,Airlines
+ZIP,"ZIPRECRUITER, INC.",0001617553,Industrials,Staffing & Employment Services
+CDLR,Cadeler A/S,0001978867,Industrials,Marine Shipping
+HLIO,"HELIOS TECHNOLOGIES, INC.",0001024795,Industrials,Specialty Industrial Machinery
+KFRC,KFORCE INC,0000930420,Industrials,Staffing & Employment Services
+FWRD,FORWARD AIR CORP,0000912728,Industrials,Integrated Freight & Logistics
+CDRE,"Cadre Holdings, Inc.",0001860543,Industrials,Aerospace & Defense
+CMRE,Costamare Inc.,0001503584,Industrials,Marine Shipping
+KAMN,KAMAN Corp,0000054381,Industrials,Aerospace & Defense
+APOG,"APOGEE ENTERPRISES, INC.",0000006845,Industrials,Building Products & Equipment
+CMCO,COLUMBUS MCKINNON CORP,0001005229,Industrials,Farm & Heavy Construction Machinery
+HY,"HYSTER-YALE MATERIALS HANDLING, INC.",0001173514,Industrials,Farm & Heavy Construction Machinery
+VVX,"V2X, Inc.",0001601548,Industrials,Aerospace & Defense
+RYI,Ryerson Holding Corp,0001481582,Industrials,Metal Fabrication
+AMRC,"Ameresco, Inc.",0001488139,Industrials,Engineering & Construction
+WNC,WABASH NATIONAL Corp,0000879526,Industrials,Farm & Heavy Construction Machinery
+TGI,TRIUMPH GROUP INC,0001021162,Industrials,Aerospace & Defense
+VSEC,VSE CORP,0000102752,Industrials,Aerospace & Defense
+NX,Quanex Building Products CORP,0001423221,Industrials,Building Products & Equipment
+DNOW,DNOW Inc.,0001599617,Industrials,Specialty Industrial Machinery
+BXC,BlueLinx Holdings Inc.,0001301787,Industrials,Industrial Distribution
+SP,SP Plus Corp,0001059262,Industrials,Specialty Business Services
+HTLD,HEARTLAND EXPRESS INC,0000799233,Industrials,Trucking
+CPLP,Capital Product Partners L.P.,0001392326,Industrials,Marine Shipping
+REVG,"REV Group, Inc.",0001687221,Industrials,Farm & Heavy Construction Machinery
+MEG,"Montrose Environmental Group, Inc.",0001643615,Industrials,Waste Management
+TRNS,TRANSCAT INC,0000099302,Industrials,Industrial Distribution
+PRLB,Proto Labs Inc,0001443669,Industrials,Metal Fabrication
+TH,Target Hospitality Corp.,0001712189,Industrials,Specialty Business Services
+BLDP,Ballard Power Systems Inc.,0001453015,Industrials,Specialty Industrial Machinery
+ATSG,"Air Transport Services Group, Inc.",0000894081,Industrials,Airlines
+GRC,GORMAN RUPP CO,0000042682,Industrials,Specialty Industrial Machinery
+MATW,MATTHEWS INTERNATIONAL CORP,0000063296,Industrials,Conglomerates
+THR,"Thermon Group Holdings, Inc.",0001489096,Industrials,Specialty Industrial Machinery
+TDCX,TDCX Inc.,0001803112,Industrials,Specialty Business Services
+ASPN,ASPEN AEROGELS INC,0001145986,Industrials,Building Products & Equipment
+ECO,Okeanis Eco Tankers Corp.,0001964954,Industrials,Marine Shipping
+VLRS,"Controladora Vuela Compania de Aviacion, S.A.B. de C.V.",0001520504,Industrials,Airlines
+AZUL,AZUL SA,0001432364,Industrials,Airlines
+TWI,TITAN INTERNATIONAL INC,0000899751,Industrials,Farm & Heavy Construction Machinery
+NAT,NORDIC AMERICAN TANKERS Ltd,0001000177,Industrials,Marine Shipping
+KRNT,Kornit Digital Ltd.,0001625791,Industrials,Specialty Industrial Machinery
+ERII,"Energy Recovery, Inc.",0001421517,Industrials,Pollution & Treatment Controls
+NMM,Navios Maritime Partners L.P.,0001415921,Industrials,Marine Shipping
+HRT,HireRight Holdings Corp,0001859285,Industrials,Staffing & Employment Services
+NKLA,Nikola Corp,0001731289,Industrials,Farm & Heavy Construction Machinery
+ARLO,"Arlo Technologies, Inc.",0001736946,Industrials,Building Products & Equipment
+ZUUS,"ZEUUS, INC.",0001687926,Industrials,Specialty Business Services
+ULH,"UNIVERSAL LOGISTICS HOLDINGS, INC.",0001308208,Industrials,Trucking
+ASTE,ASTEC INDUSTRIES INC,0000792987,Industrials,Farm & Heavy Construction Machinery
+PCT,"PureCycle Technologies, Inc.",0001830033,Industrials,Pollution & Treatment Controls
+SNCY,"Sun Country Airlines Holdings, Inc.",0001743907,Industrials,Airlines
+BV,"BrightView Holdings, Inc.",0001734713,Industrials,Specialty Business Services
+RGR,STURM RUGER & CO INC,0000095029,Industrials,Aerospace & Defense
+CYRX,"Cryoport, Inc.",0001124524,Industrials,Integrated Freight & Logistics
+SKYH,Sky Harbour Group Corp,0001823587,Industrials,Aerospace & Defense
+SAVE,"Spirit Airlines, Inc.",0001498710,Industrials,Airlines
+EVLV,"Evolv Technologies Holdings, Inc.",0001805385,Industrials,Security & Protection Services
+SPLP,STEEL PARTNERS HOLDINGS L.P.,0001452857,Industrials,Conglomerates
+HAYN,HAYNES INTERNATIONAL INC,0000858655,Industrials,Metal Fabrication
+GNK,GENCO SHIPPING & TRADING LTD,0001326200,Industrials,Marine Shipping
+CRESY,CRESUD INC,0001034957,Industrials,Conglomerates
+CRAI,"CRA INTERNATIONAL, INC.",0001053706,Industrials,Consulting Services
+KELYA,KELLY SERVICES INC,0000055135,Industrials,Staffing & Employment Services
+TILE,INTERFACE INC,0000715787,Industrials,Building Products & Equipment
+HA,HAWAIIAN HOLDINGS INC,0001172222,Industrials,Airlines
+BBSI,BARRETT BUSINESS SERVICES INC,0000902791,Industrials,Staffing & Employment Services
+GSL,"Global Ship Lease, Inc.",0001430725,Industrials,Rental & Leasing Services
+DCO,DUCOMMUN INC /DE/,0000030305,Industrials,Aerospace & Defense
+SPCE,"Virgin Galactic Holdings, Inc",0001706946,Industrials,Aerospace & Defense
+OFLX,"Omega Flex, Inc.",0001317945,Industrials,Specialty Industrial Machinery
+CECO,CECO ENVIRONMENTAL CORP,0000003197,Industrials,Pollution & Treatment Controls
+IIIN,INSTEEL INDUSTRIES INC,0000764401,Industrials,Metal Fabrication
+VVI,VIAD CORP,0000884219,Industrials,Specialty Business Services
+PBI,PITNEY BOWES INC /DE/,0000078814,Industrials,Integrated Freight & Logistics
+NVRI,ENVIRI Corp,0000045876,Industrials,Waste Management
+CVLG,"COVENANT LOGISTICS GROUP, INC.",0000928658,Industrials,Trucking
+EUBG,ENTREPRENEUR UNIVERSE BRIGHT GROUP,0001171326,Industrials,Consulting Services
+ASC,Ardmore Shipping Corp,0001577437,Industrials,Marine Shipping
+LNZA,"LanzaTech Global, Inc.",0001843724,Industrials,Waste Management
+PL,Planet Labs PBC,0001836833,Industrials,Aerospace & Defense
+EH,EHang Holdings Ltd,0001759783,Industrials,Aerospace & Defense
+PLPC,PREFORMED LINE PRODUCTS CO,0000080035,Industrials,Electrical Equipment & Parts
+FLYX,FLYEXCLUSIVE INC.,0001843973,Industrials,Airlines
+SWBI,"SMITH & WESSON BRANDS, INC.",0001092796,Industrials,Aerospace & Defense
+TITN,Titan Machinery Inc.,0001409171,Industrials,Industrial Distribution
+AGX,ARGAN INC,0000100591,Industrials,Engineering & Construction
+HSII,HEIDRICK & STRUGGLES INTERNATIONAL INC,0001066605,Industrials,Staffing & Employment Services
+ATRO,ASTRONICS CORP,0000008063,Industrials,Aerospace & Defense
+MTW,MANITOWOC CO INC,0000061986,Industrials,Farm & Heavy Construction Machinery
+ACCO,ACCO BRANDS Corp,0000712034,Industrials,Business Equipment & Supplies
+NPWR,NET Power Inc.,0001845437,Industrials,Specialty Industrial Machinery
+CASS,CASS INFORMATION SYSTEMS INC,0000708781,Industrials,Specialty Business Services
+FCEL,FUELCELL ENERGY INC,0000886128,Industrials,Electrical Equipment & Parts
+EGLE,Eagle Bulk Shipping Inc.,0001322439,Industrials,Marine Shipping
+NPK,NATIONAL PRESTO INDUSTRIES INC,0000080172,Industrials,Aerospace & Defense
+DXPE,DXP ENTERPRISES INC,0001020710,Industrials,Industrial Distribution
+BWMN,Bowman Consulting Group Ltd.,0001847590,Industrials,Engineering & Construction
+GLDD,Great Lakes Dredge & Dock CORP,0001372020,Industrials,Engineering & Construction
+EBF,"ENNIS, INC.",0000033002,Industrials,Business Equipment & Supplies
+FC,FRANKLIN COVEY CO,0000886206,Industrials,Consulting Services
+KE,"Kimball Electronics, Inc.",0001606757,Industrials,Electrical Equipment & Parts
+MIESY,"Mitsui E&S Holdings Co., Ltd./ADR",0001567924,Industrials,Aerospace & Defense
+LILM,Lilium N.V.,0001855756,Industrials,Aerospace & Defense
+ASLE,AerSale Corp,0001754170,Industrials,Airports & Air Services
+LMB,"Limbach Holdings, Inc.",0001606163,Industrials,Building Products & Equipment
+TPC,TUTOR PERINI CORP,0000077543,Industrials,Engineering & Construction
+SB,"SAFE BULKERS, INC.",0001434754,Industrials,Marine Shipping
+FORR,"FORRESTER RESEARCH, INC.",0001023313,Industrials,Consulting Services
+ADSE,Ads-Tec Energy Public Ltd Co,0001879248,Industrials,Electrical Equipment & Parts
+RGP,"RESOURCES CONNECTION, INC.",0001084765,Industrials,Consulting Services
+FIP,FTAI Infrastructure Inc.,0001899883,Industrials,Conglomerates
+BBCP,"Concrete Pumping Holdings, Inc.",0001703956,Industrials,Engineering & Construction
+ACTG,ACACIA RESEARCH CORP,0000934549,Industrials,Business Equipment & Supplies
+TRC,TEJON RANCH CO,0000096869,Industrials,Conglomerates
+TBI,"TrueBlue, Inc.",0000768899,Industrials,Staffing & Employment Services
+LEV,Lion Electric Co,0001834974,Industrials,Farm & Heavy Construction Machinery
+PTSI,PAM TRANSPORTATION SERVICES INC,0000798287,Industrials,Trucking
+AERG,"APPLIED ENERGETICS, INC.",0000879911,Industrials,Aerospace & Defense
+AMSC,AMERICAN SUPERCONDUCTOR CORP /DE/,0000880807,Industrials,Specialty Industrial Machinery
+PANL,Pangaea Logistics Solutions Ltd.,0001606909,Industrials,Marine Shipping
+CMPO,"CompoSecure, Inc.",0001823144,Industrials,Metal Fabrication
+AMPX,"Amprius Technologies, Inc.",0001899287,Industrials,Electrical Equipment & Parts
+ALTG,ALTA EQUIPMENT GROUP INC.,0001759824,Industrials,Rental & Leasing Services
+DSKE,"Daseke, Inc.",0001642453,Industrials,Trucking
+SHYF,"SHYFT GROUP, INC.",0000743238,Industrials,Farm & Heavy Construction Machinery
+EAF,GRAFTECH INTERNATIONAL LTD,0000931148,Industrials,Electrical Equipment & Parts
+DSX,DIANA SHIPPING INC.,0001318885,Industrials,Marine Shipping
+WLFC,WILLIS LEASE FINANCE CORP,0001018164,Industrials,Rental & Leasing Services
+AMBI,Ambipar Emergency Response,0001937441,Industrials,Waste Management
+CVEO,Civeo Corp,0001590584,Industrials,Specialty Business Services
+PKOH,PARK OHIO HOLDINGS CORP,0000076282,Industrials,Specialty Industrial Machinery
+MTRX,MATRIX SERVICE CO,0000866273,Industrials,Engineering & Construction
+HSHP,Himalaya Shipping Ltd.,0001959455,Industrials,Marine Shipping
+SWIM,"Latham Group, Inc.",0001833197,Industrials,Building Products & Equipment
+AAN,"Aaron's Company, Inc.",0001821393,Industrials,Rental & Leasing Services
+EVI,"EVI INDUSTRIES, INC.",0000065312,Industrials,Industrial Distribution
+NWPX,NORTHWEST PIPE CO,0001001385,Industrials,Metal Fabrication
+PKE,PARK AEROSPACE CORP,0000076267,Industrials,Aerospace & Defense
+MVST,"Microvast Holdings, Inc.",0001760689,Industrials,Electrical Equipment & Parts
+BAER,"Bridger Aerospace Group Holdings, Inc.",0001941536,Industrials,Security & Protection Services
+RLGT,"RADIANT LOGISTICS, INC",0001171155,Industrials,Integrated Freight & Logistics
+CIX,COMPX INTERNATIONAL INC,0001049606,Industrials,Security & Protection Services
+SLDP,"Solid Power, Inc.",0001844862,Industrials,Electrical Equipment & Parts
+QUAD,"Quad/Graphics, Inc.",0001481792,Industrials,Specialty Business Services
+ESEA,EUROSEAS LTD.,0001341170,Industrials,Marine Shipping
+SMHI,SEACOR Marine Holdings Inc.,0001690334,Industrials,Marine Shipping
+KODK,EASTMAN KODAK CO,0000031235,Industrials,Specialty Business Services
+WLDN,"Willdan Group, Inc.",0001370450,Industrials,Engineering & Construction
+FSTR,FOSTER L B CO,0000352825,Industrials,Railroads
+POWW,"AMMO, INC.",0001015383,Industrials,Aerospace & Defense
+NL,NL INDUSTRIES INC,0000072162,Industrials,Security & Protection Services
+MEC,"Mayville Engineering Company, Inc.",0001766368,Industrials,Metal Fabrication
+GASS,StealthGas Inc.,0001328919,Industrials,Marine Shipping
+EOSE,"Eos Energy Enterprises, Inc.",0001805077,Industrials,Electrical Equipment & Parts
+FREY,"FREYR Battery, Inc. /DE/",0001992243,Industrials,Electrical Equipment & Parts
+GHM,GRAHAM CORP,0000716314,Industrials,Specialty Industrial Machinery
+GENC,GENCOR INDUSTRIES INC,0000064472,Industrials,Farm & Heavy Construction Machinery
+MG,"Mistras Group, Inc.",0001436126,Industrials,Security & Protection Services
+DLHC,DLH Holdings Corp.,0000785557,Industrials,Specialty Business Services
+SLND,"Southland Holdings, Inc.",0001883814,Industrials,Engineering & Construction
+BLDE,"Blade Air Mobility, Inc.",0001779128,Industrials,Airports & Air Services
+PFMT,Performant Financial Corp,0001550695,Industrials,Specialty Business Services
+NNBR,NN INC,0000918541,Industrials,Conglomerates
+RCMT,"RCM TECHNOLOGIES, INC.",0000700841,Industrials,Conglomerates
+TWIN,TWIN DISC INC,0000100378,Industrials,Specialty Industrial Machinery
+SMR,NUSCALE POWER Corp,0001822966,Industrials,Specialty Industrial Machinery
+LXFR,LUXFER HOLDINGS PLC,0001096056,Industrials,Specialty Industrial Machinery
+KNOP,KNOT Offshore Partners LP,0001564180,Industrials,Marine Shipping
+SST,"System1, Inc.",0001805833,Industrials,Specialty Business Services
+RDW,Redwire Corp,0001819810,Industrials,Aerospace & Defense
+NVX,NOVONIX Ltd,0001859795,Industrials,Electrical Equipment & Parts
+BYRN,Byrna Technologies Inc.,0001354866,Industrials,Aerospace & Defense
+WSCO,"Global AI, Inc.",0001473490,Industrials,Consulting Services
+ORN,Orion Group Holdings Inc,0001402829,Industrials,Engineering & Construction
+BLNK,Blink Charging Co.,0001429764,Industrials,Engineering & Construction
+GRIN,Grindrod Shipping Holdings Ltd.,0001725293,Industrials,Marine Shipping
+HQI,"HireQuest, Inc.",0001140102,Industrials,Staffing & Employment Services
+TUSK,"MAMMOTH ENERGY SERVICES, INC.",0001679268,Industrials,Conglomerates
+SPIR,"Spire Global, Inc.",0001816017,Industrials,Specialty Business Services
+LLAP,Terran Orbital Corp,0001835512,Industrials,Aerospace & Defense
+FLCX,flooidCX Corp.,0001609988,Industrials,Consulting Services
+GWH,"ESS Tech, Inc.",0001819438,Industrials,Electrical Equipment & Parts
+SFWL,SHENGFENG DEVELOPMENT Ltd,0001863218,Industrials,Integrated Freight & Logistics
+HURC,HURCO COMPANIES INC,0000315374,Industrials,Specialty Industrial Machinery
+MNTX,"Manitex International, Inc.",0001302028,Industrials,Farm & Heavy Construction Machinery
+TG,TREDEGAR CORP,0000850429,Industrials,Metal Fabrication
+ICTSF,ICTS INTERNATIONAL N V,0001010134,Industrials,Security & Protection Services
+EVTL,Vertical Aerospace Ltd.,0001867102,Industrials,Aerospace & Defense
+SHIM,Shimmick Corp,0001887944,Industrials,Engineering & Construction
+SCWO,374Water Inc.,0000933972,Industrials,Pollution & Treatment Controls
+EML,EASTERN CO,0000031107,Industrials,Tools & Accessories
+SHIP,Seanergy Maritime Holdings Corp.,0001448397,Industrials,Marine Shipping
+QRHC,Quest Resource Holding Corp,0001442236,Industrials,Waste Management
+ISSC,INNOVATIVE SOLUTIONS & SUPPORT INC,0000836690,Industrials,Aerospace & Defense
+CRGO,Freightos Ltd,0001927719,Industrials,Integrated Freight & Logistics
+SKYX,SKYX Platforms Corp.,0001598981,Industrials,Electrical Equipment & Parts
+CSTE,Caesarstone Ltd.,0001504379,Industrials,Building Products & Equipment
+ELVA,Electrovaya Inc.,0001844450,Industrials,Electrical Equipment & Parts
+VTSI,"VirTra, Inc",0001085243,Industrials,Aerospace & Defense
+ESOA,Energy Services of America CORP,0001357971,Industrials,Engineering & Construction
+CRAWA,CRAWFORD UNITED Corp,0000047307,Industrials,Specialty Industrial Machinery
+TPIC,"TPI COMPOSITES, INC",0001455684,Industrials,Specialty Industrial Machinery
+CHMX,NEXT-ChemX Corporation.,0001657045,Industrials,Consulting Services
+SATL,Satellogic Inc.,0001874315,Industrials,Aerospace & Defense
+ARC,"ARC DOCUMENT SOLUTIONS, INC.",0001305168,Industrials,Specialty Business Services
+TATT,TAT TECHNOLOGIES LTD,0000808439,Industrials,Aerospace & Defense
+ZCAR,"Zoomcar Holdings, Inc.",0001854275,Industrials,Rental & Leasing Services
+RR,RICHTECH ROBOTICS INC.,0001963685,Industrials,Specialty Industrial Machinery
+ULBI,ULTRALIFE CORP,0000875657,Industrials,Electrical Equipment & Parts
+LUNR,"Intuitive Machines, Inc.",0001844452,Industrials,Aerospace & Defense
+BGSF,"BGSF, INC.",0001474903,Industrials,Staffing & Employment Services
+TORO,TORO CORP.,0001941131,Industrials,Marine Shipping
+IVAC,INTEVAC INC,0001001902,Industrials,Specialty Industrial Machinery
+PESI,PERMA FIX ENVIRONMENTAL SERVICES INC,0000891532,Industrials,Waste Management
+FBYD,"Falcon's Beyond Global, Inc.",0001937987,Industrials,Conglomerates
+BW,"Babcock & Wilcox Enterprises, Inc.",0001630805,Industrials,Specialty Industrial Machinery
+TAYD,TAYLOR DEVICES INC,0000096536,Industrials,Specialty Industrial Machinery
+MHH,"Mastech Digital, Inc.",0001437226,Industrials,Staffing & Employment Services
+SCX,STARRETT L S CO,0000093676,Industrials,Tools & Accessories
+ASFH,ASIAFIN HOLDINGS CORP.,0001828748,Industrials,Specialty Business Services
+MPU,Mega Matrix Corp.,0001036848,Industrials,Rental & Leasing Services
+HRBR,"HARBOR DIVERSIFIED, INC.",0000899394,Industrials,Airlines
+OMEX,ODYSSEY MARINE EXPLORATION INC,0000798528,Industrials,Specialty Business Services
+STI,Solidion Technology Inc.,0001881551,Industrials,Electrical Equipment & Parts
+CBAT,"CBAK Energy Technology, Inc.",0001117171,Industrials,Electrical Equipment & Parts
+SPGX,Sustainable Projects Group Inc.,0001500305,Industrials,Conglomerates
+SRFM,SURF AIR MOBILITY INC.,0001936224,Industrials,Airlines
+MEEC,Midwest Energy Emissions Corp.,0000728385,Industrials,Pollution & Treatment Controls
+RVSN,Rail Vision Ltd.,0001743905,Industrials,Railroads
+SFRX,SEAFARER EXPLORATION CORP,0001106213,Industrials,Specialty Business Services
+DRTTF,DIRTT ENVIRONMENTAL SOLUTIONS LTD,0001340476,Industrials,Engineering & Construction
+VATE,INNOVATE Corp.,0001006837,Industrials,Engineering & Construction
+GIFI,GULF ISLAND FABRICATION INC,0001031623,Industrials,Metal Fabrication
+LICY,Li-Cycle Holdings Corp.,0001828811,Industrials,Waste Management
+PYRGF,PyroGenesis Canada Inc.,0001743344,Industrials,Specialty Industrial Machinery
+PMEC,Primech Holdings Ltd,0001891944,Industrials,Specialty Business Services
+FLUX,"Flux Power Holdings, Inc.",0001083743,Industrials,Electrical Equipment & Parts
+GTII,"GLOBAL TECH INDUSTRIES GROUP, INC.",0000356590,Industrials,Conglomerates
+SOAR,"Volato Group, Inc.",0001853070,Industrials,Airports & Air Services
+GP,GREENPOWER MOTOR Co INC.,0001584547,Industrials,Farm & Heavy Construction Machinery
+PPIH,"Perma-Pipe International Holdings, Inc.",0000914122,Industrials,Building Products & Equipment
+AQMS,"Aqua Metals, Inc.",0001621832,Industrials,Waste Management
+CIPI,Correlate Energy Corp.,0001108645,Industrials,Engineering & Construction
+TOPS,TOP SHIPS INC.,0001296484,Industrials,Marine Shipping
+CODA,"Coda Octopus Group, Inc.",0001334325,Industrials,Aerospace & Defense
+RSKIA,"GEORGE RISK INDUSTRIES, INC.",0000084112,Industrials,Security & Protection Services
+BEEP,Mobile Infrastructure Corp,0001847874,Industrials,Infrastructure Operations
+APT,ALPHA PRO TECH LTD,0000884269,Industrials,Building Products & Equipment
+BNET,BION ENVIRONMENTAL TECHNOLOGIES INC,0000875729,Industrials,Pollution & Treatment Controls
+CCTG,CCSC Technology International Holdings Ltd,0001931717,Industrials,Electrical Equipment & Parts
+EDRY,EuroDry Ltd.,0001731388,Industrials,Marine Shipping
+ESP,ESPEY MFG & ELECTRONICS CORP,0000033533,Industrials,Electrical Equipment & Parts
+AGSS,"AMERIGUARD SECURITY SERVICES, INC.",0001514443,Industrials,Security & Protection Services
+HHS,HARTE HANKS INC,0000045919,Industrials,Conglomerates
+BUKS,BUTLER NATIONAL CORP,0000015847,Industrials,Aerospace & Defense
+NEOV,NeoVolta Inc.,0001748137,Industrials,Electrical Equipment & Parts
+PSIX,"POWER SOLUTIONS INTERNATIONAL, INC.",0001137091,Industrials,Specialty Industrial Machinery
+BWEN,"BROADWIND, INC.",0001120370,Industrials,Specialty Industrial Machinery
+NTIP,"NETWORK-1 TECHNOLOGIES, INC.",0001065078,Industrials,Specialty Business Services
+NSGP,NewStream Energy Technologies Group Inc,0001445109,Industrials,Specialty Industrial Machinery
+LQMT,LIQUIDMETAL TECHNOLOGIES INC,0001141240,Industrials,Metal Fabrication
+PPSI,"PIONEER POWER SOLUTIONS, INC.",0001449792,Industrials,Electrical Equipment & Parts
+RAIL,"FreightCar America, Inc.",0001320854,Industrials,Railroads
+AIRT,AIR T INC,0000353184,Industrials,Integrated Freight & Logistics
+AP,AMPCO PITTSBURGH CORP,0000006176,Industrials,Metal Fabrication
+AZ,A2Z Smart Technologies Corp,0001866030,Industrials,Aerospace & Defense
+XOS,"Xos, Inc.",0001819493,Industrials,Farm & Heavy Construction Machinery
+JOB,GEE Group Inc.,0000040570,Industrials,Staffing & Employment Services
+BEST,BEST Inc.,0001709505,Industrials,Trucking
+ASTR,"Astra Space, Inc.",0001814329,Industrials,Aerospace & Defense
+GTEC,Greenland Technologies Holding Corp.,0001735041,Industrials,Specialty Industrial Machinery
+KSCP,"Knightscope, Inc.",0001600983,Industrials,Security & Protection Services
+GLBS,GLOBUS MARITIME LTD,0001499780,Industrials,Marine Shipping
+CTRM,Castor Maritime Inc.,0001720161,Industrials,Marine Shipping
+IPWR,Ideal Power Inc.,0001507957,Industrials,Electrical Equipment & Parts
+HSON,"Hudson Global, Inc.",0001210708,Industrials,Staffing & Employment Services
+HYFM,"HYDROFARM HOLDINGS GROUP, INC.",0001695295,Industrials,Farm & Heavy Construction Machinery
+OPXS,Optex Systems Holdings Inc,0001397016,Industrials,Aerospace & Defense
+AERT,"Aeries Technology, Inc.",0001853044,Industrials,Consulting Services
+MESA,MESA AIR GROUP INC,0000810332,Industrials,Airlines
+CLIR,ClearSign Technologies Corp,0001434524,Industrials,Pollution & Treatment Controls
+LTBR,LIGHTBRIDGE Corp,0001084554,Industrials,Electrical Equipment & Parts
+CVU,CPI AEROSTRUCTURES INC,0000889348,Industrials,Aerospace & Defense
+FTEK,"FUEL TECH, INC.",0000846913,Industrials,Pollution & Treatment Controls
+OESX,"ORION ENERGY SYSTEMS, INC.",0001409375,Industrials,Electrical Equipment & Parts
+SUGP,SU Group Holdings Ltd,0001969863,Industrials,Security & Protection Services
+SVT,SERVOTRONICS INC /DE/,0000089140,Industrials,Electrical Equipment & Parts
+VCIG,VCI Global Ltd,0001930510,Industrials,Consulting Services
+TPCS,TECHPRECISION CORP,0001328792,Industrials,Metal Fabrication
+CVV,CVD EQUIPMENT CORP,0000766792,Industrials,Specialty Industrial Machinery
+RFIL,R F INDUSTRIES LTD,0000740664,Industrials,Electrical Equipment & Parts
+LICN,Lichen China Ltd,0001876766,Industrials,Specialty Business Services
+XPON,Expion360 Inc.,0001894954,Industrials,Electrical Equipment & Parts
+DFLI,Dragonfly Energy Holdings Corp.,0001847986,Industrials,Electrical Equipment & Parts
+HOVR,New Horizon Aircraft Ltd.,0001930021,Industrials,Aerospace & Defense
+JANL,JANEL CORP,0001133062,Industrials,Integrated Freight & Logistics
+JETMF,Global Crossing Airlines Group Inc.,0001846084,Industrials,Airlines
+TISI,TEAM INC,0000318833,Industrials,Specialty Business Services
+CACO,Caravelle International Group,0001928948,Industrials,Marine Shipping
+FPAY,"FlexShopper, Inc.",0001397047,Industrials,Rental & Leasing Services
+FATH,Fathom Digital Manufacturing Corp,0001836176,Industrials,Conglomerates
+SNT,SENSTAR TECHNOLOGIES LTD.,0000896494,Industrials,Security & Protection Services
+PGTK,Pacific Green Technologies Inc.,0001553404,Industrials,Pollution & Treatment Controls
+APWC,ASIA PACIFIC WIRE & CABLE CORP LTD,0001026980,Industrials,Electrical Equipment & Parts
+IPDN,"Professional Diversity Network, Inc.",0001546296,Industrials,Staffing & Employment Services
+JYD,Jayud Global Logistics Ltd,0001938186,Industrials,Integrated Freight & Logistics
+GFAI,"Guardforce AI Co., Ltd.",0001804469,Industrials,Security & Protection Services
+SPEC,Spectaire Holdings Inc.,0001844149,Industrials,Pollution & Treatment Controls
+SGRP,"SPAR Group, Inc.",0001004989,Industrials,Specialty Business Services
+UNXP,United Express Inc.,0001751707,Industrials,Trucking
+PIXY,"ShiftPixy, Inc.",0001675634,Industrials,Staffing & Employment Services
+EPOW,"Sunrise New Energy Co., Ltd.",0001780731,Industrials,Electrical Equipment & Parts
+WHLM,"Wilhelmina International, Inc.",0001013706,Industrials,Specialty Business Services
+USEA,United Maritime Corp,0001912847,Industrials,Marine Shipping
+UGRO,"urban-gro, Inc.",0001706524,Industrials,Farm & Heavy Construction Machinery
+PSHG,Performance Shipping Inc.,0001481241,Industrials,Marine Shipping
+SIF,SIFCO INDUSTRIES INC,0000090168,Industrials,Aerospace & Defense
+GTMAY,GRUPO TMM SAB,0001163560,Industrials,Marine Shipping
+LWLW,Longwen Group Corp.,0000723533,Industrials,Consulting Services
+CETY,"Clean Energy Technologies, Inc.",0001329606,Industrials,Specialty Industrial Machinery
+LIQT,LIQTECH INTERNATIONAL INC,0001307579,Industrials,Pollution & Treatment Controls
+DCFC,Tritium DCFC Ltd,0001862490,Industrials,Electrical Equipment & Parts
+OPTT,"Ocean Power Technologies, Inc.",0001378140,Industrials,Specialty Industrial Machinery
+KITT,"Nauticus Robotics, Inc.",0001849820,Industrials,Aerospace & Defense
+TGEN,TECOGEN INC.,0001537435,Industrials,Electrical Equipment & Parts
+AUSI,AURA SYSTEMS INC,0000826253,Industrials,Specialty Industrial Machinery
+OP,OceanPal Inc.,0001869467,Industrials,Marine Shipping
+TOMZ,"TOMI Environmental Solutions, Inc.",0000314227,Industrials,Pollution & Treatment Controls
+GVH,Globavend Holdings Ltd,0001978527,Industrials,Integrated Freight & Logistics
+RLBY,RELIABILITY INC,0000034285,Industrials,Staffing & Employment Services
+CVR,CHICAGO RIVET & MACHINE CO,0000019871,Industrials,Tools & Accessories
+ALPP,"ALPINE 4 HOLDINGS, INC.",0001606698,Industrials,Conglomerates
+GWAV,"Greenwave Technology Solutions, Inc.",0001589149,Industrials,Waste Management
+DFCO,DALRADA FINANCIAL CORP,0000725394,Industrials,Consulting Services
+CLEV,Concrete Leveling Systems Inc,0001414382,Industrials,Farm & Heavy Construction Machinery
+AIRI,AIR INDUSTRIES GROUP,0001009891,Industrials,Aerospace & Defense
+QIND,Quality Industrial Corp.,0001393781,Industrials,Specialty Industrial Machinery
+SNRG,SusGlobal Energy Corp.,0001652539,Industrials,Waste Management
+EAWD,Energy & Water Development Corp,0001563298,Industrials,Pollution & Treatment Controls
+ASTC,ASTROTECH Corp,0001001907,Industrials,Aerospace & Defense
+OCLN,"ORIGINCLEAR, INC.",0001419793,Industrials,Waste Management
+EESH,"EESTech, Inc.",0001138867,Industrials,Pollution & Treatment Controls
+SHPW,"Shapeways Holdings, Inc.",0001784851,Industrials,Specialty Industrial Machinery
+SIDU,Sidus Space Inc.,0001879726,Industrials,Aerospace & Defense
+YGMZ,MingZhu Logistics Holdings Ltd,0001782037,Industrials,Trucking
+IDEX,"IDEANOMICS, INC.",0000837852,Industrials,Farm & Heavy Construction Machinery
+PNYG,Pony Group Inc.,0001784058,Industrials,Railroads
+ROMA,Roma Green Finance Ltd,0001945240,Industrials,Consulting Services
+CLWT,EURO TECH HOLDINGS CO LTD,0001026662,Industrials,Pollution & Treatment Controls
+VRME,"VerifyMe, Inc.",0001104038,Industrials,Security & Protection Services
+ARTW,ARTS WAY MANUFACTURING CO INC,0000007623,Industrials,Farm & Heavy Construction Machinery
+ELVG,"Elvictor Group, Inc.",0001741489,Industrials,Specialty Business Services
+WLGS,"WANG & LEE GROUP, Inc.",0001899658,Industrials,Engineering & Construction
+MWG,Multi Ways Holdings Ltd,0001941500,Industrials,Rental & Leasing Services
+GRHI,"GOLD ROCK HOLDINGS, INC.",0000894501,Industrials,Engineering & Construction
+IVDA,"Iveda Solutions, Inc.",0001397183,Industrials,Security & Protection Services
+MMTRS,MILLS MUSIC TRUST,0000066496,Industrials,Specialty Business Services
+SGLY,Singularity Future Technology Ltd.,0001422892,Industrials,Integrated Freight & Logistics
+HIHO,HIGHWAY HOLDINGS LTD,0001026785,Industrials,Metal Fabrication
+KIQ,KELSO TECHNOLOGIES INC,0001161814,Industrials,Railroads
+LASE,Laser Photonics Corp,0001807887,Industrials,Specialty Industrial Machinery
+AWX,AVALON HOLDINGS CORP,0001061069,Industrials,Waste Management
+ILAG,Intelligent Living Application Group Inc.,0001814963,Industrials,Building Products & Equipment
+GRNQ,Greenpro Capital Corp.,0001597846,Industrials,Consulting Services
+SKAS,"Saker Aviation Services, Inc.",0001128281,Industrials,Airports & Air Services
+KWE,KWESST Micro Systems Inc.,0001889823,Industrials,Aerospace & Defense
+MNTS,Momentus Inc.,0001781162,Industrials,Aerospace & Defense
+CHNR,CHINA NATURAL RESOURCES INC,0000793628,Industrials,Pollution & Treatment Controls
+PRZO,ParaZero Technologies Ltd.,0001916241,Industrials,Aerospace & Defense
+CBMJ,"CONSERVATIVE BROADCAST MEDIA & PUBLISHING, INC.",0001452583,Industrials,Specialty Business Services
+CRWE,"Crown Equity Holdings, Inc.",0001103833,Industrials,Consulting Services
+TIKK,TEL INSTRUMENT ELECTRONICS CORP,0000096885,Industrials,Aerospace & Defense
+XERI,"XERIANT, INC.",0001481504,Industrials,Aerospace & Defense
+RAYA,Erayak Power Solution Group Inc.,0001825875,Industrials,Electrical Equipment & Parts
+CAMG,"CAM GROUP, INC.",0001419559,Industrials,Aerospace & Defense
+OZSC,"OZOP ENERGY SOLUTIONS, INC.",0001679817,Industrials,Electrical Equipment & Parts
+MSNVF,MISSION READY SOLUTIONS INC,0001718817,Industrials,Aerospace & Defense
+ENG,ENGLOBAL CORP,0000933738,Industrials,Engineering & Construction
+ESGL,ESGL Holdings Ltd,0001957538,Industrials,Waste Management
+GPOX,"GPO Plus, Inc.",0001673475,Industrials,Specialty Business Services
+POLA,"Polar Power, Inc.",0001622345,Industrials,Electrical Equipment & Parts
+BURU,"Nuburu, Inc.",0001814215,Industrials,Specialty Industrial Machinery
+GPAK,Gamer Pakistan Inc,0001948884,Industrials,Specialty Business Services
+CISS,C3is Inc.,0001951067,Industrials,Marine Shipping
+USDR,UAS Drone Corp.,0001638911,Industrials,Aerospace & Defense
+BLNC,"Balance Labs, Inc.",0001632121,Industrials,Consulting Services
+NORD,Nordicus Partners Corp,0001011060,Industrials,Consulting Services
+VIEW,"View, Inc.",0001811856,Industrials,Building Products & Equipment
+SGBX,SAFE & GREEN HOLDINGS CORP.,0001023994,Industrials,Metal Fabrication
+ATXG,ADDENTAX GROUP CORP.,0001650101,Industrials,Integrated Freight & Logistics
+UNQL,"Unique Logistics International, Inc.",0001281845,Industrials,Integrated Freight & Logistics
+AGFY,Agrify Corp,0001800637,Industrials,Engineering & Construction
+QWTR,"Quest Water Global, Inc.",0001487091,Industrials,Pollution & Treatment Controls
+CVAT,"Cavitation Technologies, Inc.",0001376793,Industrials,Specialty Industrial Machinery
+PTRAQ,Proterra Inc,0001820630,Industrials,Farm & Heavy Construction Machinery
+BWVI,"PSYCHECEUTICAL BIOSCIENCE, INC.",0001310291,Industrials,Specialty Business Services
+CEAD,CEA Industries Inc.,0001482541,Industrials,Farm & Heavy Construction Machinery
+SENR,"Strategic Environmental & Energy Resources, Inc.",0001576197,Industrials,Waste Management
+SMX,SMX (Security Matters) Public Ltd Co,0001940674,Industrials,Specialty Business Services
+IAALF,IBC Advanced Alloys Corp.,0001450894,Industrials,Metal Fabrication
+TBLT,"Toughbuilt Industries, Inc",0001668370,Industrials,Tools & Accessories
+YJGJ,YIJIA GROUP CORP.,0001699709,Industrials,Consulting Services
+AEHL,Antelope Enterprise Holdings Ltd,0001470683,Industrials,Building Products & Equipment
+JCSE,JE Cleantech Holdings Ltd,0001905511,Industrials,Specialty Industrial Machinery
+BKYI,BIO KEY INTERNATIONAL INC,0001019034,Industrials,Security & Protection Services
+UUU,UNIVERSAL SECURITY INSTRUMENTS INC,0000102109,Industrials,Security & Protection Services
+JAN,JanOne Inc.,0000862861,Industrials,Waste Management
+NXU,"Nxu, Inc.",0001722969,Industrials,Electrical Equipment & Parts
+GTLL,GLOBAL TECHNOLOGIES LTD,0000932021,Industrials,Conglomerates
+MACE,MACE SECURITY INTERNATIONAL INC,0000912607,Industrials,Security & Protection Services
+AMMJ,"American Cannabis Company, Inc.",0000945617,Industrials,Consulting Services
+KRFG,"KING RESOURCES, INC.",0000774415,Industrials,Electrical Equipment & Parts
+TLSS,"Transportation & Logistics Systems, Inc.",0001463208,Industrials,Trucking
+STAF,"Staffing 360 Solutions, Inc.",0001499717,Industrials,Staffing & Employment Services
+PTNYF,ParcelPal Logistics Inc.,0001819074,Industrials,Integrated Freight & Logistics
+AETHF,Aether Global Innovations Corp.,0001639142,Industrials,Security & Protection Services
+RCRT,"Recruiter.com Group, Inc.",0001462223,Industrials,Staffing & Employment Services
+WARM,"COOL TECHNOLOGIES, INC.",0001399352,Industrials,Industrial Distribution
+IMHC,IMPERALIS HOLDING CORP.,0001349706,Industrials,Electrical Equipment & Parts
+JKSM,Jacksam Corp,0000860543,Industrials,Specialty Industrial Machinery
+NVGT,NOVAGANT CORP,0001089297,Industrials,Integrated Freight & Logistics
+QPRC,QUEST PATENT RESEARCH CORP,0000824416,Industrials,Consulting Services
+DRFS,"Dr. Foods, Inc.",0001857910,Industrials,Pollution & Treatment Controls
+DLOC,"Digital Locations, Inc.",0001407878,Industrials,Engineering & Construction
+SPCB,SuperCom Ltd,0001291855,Industrials,Security & Protection Services
+EFSH,1847 Holdings LLC,0001599407,Industrials,Conglomerates
+AULT,"Ault Alliance, Inc.",0000896493,Industrials,Aerospace & Defense
+BLIS,"Treasure & Shipwreck Recovery, Inc.",0001703625,Industrials,Specialty Business Services
+DLYT,DAIS Corp,0001125699,Industrials,Electrical Equipment & Parts
+RAKR,Rainmaker Worldwide Inc.,0001872292,Industrials,Pollution & Treatment Controls
+GOGR,Go Green Global Technologies Corp.,0001378866,Industrials,Pollution & Treatment Controls
+CAPC,"CAPSTONE COMPANIES, INC.",0000814926,Industrials,Electrical Equipment & Parts
+ATVK,"Ameritek Ventures, Inc.",0001530185,Industrials,Specialty Industrial Machinery
+SSET,"STARSTREAM ENTERTAINMENT, INC.",0001561686,Industrials,Staffing & Employment Services
+BRDSQ,"Bird Global, Inc.",0001861449,Industrials,Rental & Leasing Services
+SSHT,SSHT S&T Group Ltd.,0001975222,Industrials,Consulting Services
+FIFG,"First Foods Group, Inc.",0001648903,Industrials,Specialty Business Services
+HLLK,"HALLMARK VENTURE GROUP, INC.",0001331421,Industrials,Conglomerates
+UMAV,UAV Corp,0001843573,Industrials,Aerospace & Defense
+BLPG,"Blue Line Protection Group, Inc.",0001416697,Industrials,Security & Protection Services
+COUV,CORPORATE UNIVERSE INC,0001450307,Industrials,Electrical Equipment & Parts
+JFIL,"Jubilant Flame International, Ltd",0001517389,Industrials,Specialty Business Services
+GXXM,"GEX MANAGEMENT, INC.",0001681556,Industrials,Staffing & Employment Services
+HWKE,"Hawkeye Systems, Inc.",0001750777,Industrials,Aerospace & Defense
+ZEVY,"Lightning eMotors, Inc.",0001802749,Industrials,Farm & Heavy Construction Machinery
+MHHC,MHHC Enterprises Inc.,0001826135,Industrials,Specialty Business Services
+KDCE,KID CASTLE EDUCATIONAL CORP,0001049011,Industrials,Conglomerates
+RCIT,REELCAUSE INC,0002008670,Industrials,Specialty Industrial Machinery
+DTII,DEFENSE TECHNOLOGIES INTERNATIONAL CORP.,0001533357,Industrials,Security & Protection Services
+DGWR,"Deep Green Waste & Recycling, Inc.",0001637866,Industrials,Waste Management
+GDSI,GLOBAL DIGITAL SOLUTIONS INC,0001011662,Industrials,Security & Protection Services
+BBRW,BrewBilt Manufacturing Inc.,0001641751,Industrials,Specialty Industrial Machinery
+JPEX,JPX Global Inc.,0001506814,Industrials,Waste Management
+CIRX,CIRTRAN CORP,0000813716,Industrials,Conglomerates
+BANT,"Bantec, Inc.",0001704795,Industrials,Aerospace & Defense
+MSYN,"MS YOUNG ADVENTURE ENTERPRISE, INC.",0001693687,Industrials,Consulting Services
+WOEN,WOLF ENERGY SERVICES INC.,0001043894,Industrials,Trucking
+DPUI,"DISCOUNT PRINT USA, INC.",0001791929,Industrials,Specialty Business Services
+PHOT,"GROWLIFE, INC.",0001161582,Industrials,Industrial Distribution
+AFIIQ,"Armstrong Flooring, Inc.",0001655075,Industrials,Building Products & Equipment
+MJHI,"MJ Harvest, Inc.",0001789330,Industrials,Industrial Distribution
+MKULQ,"Molekule Group, Inc.",0001872356,Industrials,Pollution & Treatment Controls
+BRBL,BrewBilt Brewing Co,0001399306,Industrials,Specialty Industrial Machinery
+WLMSQ,"NOS4-1, Inc.",0001136294,Industrials,Engineering & Construction
+RNWR,808 RENEWABLE ENERGY CORP,0001467913,Industrials,Aerospace & Defense
+YAYO,"EVmo, Inc.",0001691077,Industrials,Rental & Leasing Services
+CHEAF,CHINA EASTERN AIRLINES CORP LTD,0001030475,Industrials,Airlines
+CHKIF,CHINA SOUTHERN AIRLINES CO LTD,0001041668,Industrials,Airlines
+EENEF,Electrocomponents plc / ADR,0001455626,Industrials,Industrial Distribution
+GOL,Gol Intelligent Airlines Inc.,0001291733,Industrials,Airlines
+GNGYF,GUANGSHEN RAILWAY CO LTD,0001012139,Industrials,Railroads
+TRTN-PA,Triton International Ltd,0001660734,Industrials,Rental & Leasing Services
+EXROF,EXRO TECHNOLOGIES INC.,0001459762,Industrials,Electrical Equipment & Parts
+YELLQ,Yellow Corp,0000716006,Industrials,Trucking
+NM-PH,Navios Maritime Holdings Inc.,0001333172,Industrials,Marine Shipping
+ADES,"Advanced Emissions Solutions, Inc.",0001515156,Industrials,Pollution & Treatment Controls
+TSP,TuSimple Holdings Inc.,0001823593,Industrials,Trucking
+ACMB,AGRO CAPITAL MANAGEMENT CORP.,0001598323,Industrials,Conglomerates
+DPRO,Draganfly Inc.,0001786286,Industrials,Aerospace & Defense
+ARMC,Un Monde International Ltd.,0001415813,Industrials,Consulting Services
+BCCEF,BacTech Environmental Corp,0001807387,Industrials,Waste Management
+ADMQ,"ADM ENDEAVORS, INC.",0001588014,Industrials,Specialty Business Services
+USDP,USD Partners LP,0001610682,Industrials,Railroads
+UCIX,"Umbra Companies, Inc.",0001358099,Industrials,Specialty Industrial Machinery
+PRPI,PERPETUAL INDUSTRIES INC.,0001395445,Industrials,Specialty Industrial Machinery
+AMMX,Ameramex International Inc,0001776048,Industrials,Farm & Heavy Construction Machinery
+JETR,Star Jets International Inc.,0001908054,Industrials,Airports & Air Services
+FTRS,Futuris Co,0001041633,Industrials,Staffing & Employment Services
+PWDY,"POWERDYNE INTERNATIONAL, INC.",0001435617,Industrials,Electrical Equipment & Parts
+RELT,"Reliant Holdings, Inc.",0001682265,Industrials,Engineering & Construction
+TMRR,TEMIR CORP.,0001685237,Industrials,Conglomerates
+PCTL,PCT LTD,0001119897,Industrials,Pollution & Treatment Controls
+LEAS,"Strategic Asset Leasing, Inc.",0000822655,Industrials,Rental & Leasing Services
+IWAL,iWallet Corp,0001498372,Industrials,Security & Protection Services
+KNOS,KRONOS ADVANCED TECHNOLOGIES INC,0001108248,Industrials,Pollution & Treatment Controls
+ECOX,"ECO INNOVATION GROUP, INC.",0001144169,Industrials,Specialty Business Services
+WTII,"Water Technologies International,Inc.",0001715032,Industrials,Pollution & Treatment Controls
+RENO,"RENOVARE ENVIRONMENTAL, INC.",0001590383,Industrials,Pollution & Treatment Controls
+CDXQ,"China De Xiao Quan Care Group Co., Ltd",0001552979,Industrials,Conglomerates
+HYREQ,"HC LIQUIDATING, INC.",0001713832,Industrials,Rental & Leasing Services

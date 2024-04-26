@@ -1,0 +1,330 @@
+Ticker,Company Name,CIK,Sector,Industry
+XOM,EXXON MOBIL CORP,0000034088,Energy,Oil & Gas Integrated
+CVX,CHEVRON CORP,0000093410,Energy,Oil & Gas Integrated
+SHEL,Shell plc,0001306965,Energy,Oil & Gas Integrated
+TTE,TotalEnergies SE,0000879764,Energy,Oil & Gas Integrated
+COP,CONOCOPHILLIPS,0001163165,Energy,Oil & Gas E&P
+PBR,PETROBRAS - PETROLEO BRASILEIRO SA,0001119639,Energy,Oil & Gas Integrated
+BP,BP PLC,0000313807,Energy,Oil & Gas Integrated
+EQNR,EQUINOR ASA,0001140625,Energy,Oil & Gas Integrated
+ENB,ENBRIDGE INC,0000895728,Energy,Oil & Gas Midstream
+SLB,SCHLUMBERGER LIMITED/NV,0000087347,Energy,Oil & Gas Equipment & Services
+CNQ,CANADIAN NATURAL RESOURCES LTD,0001017413,Energy,Oil & Gas E&P
+EOG,EOG RESOURCES INC,0000821189,Energy,Oil & Gas E&P
+PSX,Phillips 66,0001534701,Energy,Oil & Gas Refining & Marketing
+MPC,Marathon Petroleum Corp,0001510295,Energy,Oil & Gas Refining & Marketing
+EPD,ENTERPRISE PRODUCTS PARTNERS L.P.,0001061219,Energy,Oil & Gas Midstream
+PXD,PIONEER NATURAL RESOURCES CO,0001038357,Energy,Oil & Gas E&P
+OXY,OCCIDENTAL PETROLEUM CORP /DE/,0000797468,Energy,Oil & Gas E&P
+E,ENI SPA,0001002242,Energy,Oil & Gas Integrated
+VLO,VALERO ENERGY CORP/TX,0001035002,Energy,Oil & Gas Refining & Marketing
+ET,Energy Transfer LP,0001276187,Energy,Oil & Gas Midstream
+HES,HESS CORP,0000004447,Energy,Oil & Gas E&P
+SU,SUNCOR ENERGY INC,0000311337,Energy,Oil & Gas Integrated
+WMB,"WILLIAMS COMPANIES, INC.",0000107263,Energy,Oil & Gas Midstream
+WDS,WOODSIDE ENERGY GROUP LTD,0000844551,Energy,Oil & Gas E&P
+OKE,ONEOK INC /NEW/,0001039684,Energy,Oil & Gas Midstream
+TRP,TC ENERGY CORP,0001232384,Energy,Oil & Gas Midstream
+LNG,"Cheniere Energy, Inc.",0000003570,Energy,Oil & Gas Midstream
+MPLX,MPLX LP,0001552000,Energy,Oil & Gas Midstream
+KMI,"KINDER MORGAN, INC.",0001506307,Energy,Oil & Gas Midstream
+IMO,IMPERIAL OIL LTD,0000049938,Energy,Oil & Gas Integrated
+HAL,HALLIBURTON CO,0000045012,Energy,Oil & Gas Equipment & Services
+CVE,CENOVUS ENERGY INC.,0001475260,Energy,Oil & Gas Integrated
+BKR,Baker Hughes Co,0001701605,Energy,Oil & Gas Equipment & Services
+FANG,"Diamondback Energy, Inc.",0001539838,Energy,Oil & Gas E&P
+DVN,DEVON ENERGY CORP/DE,0001090012,Energy,Oil & Gas E&P
+EC,ECOPETROL S.A.,0001444406,Energy,Oil & Gas Integrated
+CQP,"Cheniere Energy Partners, L.P.",0001383650,Energy,Oil & Gas Midstream
+CCJ,CAMECO CORP,0001009001,Energy,Uranium
+TRGP,Targa Resources Corp.,0001389170,Energy,Oil & Gas Midstream
+TS,TENARIS SA,0001190723,Energy,Oil & Gas Equipment & Services
+PBA,PEMBINA PIPELINE CORP,0001546066,Energy,Oil & Gas Midstream
+CTRA,Coterra Energy Inc.,0000858470,Energy,Oil & Gas E&P
+EQT,EQT Corp,0000033213,Energy,Oil & Gas E&P
+OMVKY,OMV AKTIENGESELLSCHAFT /FI,0000882602,Energy,Oil & Gas Integrated
+MRO,MARATHON OIL CORP,0000101778,Energy,Oil & Gas E&P
+GLPEY,"Galp Energia, SGPS, S.A.",0001385535,Energy,Oil & Gas Integrated
+DINO,HF Sinclair Corp,0001915657,Energy,Oil & Gas Refining & Marketing
+OVV,Ovintiv Inc.,0001792580,Energy,Oil & Gas E&P
+TPL,Texas Pacific Land Corp,0001811074,Energy,Oil & Gas E&P
+PAA,PLAINS ALL AMERICAN PIPELINE LP,0001070423,Energy,Oil & Gas Midstream
+WES,"Western Midstream Partners, LP",0001423902,Energy,Oil & Gas Midstream
+PR,Permian Resources Corp,0001658566,Energy,Oil & Gas E&P
+CHK,CHESAPEAKE ENERGY CORP,0000895126,Energy,Oil & Gas E&P
+YPF,YPF SOCIEDAD ANONIMA,0000904851,Energy,Oil & Gas Integrated
+APA,APA Corp,0001841666,Energy,Oil & Gas E&P
+FTI,TechnipFMC plc,0001681459,Energy,Oil & Gas Equipment & Services
+HESM,Hess Midstream LP,0001789832,Energy,Oil & Gas Midstream
+IEP,ICAHN ENTERPRISES L.P.,0000813762,Energy,Oil & Gas Refining & Marketing
+IDKOY,"IDEMITSU KOSAN CO., LTD",0001380365,Energy,Oil & Gas Refining & Marketing
+WFRD,Weatherford International plc,0001603923,Energy,Oil & Gas Equipment & Services
+SWN,SOUTHWESTERN ENERGY CO,0000007332,Energy,Oil & Gas E&P
+CSAN,Cosan S.A.,0001430162,Energy,Oil & Gas Refining & Marketing
+RRC,RANGE RESOURCES CORP,0000315852,Energy,Oil & Gas E&P
+NOV,NOV Inc.,0001021860,Energy,Oil & Gas Equipment & Services
+MTDR,Matador Resources Co,0001520006,Energy,Oil & Gas E&P
+AR,ANTERO RESOURCES Corp,0001433270,Energy,Oil & Gas E&P
+PBF,PBF Energy Inc.,0001534504,Energy,Oil & Gas Refining & Marketing
+CHRD,Chord Energy Corp,0001486159,Energy,Oil & Gas E&P
+UGP,ULTRAPAR HOLDINGS INC,0001094972,Energy,Oil & Gas Refining & Marketing
+NE,Noble Corp plc,0001895262,Energy,Oil & Gas Drilling
+CIVI,"CIVITAS RESOURCES, INC.",0001509589,Energy,Oil & Gas E&P
+MUR,MURPHY OIL CORP,0000717423,Energy,Oil & Gas E&P
+AM,Antero Midstream Corp,0001623925,Energy,Oil & Gas Midstream
+VNOM,"Viper Energy, Inc.",0001602065,Energy,Oil & Gas Midstream
+CHX,ChampionX Corp,0001723089,Energy,Oil & Gas Equipment & Services
+ENLC,"EnLink Midstream, LLC",0001592000,Energy,Oil & Gas Midstream
+VVV,VALVOLINE INC,0001674910,Energy,Oil & Gas Refining & Marketing
+SUN,Sunoco LP,0001552275,Energy,Oil & Gas Refining & Marketing
+DTM,"DT Midstream, Inc.",0001842022,Energy,Oil & Gas Midstream
+FRO,Frontline plc,0000913290,Energy,Oil & Gas Midstream
+ADOOY,Adaro Energy PT/ADR/,0001489079,Energy,Thermal Coal
+VAL,Valaris Ltd,0000314808,Energy,Oil & Gas Equipment & Services
+NFG,NATIONAL FUEL GAS CO,0000070145,Energy,Oil & Gas Integrated
+PTEN,PATTERSON UTI ENERGY INC,0000889900,Energy,Oil & Gas Drilling
+ETRN,Equitrans Midstream Corp,0001747009,Energy,Oil & Gas Midstream
+SM,SM Energy Co,0000893538,Energy,Oil & Gas E&P
+MGY,Magnolia Oil & Gas Corp,0001698990,Energy,Oil & Gas E&P
+RIG,Transocean Ltd.,0001451505,Energy,Oil & Gas Drilling
+NXE,NexGen Energy Ltd.,0001698535,Energy,Uranium
+CPG,Crescent Point Energy Corp.,0001545851,Energy,Oil & Gas E&P
+PAGP,PLAINS GP HOLDINGS LP,0001581990,Energy,Oil & Gas Midstream
+HP,"Helmerich & Payne, Inc.",0000046765,Energy,Oil & Gas Drilling
+CRC,California Resources Corp,0001609253,Energy,Oil & Gas E&P
+EURN,Euronav NV,0001604481,Energy,Oil & Gas Midstream
+TDW,TIDEWATER INC,0000098222,Energy,Oil & Gas Equipment & Services
+CVI,CVR ENERGY INC,0001376139,Energy,Oil & Gas Refining & Marketing
+STNG,Scorpio Tankers Inc.,0001483934,Energy,Oil & Gas Midstream
+BTU,PEABODY ENERGY CORP,0001064728,Energy,Thermal Coal
+BSM,"Black Stone Minerals, L.P.",0001621434,Energy,Oil & Gas E&P
+STR,Sitio Royalties Corp.,0001949543,Energy,Oil & Gas E&P
+LBRT,Liberty Energy Inc.,0001694028,Energy,Oil & Gas Equipment & Services
+NOG,"NORTHERN OIL & GAS, INC.",0001104485,Energy,Oil & Gas E&P
+ERF,ENERPLUS Corp,0001126874,Energy,Oil & Gas E&P
+SDRL,Seadrill Ltd,0001737706,Energy,Oil & Gas Drilling
+TGS,GAS TRANSPORTER OF THE SOUTH INC,0000931427,Energy,Oil & Gas Integrated
+CNX,CNX Resources Corp,0001070412,Energy,Oil & Gas E&P
+TRMD,TORM plc,0001655891,Energy,Oil & Gas Midstream
+VIST,"Vista Energy, S.A.B. de C.V.",0001762506,Energy,Oil & Gas E&P
+UEC,URANIUM ENERGY CORP,0001334933,Energy,Uranium
+WHD,"Cactus, Inc.",0001699136,Energy,Oil & Gas Equipment & Services
+NS,NuStar Energy L.P.,0001110805,Energy,Oil & Gas Midstream
+CEIX,CONSOL Energy Inc.,0001710366,Energy,Thermal Coal
+KOS,Kosmos Energy Ltd.,0001509991,Energy,Oil & Gas E&P
+BTE,BAYTEX ENERGY CORP.,0001279495,Energy,Oil & Gas E&P
+AROC,"Archrock, Inc.",0001389050,Energy,Oil & Gas Equipment & Services
+ARLP,ALLIANCE RESOURCE PARTNERS LP,0001086600,Energy,Thermal Coal
+INSW,"International Seaways, Inc.",0001679049,Energy,Oil & Gas Midstream
+USAC,"USA Compression Partners, LP",0001522727,Energy,Oil & Gas Equipment & Services
+PARR,"PAR PACIFIC HOLDINGS, INC.",0000821483,Energy,Oil & Gas Refining & Marketing
+GPOR,GULFPORT ENERGY CORP,0000874499,Energy,Oil & Gas E&P
+GLNG,GOLAR LNG LTD,0001207179,Energy,Oil & Gas Midstream
+CPE,Callon Petroleum Co,0000928022,Energy,Oil & Gas E&P
+CRK,COMSTOCK RESOURCES INC,0000023194,Energy,Oil & Gas E&P
+OII,OCEANEERING INTERNATIONAL INC,0000073756,Energy,Oil & Gas Equipment & Services
+TALO,TALOS ENERGY INC.,0001724965,Energy,Oil & Gas E&P
+TNK,TEEKAY TANKERS LTD.,0001419945,Energy,Oil & Gas Midstream
+XPRO,EXPRO GROUP HOLDINGS N.V.,0001575828,Energy,Oil & Gas Equipment & Services
+CRGY,Crescent Energy Co,0001866175,Energy,Oil & Gas E&P
+DKL,"Delek Logistics Partners, LP",0001552797,Energy,Oil & Gas Refining & Marketing
+KGS,"Kodiak Gas Services, Inc.",0001767042,Energy,Oil & Gas Equipment & Services
+KNTK,Kinetik Holdings Inc.,0001692787,Energy,Oil & Gas Midstream
+HPK,"HighPeak Energy, Inc.",0001792849,Energy,Oil & Gas E&P
+DK,"Delek US Holdings, Inc.",0001694426,Energy,Oil & Gas Refining & Marketing
+DNN,DENISON MINES CORP.,0001063259,Energy,Uranium
+DHT,"DHT Holdings, Inc.",0001331284,Energy,Oil & Gas Midstream
+AESI,Atlas Energy Solutions Inc.,0001984060,Energy,Oil & Gas Equipment & Services
+VET,VERMILION ENERGY INC.,0001293135,Energy,Oil & Gas E&P
+MNR,MACH NATURAL RESOURCES LP,0001980088,Energy,Oil & Gas E&P
+VTLE,"Vital Energy, Inc.",0001528129,Energy,Oil & Gas E&P
+BORR,Borr Drilling Ltd,0001715497,Energy,Oil & Gas Drilling
+KRP,"Kimbell Royalty Partners, LP",0001657788,Energy,Oil & Gas E&P
+GLP,GLOBAL PARTNERS LP,0001323468,Energy,Oil & Gas Midstream
+EE,"Excelerate Energy, Inc.",0001888447,Energy,Oil & Gas Midstream
+RES,RPC INC,0000742278,Energy,Oil & Gas Equipment & Services
+LPG,DORIAN LPG LTD.,0001596993,Energy,Oil & Gas Midstream
+HLX,HELIX ENERGY SOLUTIONS GROUP INC,0000866829,Energy,Oil & Gas Equipment & Services
+FLNG,Flex LNG Ltd.,0001772253,Energy,Oil & Gas Midstream
+WKC,WORLD KINECT CORP,0000789460,Energy,Oil & Gas Refining & Marketing
+GEL,GENESIS ENERGY LP,0001022321,Energy,Oil & Gas Midstream
+CLMT,"Calumet Specialty Products Partners, L.P.",0001340122,Energy,Oil & Gas E&P
+NEXT,NextDecade Corp.,0001612720,Energy,Oil & Gas E&P
+DO,"DIAMOND OFFSHORE DRILLING, INC.",0000949039,Energy,Oil & Gas Drilling
+DMLP,"DORCHESTER MINERALS, L.P.",0001172358,Energy,Oil & Gas E&P
+ACDC,ProFrac Holding Corp.,0001881487,Energy,Oil & Gas Equipment & Services
+NVGS,Navigator Holdings Ltd.,0001581804,Energy,Oil & Gas Midstream
+NRP,NATURAL RESOURCE PARTNERS LP,0001171486,Energy,Thermal Coal
+UUUU,ENERGY FUELS INC,0001385849,Energy,Uranium
+PDS,PRECISION DRILLING Corp,0001013605,Energy,Oil & Gas Drilling
+MRC,MRC GLOBAL INC.,0001439095,Energy,Oil & Gas Equipment & Services
+SBR,SABINE ROYALTY TRUST,0000710752,Energy,Oil & Gas E&P
+PUMP,ProPetro Holding Corp.,0001680247,Energy,Oil & Gas Equipment & Services
+EU,enCore Energy Corp.,0001500881,Energy,Uranium
+CAPL,CrossAmerica Partners LP,0001538849,Energy,Oil & Gas Refining & Marketing
+SLCA,"U.S. SILICA HOLDINGS, INC.",0001524741,Energy,Oil & Gas Equipment & Services
+NGL,NGL Energy Partners LP,0001504461,Energy,Oil & Gas Midstream
+NBR,NABORS INDUSTRIES LTD,0001163739,Energy,Oil & Gas Drilling
+VTOL,Bristow Group Inc.,0001525221,Energy,Oil & Gas Equipment & Services
+LEU,CENTRUS ENERGY CORP,0001065059,Energy,Uranium
+TK,TEEKAY CORP,0000911971,Energy,Oil & Gas Midstream
+GRNT,"Granite Ridge Resources, Inc.",0001928446,Energy,Oil & Gas E&P
+TNP,TSAKOS ENERGY NAVIGATION LTD,0001166663,Energy,Oil & Gas Midstream
+CLB,Core Laboratories Inc. /DE/,0001958086,Energy,Oil & Gas Equipment & Services
+DRQ,DRIL-QUIP INC,0001042893,Energy,Oil & Gas Equipment & Services
+SBOW,"SILVERBOW RESOURCES, INC.",0000351817,Energy,Oil & Gas E&P
+NESR,National Energy Services Reunited Corp.,0001698514,Energy,Oil & Gas Equipment & Services
+CLNE,Clean Energy Fuels Corp.,0001368265,Energy,Oil & Gas Refining & Marketing
+EFXT,Enerflex Ltd.,0001904856,Energy,Oil & Gas Equipment & Services
+NOA,North American Construction Group Ltd.,0001368519,Energy,Oil & Gas Equipment & Services
+PBT,PERMIAN BASIN ROYALTY TRUST,0000319654,Energy,Oil & Gas Midstream
+VTS,"Vitesse Energy, Inc.",0001944558,Energy,Oil & Gas E&P
+DEC,Diversified Energy Co PLC,0001922446,Energy,Oil & Gas E&P
+CLCO,Cool Co Ltd.,0001944057,Energy,Oil & Gas Midstream
+TXO,"TXO Partners, L.P.",0001559432,Energy,Oil & Gas E&P
+NR,NEWPARK RESOURCES INC,0000071829,Energy,Oil & Gas Equipment & Services
+OBE,OBSIDIAN ENERGY LTD.,0001334388,Energy,Oil & Gas E&P
+URG,UR-ENERGY INC,0001375205,Energy,Uranium
+TTI,TETRA TECHNOLOGIES INC,0000844965,Energy,Oil & Gas Equipment & Services
+BRY,Berry Corp (bry),0001705873,Energy,Oil & Gas E&P
+GPRK,GeoPark Ltd,0001464591,Energy,Oil & Gas E&P
+SD,SANDRIDGE ENERGY INC,0001349436,Energy,Oil & Gas E&P
+REPX,"Riley Exploration Permian, Inc.",0001001614,Energy,Oil & Gas E&P
+EGY,VAALCO ENERGY INC /DE/,0000894627,Energy,Oil & Gas E&P
+OSG,OVERSEAS SHIPHOLDING GROUP INC,0000075208,Energy,Oil & Gas Midstream
+WTI,W&T OFFSHORE INC,0001288403,Energy,Oil & Gas E&P
+SGU,"STAR GROUP, L.P.",0001002590,Energy,Oil & Gas Refining & Marketing
+OIS,"OIL STATES INTERNATIONAL, INC",0001121484,Energy,Oil & Gas Equipment & Services
+UNTC,UNIT CORP,0000798949,Energy,Oil & Gas Integrated
+TELL,TELLURIAN INC. /DE/,0000061398,Energy,Oil & Gas E&P
+GFR,Greenfire Resources Ltd.,0001966287,Energy,Oil & Gas E&P
+BOOM,DMC Global Inc.,0000034067,Energy,Oil & Gas Equipment & Services
+UROY,Uranium Royalty Corp.,0001711570,Energy,Uranium
+SOI,"Solaris Oilfield Infrastructure, Inc.",0001697500,Energy,Oil & Gas Equipment & Services
+BROG,Brooge Energy Ltd,0001774983,Energy,Oil & Gas Midstream
+CCLP,CSI Compressco LP,0001449488,Energy,Oil & Gas Equipment & Services
+NC,NACCO INDUSTRIES INC,0000789933,Energy,Thermal Coal
+REI,"RING ENERGY, INC.",0001384195,Energy,Oil & Gas E&P
+FGPR,FERRELLGAS PARTNERS L P,0000922358,Energy,Oil & Gas Refining & Marketing
+HNRG,HALLADOR ENERGY CO,0000788965,Energy,Thermal Coal
+RNGR,"Ranger Energy Services, Inc.",0001699039,Energy,Oil & Gas Equipment & Services
+AMPY,Amplify Energy Corp.,0001533924,Energy,Oil & Gas E&P
+FET,"FORUM ENERGY TECHNOLOGIES, INC.",0001401257,Energy,Oil & Gas Equipment & Services
+SJT,SAN JUAN BASIN ROYALTY TRUST,0000319655,Energy,Oil & Gas E&P
+GEOS,GEOSPACE TECHNOLOGIES CORP,0001001115,Energy,Oil & Gas Equipment & Services
+EPM,EVOLUTION PETROLEUM CORP,0001006655,Energy,Oil & Gas E&P
+NGS,NATURAL GAS SERVICES GROUP INC,0001084991,Energy,Oil & Gas Equipment & Services
+GTE,GRAN TIERRA ENERGY INC.,0001273441,Energy,Oil & Gas E&P
+PNRG,PRIMEENERGY RESOURCES CORP,0000056868,Energy,Oil & Gas E&P
+SMLP,"Summit Midstream Partners, LP",0001549922,Energy,Oil & Gas Midstream
+KLXE,"KLX Energy Services Holdings, Inc.",0001738827,Energy,Oil & Gas Equipment & Services
+AMTX,"AEMETIS, INC",0000738214,Energy,Oil & Gas Refining & Marketing
+TRLM,"TRULEUM, INC.",0000855787,Energy,Oil & Gas E&P
+EP,EMPIRE PETROLEUM CORP,0000887396,Energy,Oil & Gas E&P
+MVO,MV Oil Trust,0001371782,Energy,Oil & Gas E&P
+VTNR,Vertex Energy Inc.,0000890447,Energy,Oil & Gas Refining & Marketing
+GVXXF,GoviEx Uranium Inc.,0001490596,Energy,Uranium
+KGEI,Kolibri Global Energy Inc.,0001477081,Energy,Oil & Gas E&P
+PHX,PHX MINERALS INC.,0000315131,Energy,Oil & Gas E&P
+VOC,VOC Energy Trust,0001505413,Energy,Oil & Gas E&P
+DLNG,Dynagas LNG Partners LP,0001578453,Energy,Oil & Gas Midstream
+EPSN,Epsilon Energy Ltd.,0001726126,Energy,Oil & Gas E&P
+BATL,BATTALION OIL CORP,0001282648,Energy,Oil & Gas E&P
+CRT,CROSS TIMBERS ROYALTY TRUST,0000881787,Energy,Oil & Gas E&P
+MMLP,MARTIN MIDSTREAM PARTNERS L.P.,0001176334,Energy,Oil & Gas Midstream
+FTK,FLOTEK INDUSTRIES INC/CN/,0000928054,Energy,Oil & Gas Equipment & Services
+DTI,Drilling Tools International Corp,0001884516,Energy,Oil & Gas Equipment & Services
+SLNG,"Stabilis Solutions, Inc.",0001043186,Energy,Oil & Gas Integrated
+NINE,"Nine Energy Service, Inc.",0001532286,Energy,Oil & Gas Equipment & Services
+SND,"Smart Sand, Inc.",0001529628,Energy,Oil & Gas Equipment & Services
+IMPP,Imperial Petroleum Inc./Marshall Islands,0001876581,Energy,Oil & Gas Midstream
+BDCO,BLUE DOLPHIN ENERGY CO,0000793306,Energy,Oil & Gas Refining & Marketing
+WSTRF,Western Uranium & Vanadium Corp.,0001621906,Energy,Uranium
+PFIE,PROFIRE ENERGY INC,0001289636,Energy,Oil & Gas Equipment & Services
+ANLDF,ANFIELD ENERGY INC.,0001519469,Energy,Uranium
+MPIR,Empire Diversified Energy Inc,0000815577,Energy,Oil & Gas Midstream
+PED,PEDEVCO CORP,0001141197,Energy,Oil & Gas E&P
+AE,"ADAMS RESOURCES & ENERGY, INC.",0000002178,Energy,Oil & Gas Refining & Marketing
+WTRV,White River Energy Corp.,0001589361,Energy,Oil & Gas E&P
+BPT,BP PRUDHOE BAY ROYALTY TRUST,0000850033,Energy,Oil & Gas Midstream
+PRT,PermRock Royalty Trust,0001724009,Energy,Oil & Gas E&P
+PVL,Permianville Royalty Trust,0001520048,Energy,Oil & Gas E&P
+DWSN,DAWSON GEOPHYSICAL CO,0000799165,Energy,Oil & Gas Equipment & Services
+PXS,Pyxis Tankers Inc.,0001640043,Energy,Oil & Gas Midstream
+NRT,NORTH EUROPEAN OIL ROYALTY TRUST,0000072633,Energy,Oil & Gas E&P
+SMGI,SMG Industries Inc.,0001426506,Energy,Oil & Gas Equipment & Services
+NCSM,"NCS Multistage Holdings, Inc.",0001692427,Energy,Oil & Gas Equipment & Services
+ZNOG,ZION OIL & GAS INC,0001131312,Energy,Oil & Gas E&P
+BANL,CBL International Ltd,0001914805,Energy,Oil & Gas Midstream
+CHKR,CHESAPEAKE GRANITE WASH TRUST,0001524769,Energy,Oil & Gas E&P
+CWPE,CW Petroleum Corp,0001741220,Energy,Oil & Gas Midstream
+ICD,"Independence Contract Drilling, Inc.",0001537028,Energy,Oil & Gas Drilling
+RSRV,RESERVE PETROLEUM CO,0000083350,Energy,Oil & Gas E&P
+QSEP,"QS Energy, Inc.",0001103795,Energy,Oil & Gas Equipment & Services
+CKX,"CKX LANDS, INC.",0000352955,Energy,Oil & Gas E&P
+INDO,Indonesia Energy Corp Ltd,0001757840,Energy,Oil & Gas E&P
+USEG,US ENERGY CORP,0000101594,Energy,Oil & Gas E&P
+BRN,BARNWELL INDUSTRIES INC,0000010048,Energy,Oil & Gas E&P
+VIVK,"Vivakor, Inc.",0001450704,Energy,Oil & Gas E&P
+RCON,"Recon Technology, Ltd",0001442620,Energy,Oil & Gas Equipment & Services
+SDPI,"Superior Drilling Products, Inc.",0001600422,Energy,Oil & Gas Equipment & Services
+HGTXU,HUGOTON ROYALTY TRUST,0000862022,Energy,Oil & Gas E&P
+MXC,MEXCO ENERGY CORP,0000066418,Energy,Oil & Gas E&P
+SPND,SPINDLETOP OIL & GAS CO,0000867038,Energy,Oil & Gas E&P
+LRDC,"Laredo Oil, Inc.",0001442492,Energy,Oil & Gas E&P
+MTR,MESA ROYALTY TRUST/TX,0000313364,Energy,Oil & Gas E&P
+CEI,"CAMBER ENERGY, INC.",0001309082,Energy,Oil & Gas E&P
+TRLEF,Trillion Energy International Inc.,0001648636,Energy,Oil & Gas E&P
+HUSA,HOUSTON AMERICAN ENERGY CORP,0001156041,Energy,Oil & Gas E&P
+BKUCF,BLUE SKY URANIUM CORP.,0001463978,Energy,Uranium
+VYEY,"VICTORY OILFIELD TECH, INC.",0000700764,Energy,Oil & Gas Equipment & Services
+OILY,Sino American Oil Co,0001367408,Energy,Oil & Gas E&P
+SRNW,Stratos Renewables Corp,0001321517,Energy,Oil & Gas Refining & Marketing
+EGYF,ENERGY FINDERS INC,0000876235,Energy,Oil & Gas E&P
+SNMP,Evolve Transition Infrastructure LP,0001362705,Energy,Oil & Gas Midstream
+NSFDF,NXT Energy Solutions Inc.,0001009922,Energy,Oil & Gas Equipment & Services
+MARPS,MARINE PETROLEUM TRUST,0000062362,Energy,Oil & Gas Midstream
+GWTI,GREENWAY TECHNOLOGIES INC,0001572386,Energy,Oil & Gas Equipment & Services
+ECTM,ECA Marcellus Trust I,0001487798,Energy,Oil & Gas Integrated
+KLNG,"Koil Energy Solutions, Inc.",0001110607,Energy,Oil & Gas Equipment & Services
+ENSV,Enservco Corp,0000319458,Energy,Oil & Gas Equipment & Services
+TPET,Trio Petroleum Corp.,0001898766,Energy,Oil & Gas E&P
+GULTU,Gulf Coast Ultra Deep Royalty Trust,0001565146,Energy,Oil & Gas E&P
+PTCO,PetroGas Co,0001609258,Energy,Oil & Gas E&P
+NRIS,"Norris Industries, Inc.",0001603793,Energy,Oil & Gas E&P
+ROYL,"Royale Energy, Inc.",0001694617,Energy,Oil & Gas E&P
+ALTX,ALTEX INDUSTRIES INC,0000775057,Energy,Oil & Gas E&P
+OILCF,Permex Petroleum Corp,0001922639,Energy,Oil & Gas E&P
+CRCE,"Circle Energy, Inc./NV",0001911467,Energy,Oil & Gas E&P
+SSOF,"Sixty Six Oilfield Services, Inc.",0001935435,Energy,Oil & Gas Equipment & Services
+FECOF,FEC Resources Inc.,0000849997,Energy,Oil & Gas E&P
+GRVE,GROOVE BOTANICALS INC.,0000918573,Energy,Oil & Gas E&P
+REOS,ReoStar Energy CORP,0001335288,Energy,Oil & Gas E&P
+GSPE,"GULFSLOPE ENERGY, INC.",0001341726,Energy,Oil & Gas E&P
+NXMR,NextMart Inc.,0001088005,Energy,Oil & Gas Equipment & Services
+VBHI,"VERDE BIO HOLDINGS, INC.",0001490054,Energy,Oil & Gas E&P
+AMNI,"AMERICAN NOBLE GAS, INC.",0000822746,Energy,Oil & Gas E&P
+AURI,AURI INC,0001092802,Energy,Oil & Gas Equipment & Services
+SPOWF,Strata Power Corp,0001227282,Energy,Oil & Gas E&P
+QREE,QUANTUM ENERGY INC.,0001295961,Energy,Oil & Gas Refining & Marketing
+DBRM,"DAYBREAK OIL & GAS, INC.",0001164256,Energy,Oil & Gas E&P
+MMEX,MMEX Resources Corp,0001440799,Energy,Oil & Gas E&P
+PCCYF,PETROCHINA CO LTD,0001108329,Energy,Oil & Gas Integrated
+SNPMF,CHINA PETROLEUM & CHEMICAL CORP,0001123658,Energy,Oil & Gas Integrated
+ATGFF,AltaGas Ltd.,0001695519,Energy,Oil & Gas Midstream
+THNPF,Technip Energies N.V.,0001792045,Energy,Oil & Gas Equipment & Services
+SAPMF,SAIPEM S P A /FI,0001062750,Energy,Oil & Gas Equipment & Services
+SPTJF,SINOPEC SHANGHAI PETROCHEMICAL CO LTD,0000908732,Energy,Oil & Gas Refining & Marketing
+GLOG-PA,GasLog Ltd.,0001534126,Energy,Oil & Gas Midstream
+CRNZF,CAIRN ENERGY PLC,0000909531,Energy,Oil & Gas E&P
+VTDRF,VANTAGE DRILLING INTERNATIONAL,0001465872,Energy,Oil & Gas Drilling
+ALPSQ,"ALPINE SUMMIT ENERGY PARTNERS, INC.",0001882607,Energy,Oil & Gas E&P
+CJAX,CoJax Oil & Gas Corp,0001763925,Energy,Oil & Gas E&P
+PQEFF,PETROTEQ ENERGY INC.,0001561180,Energy,Oil & Gas E&P
+BRLL,Barrel Energy Inc.,0001631463,Energy,Oil & Gas E&P
+SDTTU,SandRidge Mississippian Trust I,0001509228,Energy,Oil & Gas E&P
+MRGE,Mirage Energy Corp,0001623360,Energy,Oil & Gas Midstream
+MSCH,"MainStreetChamber Holdings, Inc.",0001413659,Energy,Oil & Gas E&P
+FTXP,"FOOTHILLS EXPLORATION, INC.",0001503458,Energy,Oil & Gas E&P
+BBLS,Petrolia Energy Corp,0001368637,Energy,Oil & Gas E&P
+OKMN,"OKMIN RESOURCES, INC.",0001848334,Energy,Oil & Gas E&P

@@ -1,0 +1,311 @@
+Ticker,Company Name,CIK,Sector,Industry
+PLD,"Prologis, Inc.",0001045609,Real Estate,REIT - Industrial
+AMT,AMERICAN TOWER CORP /MA/,0001053507,Real Estate,REIT - Specialty
+EQIX,EQUINIX INC,0001101239,Real Estate,REIT - Specialty
+SPG,SIMON PROPERTY GROUP INC /DE/,0001063761,Real Estate,REIT - Retail
+PSA,Public Storage,0001393311,Real Estate,REIT - Industrial
+WELL,WELLTOWER INC.,0000766704,Real Estate,REIT - Healthcare Facilities
+CCI,CROWN CASTLE INC.,0001051470,Real Estate,REIT - Specialty
+DLR,"DIGITAL REALTY TRUST, INC.",0001297996,Real Estate,REIT - Specialty
+O,REALTY INCOME CORP,0000726728,Real Estate,REIT - Retail
+CSGP,"COSTAR GROUP, INC.",0001057352,Real Estate,Real Estate Services
+EXR,Extra Space Storage Inc.,0001289490,Real Estate,REIT - Industrial
+VICI,VICI PROPERTIES INC.,0001705696,Real Estate,REIT - Diversified
+CBRE,"CBRE GROUP, INC.",0001138118,Real Estate,Real Estate Services
+AVB,AVALONBAY COMMUNITIES INC,0000915912,Real Estate,REIT - Residential
+WY,WEYERHAEUSER CO,0000106535,Real Estate,REIT - Specialty
+SBAC,SBA COMMUNICATIONS CORP,0001034054,Real Estate,REIT - Specialty
+EQR,EQUITY RESIDENTIAL,0000906107,Real Estate,REIT - Residential
+ARE,"ALEXANDRIA REAL ESTATE EQUITIES, INC.",0001035443,Real Estate,REIT - Office
+INVH,Invitation Homes Inc.,0001687229,Real Estate,REIT - Residential
+IRM,IRON MOUNTAIN INC,0001020569,Real Estate,REIT - Specialty
+BEKE,KE Holdings Inc.,0001809587,Real Estate,Real Estate Services
+VTR,"Ventas, Inc.",0000740260,Real Estate,REIT - Healthcare Facilities
+SUI,SUN COMMUNITIES INC,0000912593,Real Estate,REIT - Residential
+ESS,"ESSEX PROPERTY TRUST, INC.",0000920522,Real Estate,REIT - Residential
+AMH,American Homes 4 Rent,0001562401,Real Estate,REIT - Residential
+HST,"HOST HOTELS & RESORTS, INC.",0001070750,Real Estate,REIT - Hotel & Motel
+KIM,KIMCO REALTY CORP,0000879101,Real Estate,REIT - Retail
+WPC,W. P. Carey Inc.,0001025378,Real Estate,REIT - Diversified
+ELS,EQUITY LIFESTYLE PROPERTIES INC,0000895417,Real Estate,REIT - Residential
+HLDCY,HENDERSON LAND DEVELOPMENT COMPANY LTD /FI,0000811250,Real Estate,Real Estate - Diversified
+UDR,"UDR, Inc.",0000074208,Real Estate,REIT - Residential
+GLPI,"Gaming & Leisure Properties, Inc.",0001575965,Real Estate,REIT - Specialty
+REXR,"Rexford Industrial Realty, Inc.",0001571283,Real Estate,REIT - Industrial
+REG,REGENCY CENTERS CORP,0000910606,Real Estate,REIT - Retail
+LAMR,LAMAR ADVERTISING CO/NEW,0001090425,Real Estate,REIT - Specialty
+BXP,BOSTON PROPERTIES INC,0001037540,Real Estate,REIT - Office
+CPT,CAMDEN PROPERTY TRUST,0000906345,Real Estate,REIT - Residential
+CUBE,CubeSmart,0001298675,Real Estate,REIT - Industrial
+PEAK,"HEALTHPEAK PROPERTIES, INC.",0000765880,Real Estate,REIT - Healthcare Facilities
+NLY,ANNALY CAPITAL MANAGEMENT INC,0001043219,Real Estate,REIT - Mortgage
+BPYPP,Brookfield Property Partners L.P.,0001545772,Real Estate,Real Estate Services
+EGP,EASTGROUP PROPERTIES INC,0000049600,Real Estate,REIT - Industrial
+JLL,JONES LANG LASALLE INC,0001037976,Real Estate,Real Estate Services
+FRT,FEDERAL REALTY INVESTMENT TRUST,0000034903,Real Estate,REIT - Retail
+COLD,AMERICOLD REALTY TRUST,0001455863,Real Estate,REIT—Industrial
+OHI,OMEGA HEALTHCARE INVESTORS INC,0000888491,Real Estate,REIT—Healthcare Facilities
+FSV,FirstService Corp,0001637810,Real Estate,Real Estate Services
+NNN,"NNN REIT, INC.",0000751364,Real Estate,REIT—Retail
+FR,FIRST INDUSTRIAL REALTY TRUST INC,0000921825,Real Estate,REIT—Industrial
+HNGKY,HONGKONG LAND HOLDINGS LTD /FI,0000871464,Real Estate,Real Estate—Development
+STAG,"STAG Industrial, Inc.",0001479094,Real Estate,REIT—Industrial
+BRX,Brixmor Property Group Inc.,0001581068,Real Estate,REIT—Retail
+RHP,"Ryman Hospitality Properties, Inc.",0001040829,Real Estate,REIT—Hotel & Motel
+AGNC,AGNC Investment Corp.,0001423689,Real Estate,REIT—Mortgage
+STWD,"STARWOOD PROPERTY TRUST, INC.",0001465128,Real Estate,REIT—Mortgage
+HR,Healthcare Realty Trust Inc,0001360604,Real Estate,REIT—Healthcare Facilities
+ADC,AGREE REALTY CORP,0000917251,Real Estate,REIT—Retail
+CIGI,Colliers International Group Inc.,0000913353,Real Estate,Real Estate Services
+VNO,VORNADO REALTY TRUST,0000899689,Real Estate,REIT—Office
+TRNO,Terreno Realty Corp,0001476150,Real Estate,REIT—Industrial
+NSA,National Storage Affiliates Trust,0001618563,Real Estate,REIT—Industrial
+RYN,RAYONIER INC,0000052827,Real Estate,REIT—Specialty
+RITM,Rithm Capital Corp.,0001556593,Real Estate,REIT—Mortgage
+KRG,KITE REALTY GROUP TRUST,0001286043,Real Estate,REIT—Retail
+AIRC,Apartment Income REIT Corp.,0001820877,Real Estate,REIT—Residential
+PECO,"Phillips Edison & Company, Inc.",0001476204,Real Estate,REIT—Retail
+KRC,KILROY REALTY CORP,0001025996,Real Estate,REIT—Office
+HHH,Howard Hughes Holdings Inc.,0001981792,Real Estate,Real Estate—Diversified
+EPRT,"ESSENTIAL PROPERTIES REALTY TRUST, INC.",0001728951,Real Estate,REIT—Diversified
+MAC,MACERICH CO,0000912242,Real Estate,REIT—Retail
+APLE,"Apple Hospitality REIT, Inc.",0001418121,Real Estate,REIT—Hotel & Motel
+RLJ,RLJ Lodging Trust,0001511337,Real Estate,REIT—Hotel & Motel
+GRP-UN,GRANITE REAL ESTATE INVESTMENT TRUST,0001564538,Real Estate,REIT—Industrial
+PCH,POTLATCHDELTIC CORP,0001338749,Real Estate,REIT—Specialty
+CUZ,COUSINS PROPERTIES INC,0000025232,Real Estate,REIT—Office
+IRT,"INDEPENDENCE REALTY TRUST, INC.",0001466085,Real Estate,REIT—Residential
+VTMX,"Vesta Real Estate Corporation, S.A.B. de C.V.",0001969373,Real Estate,Real Estate—Development
+DBRG,"DigitalBridge Group, Inc.",0001679688,Real Estate,Real Estate Services
+EPR,EPR PROPERTIES,0001045450,Real Estate,REIT—Specialty
+PK,Park Hotels & Resorts Inc.,0001617406,Real Estate,REIT—Hotel & Motel
+JOE,ST JOE Co,0000745308,Real Estate,Real Estate—Diversified
+BXMT,"BLACKSTONE MORTGAGE TRUST, INC.",0001061630,Real Estate,REIT—Mortgage
+BNL,"Broadstone Net Lease, Inc.",0001424182,Real Estate,REIT—Diversified
+SBRA,"Sabra Health Care REIT, Inc.",0001492298,Real Estate,REIT—Healthcare Facilities
+TCN,Tricon Residential Inc.,0001584425,Real Estate,Real Estate Services
+DOC,Physicians Realty Trust,0001574540,Real Estate,REIT—Healthcare Facilities
+SLG,SL GREEN REALTY CORP,0001040971,Real Estate,REIT—Office
+SITC,SITE Centers Corp.,0000894315,Real Estate,REIT—Retail
+SKT,TANGER INC.,0000899715,Real Estate,REIT—Retail
+DEI,Douglas Emmett Inc,0001364250,Real Estate,REIT—Office
+ESRT,"Empire State Realty Trust, Inc.",0001541401,Real Estate,REIT—Diversified
+CDP,COPT DEFENSE PROPERTIES,0000860546,Real Estate,REIT—Office
+HASI,"Hannon Armstrong Sustainable Infrastructure Capital, Inc.",0001561894,Real Estate,REIT—Specialty
+LXP,LXP Industrial Trust,0000910108,Real Estate,REIT—Industrial
+HIW,"HIGHWOODS PROPERTIES, INC.",0000921082,Real Estate,REIT—Office
+IIPR,INNOVATIVE INDUSTRIAL PROPERTIES INC,0001677576,Real Estate,REIT—Industrial
+NMRK,"NEWMARK GROUP, INC.",0001690680,Real Estate,Real Estate Services
+CTRE,"CareTrust REIT, Inc.",0001590717,Real Estate,REIT—Healthcare Facilities
+ESBA,"Empire State Realty OP, L.P.",0001553079,Real Estate,REIT—Office
+CWK,Cushman & Wakefield plc,0001628369,Real Estate,Real Estate Services
+NHI,NATIONAL HEALTH INVESTORS INC,0000877860,Real Estate,REIT—Healthcare Facilities
+ABR,ARBOR REALTY TRUST INC,0001253986,Real Estate,REIT—Mortgage
+OPEN,Opendoor Technologies Inc.,0001801169,Real Estate,Real Estate Services
+SHO,"Sunstone Hotel Investors, Inc.",0001295810,Real Estate,REIT—Hotel & Motel
+UE,Urban Edge Properties,0001611547,Real Estate,REIT—Retail
+OUT,OUTFRONT Media Inc.,0001579877,Real Estate,REIT—Specialty
+FCPT,"Four Corners Property Trust, Inc.",0001650132,Real Estate,REIT—Retail
+EQC,Equity Commonwealth,0000803649,Real Estate,REIT—Office
+MPW,MEDICAL PROPERTIES TRUST INC,0001287865,Real Estate,REIT—Healthcare Facilities
+DRH,DiamondRock Hospitality Co,0001298946,Real Estate,REIT—Hotel & Motel
+GNL,"Global Net Lease, Inc.",0001526113,Real Estate,REIT—Diversified
+EXPI,"EXP World Holdings, Inc.",0001495932,Real Estate,Real Estate Services
+AKR,ACADIA REALTY TRUST,0000899629,Real Estate,REIT—Retail
+PEB,Pebblebrook Hotel Trust,0001474098,Real Estate,REIT—Hotel & Motel
+ROIC,RETAIL OPPORTUNITY INVESTMENTS CORP,0001407623,Real Estate,REIT—Retail
+COMP,"Compass, Inc.",0001563190,Real Estate,Real Estate Services
+AAT,"American Assets Trust, Inc.",0001500217,Real Estate,REIT—Diversified
+IVT,InvenTrust Properties Corp.,0001307748,Real Estate,REIT—Retail
+JBGS,JBG SMITH Properties,0001689796,Real Estate,REIT—Office
+NXRT,"NexPoint Residential Trust, Inc.",0001620393,Real Estate,REIT—Residential
+FOR,Forestar Group Inc.,0001406587,Real Estate,Real Estate—Development
+RC,Ready Capital Corp,0001527590,Real Estate,REIT—Mortgage
+VRE,"Veris Residential, Inc.",0000924901,Real Estate,REIT—Residential
+ARI,"Apollo Commercial Real Estate Finance, Inc.",0001467760,Real Estate,REIT—Mortgage
+SAFE,Safehold Inc.,0001095651,Real Estate,REIT—Diversified
+MMI,"Marcus & Millichap, Inc.",0001578732,Real Estate,Real Estate Services
+XHR,"Xenia Hotels & Resorts, Inc.",0001616000,Real Estate,REIT—Hotel & Motel
+GTY,GETTY REALTY CORP /MD/,0001052752,Real Estate,REIT—Retail
+NTST,NETSTREIT Corp.,0001798100,Real Estate,REIT—Retail
+CMTG,"Claros Mortgage Trust, Inc.",0001666291,Real Estate,REIT—Mortgage
+KW,"Kennedy-Wilson Holdings, Inc.",0001408100,Real Estate,Real Estate Services
+LADR,Ladder Capital Corp,0001577670,Real Estate,REIT—Mortgage
+TWO,TWO HARBORS INVESTMENT CORP.,0001465740,Real Estate,REIT—Mortgage
+SVC,Service Properties Trust,0000945394,Real Estate,REIT—Hotel & Motel
+ELME,Elme Communities,0000104894,Real Estate,REIT—Residential
+LTC,LTC PROPERTIES INC,0000887905,Real Estate,REIT—Healthcare Facilities
+ALEX,"Alexander & Baldwin, Inc.",0001545654,Real Estate,REIT—Retail
+BFS,"SAUL CENTERS, INC.",0000907254,Real Estate,REIT—Retail
+PMT,PennyMac Mortgage Investment Trust,0001464423,Real Estate,REIT—Mortgage
+UNIT,Uniti Group Inc.,0001620280,Real Estate,REIT—Specialty
+DEA,"Easterly Government Properties, Inc.",0001622194,Real Estate,REIT—Office
+ALX,ALEXANDERS INC,0000003499,Real Estate,REIT—Retail
+HPP,"Hudson Pacific Properties, Inc.",0001482512,Real Estate,REIT—Office
+MFA,"MFA FINANCIAL, INC.",0001055160,Real Estate,REIT—Mortgage
+AIV,APARTMENT INVESTMENT & MANAGEMENT CO,0000922864,Real Estate,REIT—Residential
+PGRE,"Paramount Group, Inc.",0001605607,Real Estate,REIT—Office
+AHH,"Armada Hoffler Properties, Inc.",0001569187,Real Estate,REIT—Diversified
+CIM,CHIMERA INVESTMENT CORP,0001409493,Real Estate,REIT—Mortgage
+PLYM,"Plymouth Industrial REIT, Inc.",0001515816,Real Estate,REIT—Industrial
+FBRT,"Franklin BSP Realty Trust, Inc.",0001562528,Real Estate,REIT—Mortgage
+EFC,Ellington Financial Inc.,0001411342,Real Estate,REIT—Mortgage
+UMH,"UMH PROPERTIES, INC.",0000752642,Real Estate,REIT—Residential
+RDFN,Redfin Corp,0001382821,Real Estate,Real Estate Services
+AHR,"American Healthcare REIT, Inc.",0001632970,Real Estate,REIT—Healthcare Facilities
+ARR,"Armour Residential REIT, Inc.",0001428205,Real Estate,REIT—Mortgage
+CSR,CENTERSPACE,0000798359,Real Estate,REIT—Residential
+BRSP,"BrightSpire Capital, Inc.",0001717547,Real Estate,REIT—Mortgage
+RWT,REDWOOD TRUST INC,0000930236,Real Estate,REIT—Mortgage
+PDM,"Piedmont Office Realty Trust, Inc.",0001042776,Real Estate,REIT—Office
+HOUS,Anywhere Real Estate Inc.,0001398987,Real Estate,Real Estate Services
+CBL,CBL & ASSOCIATES PROPERTIES INC,0000910612,Real Estate,REIT—Retail
+BDN,BRANDYWINE REALTY TRUST,0000790816,Real Estate,REIT—Office
+INN,"Summit Hotel Properties, Inc.",0001497645,Real Estate,REIT—Hotel & Motel
+CHCT,Community Healthcare Trust Inc,0001631569,Real Estate,REIT—Healthcare Facilities
+DX,DYNEX CAPITAL INC,0000826675,Real Estate,REIT—Mortgage
+NYMT,NEW YORK MORTGAGE TRUST INC,0001273685,Real Estate,REIT—Mortgage
+KREF,KKR Real Estate Finance Trust Inc.,0001631596,Real Estate,REIT—Mortgage
+WSR,Whitestone REIT,0001175535,Real Estate,REIT—Retail
+DHC,DIVERSIFIED HEALTHCARE TRUST,0001075415,Real Estate,REIT—Healthcare Facilities
+GMRE,Global Medical REIT Inc.,0001533615,Real Estate,REIT—Healthcare Facilities
+FRPH,"FRP HOLDINGS, INC.",0000844059,Real Estate,Real Estate Services
+FPI,Farmland Partners Inc.,0001591670,Real Estate,REIT—Specialty
+IRS,IRSA INVESTMENTS & REPRESENTATIONS INC,0000933267,Real Estate,Real Estate Services
+REAX,Real Brokerage Inc,0001862461,Real Estate,Real Estate Services
+PKST,Peakstone Realty Trust,0001600626,Real Estate,REIT—Office
+SRG,Seritage Growth Properties,0001628063,Real Estate,REIT—Retail
+UHT,UNIVERSAL HEALTH REALTY INCOME TRUST,0000798783,Real Estate,REIT—Healthcare Facilities
+CLDT,Chatham Lodging Trust,0001476045,Real Estate,REIT—Hotel & Motel
+GOOD,GLADSTONE COMMERCIAL CORP,0001234006,Real Estate,REIT—Diversified
+FPH,"Five Point Holdings, LLC",0001574197,Real Estate,Real Estate—Development
+LAND,GLADSTONE LAND Corp,0001495240,Real Estate,REIT—Specialty
+ACRE,Ares Commercial Real Estate Corp,0001529377,Real Estate,REIT—Mortgage
+LSEA,Landsea Homes Corp,0001721386,Real Estate,Real Estate—Development
+RMR,RMR GROUP INC.,0001644378,Real Estate,Real Estate Services
+OLP,ONE LIBERTY PROPERTIES INC,0000712770,Real Estate,REIT—Diversified
+INRE,"Inland Real Estate Income Trust, Inc.",0001528985,Real Estate,REIT—Diversified
+ORC,"Orchid Island Capital, Inc.",0001518621,Real Estate,REIT—Mortgage
+STRW,"Strawberry Fields REIT, Inc.",0001782430,Real Estate,REIT—Healthcare Facilities
+TRTX,"TPG RE Finance Trust, Inc.",0001630472,Real Estate,REIT—Mortgage
+IVR,Invesco Mortgage Capital Inc.,0001437071,Real Estate,REIT—Mortgage
+PCOK,"Pacific Oak Strategic Opportunity REIT, Inc.",0001452936,Real Estate,REIT—Diversified
+MLP,MAUI LAND & PINEAPPLE CO INC,0000063330,Real Estate,Real Estate Services
+PSTL,"Postal Realty Trust, Inc.",0001759774,Real Estate,REIT—Office
+CTO,"CTO Realty Growth, Inc.",0000023795,Real Estate,REIT—Diversified
+NLCP,"NewLake Capital Partners, Inc.",0001854964,Real Estate,REIT—Specialty
+NLOP,Net Lease Office Properties,0001952976,Real Estate,REIT—Office
+ARL,AMERICAN REALTY INVESTORS INC,0001102238,Real Estate,Real Estate—Development
+TCI,TRANSCONTINENTAL REALTY INVESTORS INC,0000733590,Real Estate,Real Estate Services
+NREF,"NexPoint Real Estate Finance, Inc.",0001786248,Real Estate,REIT—Mortgage
+RMAX,"RE/MAX Holdings, Inc.",0001581091,Real Estate,Real Estate Services
+BRT,BRT Apartments Corp.,0000014846,Real Estate,REIT—Residential
+FLJ,FLJ Group Ltd,0001769256,Real Estate,Real Estate Services
+REFI,"Chicago Atlantic Real Estate Finance, Inc.",0001867949,Real Estate,REIT—Mortgage
+ONL,Orion Office REIT Inc.,0001873923,Real Estate,REIT—Office
+GPMT,Granite Point Mortgage Trust Inc.,0001703644,Real Estate,REIT—Mortgage
+ILPT,Industrial Logistics Properties Trust,0001717307,Real Estate,REIT—Industrial
+AOMR,"Angel Oak Mortgage REIT, Inc.",0001766478,Real Estate,REIT—Mortgage
+NXDT,NEXPOINT DIVERSIFIED REAL ESTATE TRUST,0001356115,Real Estate,REIT—Diversified
+NEN,NEW ENGLAND REALTY ASSOCIATES LIMITED PARTNERSHIP,0000746514,Real Estate,Real Estate Services
+NTPIF,NAM TAI PROPERTY INC.,0000829365,Real Estate,Real Estate Services
+OPAD,Offerpad Solutions Inc.,0001825024,Real Estate,Real Estate Services
+FSP,FRANKLIN STREET PROPERTIES CORP /MA/,0001031316,Real Estate,REIT—Office
+PINE,"Alpine Income Property Trust, Inc.",0001786117,Real Estate,REIT—Retail
+AFCG,"AFC Gamma, Inc.",0001822523,Real Estate,REIT—Specialty
+OZ,"Belpointe PREP, LLC",0001807046,Real Estate,Real Estate—Development
+CLPR,Clipper Realty Inc.,0001649096,Real Estate,REIT—Residential
+SDHC,Smith Douglas Homes Corp.,0001982518,Real Estate,Real Estate—Development
+CIO,"City Office REIT, Inc.",0001593222,Real Estate,REIT—Office
+OPI,OFFICE PROPERTIES INCOME TRUST,0001456772,Real Estate,REIT—Office
+BHR,Braemar Hotels & Resorts Inc.,0001574085,Real Estate,REIT—Hotel & Motel
+MITT,"AG Mortgage Investment Trust, Inc.",0001514281,Real Estate,REIT—Mortgage
+SEVN,Seven Hills Realty Trust,0001452477,Real Estate,REIT—Mortgage
+STRS,STRATUS PROPERTIES INC,0000885508,Real Estate,Real Estate—Diversified
+NHHS,"NorthStar Healthcare Income, Inc.",0001503707,Real Estate,REIT—Healthcare Facilities
+DOUG,Douglas Elliman Inc.,0001878897,Real Estate,Real Estate Services
+SACH,Sachem Capital Corp.,0001682220,Real Estate,REIT—Mortgage
+STHO,Star Holdings,0001953366,Real Estate,Real Estate Services
+AJX,Great Ajax Corp.,0001614806,Real Estate,REIT—Mortgage
+FREVS,FIRST REAL ESTATE INVESTMENT TRUST OF NEW JERSEY,0000036840,Real Estate,REIT—Residential
+LFT,"Lument Finance Trust, Inc.",0001547546,Real Estate,REIT—Mortgage
+MDV,"Modiv Industrial, Inc.",0001645873,Real Estate,REIT—Diversified
+AXR,AMREP CORP.,0000006207,Real Estate,Real Estate—Development
+AWCA,"Awaysis Capital, Inc.",0001021917,Real Estate,Real Estate Services
+CHMI,Cherry Hill Mortgage Investment Corp,0001571776,Real Estate,REIT—Mortgage
+EARN,Ellington Residential Mortgage REIT,0001560672,Real Estate,REIT—Mortgage
+KANP,KAANAPALI LAND LLC,0001230058,Real Estate,Real Estate—Development
+MAYS,MAYS J W INC,0000054187,Real Estate,Real Estate Services
+ACR,ACRES Commercial Realty Corp.,0001332551,Real Estate,REIT—Mortgage
+CMCT,Creative Media & Community Trust Corp,0000908311,Real Estate,REIT—Office
+CPTP,CAPITAL PROPERTIES INC /RI/,0000202947,Real Estate,Real Estate Services
+ASPS,ALTISOURCE PORTFOLIO SOLUTIONS S.A.,0001462418,Real Estate,Real Estate Services
+LRE,"LEAD REAL ESTATE CO., LTD",0001888980,Real Estate,Real Estate—Development
+FGNV,FORGE INNOVATION DEVELOPMENT CORP.,0001687919,Real Estate,Real Estate Services
+AHT,ASHFORD HOSPITALITY TRUST INC,0001232582,Real Estate,REIT—Hotel & Motel
+AIRE,reAlpha Tech Corp.,0001859199,Real Estate,Real Estate Services
+BHM,"Bluerock Homes Trust, Inc.",0001903382,Real Estate,REIT—Residential
+LODE,Comstock Inc.,0001120970,Real Estate,Real Estate Services
+SOHO,Sotherly Hotels Inc.,0001301236,Real Estate,REIT—Hotel & Motel
+LOAN,"MANHATTAN BRIDGE CAPITAL, INC",0001080340,Real Estate,REIT—Mortgage
+FTHM,Fathom Holdings Inc.,0001753162,Real Estate,Real Estate Services
+SELF,"Global Self Storage, Inc.",0001031235,Real Estate,REIT—Industrial
+CHCI,"Comstock Holding Companies, Inc.",0001299969,Real Estate,Real Estate—Diversified
+RFL,"Rafael Holdings, Inc.",0001713863,Real Estate,Real Estate Services
+HWTR,"HFactor, Inc.",0001144546,Real Estate,Real Estate Services
+LRHC,La Rosa Holdings Corp.,0001879403,Real Estate,Real Estate Services
+AEI,Alset Inc.,0001750106,Real Estate,Real Estate—Development
+SRRE,SUNRISE REAL ESTATE GROUP INC,0001083490,Real Estate,Real Estate—Development
+OMH,Ohmyhome Ltd,0001944902,Real Estate,Real Estate Services
+GIPR,"GENERATION INCOME PROPERTIES, INC.",0001651721,Real Estate,REIT—Diversified
+NYC,American Strategic Investment Co.,0001595527,Real Estate,Real Estate Services
+CMRF,"CIM REAL ESTATE FINANCE TRUST, INC.",0001498547,Real Estate,REIT—Retail
+LEJU,Leju Holdings Ltd,0001596856,Real Estate,Real Estate Services
+XIN,"Xinyuan Real Estate Co., Ltd.",0001398453,Real Estate,Real Estate—Development
+BRST,"Broad Street Realty, Inc.",0000764897,Real Estate,Real Estate Services
+MDJH,MDJM LTD,0001741534,Real Estate,Real Estate Services
+SQFT,"Presidio Property Trust, Inc.",0001080657,Real Estate,REIT—Diversified
+GYRO,"Gyrodyne, LLC",0001589061,Real Estate,Real Estate Services
+IHT,INNSUITES HOSPITALITY TRUST,0000082473,Real Estate,REIT—Hotel & Motel
+WHLR,"Wheeler Real Estate Investment Trust, Inc.",0001527541,Real Estate,REIT—Retail
+MDRR,"Medalist Diversified REIT, Inc.",0001654595,Real Estate,REIT—Diversified
+MHPC,MANUFACTURED HOUSING PROPERTIES INC.,0001277998,Real Estate,Real Estate Services
+SGD,Safe & Green Development Corp,0001959023,Real Estate,Real Estate—Development
+TPHS,Trinity Place Holdings Inc.,0000724742,Real Estate,Real Estate—Development
+CRDV,Community Redevelopment Inc.,0001084551,Real Estate,Real Estate—Diversified
+GGE,Green Giant Inc.,0001158420,Real Estate,Real Estate—Development
+MTPP,"MOUNTAIN TOP PROPERTIES, INC.",0001658521,Real Estate,Real Estate—Development
+ABCP,AmBase Corp,0000020639,Real Estate,Real Estate Services
+WEWKQ,WeWork Inc.,0001813756,Real Estate,Real Estate Services
+ILAL,International Land Alliance Inc.,0001657214,Real Estate,Real Estate—Development
+ZDPY,"Zoned Properties, Inc.",0001279620,Real Estate,Real Estate Services
+GBR,"New Concept Energy, Inc.",0000105744,Real Estate,Real Estate Services
+ALBT,Avalon GloboCare Corp.,0001630212,Real Estate,Real Estate Services
+CORR,"CorEnergy Infrastructure Trust, Inc.",0001347652,Real Estate,REIT—Specialty
+VINO,"Gaucho Group Holdings, Inc.",0001559998,Real Estate,Real Estate—Diversified
+WETH,Wetouch Technology Inc.,0001826660,Real Estate,Real Estate Services
+DUO,Fangdd Network Group Ltd.,0001750593,Real Estate,Real Estate Services
+PDNLA,PRESIDENTIAL REALTY CORP/DE/,0000731245,Real Estate,REIT—Diversified
+PW,Power REIT,0001532619,Real Estate,REIT—Specialty
+HBUV,Hubilu Venture Corp,0001639068,Real Estate,Real Estate Services
+ACAN,"AmeriCann, Inc.",0001508348,Real Estate,Real Estate Services
+UK,Ucommune International Ltd,0001821424,Real Estate,Real Estate Services
+NIHK,"Video River Networks, Inc.",0001084475,Real Estate,Real Estate—Diversified
+AOXY,ADVANCED OXYGEN TECHNOLOGIES INC,0000352991,Real Estate,Real Estate Services
+MYCB,"My City Builders, Inc.",0001556801,Real Estate,Real Estate—Development
+HCDIQ,"Harbor Custom Development, Inc.",0001784567,Real Estate,Real Estate—Development
+DPWW,"DIEGO PELLICER WORLDWIDE, INC",0001559172,Real Estate,Real Estate Services
+MAA,MID AMERICA APARTMENT COMMUNITIES INC.,0000912595,Real Estate,REIT—Residential
+SRC,"SPIRIT REALTY CAPITAL, INC.",0001308606,Real Estate,REIT—Diversified
+STSFF,"SmartStop Self Storage REIT, Inc.",0001585389,Real Estate,REIT—Industrial
+KBSR,"KBS Real Estate Investment Trust III, Inc.",0001482430,Real Estate,REIT—Office
+HLTC,"Healthcare Trust, Inc.",0001561032,Real Estate,REIT—Healthcare Facilities
+CDR-PB,"CEDAR REALTY TRUST, INC.",0000761648,Real Estate,REIT—Retail
+CHTH,"CNL Healthcare Properties, Inc.",0001496454,Real Estate,REIT—Healthcare Facilities
+SGIC,"Strategic Realty Trust, Inc.",0001446371,Real Estate,REIT—Retail
+UCASU,UC Asset LP,0001723517,Real Estate,Real Estate—Development
+MSPC,"METROSPACES, INC.",0001488501,Real Estate,Real Estate Services
+MSTO,Masterbeat Corp,0001407591,Real Estate,Real Estate Services
+SFRT,"Appreciate Holdings, Inc.",0001821075,Real Estate,Real Estate Services
+CVMCA,"Sila Realty Trust, Inc.",0001567925,Real Estate,REIT—Healthcare Facilities
+PVOZ,Park View OZ REIT Inc,0001824204,Real Estate,REIT—Diversified

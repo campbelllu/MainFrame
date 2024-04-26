@@ -1,0 +1,358 @@
+Ticker,Company Name,CIK,Sector,Industry
+WMT,Walmart Inc.,0000104169,Consumer Defensive,Discount Stores
+PG,PROCTER & GAMBLE Co,0000080424,Consumer Defensive,Household & Personal Products
+COST,COSTCO WHOLESALE CORP /NEW,0000909832,Consumer Defensive,Discount Stores
+KO,COCA COLA CO,0000021344,Consumer Defensive,Beverages - Non-Alcoholic
+FMX,MEXICAN ECONOMIC DEVELOPMENT INC,0001061736,Consumer Defensive,Beverages - Brewers
+PEP,PEPSICO INC,0000077476,Consumer Defensive,Beverages - Non-Alcoholic
+PM,Philip Morris International Inc.,0001413329,Consumer Defensive,Tobacco
+BUD,Anheuser-Busch InBev SA/NV,0001668717,Consumer Defensive,Beverages - Brewers
+UL,UNILEVER PLC,0000217410,Consumer Defensive,Household & Personal Products
+MDLZ,"Mondelez International, Inc.",0001103982,Consumer Defensive,Confectioners
+DEO,DIAGEO PLC,0000835403,Consumer Defensive,Beverages - Wineries & Distilleries
+BTI,British American Tobacco p.l.c.,0001303523,Consumer Defensive,Tobacco
+MO,"ALTRIA GROUP, INC.",0000764180,Consumer Defensive,Tobacco
+CL,COLGATE PALMOLIVE CO,0000021665,Consumer Defensive,Household & Personal Products
+TGT,TARGET CORP,0000027419,Consumer Defensive,Discount Stores
+MNST,Monster Beverage Corp,0000865752,Consumer Defensive,Beverages - Non-Alcoholic
+EL,ESTEE LAUDER COMPANIES INC,0001001250,Consumer Defensive,Household & Personal Products
+KHC,Kraft Heinz Co,0001637459,Consumer Defensive,Packaged Foods
+STZ,"CONSTELLATION BRANDS, INC.",0000016918,Consumer Defensive,Beverages - Wineries & Distilleries
+KDP,Keurig Dr Pepper Inc.,0001418135,Consumer Defensive,Beverages - Non-Alcoholic
+HSY,HERSHEY CO,0000047111,Consumer Defensive,Confectioners
+ABEV,AMBEV S.A.,0001565025,Consumer Defensive,Beverages - Brewers
+KMB,KIMBERLY CLARK CORP,0000055785,Consumer Defensive,Household & Personal Products
+SYY,SYSCO CORP,0000096021,Consumer Defensive,Food Distribution
+KVUE,Kenvue Inc.,0001944048,Consumer Defensive,Household & Personal Products
+GIS,GENERAL MILLS INC,0000040704,Consumer Defensive,Packaged Foods
+SVNDY,SEVEN & I HOLDINGS CO LTD,0001359519,Consumer Defensive,Grocery Stores
+KR,KROGER CO,0000056873,Consumer Defensive,Grocery Stores
+CCEP,COCA-COLA EUROPACIFIC PARTNERS plc,0001650107,Consumer Defensive,Beverages - Non-Alcoholic
+DLTR,"DOLLAR TREE, INC.",0000935703,Consumer Defensive,Discount Stores
+DG,DOLLAR GENERAL CORP,0000029534,Consumer Defensive,Discount Stores
+ADM,Archer-Daniels-Midland Co,0000007084,Consumer Defensive,Farm Products
+BF-B,BROWN FORMAN CORP,0000014693,Consumer Defensive,Beverages - Wineries & Distilleries
+CHD,CHURCH & DWIGHT CO INC /DE/,0000313927,Consumer Defensive,Household & Personal Products
+KOF,COCA COLA FEMSA SAB DE CV,0000910631,Consumer Defensive,Beverages - Non-Alcoholic
+TSN,"TYSON FOODS, INC.",0000100493,Consumer Defensive,Farm Products
+CLX,CLOROX CO /DE/,0000021076,Consumer Defensive,Household & Personal Products
+K,KELLANOVA,0000055067,Consumer Defensive,Packaged Foods
+MKC,MCCORMICK & CO INC,0000063754,Consumer Defensive,Packaged Foods
+HRL,HORMEL FOODS CORP /DE/,0000048465,Consumer Defensive,Packaged Foods
+JRONY,Jeronimo Martins SGPS SA,0001438077,Consumer Defensive,Food Distribution
+LW,"Lamb Weston Holdings, Inc.",0001679273,Consumer Defensive,Packaged Foods
+EDU,New Oriental Education & Technology Group Inc.,0001372920,Consumer Defensive,Education & Training Services
+SJM,J M SMUCKER Co,0000091419,Consumer Defensive,Packaged Foods
+CELH,"Celsius Holdings, Inc.",0001341766,Consumer Defensive,Beverages - Non-Alcoholic
+CAG,CONAGRA BRANDS INC.,0000023217,Consumer Defensive,Packaged Foods
+TAP,MOLSON COORS BEVERAGE CO,0000024545,Consumer Defensive,Beverages - Brewers
+CPB,CAMPBELL SOUP CO,0000016732,Consumer Defensive,Packaged Foods
+BG,Bunge Global SA,0001996862,Consumer Defensive,Farm Products
+ACI,"Albertsons Companies, Inc.",0001646972,Consumer Defensive,Grocery Stores
+USFD,US Foods Holding Corp.,0001665918,Consumer Defensive,Food Distribution
+PFGC,Performance Food Group Co,0001618673,Consumer Defensive,Food Distribution
+SMKUY,Siam Makro Public Co Limited/ADR,0001555812,Consumer Defensive,Food Distribution
+COTY,COTY INC.,0001024305,Consumer Defensive,Household & Personal Products
+JBSAY,JBS S.A.,0001450123,Consumer Defensive,Packaged Foods
+ELF,"e.l.f. Beauty, Inc.",0001600033,Consumer Defensive,Household & Personal Products
+BJ,"BJ's Wholesale Club Holdings, Inc.",0001531152,Consumer Defensive,Discount Stores
+TAL,TAL Education Group,0001499620,Consumer Defensive,Education & Training Services
+COKE,"Coca-Cola Consolidated, Inc.",0000317540,Consumer Defensive,Beverages—Non-Alcoholic
+BRBR,"BELLRING BRANDS, INC.",0001772016,Consumer Defensive,Packaged Foods
+INGR,Ingredion Inc,0001046257,Consumer Defensive,Packaged Foods
+MEJHY,MEIJI Holdings Co Ltd/ADR,0001558812,Consumer Defensive,Packaged Foods
+DAR,DARLING INGREDIENTS INC.,0000916540,Consumer Defensive,Packaged Foods
+POST,"Post Holdings, Inc.",0001530950,Consumer Defensive,Packaged Foods
+PPC,PILGRIMS PRIDE CORP,0000802481,Consumer Defensive,Packaged Foods
+CUYTY,Colruyt SA,0001437153,Consumer Defensive,Grocery Stores
+LCCTF,L'Occitane International S.A./ADR/,0001495798,Consumer Defensive,Household & Personal Products
+LANC,LANCASTER COLONY CORP,0000057515,Consumer Defensive,Packaged Foods
+SFM,"Sprouts Farmers Market, Inc.",0001575515,Consumer Defensive,Grocery Stores
+FLO,FLOWERS FOODS INC,0001128928,Consumer Defensive,Packaged Foods
+BRFS,BRF S.A.,0001122491,Consumer Defensive,Packaged Foods
+IPAR,INTER PARFUMS INC,0000822663,Consumer Defensive,Household & Personal Products
+OLLI,"Ollie's Bargain Outlet Holdings, Inc.",0001639300,Consumer Defensive,Discount Stores
+FIZZ,NATIONAL BEVERAGE CORP,0000069891,Consumer Defensive,Beverages—Non-Alcoholic
+SAM,BOSTON BEER CO INC,0000949870,Consumer Defensive,Beverages—Brewers
+FRPT,"Freshpet, Inc.",0001611647,Consumer Defensive,Packaged Foods
+LOPE,"Grand Canyon Education, Inc.",0001434588,Consumer Defensive,Education & Training Services
+ASAI,Sendas Distributor S.A.,0001834048,Consumer Defensive,Grocery Stores
+SMPL,Simply Good Foods Co,0001702744,Consumer Defensive,Packaged Foods
+NWL,NEWELL BRANDS INC.,0000814453,Consumer Defensive,Household & Personal Products
+GHC,Graham Holdings Co,0000104889,Consumer Defensive,Education & Training Services
+NOMD,Nomad Foods Ltd,0001651717,Consumer Defensive,Packaged Foods
+RLX,RLX Technology Inc.,0001828365,Consumer Defensive,Tobacco
+JJSF,J&J SNACK FOODS CORP,0000785956,Consumer Defensive,Packaged Foods
+DFIHY,DAIRY FARM INTERNATIONAL HOLDINGS LTD /FI,0000871459,Consumer Defensive,Grocery Stores
+HELE,HELEN OF TROY LTD,0000916789,Consumer Defensive,Household & Personal Products
+COUR,"Coursera, Inc.",0001651562,Consumer Defensive,Education & Training Services
+CALM,CAL-MAINE FOODS INC,0000016160,Consumer Defensive,Farm Products
+SPB,"Spectrum Brands Holdings, Inc.",0000109177,Consumer Defensive,Household & Personal Products
+LRN,"Stride, Inc.",0001157408,Consumer Defensive,Education & Training Services
+GO,Grocery Outlet Holding Corp.,0001771515,Consumer Defensive,Grocery Stores
+CENT,CENTRAL GARDEN & PET CO,0000887733,Consumer Defensive,Packaged Foods
+PSMT,PRICESMART INC,0001041803,Consumer Defensive,Discount Stores
+THS,"TreeHouse Foods, Inc.",0001320695,Consumer Defensive,Packaged Foods
+STRA,"Strategic Education, Inc.",0001013934,Consumer Defensive,Education & Training Services
+PRMW,Primo Water Corp /CN/,0000884713,Consumer Defensive,Beverages—Non-Alcoholic
+DNUT,"Krispy Kreme, Inc.",0001857154,Consumer Defensive,Grocery Stores
+SOVO,"Sovos Brands, Inc.",0001856608,Consumer Defensive,Packaged Foods
+CCU,UNITED BREWERIES CO INC,0000888746,Consumer Defensive,Beverages—Brewers
+UDMY,"Udemy, Inc.",0001607939,Consumer Defensive,Education & Training Services
+AKO-A,ANDINA BOTTLING CO INC,0000925261,Consumer Defensive,Beverages—Non-Alcoholic
+HIMS,"Hims & Hers Health, Inc.",0001773751,Consumer Defensive,Household & Personal Products
+LAUR,"LAUREATE EDUCATION, INC.",0000912766,Consumer Defensive,Education & Training Services
+AQPW,"Golden Ally Lifetech Group, Inc.",0001317833,Consumer Defensive,Beverages—Non-Alcoholic
+EPC,EDGEWELL PERSONAL CARE Co,0001096752,Consumer Defensive,Household & Personal Products
+ATGE,Adtalem Global Education Inc.,0000730464,Consumer Defensive,Education & Training Services
+AFYA,Afya Ltd,0001771007,Consumer Defensive,Education & Training Services
+MGPI,MGP INGREDIENTS INC,0000835011,Consumer Defensive,Beverages—Wineries & Distilleries
+ANDE,"Andersons, Inc.",0000821026,Consumer Defensive,Food Distribution
+MRRTY,MARFRIG GLOBAL FOODS S.A.,0001496919,Consumer Defensive,Packaged Foods
+WMK,WEIS MARKETS INC,0000105418,Consumer Defensive,Grocery Stores
+VGR,VECTOR GROUP LTD,0000059440,Consumer Defensive,Tobacco
+IMKTA,INGLES MARKETS INC,0000050493,Consumer Defensive,Grocery Stores
+UTZ,"Utz Brands, Inc.",0001739566,Consumer Defensive,Packaged Foods
+NISUY,NIPPON SUISAN KAISHA LTD /ADR/,0000110095,Consumer Defensive,Packaged Foods
+CHEF,"Chefs' Warehouse, Inc.",0001517175,Consumer Defensive,Food Distribution
+TR,TOOTSIE ROLL INDUSTRIES INC,0000098677,Consumer Defensive,Confectioners
+UVV,UNIVERSAL CORP /VA/,0000102037,Consumer Defensive,Tobacco
+HLF,HERBALIFE LTD.,0001180262,Consumer Defensive,Packaged Foods
+GOTU,Gaotu Techedu Inc.,0001768259,Consumer Defensive,Education & Training Services
+JBSS,SANFILIPPO JOHN B & SON INC,0000880117,Consumer Defensive,Packaged Foods
+PRDO,PERDOCEO EDUCATION Corp,0001046568,Consumer Defensive,Education & Training Services
+FDP,FRESH DEL MONTE PRODUCE INC,0001047340,Consumer Defensive,Farm Products
+COCO,"Vita Coco Company, Inc.",0001482981,Consumer Defensive,Beverages—Non-Alcoholic
+KLG,WK Kellogg Co,0001959348,Consumer Defensive,Packaged Foods
+AGRO,Adecoagro S.A.,0001499505,Consumer Defensive,Farm Products
+DOLE,Dole plc,0001857475,Consumer Defensive,Farm Products
+NAPA,"Duckhorn Portfolio, Inc.",0001835256,Consumer Defensive,Beverages—Wineries & Distilleries
+USNA,USANA HEALTH SCIENCES INC,0000896264,Consumer Defensive,Packaged Foods
+UNFI,UNITED NATURAL FOODS INC,0001020859,Consumer Defensive,Food Distribution
+HAIN,HAIN CELESTIAL GROUP INC,0000910406,Consumer Defensive,Packaged Foods
+EWCZ,"European Wax Center, Inc.",0001856236,Consumer Defensive,Household & Personal Products
+BRCC,BRC Inc.,0001891101,Consumer Defensive,Packaged Foods
+WEST,Westrock Coffee Co,0001806347,Consumer Defensive,Packaged Foods
+CHGG,"CHEGG, INC",0001364954,Consumer Defensive,Education & Training Services
+NUS,"NU SKIN ENTERPRISES, INC.",0001021561,Consumer Defensive,Household & Personal Products
+UTI,UNIVERSAL TECHNICAL INSTITUTE INC,0001261654,Consumer Defensive,Education & Training Services
+BGS,"B&G Foods, Inc.",0001278027,Consumer Defensive,Packaged Foods
+SPTN,SpartanNash Co,0000877422,Consumer Defensive,Food Distribution
+AVO,"Mission Produce, Inc.",0001802974,Consumer Defensive,Food Distribution
+KUBR,Kuber Resources Corp,0001081834,Consumer Defensive,Farm Products
+STKL,SunOpta Inc.,0000351834,Consumer Defensive,Packaged Foods
+OTLY,Oatly Group AB,0001843586,Consumer Defensive,Beverages—Non-Alcoholic
+VITL,"Vital Farms, Inc.",0001579733,Consumer Defensive,Farm Products
+VTRU,Vitru Ltd,0001805012,Consumer Defensive,Education & Training Services
+YUMM,YUMMIES INC,0001073748,Consumer Defensive,Education & Training Services
+LND,BrasilAgro - Brazilian Agricultural Real Estate Co,0001499849,Consumer Defensive,Farm Products
+ISPR,Ispire Technology Inc.,0001948455,Consumer Defensive,Tobacco
+CVGW,CALAVO GROWERS INC,0001133470,Consumer Defensive,Food Distribution
+DAO,"Youdao, Inc.",0001781753,Consumer Defensive,Education & Training Services
+BYND,"BEYOND MEAT, INC.",0001655210,Consumer Defensive,Packaged Foods
+TPB,"Turning Point Brands, Inc.",0001290677,Consumer Defensive,Tobacco
+VLGEA,VILLAGE SUPER MARKET INC,0000103595,Consumer Defensive,Grocery Stores
+SENEA,Seneca Foods Corp,0000088948,Consumer Defensive,Packaged Foods
+SNDL,SNDL Inc.,0001766600,Consumer Defensive,Beverages—Wineries & Distilleries
+SKIN,Beauty Health Co,0001818093,Consumer Defensive,Household & Personal Products
+NATR,NATURES SUNSHINE PRODUCTS INC,0000275053,Consumer Defensive,Packaged Foods
+YSG,Yatsen Holding Ltd,0001819580,Consumer Defensive,Household & Personal Products
+NGVC,"Natural Grocers by Vitamin Cottage, Inc.",0001547459,Consumer Defensive,Grocery Stores
+VSTA,Vasta Platform Ltd,0001792829,Consumer Defensive,Education & Training Services
+HNST,"Honest Company, Inc.",0001530979,Consumer Defensive,Household & Personal Products
+LMNR,Limoneira CO,0001342423,Consumer Defensive,Farm Products
+LINC,LINCOLN EDUCATIONAL SERVICES CORP,0001286613,Consumer Defensive,Education & Training Services
+AFRI,Forafric Global PLC,0001903870,Consumer Defensive,Farm Products
+DDL,Dingdong (Cayman) Ltd,0001854545,Consumer Defensive,Grocery Stores
+SDSYA,SOUTH DAKOTA SOYBEAN PROCESSORS LLC,0001163609,Consumer Defensive,Packaged Foods
+HFFG,HF Foods Group Inc.,0001680873,Consumer Defensive,Food Distribution
+ALCO,"ALICO, INC.",0000003545,Consumer Defensive,Farm Products
+QSG,QuantaSing Group Ltd,0001932770,Consumer Defensive,Education & Training Services
+APEI,AMERICAN PUBLIC EDUCATION INC,0001201792,Consumer Defensive,Education & Training Services
+SHOT,"Safety Shot, Inc.",0001760903,Consumer Defensive,Beverages—Non-Alcoholic
+LWAY,"Lifeway Foods, Inc.",0000814586,Consumer Defensive,Packaged Foods
+ACU,ACME UNITED CORP,0000002098,Consumer Defensive,Household & Personal Products
+BIG,BIG LOTS INC,0000768835,Consumer Defensive,Discount Stores
+MAMA,"Mama's Creations, Inc.",0001520358,Consumer Defensive,Packaged Foods
+FREE,"Whole Earth Brands, Inc.",0001753706,Consumer Defensive,Packaged Foods
+HCIL,"Hongchang International Co., Ltd",0001086303,Consumer Defensive,Packaged Foods
+WILC,G WILLI FOOD INTERNATIONAL LTD,0001030997,Consumer Defensive,Food Distribution
+CWGL,"Crimson Wine Group, Ltd",0001562151,Consumer Defensive,Beverages—Wineries & Distilleries
+IH,iHuman Inc.,0001814423,Consumer Defensive,Education & Training Services
+DIT,AMCON DISTRIBUTING CO,0000928465,Consumer Defensive,Food Distribution
+STG,Sunlands Technology Group,0001723935,Consumer Defensive,Education & Training Services
+ZVIA,Zevia PBC,0001854139,Consumer Defensive,Beverages—Non-Alcoholic
+FTLF,"FITLIFE BRANDS, INC.",0001374328,Consumer Defensive,Packaged Foods
+SKIL,Skillsoft Corp.,0001774675,Consumer Defensive,Education & Training Services
+HIGR,Hi-Great Group Holding Co,0001807616,Consumer Defensive,Packaged Foods
+BRID,BRIDGFORD FOODS CORP,0000014177,Consumer Defensive,Packaged Foods
+VFF,"Village Farms International, Inc.",0001584549,Consumer Defensive,Farm Products
+GRAM,Gold Flora Corp.,0001876945,Consumer Defensive,Tobacco
+LFVN,Lifevantage Corp,0000849146,Consumer Defensive,Packaged Foods
+AIU,Meta Data Ltd,0001722380,Consumer Defensive,Education & Training Services
+FVTI,"Fortune Valley Treasures, Inc.",0001626745,Consumer Defensive,Beverages—Wineries & Distilleries
+GROV,"Grove Collaborative Holdings, Inc.",0001841761,Consumer Defensive,Household & Personal Products
+GGROU,Golden Growers Cooperative,0001489874,Consumer Defensive,Farm Products
+FARM,FARMER BROTHERS CO,0000034563,Consumer Defensive,Packaged Foods
+ZHYBF,Zhong Yuan Bio-Technology Holdings Ltd,0001672886,Consumer Defensive,Packaged Foods
+RFLFY,Raffles Education Corp Ltd,0001448815,Consumer Defensive,Education & Training Services
+TWOU,"2U, Inc.",0001459417,Consumer Defensive,Education & Training Services
+NXMH,"Next Meats Holdings, Inc.",0001811530,Consumer Defensive,Packaged Foods
+BFNH,"BIOFORCE NANOSCIENCES HOLDINGS, INC.",0001310488,Consumer Defensive,Packaged Foods
+UMEWF,UMeWorld Ltd,0001114936,Consumer Defensive,Packaged Foods
+BEDU,Bright Scholar Education Holdings Ltd,0001696355,Consumer Defensive,Education & Training Services
+AAGR,African Agriculture Holdings Inc.,0001848898,Consumer Defensive,Farm Products
+CFOO,China Foods Holdings Ltd.,0001310630,Consumer Defensive,Packaged Foods
+YERBF,YERBAE BRANDS CORP.,0001978133,Consumer Defensive,Beverages—Non-Alcoholic
+SOWG,Sow Good Inc.,0001490161,Consumer Defensive,Packaged Foods
+GCEH,"Global Clean Energy Holdings, Inc.",0000748790,Consumer Defensive,Farm Products
+CHUC,"Charlie's Holdings, Inc.",0001134765,Consumer Defensive,Tobacco
+PYYX,"PYXUS INTERNATIONAL, INC.",0000939930,Consumer Defensive,Tobacco
+JZ,Jianzhi Education Technology Group Co Ltd,0001852440,Consumer Defensive,Education & Training Services
+RGF,"Real Good Food Company, Inc.",0001871149,Consumer Defensive,Packaged Foods
+UG,UNITED GUARDIAN INC,0000101295,Consumer Defensive,Household & Personal Products
+COE,51Talk Online Education Group,0001659494,Consumer Defensive,Education & Training Services
+GNS,Genius Group Ltd,0001847806,Consumer Defensive,Education & Training Services
+NAII,NATURAL ALTERNATIVES INTERNATIONAL INC,0000787253,Consumer Defensive,Packaged Foods
+MALG,MICROALLIANCE GROUP INC.,0001309251,Consumer Defensive,Packaged Foods
+AACG,ATA Creativity Global,0001420529,Consumer Defensive,Education & Training Services
+DDC,DDC Enterprise Ltd,0001808110,Consumer Defensive,Packaged Foods
+ATPC,Agape ATP Corp,0001713210,Consumer Defensive,Packaged Foods
+IVFH,INNOVATIVE FOOD HOLDINGS INC,0000312257,Consumer Defensive,Food Distribution
+LXEH,Lixiang Education Holding Co. Ltd.,0001814067,Consumer Defensive,Education & Training Services
+PGID,PEREGRINE INDUSTRIES INC,0001061164,Consumer Defensive,Household & Personal Products
+VWE,"Vintage Wine Estates, Inc.",0001834045,Consumer Defensive,Beverages—Wineries & Distilleries
+RMCF,"Rocky Mountain Chocolate Factory, Inc.",0001616262,Consumer Defensive,Confectioners
+WVVI,WILLAMETTE VALLEY VINEYARDS INC,0000838875,Consumer Defensive,Beverages—Wineries & Distilleries
+PLAG,Planet Green Holdings Corp.,0001117057,Consumer Defensive,Packaged Foods
+NPLS,NP Life Sciences Health Industry Group Inc.,0001781726,Consumer Defensive,Education & Training Services
+DTCK,DAVIS COMMODITIES Ltd,0001949478,Consumer Defensive,Farm Products
+HCMC,Healthier Choices Management Corp.,0000844856,Consumer Defensive,Grocery Stores
+YGF,"YanGuFang International Group Co., Ltd",0001875496,Consumer Defensive,Packaged Foods
+SANW,S&W Seed Co,0001477246,Consumer Defensive,Farm Products
+PCSV,"PCS Edventures!, Inc.",0001122020,Consumer Defensive,Education & Training Services
+NASO,"Naples Soap Company, Inc.",0001398172,Consumer Defensive,Household & Personal Products
+YQ,17 Education & Technology Group Inc.,0001821468,Consumer Defensive,Education & Training Services
+EEIQ,EpicQuest Education Group International Ltd,0001781397,Consumer Defensive,Education & Training Services
+EOSS,EOS INC.,0001651958,Consumer Defensive,Household & Personal Products
+GSUN,Golden Sun Health Technology Group Ltd,0001826376,Consumer Defensive,Education & Training Services
+BRFH,BARFRESH FOOD GROUP INC.,0001487197,Consumer Defensive,Beverages—Non-Alcoholic
+MSS,Maison Solutions Inc.,0001892292,Consumer Defensive,Grocery Stores
+LOCL,Local Bounti Corporation/DE,0001840780,Consumer Defensive,Farm Products
+STKH,Steakholder Foods Ltd.,0001828098,Consumer Defensive,Packaged Foods
+PCST,"PURE CAPITAL SOLUTIONS, INC.",0001406434,Consumer Defensive,Education & Training Services
+CTGL,"CITRINE GLOBAL, CORP.",0001498067,Consumer Defensive,Packaged Foods
+FEDU,Four Seasons Education (Cayman) Inc.,0001709819,Consumer Defensive,Education & Training Services
+PAVS,Paranovus Entertainment Technology Ltd.,0001751876,Consumer Defensive,Packaged Foods
+MTEX,MANNATECH INC,0001056358,Consumer Defensive,Food Distribution
+EXDW,"Exceed World, Inc.",0001634293,Consumer Defensive,Education & Training Services
+SDOT,Sadot Group Inc.,0001701756,Consumer Defensive,Farm Products
+JSDA,JONES SODA CO,0001083522,Consumer Defensive,Beverages—Non-Alcoholic
+VPRB,"VPR Brands, LP.",0001376231,Consumer Defensive,Tobacco
+EDTK,Skillful Craftsman Education Technology Ltd,0001782309,Consumer Defensive,Education & Training Services
+SBEV,"SPLASH BEVERAGE GROUP, INC.",0001553788,Consumer Defensive,Beverages—Wineries & Distilleries
+NCRA,"NOCERA, INC.",0001756180,Consumer Defensive,Packaged Foods
+LQR,LQR House Inc.,0001843165,Consumer Defensive,Beverages—Wineries & Distilleries
+PURE,"PURE BIOSCIENCE, INC.",0001006028,Consumer Defensive,Household & Personal Products
+AIXN,"AiXin Life International, Inc.",0000835662,Consumer Defensive,Food Distribution
+VINE,"Fresh Vine Wine, Inc.",0001880343,Consumer Defensive,Beverages—Wineries & Distilleries
+SLGD,Scott's Liquid Gold - Inc.,0000088000,Consumer Defensive,Household & Personal Products
+TCTM,"Tarena International, Inc.",0001592560,Consumer Defensive,Education & Training Services
+PETZ,"TDH Holdings, Inc.",0001684425,Consumer Defensive,Packaged Foods
+BRSH,Bruush Oral Care Inc.,0001913210,Consumer Defensive,Household & Personal Products
+DQWS,DSwiss Inc,0001652561,Consumer Defensive,Household & Personal Products
+MYND,"Mynd.ai, Inc.",0001708441,Consumer Defensive,Education & Training Services
+SHMP,NaturalShrimp Inc,0001465470,Consumer Defensive,Farm Products
+AQB,"AquaBounty Technologies, Inc.",0001603978,Consumer Defensive,Farm Products
+SISI,"SHINECO, INC.",0001300734,Consumer Defensive,Farm Products
+GV,Visionary Holdings Inc.,0001892274,Consumer Defensive,Education & Training Services
+HPCO,"Hempacco Co., Inc.",0001892480,Consumer Defensive,Tobacco
+MOJO,EQUATOR Beverage Co,0001414953,Consumer Defensive,Beverages—Non-Alcoholic
+CLEU,China Liberal Education Holdings Ltd,0001775085,Consumer Defensive,Education & Training Services
+WAFU,Wah Fu Education Group Ltd,0001716770,Consumer Defensive,Education & Training Services
+MNKA,"Manuka, Inc.",0001062128,Consumer Defensive,Household & Personal Products
+REED,"REED'S, INC.",0001140215,Consumer Defensive,Beverages—Non-Alcoholic
+LSF,"Laird Superfood, Inc.",0001650696,Consumer Defensive,Packaged Foods
+KAVL,"Kaival Brands Innovations Group, Inc.",0001762239,Consumer Defensive,Tobacco
+FAMI,"Farmmi, Inc.",0001701261,Consumer Defensive,Packaged Foods
+INKW,"Greene Concepts, Inc",0001585380,Consumer Defensive,Beverages—Non-Alcoholic
+INBP,INTEGRATED BIOPHARMA INC,0001016504,Consumer Defensive,Packaged Foods
+LEAI,"Legacy Education Alliance, Inc.",0001561880,Consumer Defensive,Education & Training Services
+BON,Bon Natural Life Ltd,0001816815,Consumer Defensive,Packaged Foods
+XXII,"22nd Century Group, Inc.",0001347858,Consumer Defensive,Tobacco
+JVA,COFFEE HOLDING CO INC,0001007019,Consumer Defensive,Packaged Foods
+BOF,BranchOut Food Inc.,0001962481,Consumer Defensive,Packaged Foods
+BTCT,BTC Digital Ltd.,0001796514,Consumer Defensive,Education & Training Services
+BTTR,Better Choice Co Inc.,0001471727,Consumer Defensive,Packaged Foods
+SNBH,SENTIENT BRANDS HOLDINGS INC.,0001358633,Consumer Defensive,Household & Personal Products
+BABB,"BAB, INC.",0001123596,Consumer Defensive,Packaged Foods
+RMHB,"Rocky Mountain High Brands, Inc.",0001670869,Consumer Defensive,Beverages—Non-Alcoholic
+CYAN,CYANOTECH CORP,0000768408,Consumer Defensive,Packaged Foods
+SNAX,"STRYVE FOODS, INC.",0001691936,Consumer Defensive,Packaged Foods
+TOFB,TOFUTTI BRANDS INC,0000730349,Consumer Defensive,Packaged Foods
+AMBO,Ambow Education Holding Ltd.,0001494558,Consumer Defensive,Education & Training Services
+WTER,ALKALINE WATER Co INC,0001532390,Consumer Defensive,Beverages—Non-Alcoholic
+CBDW,1606 CORP.,0001877461,Consumer Defensive,Tobacco
+RVIV,Reviv3 Procare Co,0001718500,Consumer Defensive,Household & Personal Products
+TANH,TANTECH HOLDINGS LTD,0001588084,Consumer Defensive,Household & Personal Products
+EDBL,Edible Garden AG Inc,0001809750,Consumer Defensive,Farm Products
+RKDA,"Arcadia Biosciences, Inc.",0001469443,Consumer Defensive,Packaged Foods
+TLCC,"TWINLAB CONSOLIDATED HOLDINGS, INC.",0001590695,Consumer Defensive,Packaged Foods
+BSFC,Blue Star Foods Corp.,0001730773,Consumer Defensive,Packaged Foods
+NUZE,"NuZee, Inc.",0001527613,Consumer Defensive,Packaged Foods
+YCRM,Yuenglings Ice Cream Corp,0001624517,Consumer Defensive,Packaged Foods
+NGTF,"NightFood Holdings, Inc.",0001593001,Consumer Defensive,Packaged Foods
+EAST,"Eastside Distilling, Inc.",0001534708,Consumer Defensive,Beverages—Wineries & Distilleries
+SRSG,"SPIRITS TIME INTERNATIONAL, INC.",0001434737,Consumer Defensive,Beverages—Wineries & Distilleries
+HIRU,HIRU Corp,0000925779,Consumer Defensive,Beverages—Non-Alcoholic
+GNLN,"Greenlane Holdings, Inc.",0001743745,Consumer Defensive,Tobacco
+FHSEY,"First High-School Education Group Co., Ltd.",0001786182,Consumer Defensive,Education & Training Services
+AGRI,AGRIFORCE GROWING SYSTEMS LTD.,0001826397,Consumer Defensive,Farm Products
+NBND,NetBrands Corp.,0001725911,Consumer Defensive,Packaged Foods
+GRLF,GREEN LEAF INNOVATIONS INC,0000915661,Consumer Defensive,Tobacco
+RIBT,RiceBran Technologies,0001063537,Consumer Defensive,Packaged Foods
+SHRG,SHARING SERVICES GLOBAL Corp,0001644488,Consumer Defensive,Packaged Foods
+VGFCQ,Very Good Food Co Inc.,0001878835,Consumer Defensive,Packaged Foods
+SMFL,"SMART FOR LIFE, INC.",0001851860,Consumer Defensive,Packaged Foods
+NAFS,"North America Frac Sand, Inc.",0001409253,Consumer Defensive,Packaged Foods
+RTON,"Right On Brands, Inc.",0001580262,Consumer Defensive,Packaged Foods
+BDPT,"BIOADAPTIVES, INC.",0001575142,Consumer Defensive,Packaged Foods
+ARRT,"Artisan Consumer Goods, Inc.",0001530425,Consumer Defensive,Packaged Foods
+SKVI,"SKINVISIBLE, INC.",0001085277,Consumer Defensive,Household & Personal Products
+MFLTY,Missfresh Ltd,0001851682,Consumer Defensive,Grocery Stores
+ASII,"Accredited Solutions, Inc.",0001464865,Consumer Defensive,Beverages—Non-Alcoholic
+NUVI,Emo Capital Corp.,0001410708,Consumer Defensive,Household & Personal Products
+LBWR,Labwire Inc,0001426567,Consumer Defensive,Discount Stores
+OGAA,Organic Agricultural Co Ltd,0001749849,Consumer Defensive,Farm Products
+PDPG,"Performance Drink Group, Inc.",0001902930,Consumer Defensive,Beverages—Non-Alcoholic
+EARI,"ENTERTAINMENT ARTS RESEARCH, INC.",0001083468,Consumer Defensive,Beverages—Brewers
+IFMK,iFresh Inc,0001681941,Consumer Defensive,Grocery Stores
+TTCFQ,"Tattooed Chef, Inc.",0001741231,Consumer Defensive,Packaged Foods
+BMXC,"Bemax, Inc.",0001613895,Consumer Defensive,Household & Personal Products
+TDNT,Trident Brands Inc,0001421907,Consumer Defensive,Packaged Foods
+PCNT,"Point of Care Nano-Technology, Inc.",0001504239,Consumer Defensive,Packaged Foods
+TUEMQ,TUESDAY MORNING CORP/DE,0000878726,Consumer Defensive,Discount Stores
+PACV,"Pacific Ventures Group, Inc.",0000882800,Consumer Defensive,Food Distribution
+UPDC,UPD HOLDING CORP.,0000836937,Consumer Defensive,Packaged Foods
+ICNB,"Iconic Brands, Inc.",0001350073,Consumer Defensive,Beverages—Wineries & Distilleries
+RAYT,RAYONT INC.,0001539778,Consumer Defensive,Packaged Foods
+TBBB,BBB FOODS INC,0001978954,Consumer Defensive,Discount Stores
+BRLS,Oxus Acquisition Corp.,0001852973,Consumer Defensive,Packaged Foods
+NTCO,Natura &Co Holding S.A.,0001776967,Consumer Defensive,Household & Personal Products
+GWLL,"GOLDENWELL BIOTECH, INC.",0001800373,Consumer Defensive,Packaged Foods
+BRCNF,Burcon NutraScience Corp,0001158399,Consumer Defensive,Packaged Foods
+QOEG,Quality Online Education Group Inc.,0001439237,Consumer Defensive,Education & Training Services
+MCLE,Medicale Corp.,0001827855,Consumer Defensive,Food Distribution
+ASPU,"ASPEN GROUP, INC.",0001487198,Consumer Defensive,Education & Training Services
+GLUC,"Glucose Health, Inc.",0001420108,Consumer Defensive,Packaged Foods
+LMDCF,LINGO MEDIA CORP,0001177167,Consumer Defensive,Education & Training Services
+BLEG,"Branded Legacy, Inc.",0001794311,Consumer Defensive,Packaged Foods
+FKST,"Flowerkist Skin Care & Cosmetics, Inc.",0001458023,Consumer Defensive,Household & Personal Products
+SGLA,Sino Green Land Corp.,0001433551,Consumer Defensive,Farm Products
+ZVOI,Zovio Inc,0001305323,Consumer Defensive,Education & Training Services
+SUWN,"SUNWIN STEVIA INTERNATIONAL, INC.",0000806592,Consumer Defensive,Farm Products
+HVCW,HARRISON VICKERS & WATERMAN INC,0001472847,Consumer Defensive,Beverages—Brewers
+WNBD,Winning Brands Corp,0001114898,Consumer Defensive,Household & Personal Products
+DTEAF,DAVIDsTEA Inc.,0001627606,Consumer Defensive,Packaged Foods
+BRWC,Birdie Win Corp,0001873213,Consumer Defensive,Education & Training Services
+ITOR,"Intorio, Corp.",0001852536,Consumer Defensive,Education & Training Services
