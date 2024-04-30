@@ -1748,7 +1748,7 @@ def fillEmptyIncomeGrowthRates(df):
         if df_filled['netCashFlow'].isnull().any():
             df_filled['netCashFlow'] = df_filled['netCashFlow'].fillna(df_filled['operatingCashFlow'] + df_filled['investingCashFlow'] + df_filled['financingCashFlow'])
 
-        tarList = ['revenue','netIncome','netIncomeNCI','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx','depreNAmor']
+        tarList = ['revenue','netIncome','netIncomeNCI','operatingCashFlow','investingCashFlow','financingCashFlow','netCashFlow', 'capEx', 'depreNAmor']
         for x in tarList:
             tarGrowthRate = x + 'GrowthRate'
             # meanReplacement = df_filled[x].mean()
@@ -1785,10 +1785,21 @@ def fillEmptyIncomeGrowthRates(df):
         growthCol1 = grManualCalc(df_filled['ffo'])
         df_filled['ffoGrowthRate'] = growthCol1
 
-        #eps growth rate, and eps filled in
-        #calculated eps from net income and shares
-        #calculated reit eps from ffo and shares #Luke start here you got this!
+        #eps related values
+        df_filled['calculatedEPS'] = df_filled['netIncome'] / df_filled['shares']
+        growthCol2 = grManualCalc(df_filled['calculatedEPS'])
+        df_filled['calculatedEPSGrowthRate'] = growthCol2
+        #calculated reit eps from ffo 
+        df_filled['reitEPS'] = df_filled['ffo'] / df_filled['shares']
+        growthCol3 = grManualCalc(df_filled['reitEPS'])
+        df_filled['reitEPSGrowthRate'] = growthCol3
 
+        #payout ratio related
+        df_filled['payoutRatio'] = df_filled['totalDivsPaid'] / df_filled['netIncome']
+        df_filled['fcfPayoutRatio'] = df_filled['totalDivsPaid'] / df_filled['fcf']
+        df_filled['ffoPayoutRatio'] = df_filled['totalDivsPaid'] / df_filled['ffo']
+        #luke consider putting ffo / int + divs
+        #think of some others. add them. then edit your face off and prosper!
 
         if fixTracker > 4:
             df_filled['INCintegrityFlag'] = 'NeedsWork'
@@ -2041,21 +2052,21 @@ def fillPrice(df):
         yearList = df_filled['year'].tolist()
         priceList = []
         # print(yearList)
-        df_filled['price'] = 0 #maybe not needed
+        # df_filled['price'] = 0 #maybe not needed
         for x in yearList:
             # print(type(x))
             # print(x)
             # if int(x) <= 2012:
             #     pass
             # else:
+            # df_filled['price'] = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close'][-1]
             priceData = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close']
             priceList.append(priceData[-1])
-            #LUKE YOU'RE UP HERE FIGURING OUT HOW TO ADD PRICE TO CONSOLIDATED TABLE MAN
-
+            
+        # print(priceList)
         df_filled['price'] = priceList
         growthCol = grManualCalc(df_filled['price'])
         df_filled['priceGrowthRate'] = growthCol
-        # print(priceList)
         # print(df_filled['price'])
         # df_filled['price'] = yf.download(ticker, df['year'] + '-12-30', df['year'] + '-12-31')['Close'][0]
         
@@ -2063,10 +2074,10 @@ def fillPrice(df):
         print("fill price error: ")
         print(err)
     finally:
-        # return df_filled
+        return df_filled
         # print(df_filled['price'])
         # print(df_filled['year'])
-        print(priceList)
+        # print(priceList)
         
 #Making tables for DB insertion
 def makeIncomeTableEntry(ticker, year, version, index_flag): 
@@ -2543,11 +2554,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         incDivsROIC = pd.merge(divsPlusROIC,plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
         # print('all con')
         # print(incDivsROIC)
-        print('pre price')
-        print(incDivsROIC)
-        incDivsROIC = fillPrice(incDivsROIC) 
-        print('incDivsROIC post fillprice')
-        print(incDivsROIC['price'])
+
+        incDivsROIC = fillPrice(incDivsROIC)
 
         incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC) 
         
@@ -3273,9 +3281,13 @@ version235 = '2'
 # print(ticker235 + ' divs and roic table: ')
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
-t235CON = (makeConsolidatedTableEntry(ticker235, year235, version235, False))
-print(t235CON['price'])
+t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
+print(t235CON['payoutRatio'])
+# print(t235CON['calculatedEPSGrowthRate'])
+print(t235CON['fcfPayoutRatio'])
+# print(t235CON['reitEPSGrowthRate'] - t235CON['calculatedEPSGrowthRate'])
 print(t235CON['year'])
+
 
 # for x in t235CON:
 #     print(x)
