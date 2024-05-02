@@ -1786,7 +1786,7 @@ def fillEmptyIncomeGrowthRates(df):
         df_filled['ffoGrowthRate'] = growthCol1
 
         #eps related values
-        df_filled['calculatedEPS'] = df_filled['netIncome'] / df_filled['shares']
+        df_filled['calculatedEPS'] = round(df_filled['netIncome'] / df_filled['shares'], 2)
         growthCol2 = grManualCalc(df_filled['calculatedEPS'])
         df_filled['calculatedEPSGrowthRate'] = growthCol2
         #calculated reit eps from ffo 
@@ -2419,6 +2419,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(plusSaleProp['investingCashFlowGrowthRate'])
 
         plusSaleProp = fillUnits(plusSaleProp)
+        # print('income done')
+        # print(plusSaleProp)
         ### INCOME TABLE END
 
         ### DIVS TABLE START
@@ -2432,7 +2434,7 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
                                     consolidateSingleAttribute(ticker, year, version, returnOfCapitalPerShare, False),
                                     consolidateSingleAttribute(ticker, year, version, totalReturnOfCapital, False))
         # print('divsdf con: ')
-        # print(divs_df)
+        # print(divs_df['Units'])
         # if divs_df['year'][0] == -1:
         #     df_dunce = pd.DataFrame(columns=['Ticker'])
         #     df_dunce.loc[0, 'Ticker'] = ticker
@@ -2440,7 +2442,9 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         #     return 'No Good Dividend Data'
         # else:
             # intNshares = pd.merge(intPaid_df, shares_df, on=['year','start','end','Ticker','CIK'], how='outer')
-        if divs_df['Units'].isnull().any():
+        if 'Units' not in divs_df:
+            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
+        elif divs_df['Units'].isnull().any():
             # print('divs df had empty units')
             divs_df = divs_df.drop(columns=['Units'])
             # print('did divsdf drop units?!?!: ')
@@ -2587,7 +2591,7 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # return incDivsROIC
     
     except Exception as err:
-        print("makeDividendAndROIC table error: ")
+        print("make consolidated table error: ")
         print(err)
     finally:
         return incDivsROIC
@@ -3266,7 +3270,7 @@ def checkYearsIntegrityList(sectorList):
 
 
 
-ticker235 = 'O'  #agnc, wmb, 
+ticker235 = 'MSFT'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
@@ -3282,11 +3286,14 @@ version235 = '2'
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
 t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
-print(t235CON['payoutRatio'])
+# print(t235CON['reportedEPS'])
+# print(t235CON['calculatedEPS'])
+# print(t235CON['reportedEPS'] == t235CON['calculatedEPS'])
+print(t235CON['shares'])
 # print(t235CON['calculatedEPSGrowthRate'])
-print(t235CON['fcfPayoutRatio'])
+# print(t235CON['fcfPayoutRatio'])
 # print(t235CON['reitEPSGrowthRate'] - t235CON['calculatedEPSGrowthRate'])
-print(t235CON['year'])
+# print(t235CON['year'])
 
 
 # for x in t235CON:
@@ -3308,7 +3315,7 @@ print(t235CON['year'])
 # data1 = yf.download(ticker235, '2012-12-1','2012-12-31')['Close']
 # print(data1)
 
-# print(cleanNAV(consolidateSingleAttribute(ticker235, year235, version235, netAssetValue, False)))
+# print((consolidateSingleAttribute(ticker235, year235, version235, eps, False)))
 # print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
