@@ -161,6 +161,8 @@ full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_
 full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
 clean_stockList = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_stockList_clean', type_converter_full2)
 nameCikDict = clean_stockList.set_index('Ticker')['CIK'].to_dict()
+nameSectorDict = clean_stockList.set_index('Ticker')['Sector'].to_dict()
+nameIndustryDict = clean_stockList.set_index('Ticker')['Industry'].to_dict()
 
 materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
 comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
@@ -948,7 +950,8 @@ def grManualCalc(df_col):
         print("grManualCalc error: ")
         print(err)
 
-def cleanUnits(df):
+def cleanUnits(df): #Luke your edits here for exclusion list might not be necessary, they clearly didn't work for TWD
+    exclusionList = ['TWD']
     try:
         df_col_added = df
         origRev = df_col_added['val'].tolist()
@@ -958,7 +961,9 @@ def cleanUnits(df):
         conRev = []
         # print(len(origRev))
         # print(len(unitsFrom))
+
         for i in range(len(origRev)):
+            # if unitsFrom[i] not in exclusionList:
             conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
         df_col_added['newVal'] = conRev
         df_col_added['Units'] = 'USD'
@@ -979,7 +984,15 @@ def cleanUnits(df):
         print("clean Units error: ")
         print(err)
     finally:
-        return df_col_added
+        unitFlag = False
+        for i in unitsFrom:
+            if i in exclusionList:
+                unitFlag = True
+        if unitFlag == True:
+            # print('we in twd now, no conversions')
+            return df
+        else:
+            return df_col_added
 
 def cleanRevenue(df):
     try:
@@ -1219,7 +1232,10 @@ def cleanEPS(df):
         print("clean eps error: ")
         print(err)
     finally:
-        return df_col_added
+        if df_col_added['Ticker'].isnull().any():
+            return pd.DataFrame()
+        else:
+            return df_col_added
 
 def cleanNAV(df):
     try:
@@ -2053,6 +2069,8 @@ def fillPrice(df):
         priceList = []
         # print(yearList)
         # df_filled['price'] = 0 #maybe not needed
+        # print('yearlist')
+        # print(yearList)
         for x in yearList:
             # print(type(x))
             # print(x)
@@ -2061,8 +2079,16 @@ def fillPrice(df):
             # else:
             # df_filled['price'] = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close'][-1]
             priceData = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close']
-            priceList.append(priceData[-1])
+            try:
+                priceList.append(priceData[-1])
+            except:
+                priceList.append(np.NaN)
+                continue
+            # print('priceData')
+            # print(priceData)
             
+        # print(priceList)
+        # print('priceList')
         # print(priceList)
         df_filled['price'] = priceList
         growthCol = grManualCalc(df_filled['price'])
@@ -2351,7 +2377,9 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print('netIncNCI_df df: ')
         # print(netIncNCI_df)
         eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
-
+        # print('eps df')
+        # print(eps_df)
+        # print(eps_df['Ticker'].isnull().any())
         opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
         # print('opcf_df df: ')
         # print(opcf_df)
@@ -2377,8 +2405,16 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(gainSaleProp_df)
         
         revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('revNinc: ')
+        # print(revNinc)
         revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer') 
-        revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
+        # print('revNinc: ')
+        # print(revNinc)
+        if eps_df.empty:
+            revNinc['reportedEPS'] = np.NaN
+            revNinc['reportedEPSGrowthRate'] = np.NaN
+        else:
+            revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
         # revNinc['units'] = revNinc['Units_x']
         # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
         # print('revNinc: ')
@@ -2420,7 +2456,7 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
 
         plusSaleProp = fillUnits(plusSaleProp)
         # print('income done')
-        # print(plusSaleProp)
+        # print(plusSaleProp['Units'])
         ### INCOME TABLE END
 
         ### DIVS TABLE START
@@ -2457,16 +2493,18 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
             # print('if intNdivs: ')
             # print(intNdivs)
         else:
-            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer') #'start', 'end',
+            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer')
+        
+
         #     print('else intNdivs: ')
-        #     print(intNdivs)
+        # print(intNdivs)
         # print('post ifelse merge intdivs')
         # print(intNdivs)
         # print('pre fill intndivs con: ')
         # print(intNdivs)
         intNdivs = fillUnits(intNdivs)
         # print('post fill intndivs con: ')
-        # print(intNdivs)
+        # print(intNdivs['Units'])
         ### DIVS TABLE END
         
         ### ROIC TABLE START
@@ -2476,9 +2514,6 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
         # print('taxrate df')
         # print(taxRate_df)
-        # netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
-        # print('netincome df')
-        # print(netInc_df)
         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
                                     consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), consolidateSingleAttribute(ticker, year, version, longTermDebt2, False),
                                     consolidateSingleAttribute(ticker, year, version, longTermDebt3, False), consolidateSingleAttribute(ticker, year, version, longTermDebt4, False))
@@ -2497,8 +2532,13 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(nav_df.empty)
         # print(nav_df.isnull().any())
 
+        #Luke here op income might not exist. units null. breaks all. need to fill usd?
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
+        # print('opIncNtax')
+        # print(opIncNtax)
+        if opIncNtax['Units'].isnull().all():
+            opIncNtax['Units'] = 'USD'
         # print('opIncNtax')
         # print(opIncNtax)
         
@@ -2543,6 +2583,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print('plustequity pre fill')
         # print(plustEquity)
         plustEquity = fillUnits(plustEquity)
+        # print('plustequity at end')
+        # print(plustEquity)
         ### ROIC TABLE END
         
         ###INCOME TABLE IS plusSaleProp
@@ -2552,11 +2594,20 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(intNdivs)
         # print('plustequity after fill')
         # print(plustEquity)
-        divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
+        if 'Units' not in intNdivs:
+            divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK'], how='outer')
+        else:
+            divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('pre final merge')
+        # print(divsPlusROIC)
         # print('divs n roic con')
         # print(divsPlusROIC)
-        incDivsROIC = pd.merge(divsPlusROIC,plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('pre final merge second df')
+        # print(plusSaleProp)
+        incDivsROIC = pd.merge(divsPlusROIC, plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
         # print('all con')
+        # print(incDivsROIC)
+        # print('after final merge')
         # print(incDivsROIC)
 
         incDivsROIC = fillPrice(incDivsROIC)
@@ -2578,6 +2629,10 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
 
         #Finish the ROIC Table Entries
         incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC)
+
+        incDivsROIC['Sector'] = nameSectorDict[ticker]
+        incDivsROIC['Industry'] = nameIndustryDict[ticker]
+        #cik = nameCikDict[ticker]
 
         #moved into above function. fingers crossed!
         # incDivsROIC['nopat'] = incDivsROIC['operatingIncome'] * (1 - incDivsROIC['taxRate'])
@@ -3285,11 +3340,11 @@ version235 = '2'
 # print(ticker235 + ' divs and roic table: ')
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
-t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
+# t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
 # print(t235CON['reportedEPS'])
 # print(t235CON['calculatedEPS'])
 # print(t235CON['reportedEPS'] == t235CON['calculatedEPS'])
-print(t235CON['shares'])
+# print(t235CON['shares'])
 # print(t235CON['calculatedEPSGrowthRate'])
 # print(t235CON['fcfPayoutRatio'])
 # print(t235CON['reitEPSGrowthRate'] - t235CON['calculatedEPSGrowthRate'])
@@ -3338,14 +3393,41 @@ print(t235CON['shares'])
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
 
-lickit = ['CNI']
-# checkYearsIntegritySector(materials,0,50)
+
+
+# materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
+# comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
+# consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
+# consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
+# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
+# finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
+# health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
+# ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
+# realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
+# tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
+# util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
+
+checkYearsIntegritySector(util,0,10)
+#look at util-kinda
+#LUKE YOU CAN DO THIS!
+#edit the errors
+#then write a super-all-sectors-output automation to check again
+#<3
+
+lickit = ['BHP','RIO', 'AMX', 'SPOT', 'BCE', 'ORAN', 'CHT', 'STLA', 'RACE', 'FMX', 'BUD', 'UL', 'DEO', 'BTI', 'SHEL', 'TTE', 'BP', 'EQNR', 'CNQ', 'ITW'] #netincome
+missingTotalEquity =  ['RACE', 'UPS']
+unitsbad = ['NKE', 'CMG', 'TSM']
+#price: abnb, pdd, tsla, baba
+missingyears =  ['BTI']
+#weird clean units error : hdb
+missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
+
 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
-ticker12 = 'CLMT' #ABR
+ticker12 = 'CEG' #ABR
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
@@ -3359,7 +3441,30 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
 # print(ticker12 + ' divs and roic table: ')
-# print(makeConsolidatedTableEntry(ticker12, year12, version12, False)['ReportedTotalEquity'])
+# table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
+# print(table12.loc[table12['Units']=='TWD']['netIncome'])
+# print(table12.loc[table12['Units']=='USD']['netIncome'])
+
+# print(table12)
+# yearList = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+# tla = {}
+# for x in yearList:
+#     # print(type(x))
+#     # print(x)
+#     # if int(x) <= 2012:
+#     #     pass
+#     # else:
+#     # df_filled['price'] = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close'][-1]
+#     priceData = yf.download(ticker12, str(x) + '-12-20', str(x) + '-12-31')['Close']
+#     try:
+#         tla[x] = priceData[-1]
+#     except:
+#         tla[x] = np.NaN
+#         continue
+#     # priceList.append(priceData[-1])
+#     print('priceData')
+#     print(priceData)
+# print(tla)
 
 #################
 
