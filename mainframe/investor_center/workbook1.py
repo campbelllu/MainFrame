@@ -950,51 +950,32 @@ def grManualCalc(df_col):
         print("grManualCalc error: ")
         print(err)
 
-def cleanUnits(df): #Luke your edits here for exclusion list might not be necessary, they clearly didn't work for TWD
-    exclusionList = ['TWD']
+def cleanUnits(df): 
+    #Add to EL below as conflicting currencies are found. Manually add them below in for loop. woof. You could just do an if in statement but the specificity must match the conversion rate
+    # exclusionList = ['TWD']
     try:
         df_col_added = df
         origRev = df_col_added['val'].tolist()
         unitsFrom = df_col_added['Units'].tolist()
         datesFrom = df_col_added['year'].tolist()
-        # unitsTo
         conRev = []
-        # print(len(origRev))
-        # print(len(unitsFrom))
-
-        #LUKE: From 2001 to now, the USD/TWD exchange rate is roughly 1:0.03, TWD:USD. So take the TWD, multiply by 0.03, populate list, fill values in usd from this simple conversion. you got this!
-
+       
         for i in range(len(origRev)):
-            # if unitsFrom[i] not in exclusionList:
-            conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
+            if unitsFrom[i] == 'TWD':
+                conRev.append(origRev[i] * 0.03)
+            else:
+                conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
         df_col_added['newVal'] = conRev
         df_col_added['Units'] = 'USD'
     
         df_col_added['val'] = df_col_added['newVal']
         df_col_added = df_col_added.drop('newVal',axis=1)
-        #     print(x + ', ' + y)
-        # df_col_added['convRev'] = curConvert.convert(df_col_added['revenue'], df_col_added['Units'], 'USD')
-        # print('did it convert?')
-        # print(df_col_added)
-
-        # growthCol = grManualCalc(df_col_added['revenue'])
-        # df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
-    
         
-
     except Exception as err:
         print("clean Units error: ")
         print(err)
     finally:
-        unitFlag = False
-        for i in unitsFrom:
-            if i in exclusionList:
-                unitFlag = True
-        if unitFlag == True:
-            # print('we in twd now, no conversions')
-            return df
-        else:
-            return df_col_added
+        return df_col_added
 
 def cleanRevenue(df):
     try:
@@ -3343,7 +3324,7 @@ version235 = '2'
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
 # t235CON = makeConsolidatedTableEntry(ticker235, year235, version235, False)
-# print(t235CON['reportedEPS'])
+# print(t235CON)
 # print(t235CON['calculatedEPS'])
 # print(t235CON['reportedEPS'] == t235CON['calculatedEPS'])
 # print(t235CON['shares'])
@@ -3416,9 +3397,7 @@ version235 = '2'
 #then write a super-all-sectors-output automation to check again
 #<3
 
-lickit = [] #netincome
-unitsbad = [  'TSM']
-#price: abnb, pdd, tsla, baba
+lickit = [] 
 
 #weird clean units error : hdb
 missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
@@ -3428,8 +3407,12 @@ missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
-ticker12 = 'TSM' #ABR
-# print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
+#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
+#it looks like depre and amor isn't getting the full picture for the above stocks
+#realty income is good tho. interesting.
+
+ticker12 = 'O' #ABR
+print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
 version12 = '2'
@@ -3442,11 +3425,13 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
 # print(ticker12 + ' divs and roic table: ')
-# table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
+table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
 # print(table12['ReportedTotalEquity'])
 # print(table12['TotalEquity'])
-# print(table12)
-print(curConvert.currencies)
+print(table12[['year','depreNAmor']])
+# print(table12['netIncomeNCI'])
+# print(table12['Units'])
+# print(curConvert.currencies)
 
 # print(table12['netIncomeNCIGrowthRate'])
 # print(table12.loc[table12['Units']=='TWD']['netIncome'])
