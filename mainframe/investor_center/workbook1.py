@@ -962,6 +962,8 @@ def cleanUnits(df): #Luke your edits here for exclusion list might not be necess
         # print(len(origRev))
         # print(len(unitsFrom))
 
+        #LUKE: From 2001 to now, the USD/TWD exchange rate is roughly 1:0.03, TWD:USD. So take the TWD, multiply by 0.03, populate list, fill values in usd from this simple conversion. you got this!
+
         for i in range(len(origRev)):
             # if unitsFrom[i] not in exclusionList:
             conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
@@ -3325,7 +3327,7 @@ def checkYearsIntegrityList(sectorList):
 
 
 
-ticker235 = 'MSFT'  #agnc, wmb, 
+ticker235 = 'BTI'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
@@ -3370,7 +3372,7 @@ version235 = '2'
 # data1 = yf.download(ticker235, '2012-12-1','2012-12-31')['Close']
 # print(data1)
 
-# print((consolidateSingleAttribute(ticker235, year235, version235, eps, False)))
+# print((consolidateSingleAttribute(ticker235, year235, version235, netIncomeNCI, False)))
 # print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
@@ -3407,18 +3409,17 @@ version235 = '2'
 # tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
 # util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
 
-checkYearsIntegritySector(util,0,10)
+# checkYearsIntegritySector(util,0,10)
 #look at util-kinda
 #LUKE YOU CAN DO THIS!
 #edit the errors
 #then write a super-all-sectors-output automation to check again
 #<3
 
-lickit = ['BHP','RIO', 'AMX', 'SPOT', 'BCE', 'ORAN', 'CHT', 'STLA', 'RACE', 'FMX', 'BUD', 'UL', 'DEO', 'BTI', 'SHEL', 'TTE', 'BP', 'EQNR', 'CNQ', 'ITW'] #netincome
-missingTotalEquity =  ['RACE', 'UPS']
-unitsbad = ['NKE', 'CMG', 'TSM']
+lickit = [] #netincome
+unitsbad = [  'TSM']
 #price: abnb, pdd, tsla, baba
-missingyears =  ['BTI']
+
 #weird clean units error : hdb
 missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 
@@ -3427,7 +3428,7 @@ missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
-ticker12 = 'CEG' #ABR
+ticker12 = 'TSM' #ABR
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
@@ -3442,6 +3443,12 @@ version12 = '2'
 # print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
 # print(ticker12 + ' divs and roic table: ')
 # table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
+# print(table12['ReportedTotalEquity'])
+# print(table12['TotalEquity'])
+# print(table12)
+print(curConvert.currencies)
+
+# print(table12['netIncomeNCIGrowthRate'])
 # print(table12.loc[table12['Units']=='TWD']['netIncome'])
 # print(table12.loc[table12['Units']=='USD']['netIncome'])
 
