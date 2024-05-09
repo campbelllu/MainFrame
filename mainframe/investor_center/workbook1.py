@@ -3412,7 +3412,7 @@ missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 #realty income is good tho. interesting.
 
 ticker12 = 'O' #ABR
-print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
+# print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
 year12 = '2024'
 version12 = '2'
@@ -3428,9 +3428,10 @@ version12 = '2'
 table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
 # print(table12['ReportedTotalEquity'])
 # print(table12['TotalEquity'])
-print(table12[['year','depreNAmor']])
+# print(table12[['year','depreNAmor']])
 # print(table12['netIncomeNCI'])
 # print(table12['Units'])
+print(table12)
 # print(curConvert.currencies)
 
 # print(table12['netIncomeNCIGrowthRate'])
@@ -3534,56 +3535,9 @@ version123 = '2'
 
 #########################################################
 
-# write_Master_csv_from_EDGAR('AMZN', '0001018724', ultimateTagsList, '2024','0')
-#########################################################################################
-# for x in yearsOff2:
-#     nameCikDict = tech.set_index('Ticker')['CIK'].to_dict()
-#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2') #nameCikDict[x],
-#There's no overlap! Yay!
-# print(set(fullNulls).difference(yearsOff))
-# print(set(fullNulls).difference(fullNulls))
-
-# print(set(divsYearsOff).intersection(incYearsOff))
-# fullNullOverlap = set(incFullNulls).intersection(divsFullNulls)
-# yearsOffOverlap = set(divsYearsOff).intersection(incYearsOff)
-# print(fullNullOverlap)
-# print(yearsOffOverlap)
-# print(set(fullNullOverlap).intersection(yearsOffOverlap))
-
-# print(len(incFullNulls))
-
-#THROW THIS INTO ANALYSIS/METRICS TABLE
-        # eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
-        # print('eps_df df: ')
-        # print(eps_df)
-        # pluseps = pd.merge(addfcfMargin, eps_df, on=['year','start','end','Ticker','CIK'], how='outer')
-        # pluseps['Units'] = pluseps['Units_x']
-        # pluseps = pluseps.drop(columns=['Units_x', 'Units_y'])
-        # print('pluseps: ')
-        # print(pluseps)
-        
-        #TEST EPS FILLING PRINT EITHER SIDE
-        #Put this at the end with a filling function!
-        # if pluseps['eps'].isnull().any():
-        #         integrity_flag = 'Acceptable'
-        #         pluseps['eps'] = pluseps['eps'].replace("", None).ffill()
-
-#---------------------------------------------------------------------
-# Things to calculate
-#---------------------------------------------------------------------
-#payout ratio = divs paid / net income
-#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
-#leverage ratio used by credit rating agencies: Debt / FFO
-#---------------------------------------------------------------------
-
 ### LUKE
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
-
-# debate how to calculate metrics and ratios
-#debate how to output it all, or to save it as DF over the years. we'll see. 
-#Good work!
-###
 
 #---------------------------------------------------------------------
 #The testing zone - includes yahoo finance examples
@@ -3598,27 +3552,29 @@ version123 = '2'
 # #     print(x)
 # print(marketCap)
 
-#---------------------------------------------------------------------
-#Make files to be called upon
-#---------------------------------------------------------------------
-# write_Master_csv_from_EDGAR('O','0000726728',ultimateTagsList,'2024','0')
-# write_Master_csv_from_EDGAR('MSFT', '0000789019', ultimateTagsList, '2024','0')
-# write_to_csv_from_EDGAR('STAG', '0001479094', ultimateTagsList, '2024', '0') #OMG IT WORKS #WIN!
-#---------------------------------------------------------------------
+# print(set(fullNulls).difference(yearsOff))
+# print(set(fullNulls).difference(fullNulls))
+
+# print(set(divsYearsOff).intersection(incYearsOff))
+# fullNullOverlap = set(incFullNulls).intersection(divsFullNulls)
+# yearsOffOverlap = set(divsYearsOff).intersection(incYearsOff)
+# print(fullNullOverlap)
+# print(yearsOffOverlap)
+# print(set(fullNullOverlap).intersection(yearsOffOverlap))
 
 #---------------------------------------------------------------------
 #DB interaction notes
 #---------------------------------------------------------------------
 def uploadToDB(table, df):
     return null
-##LUKE OK THIS WORKS. need to add it to consolidation: remove useless columns, add an end year where appropriate, then add it all to DB tables. 
-# conn = sql.connect(db_path)
-# query = conn.cursor()
+##LUKE OK THIS WORKS.
+conn = sql.connect(db_path)
+query = conn.cursor()
 
-# q = 'SELECT * FROM Dividends ;'
+# q = 'SELECT * FROM Mega ;'
 # query.execute(q)
 
-# df13.to_sql('Revenue',conn, if_exists='replace', index=False) # 'append' adds to DB, more useful for this app. 
+# table12.to_sql('Mega', conn, if_exists='append', index=False) # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
 
 # thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
 # query.execute(thequery)
@@ -3626,11 +3582,11 @@ def uploadToDB(table, df):
 
 
 # df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
-# df12 = pd.read_sql('SELECT * FROM Revenue;', conn)
-# print(df12)
+df12 = pd.read_sql('SELECT * FROM Mega;', conn)
+print(df12)
 
-# query.close()
-# conn.close()
+query.close()
+conn.close()
 #----------------------------------------------------------------------------------------------
 
 
