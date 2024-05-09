@@ -3308,6 +3308,78 @@ def checkYearsIntegrityList(sectorList):
 
 
 
+#########################################################
+
+### LUKE
+# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
+# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
+# Clean code
+# Automate setup of initial ciks, tickers, up top
+# db connection and upload function - DONE
+# write to db function, maybe meshed with above idea
+#omg it's happening!
+
+
+#---------------------------------------------------------------------
+#DB interaction notes
+#---------------------------------------------------------------------
+def uploadToDB(table):
+    #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        table.to_sql('Mega', conn, if_exists='append', index=False)
+        # query.close()
+        # conn.close()
+    except Exception as err:
+        print("upload to DB error: ")
+        print(err)
+    finally:
+        query.close()
+        conn.close()
+
+def write_csvList_to_DB(df):
+    pass
+    #LUKE WE HERE NOW
+
+##DB EXAMPLES THAT WORK
+# conn = sql.connect(db_path)
+# query = conn.cursor()
+
+# q = 'SELECT * FROM Mega ;'
+# query.execute(q)
+
+# table12.to_sql('Mega', conn, if_exists='append', index=False) # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
+
+# thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
+# query.execute(thequery)
+# conn.commit()
+
+# df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
+
+# df12 = pd.read_sql('SELECT * FROM Mega;', conn)
+# print(df12)
+
+# query.close()
+# conn.close()
+#----------------------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#The testing zone - includes yahoo finance examples
+#---------------------------------------------------------------------
+
+lickit = [] 
+# for x in lickit:
+#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
+# checkYearsIntegrityList(lickit)
+
+#weird clean units error : hdb
+missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
+#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
+#it looks like depre and amor isn't getting the full picture for the above stocks
+#realty income is good tho. interesting.
+
+
 ticker235 = 'BTI'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
@@ -3350,9 +3422,6 @@ version235 = '2'
 # for x in t235CON:
 #     print(x)
 
-# data1 = yf.download(ticker235, '2012-12-1','2012-12-31')['Close']
-# print(data1)
-
 # print((consolidateSingleAttribute(ticker235, year235, version235, netIncomeNCI, False)))
 # print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
@@ -3376,8 +3445,6 @@ version235 = '2'
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
 
-
-
 # materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
 # comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
 # consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
@@ -3391,25 +3458,7 @@ version235 = '2'
 # util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
 
 # checkYearsIntegritySector(util,0,10)
-#look at util-kinda
-#LUKE YOU CAN DO THIS!
-#edit the errors
-#then write a super-all-sectors-output automation to check again
-#<3
 
-lickit = [] 
-
-#weird clean units error : hdb
-missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
-
-
-# for x in lickit:
-#     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
-# checkYearsIntegrityList(lickit)
-
-#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
-#it looks like depre and amor isn't getting the full picture for the above stocks
-#realty income is good tho. interesting.
 
 ticker12 = 'O' #ABR
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
@@ -3425,39 +3474,18 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024',version12,False)) #'ReportedTotalEquity'
 # print(ticker12 + ' divs and roic table: ')
-table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
+# table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
 # print(table12['ReportedTotalEquity'])
 # print(table12['TotalEquity'])
 # print(table12[['year','depreNAmor']])
 # print(table12['netIncomeNCI'])
 # print(table12['Units'])
-print(table12)
+# print(table12)
 # print(curConvert.currencies)
 
 # print(table12['netIncomeNCIGrowthRate'])
 # print(table12.loc[table12['Units']=='TWD']['netIncome'])
 # print(table12.loc[table12['Units']=='USD']['netIncome'])
-
-# print(table12)
-# yearList = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
-# tla = {}
-# for x in yearList:
-#     # print(type(x))
-#     # print(x)
-#     # if int(x) <= 2012:
-#     #     pass
-#     # else:
-#     # df_filled['price'] = yf.download(ticker, str(x) + '-12-20', str(x) + '-12-31')['Close'][-1]
-#     priceData = yf.download(ticker12, str(x) + '-12-20', str(x) + '-12-31')['Close']
-#     try:
-#         tla[x] = priceData[-1]
-#     except:
-#         tla[x] = np.NaN
-#         continue
-#     # priceList.append(priceData[-1])
-#     print('priceData')
-#     print(priceData)
-# print(tla)
 
 #################
 
@@ -3533,15 +3561,6 @@ version123 = '2'
 # print('AMZN roic: ')
 # print(makeROICtableEntry(ticker123,'2024',version123,False))
 
-#########################################################
-
-### LUKE
-# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
-# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
-
-#---------------------------------------------------------------------
-#The testing zone - includes yahoo finance examples
-#---------------------------------------------------------------------
 # ticker = 'MSFT'
 # stock = yf.Ticker(ticker)
 # dict1 = stock.info
@@ -3562,33 +3581,6 @@ version123 = '2'
 # print(yearsOffOverlap)
 # print(set(fullNullOverlap).intersection(yearsOffOverlap))
 
-#---------------------------------------------------------------------
-#DB interaction notes
-#---------------------------------------------------------------------
-def uploadToDB(table, df):
-    return null
-##LUKE OK THIS WORKS.
-conn = sql.connect(db_path)
-query = conn.cursor()
-
-# q = 'SELECT * FROM Mega ;'
-# query.execute(q)
-
-# table12.to_sql('Mega', conn, if_exists='append', index=False) # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
-
-# thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
-# query.execute(thequery)
-# conn.commit()
-
-
-# df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
-df12 = pd.read_sql('SELECT * FROM Mega;', conn)
-print(df12)
-
-query.close()
-conn.close()
-#----------------------------------------------------------------------------------------------
-
 
 #---------------------------------------------------------------------
 #What each value is
@@ -3608,6 +3600,27 @@ conn.close()
 
 
 
+
+
+
+# -----------------------------------------------------------------SAVED until prod, or for notes, or or or---------------------
+#nifty loop checking
+# print(len(revenue))
+# tar = eps
+# def loopCheck(target):
+#     if len(target) > 1:
+#         for y in target:
+#             if len(y) > 1:
+#                 for z in y:
+#                     print(z)
+#             else:
+#                 print(y[0])
+#     else:
+#         print(target[0])
+
+# loopCheck(eps)
+# loopCheck(revenue)
+# loopCheck(ultimateList)
 
 ###
 
@@ -3632,25 +3645,6 @@ conn.close()
 
 # f = open('./demoData.txt', 'r')
 # print(f.read())
-
-# -----------------------------------------------------------------SAVED until prod, or for notes, or or or---------------------
-#nifty loop checking
-# print(len(revenue))
-# tar = eps
-# def loopCheck(target):
-#     if len(target) > 1:
-#         for y in target:
-#             if len(y) > 1:
-#                 for z in y:
-#                     print(z)
-#             else:
-#                 print(y[0])
-#     else:
-#         print(target[0])
-
-# loopCheck(eps)
-# loopCheck(revenue)
-# loopCheck(ultimateList)
 
 #unused idea
 # def fillAllEmptyGrowthRates(df):
