@@ -147,10 +147,10 @@ def updateTickersCiksSectors():
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
 fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #..
-fr_iC_toSEC_stocks = '../sec_related/stocks/' 
+fr_iC_toSEC_stocks = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/stocks/' 
 stock_data = './stockData/'
 
-db_path = '../stock_data.sqlite3'
+db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
@@ -1592,15 +1592,24 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         # print(dilutedShares)
         dilutedShares = dilutedShares.rename(columns={'val':'dilutedShares'})
         dilutedShares = dilutedShares.drop(columns=['Units'])
+        # print('what about diluted shares?')
+        # print(dilutedShares)
 
-        while shares['shares'].min() < 1000000:
-            shares['shares'] = (shares['shares'] * 1000).where(shares['shares'] < 1000000)
-        while dilutedShares['dilutedShares'].min() < 1000000:
-            dilutedShares['dilutedShares'] = (dilutedShares['dilutedShares'] * 1000).where(dilutedShares['dilutedShares'] < 1000000)
+        # while shares['shares'].min() < 1000000:
+        #     print('shares less than mil')
+        #     # print(shares['shares']/1000000)
+        #     shares['shares'] = (shares['shares'] * 1000).where(shares['shares'] < 1000000)
+        # while dilutedShares['dilutedShares'].min() < 1000000:
+        #     print('diluted shares less than mil')
+        #     dilutedShares['dilutedShares'] = (dilutedShares['dilutedShares'] * 1000).where(dilutedShares['dilutedShares'] < 1000000)
         # print('do we have any diluted share?')
         # print(dilutedShares)
         # total['year'] = total.end.str[:4]
+        # print('pre clean units total')
+        # print(total)
         total = cleanUnits(total)
+        # print('mid block post cleanunits total')
+        # print(total)
         #  = df_col_added.rename(columns={'val':'interestPaid'})
         total = total.rename(columns={'val':'totalDivsPaid'})
         if total['Units'].isnull().all():
@@ -1615,6 +1624,9 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         # shares = shares.drop(columns=['start','end'])
         # total = total.drop(columns=['start','end'])
         # perShare = perShare.drop(columns=['start','end'])
+        # print('total, per share')
+        # print(total)
+        # print(perShare)
 
         
         rocps = cleanUnits(rocps)
@@ -3442,8 +3454,8 @@ def mCTEDB(df, ticker):
         # print(plusSaleProp['investingCashFlowGrowthRate'])
 
         plusSaleProp = fillUnits(plusSaleProp)
-        # print('income done')
-        # print(plusSaleProp['Units'])
+        # print('income table')
+        # print(plusSaleProp)
         ### INCOME TABLE END
 
         ### DIVS TABLE START
@@ -3457,7 +3469,7 @@ def mCTEDB(df, ticker):
                                     cSADB(df, returnOfCapitalPerShare),
                                     cSADB(df, totalReturnOfCapital))
         # print('divsdf con: ')
-        # print(divs_df['Units'])
+        # print(divs_df)
         # if divs_df['year'][0] == -1:
         #     df_dunce = pd.DataFrame(columns=['Ticker'])
         #     df_dunce.loc[0, 'Ticker'] = ticker
@@ -3490,8 +3502,8 @@ def mCTEDB(df, ticker):
         # print('pre fill intndivs con: ')
         # print(intNdivs)
         intNdivs = fillUnits(intNdivs)
-        # print('post fill intndivs con: ')
-        # print(intNdivs['Units'])
+        # print('divs table: ')
+        # print(intNdivs)
         ### DIVS TABLE END
         
         ### ROIC TABLE START
@@ -3633,12 +3645,25 @@ def mCTEDB(df, ticker):
         # return incDivsROIC
     
     except Exception as err:
-        print("make consolidated table error: ")
+        print("mCTEDB error: ")
         print(err)
     finally:
         return incDivsROIC
 
 
+def testIndies(ticker):
+    try:
+        company_data = EDGAR_query(ticker, header, ultimateTagsList)
+        consol_table = mCTEDB(company_data, ticker)
+    except Exception as err:
+        print("test indies error: ")
+        print(err)
+    finally:
+        for x in consol_table:
+            print(x)
+        # print(consol_table)
+
+# testIndies('CEG')
 
 
 
@@ -3650,7 +3675,6 @@ def mCTEDB(df, ticker):
 # Clean code
 # Automate setup of initial ciks, tickers, up top
 # db connection and upload function - DONE
-# write to db function, maybe meshed with above idea
 #omg it's happening!
 
 
@@ -3663,8 +3687,6 @@ def uploadToDB(table):
         conn = sql.connect(db_path)
         query = conn.cursor()
         table.to_sql('Mega', conn, if_exists='append', index=False)
-        # query.close()
-        # conn.close()
     except Exception as err:
         print("upload to DB error: ")
         print(err)
@@ -3695,10 +3717,6 @@ def write_csvList_to_DB(df):
                 print('write to DB in for loop error for: ' + i)
                 print(err1)
                 continue
-            
-
-        # print(df[i])
-
     except Exception as err:
         print("write csvList to DB error: ")
         print(err)
@@ -3707,11 +3725,40 @@ def write_csvList_to_DB(df):
         print(errorTickers)
     
     # pass
-    #LUKE WE HERE NOW
+
+def write_list_to_DB(thelist):
+    try:
+        errorTickers = []
+        for i in thelist:
+            print(i)
+            try:
+                company_data = EDGAR_query(i, header, ultimateTagsList)
+                # print('making big boi table now')
+                # revDF = cSADB(company_data, revenue)
+                consol_table = mCTEDB(company_data, i)
+                # print(consol_table)
+                time.sleep(0.1)
+                uploadToDB(consol_table)
+                print(i + ' uploaded to DB!')
+                # trackerNum += 1
+                # if trackerNum == 1:
+                #     break
+            except Exception as err1:
+                errorTickers.append(str(i))
+                print('write list to DB in for loop error for: ' + i)
+                print(err1)
+                continue
+    except Exception as err:
+        print("write List to DB error: ")
+        print(err)
+    finally:
+        print(errorTickers)
 
 
-# write_csvList_to_DB(util)
+# write_csvList_to_DB(util) 
 
+# utillist = ['CEG', 'OPAL']
+# write_list_to_DB(utillist)
 
 
 ##DB EXAMPLES THAT WORK
@@ -3723,6 +3770,51 @@ def print_DB():
     # query.execute(del_query)
     # conn.commit()
     df12 = pd.read_sql('SELECT DISTINCT Ticker FROM Mega;', conn)
+    print(df12)
+
+    query.close()
+    conn.close()
+
+def checkUnits_DB():
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
+    # query.execute(del_query)
+    # conn.commit()
+    df12 = pd.read_sql('SELECT Ticker, Units FROM Mega WHERE Ticker Like \'PAM\';',conn)# WHERE count(DISTINCT Units) > 1 GROUP BY Ticker;', conn)
+    print(df12)
+    #LUKE this is tricky, trying to find the tickers with multiple units.
+    #i say make a new currency converter from notes.
+    #erase pam
+    #re put in pam
+    #check units below. win.
+
+    query.close()
+    conn.close()
+
+def print_ticker_DB(ticker):
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+
+    # del_query = 'SELECT * FROM Mega WHERE Ticker = ' + ticker + ';'
+    # query.execute(del_query)
+    # conn.commit()
+
+    df12 = pd.read_sql('SELECT * FROM Mega WHERE Ticker LIKE \''+ticker+'\';',conn)# WHERE Ticker = ' + ticker + ';', conn)
+    print(df12)
+
+    query.close()
+    conn.close()
+
+def delete_ticker_DB(ticker):
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+
+    del_query = 'DELETE FROM Mega WHERE Ticker LIKE \''+ticker+'\';'
+    query.execute(del_query)
+    conn.commit()
+
+    df12 = pd.read_sql('SELECT * FROM Mega WHERE Ticker = ' + ticker + ';', conn)
     print(df12)
 
     query.close()
@@ -3754,9 +3846,30 @@ def delete_DB():
     query.close()
     conn.close()
 #----------------------------------------------------------------------------------------------
-print_DB()
-###### NO
+# print_DB()
+###### NO#######
 # delete_DB()
+########NO###########
+
+# print_ticker_DB('PAM')
+
+#fix clean units with better converter
+# delete_ticker_DB('PAM')
+#upload pam with list adder above
+# checkUnits_DB() #again to see if it works. win! 
+
+# 0    ARS
+# 1    BRL
+# 2    CAD
+# 3    CLF
+# 4    CLP
+# 5    CNY
+# 6    EUR
+# 7    GBP
+# 8    INR
+# 9    KRW
+# 10   USD
+
 #---------------------------------------------------------------------
 #The testing zone - includes yahoo finance examples
 #---------------------------------------------------------------------
