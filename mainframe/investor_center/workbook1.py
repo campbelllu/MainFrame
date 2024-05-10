@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 import datetime as dt
-import mplfinance as mpf
+# import mplfinance as mpf
 import datetime as dt
 import time
 import yfinance as yf
 import json
-import pyarrow
+# import pyarrow
 import requests
 import math
 # from itertools import chain
@@ -146,7 +146,7 @@ def updateTickersCiksSectors():
 #frames: cross section of data from every company filed specific accnting item in specific period. quick company comparisons
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
-fr_iC_toSEC = '../sec_related/'
+fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #..
 fr_iC_toSEC_stocks = '../sec_related/stocks/' 
 stock_data = './stockData/'
 
@@ -157,9 +157,13 @@ type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
 type_converter_full = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str, 'Market Cap': str}
 type_converter_full2 = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str}#, 'Market Cap': str}
 
-full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
-full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
+# full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
+# full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
 clean_stockList = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_stockList_clean', type_converter_full2)
+#/home/family/Documents/repos/MainFrame/mainframe/investor_center/workbook1.py
+#/home/family/Documents/repos/MainFrame/mainframe/sec_related/full_stockList_clean.csv
+# sec_related/full_stockList_clean.csv
+
 nameCikDict = clean_stockList.set_index('Ticker')['CIK'].to_dict()
 nameSectorDict = clean_stockList.set_index('Ticker')['Sector'].to_dict()
 nameIndustryDict = clean_stockList.set_index('Ticker')['Industry'].to_dict()
@@ -204,6 +208,8 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
         cik = nameCikDict[ticker]
         url = ep["cf"] + 'CIK' + cik + '.json'
         response = requests.get(url, headers=header)
+        print('EDGAR response: ')
+        print(response)
         filingList = ['us-gaap','ifrs-full']
         company_data = pd.DataFrame()
         held_data = pd.DataFrame()
@@ -3301,8 +3307,336 @@ def checkYearsIntegrityList(sectorList):
     #     print('missing roic total equity')
     #     print(rTotalEq)
         
+# Returns organized data pertaining to the tag(s) provided in form of DF, but from API, for DB, instead of from CSV
+def cSADB(df, tagList):
+    try:
+        # print('taglist')
+        # print(tagList)
+        #get csv to df from params
+        filtered_data = df#csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
+        # print(filtered_data)
+        held_data = pd.DataFrame()
+        returned_data = pd.DataFrame()
+    
+        for x in tagList:
+            
+            held_data = filtered_data[filtered_data['Tag'].eq(x) == True]
+            returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+            # print(x)
+            # if 'PerShare' in x:
+            #     print('in consolidate')
+            #     print(returned_data)
+        # print(returned_data['Tag'].unique())
+        # print(returned_data)
+        returned_data = get_Only_10k_info(returned_data)
+        # print('10k data')
+        # print(returned_data)
+        # print(returned_data.shape)
+        
+        # print('pre drop fy records')
+        # print(returned_data)#.to_string())
+        # print(returned_data.shape)
+        # print(returned_data['Tag'].unique())
+        # print(returned_data['start'].min())
+        # print(returned_data['end'].min())
+        
+        returned_data = dropAllExceptFYRecords(returned_data) #was held data
+        # print('post drop fy records pre order')
+        # print(returned_data)#.to_string())
+        # print(returned_data.shape)
+        returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
+        # print('post order pre drop  dupes')
+        # print(returned_data.to_string())
+        # print(returned_data.shape)
+
+        returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
+        # print('post drop  dupes')
+        # print(returned_data)
+        # print(returned_data.shape)
 
 
+        returned_data = dropUselessColumns(returned_data)
+        
+        # print('consolidate all drops done')
+        # print(returned_data)
+
+        # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
+        # return returned_data
+
+    except Exception as err:
+        print("consolidate single attr error: ")
+        print(err)
+    finally:
+        return returned_data
+
+def mCTEDB(df, ticker):
+    try:
+        ### INCOME TABLE START
+        rev_df = cleanRevenue(cSADB(df, revenue))
+        # print('rev')
+        # print(rev_df)
+        netInc_df = cleanNetIncome(cSADB(df, netIncome))
+        netIncNCI_df = cleanNetIncomeNCI(cSADB(df, netIncomeNCI))
+        eps_df = cleanEPS(cSADB(df, eps))
+        opcf_df = cleanOperatingCashFlow(cSADB(df, operatingCashFlow))
+        invcf_df = cleanInvestingCashFlow(cSADB(df, investingCashFlow))
+        fincf_df = cleanFinancingCashFlow(cSADB(df, financingCashFlow))
+        netcf_df = cleanNetCashFlow(cSADB(df, netCashFlow))
+        capex_df = cleanCapEx(cSADB(df, capEx))
+        depAmor_df = cleanDeprNAmor(cSADB(df, deprecAndAmor))
+        if depAmor_df.empty:
+            depAmor_df = cleanDeprNAmor2(cSADB(df, deprecAndAmor2),cSADB(df, deprecAndAmor3))
+        gainSaleProp_df = cleanGainSaleProp(cSADB(df, gainSaleProperty))
+        # print('gainSaleProp_df: ')
+        # print(gainSaleProp_df)
+        
+        revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('revNinc: ')
+        # print(revNinc)
+        revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer') 
+        # print('revNinc: ')
+        # print(revNinc)
+        if eps_df.empty:
+            revNinc['reportedEPS'] = np.NaN
+            revNinc['reportedEPSGrowthRate'] = np.NaN
+        else:
+            revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
+        # revNinc['units'] = revNinc['Units_x']
+        # revNinc = revNinc.drop(columns=['Units_x', 'Units_y'])
+        # print('revNinc: ')
+        # print(revNinc)
+        plusopcf = pd.merge(revNinc, opcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # plusopcf = plusopcf.drop(columns=['units'])
+        # print('plusopcf: ')
+        # print(plusopcf)
+        plusinvcf = pd.merge(plusopcf, invcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # plusinvcf['units'] = plusinvcf['Units_x']
+        # plusinvcf = plusinvcf.drop(columns=['Units_x', 'Units_y'])
+        # print('plusinvcf: ')
+        # print(plusinvcf)
+        plusfincf = pd.merge(plusinvcf, fincf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # plusfincf = plusfincf.drop(columns=['units'])
+        # print('plusfincf: ')
+        # print(plusfincf)
+
+        plusnetcf = pd.merge(plusfincf, netcf_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # plusnetcf['units'] = plusnetcf['Units_x']
+        # plusnetcf = plusnetcf.drop(columns=['Units_x', 'Units_y'])
+        # print('plusnetcf: ')
+        # print(plusnetcf)
+
+        pluscapex = pd.merge(plusnetcf, capex_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # pluscapex = pluscapex.drop(columns=['units'])
+        # print('pluscapex: ')
+        # print(pluscapex)
+
+        plusDepAmor = pd.merge(pluscapex, depAmor_df, on=['year','Ticker','CIK','Units'], how='outer') #Testing joining on Units 'start','end',
+        # print('plusDepAmor: ')
+        # print(plusDepAmor)
+        # plusDepAmor = pluseps.drop(columns=['Units_x', 'Units_y'])
+        
+        plusSaleProp = pd.merge(plusDepAmor, gainSaleProp_df, on=['year','Ticker','CIK','Units'], how='outer')#'start','end',
+        # print('plusSaleProp: ')
+        # print(plusSaleProp['investingCashFlow'])
+        # print(plusSaleProp['investingCashFlowGrowthRate'])
+
+        plusSaleProp = fillUnits(plusSaleProp)
+        # print('income done')
+        # print(plusSaleProp['Units'])
+        ### INCOME TABLE END
+
+        ### DIVS TABLE START
+        intPaid_df = cleanInterestPaid(cSADB(df, interestPaid))
+        # print('intpaid: ')
+        # print(intPaid_df)
+        divs_df = cleanDividends(cSADB(df, totalCommonStockDivsPaid), 
+                                    cSADB(df, declaredORPaidCommonStockDivsPerShare),
+                                    cSADB(df, basicSharesOutstanding),
+                                    cSADB(df, dilutedSharesOutstanding),
+                                    cSADB(df, returnOfCapitalPerShare),
+                                    cSADB(df, totalReturnOfCapital))
+        # print('divsdf con: ')
+        # print(divs_df['Units'])
+        # if divs_df['year'][0] == -1:
+        #     df_dunce = pd.DataFrame(columns=['Ticker'])
+        #     df_dunce.loc[0, 'Ticker'] = ticker
+        #     csv.simple_appendTo_csv(fr_iC_toSEC, df_dunce,'z-divDataReallyNotFound', False)
+        #     return 'No Good Dividend Data'
+        # else:
+            # intNshares = pd.merge(intPaid_df, shares_df, on=['year','start','end','Ticker','CIK'], how='outer')
+        if 'Units' not in divs_df:
+            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
+        elif divs_df['Units'].isnull().any():
+            # print('divs df had empty units')
+            divs_df = divs_df.drop(columns=['Units'])
+            # print('did divsdf drop units?!?!: ')
+            # print(divs_df)
+            # if divs_df['start'].isnull().any():
+            #     divs_df = divs_df.drop(columns=['start'])
+            #     intNdivs = pd.merge(intPaid_df, divs_df, on=['year', 'end','Ticker','CIK'], how='outer')
+            # else:
+            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')#Was nested in else on row 'start', 'end',
+            # print('if intNdivs: ')
+            # print(intNdivs)
+        else:
+            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer')
+        
+
+        #     print('else intNdivs: ')
+        # print(intNdivs)
+        # print('post ifelse merge intdivs')
+        # print(intNdivs)
+        # print('pre fill intndivs con: ')
+        # print(intNdivs)
+        intNdivs = fillUnits(intNdivs)
+        # print('post fill intndivs con: ')
+        # print(intNdivs['Units'])
+        ### DIVS TABLE END
+        
+        ### ROIC TABLE START
+        opIncome_df = cleanOperatingIncome(cSADB(df, operatingIncome))
+        # print('opinc df')
+        # print(opIncome_df)
+        taxRate_df = cleanTaxRate(cSADB(df, taxRate))
+        # print('taxrate df')
+        # print(taxRate_df)
+        totalDebt_df = cleanDebt(cSADB(df, shortTermDebt), 
+                                    cSADB(df, longTermDebt1), cSADB(df, longTermDebt2),
+                                    cSADB(df, longTermDebt3), cSADB(df, longTermDebt4))
+        # print('TDebt df')
+        # print(totalDebt_df)
+        totalEquity_df = cleanTotalEquity(cSADB(df, totalAssets), 
+                                    cSADB(df, totalLiabilities), cSADB(df, nonCurrentLiabilities),
+                                    cSADB(df, currentLiabilities), cSADB(df, nonCurrentAssets),
+                                    cSADB(df, currentAssets), cSADB(df, shareHolderEquity))
+                                    
+        # print('TEquity df')
+        # print(totalEquity_df)
+        nav_df = cleanNAV(cSADB(df, netAssetValue))
+        # print('nav df')
+        # print(nav_df)
+        # print(nav_df.empty)
+        # print(nav_df.isnull().any())
+
+        #Luke here op income might not exist. units null. breaks all. need to fill usd?
+        opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
+        opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
+        # print('opIncNtax')
+        # print(opIncNtax)
+        if opIncNtax['Units'].isnull().all():
+            opIncNtax['Units'] = 'USD'
+        # print('opIncNtax')
+        # print(opIncNtax)
+        
+        # if opIncNtax['Units'].isnull().all():
+        #     opIncNtax = opIncNtax.drop(columns=['Units'], axis=1)
+        #     # print('opincntax df in empty if')
+        #     # print(opIncNtaxNinc)
+        #     # print(opIncNtax)
+        #     opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK'], how='outer')
+        #     # print('still in iff post merge')
+        #     # print(opIncNtaxNinc)
+        # else:
+
+        #     opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
+        #     opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
+
+        # print('opincntax df after if')
+        # print(opIncNtaxNinc)
+        # print(opIncNtax)
+        
+        plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
+        plustDebt['Units'] = plustDebt['Units'].ffill().bfill()
+        # print('plusdebt df')
+        # print(plustDebt)
+        # plustDebt = plustDebt.rename(columns={'start_x': 'start'})
+        # plustDebt = plustDebt.drop(['start_y'],axis=1)
+        plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('plustequity pre first merge')
+        # print(plustEquity)
+        if nav_df.empty:
+            plustEquity['nav'] = np.NaN
+            plustEquity['navGrowthRate'] = np.NaN
+        else:
+            plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
+        
+
+        # print('plustequity post merge')
+        # print(plustEquity)
+        # plustEquity = plustEquity.rename(columns={'start_x': 'start'})
+        # plustEquity = plustEquity.drop(['start_y'],axis=1)
+
+        # print('plustequity pre fill')
+        # print(plustEquity)
+        plustEquity = fillUnits(plustEquity)
+        # print('plustequity at end')
+        # print(plustEquity)
+        ### ROIC TABLE END
+        
+        ###INCOME TABLE IS plusSaleProp
+        ###Dividends table is intNdivs
+        ###ROIC TABLE is plustEquity
+        # print('intNdivs')
+        # print(intNdivs)
+        # print('plustequity after fill')
+        # print(plustEquity)
+        if 'Units' not in intNdivs:
+            divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK'], how='outer')
+        else:
+            divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('pre final merge')
+        # print(divsPlusROIC)
+        # print('divs n roic con')
+        # print(divsPlusROIC)
+        # print('pre final merge second df')
+        # print(plusSaleProp)
+        incDivsROIC = pd.merge(divsPlusROIC, plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
+        # print('all con')
+        # print(incDivsROIC)
+        # print('after final merge')
+        # print(incDivsROIC)
+
+        incDivsROIC = fillPrice(incDivsROIC)
+
+        incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC) 
+        
+        #Finish the Income Table Entries
+        incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
+
+        #moved into above function. fingers crossed!
+        # incDivsROIC = incDivsROIC.drop(columns=['depreNAmorGrowthRate'])
+        # incDivsROIC = cleanfcf(incDivsROIC)
+        # incDivsROIC = cleanfcfMargin(incDivsROIC)
+        # # #Clean sales of property
+        # incDivsROIC['gainSaleProp'] = incDivsROIC['gainSaleProp'].replace(np.nan,0)
+        # incDivsROIC['ffo'] = incDivsROIC['netIncome'] + incDivsROIC['depreNAmor'] - incDivsROIC['gainSaleProp']
+        # growthCol = grManualCalc(incDivsROIC['ffo'])
+        # incDivsROIC['ffoGrowthRate'] = growthCol
+
+        #Finish the ROIC Table Entries
+        incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC)
+
+        incDivsROIC['Sector'] = nameSectorDict[ticker]
+        incDivsROIC['Industry'] = nameIndustryDict[ticker]
+        #cik = nameCikDict[ticker]
+
+        #moved into above function. fingers crossed!
+        # incDivsROIC['nopat'] = incDivsROIC['operatingIncome'] * (1 - incDivsROIC['taxRate'])
+        # incDivsROIC['investedCapital'] = incDivsROIC['TotalEquity'] + incDivsROIC['TotalDebt']
+        # incDivsROIC['roic'] = incDivsROIC['nopat'] / incDivsROIC['investedCapital'] * 100
+        # incDivsROIC['adjRoic'] = incDivsROIC['netIncome'] / incDivsROIC['investedCapital'] * 100
+        # incDivsROIC['reportedAdjRoic'] = incDivsROIC['netIncome'] / (incDivsROIC['ReportedTotalEquity'] + incDivsROIC['TotalDebt']) * 100
+        # incDivsROIC['calculatedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['TotalEquity'] * 100
+        # incDivsROIC['reportedRoce'] = incDivsROIC['netIncome'] / incDivsROIC['ReportedTotalEquity'] * 100
+
+        # return incDivsROIC
+    
+    except Exception as err:
+        print("make consolidated table error: ")
+        print(err)
+    finally:
+        return incDivsROIC
 
 
 
@@ -3339,31 +3673,90 @@ def uploadToDB(table):
         conn.close()
 
 def write_csvList_to_DB(df):
-    pass
+    try:
+        # trackerNum = 0
+        errorTickers = []
+        for i in df['Ticker']:
+            print(i)
+            try:
+                company_data = EDGAR_query(i, header, ultimateTagsList)
+                # print('making big boi table now')
+                # revDF = cSADB(company_data, revenue)
+                consol_table = mCTEDB(company_data, i)
+                # print(consol_table)
+                time.sleep(0.1)
+                uploadToDB(consol_table)
+                print(i + ' uploaded to DB!')
+                # trackerNum += 1
+                # if trackerNum == 1:
+                #     break
+            except Exception as err1:
+                errorTickers.append(str(i))
+                print('write to DB in for loop error for: ' + i)
+                print(err1)
+                continue
+            
+
+        # print(df[i])
+
+    except Exception as err:
+        print("write csvList to DB error: ")
+        print(err)
+        # continue
+    finally:
+        print(errorTickers)
+    
+    # pass
     #LUKE WE HERE NOW
 
+
+# write_csvList_to_DB(util)
+
+
+
 ##DB EXAMPLES THAT WORK
-# conn = sql.connect(db_path)
-# query = conn.cursor()
 
-# q = 'SELECT * FROM Mega ;'
-# query.execute(q)
+def print_DB():
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
+    # query.execute(del_query)
+    # conn.commit()
+    df12 = pd.read_sql('SELECT DISTINCT Ticker FROM Mega;', conn)
+    print(df12)
 
-# table12.to_sql('Mega', conn, if_exists='append', index=False) # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
+    query.close()
+    conn.close()
 
-# thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
-# query.execute(thequery)
-# conn.commit()
+def delete_DB():
+    #only use this while testing, or suffer the consequences
+    conn = sql.connect(db_path)
+    query = conn.cursor()
 
-# df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
+    # q = 'SELECT * FROM Mega ;'
+    # query.execute(q)
 
-# df12 = pd.read_sql('SELECT * FROM Mega;', conn)
-# print(df12)
+    # table12.to_sql('Mega', conn, if_exists='append', index=False) # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
 
-# query.close()
-# conn.close()
+    # thequery = 'INSERT INTO Revenue (start,end,val,ticker,cik) VALUES ('+str(df13['start'])+',' +str(df13['end'])+',' +df13['val']+',' +df13['ticker']+',' +df13['cik']+');'
+    # query.execute(thequery)
+    # conn.commit()
+
+    del_query = 'DELETE FROM Mega;'
+    query.execute(del_query)
+    conn.commit()
+
+    # df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
+
+    df12 = pd.read_sql('SELECT * FROM Mega;', conn)
+    print(df12)
+
+    query.close()
+    conn.close()
 #----------------------------------------------------------------------------------------------
-
+print_DB()
+###### NO
+# delete_DB()
 #---------------------------------------------------------------------
 #The testing zone - includes yahoo finance examples
 #---------------------------------------------------------------------
@@ -3380,7 +3773,7 @@ missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 #realty income is good tho. interesting.
 
 
-ticker235 = 'BTI'  #agnc, wmb, 
+ticker235 = 'NEE'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
 year235 = '2024'
@@ -3422,7 +3815,7 @@ version235 = '2'
 # for x in t235CON:
 #     print(x)
 
-# print((consolidateSingleAttribute(ticker235, year235, version235, netIncomeNCI, False)))
+# print((consolidateSingleAttribute(ticker235, year235, version235, revenue, False)))
 # print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
 # print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
 # print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))

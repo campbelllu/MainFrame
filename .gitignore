@@ -3,4 +3,4 @@ mfvenv/
 .vscode
 ./mainframe/investor_center/stockData/
 ./mainframe/sec_related/stocks/old
-
+**/__pycache__/

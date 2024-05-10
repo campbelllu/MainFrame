@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
-import pandas_datareader.data as web
+# import pandas_datareader.data as web
 #docu: https://pandas-datareader.readthedocs.io/en/latest/ 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # %matplotlib inline
 import datetime as dt
-import mplfinance as mpf
+# import mplfinance as mpf
 import datetime as dt
 import time
 import yfinance as yf
@@ -51,7 +51,7 @@ def get_df_from_csv_with_typeset(folder, name, dict1):#, index_flag):
     try:
         df = pd.read_csv(folder + name + '.csv', converters = dict1)#, index_col = index_flag)
     except FileNotFoundError as err:
-        print("File Does Not Exist")
+        print("get df from csv with typeset error")
         print(err)
     else:
         return df
