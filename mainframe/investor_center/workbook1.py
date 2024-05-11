@@ -20,10 +20,12 @@ import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
 # import gc
-from currency_converter import CurrencyConverter
-curConvert = CurrencyConverter(fallback_on_missing_rate=True)
+from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
+converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
+curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 from datetime import date
+# from forex_python.converter import CurrencyRates
 
 import csv_modules as csv
 
@@ -3659,11 +3661,11 @@ def testIndies(ticker):
         print("test indies error: ")
         print(err)
     finally:
-        for x in consol_table:
-            print(x)
-        # print(consol_table)
+        # for x in consol_table:
+            # print(x)
+        print(consol_table['Units'])
 
-# testIndies('CEG')
+# testIndies('HTOO')
 
 
 
@@ -3675,6 +3677,7 @@ def testIndies(ticker):
 # Clean code
 # Automate setup of initial ciks, tickers, up top
 # db connection and upload function - DONE
+#manually convert some currencies
 #omg it's happening!
 
 
@@ -3775,13 +3778,13 @@ def print_DB():
     query.close()
     conn.close()
 
-def checkUnits_DB():
+def checkUnits_DB(ticker):
     conn = sql.connect(db_path)
     query = conn.cursor()
     # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
     # query.execute(del_query)
     # conn.commit()
-    df12 = pd.read_sql('SELECT Ticker, Units FROM Mega WHERE Ticker Like \'PAM\';',conn)# WHERE count(DISTINCT Units) > 1 GROUP BY Ticker;', conn)
+    df12 = pd.read_sql('SELECT Ticker, Units FROM Mega WHERE Ticker Like \''+ticker+'\';',conn)# WHERE count(DISTINCT Units) > 1 GROUP BY Ticker;', conn)
     print(df12)
     #LUKE this is tricky, trying to find the tickers with multiple units.
     #i say make a new currency converter from notes.
@@ -3814,11 +3817,32 @@ def delete_ticker_DB(ticker):
     query.execute(del_query)
     conn.commit()
 
-    df12 = pd.read_sql('SELECT * FROM Mega WHERE Ticker = ' + ticker + ';', conn)
+    df12 = pd.read_sql('SELECT * FROM Mega WHERE Ticker LIKE \''+ticker+'\';', conn)
     print(df12)
 
     query.close()
     conn.close()
+
+def find_badUnitsDB():
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
+    # query.execute(del_query)
+    # conn.commit()
+    qentry = 'SELECT DISTINCT Ticker \
+                FROM Mega \
+                WHERE Units NOT LIKE \'USD\''
+    df12 = pd.read_sql(qentry,conn)
+    print(df12)
+    #LUKE this is tricky, trying to find the tickers with multiple units.
+    #i say make a new currency converter from notes.
+    #erase pam
+    #re put in pam
+    #check units below. win.
+
+    query.close()
+    conn.close()
+
 
 def delete_DB():
     #only use this while testing, or suffer the consequences
@@ -3851,13 +3875,26 @@ def delete_DB():
 # delete_DB()
 ########NO###########
 
+
+
 # print_ticker_DB('PAM')
 
-#fix clean units with better converter
-# delete_ticker_DB('PAM')
-#upload pam with list adder above
-# checkUnits_DB() #again to see if it works. win! 
+##Tickers mixed Currencies
+stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies, unsupported! :)
 
+# for x in stockstorecap:
+#     delete_ticker_DB(x)
+
+# write_list_to_DB(stockstorecap)
+
+#upload pam with list adder above - -  see above
+
+# find_badUnitsDB()
+# checkUnits_DB('HTOO') #again to see if it works. win! 
+
+
+
+##Curries other than USD that are present in DB
 # 0    ARS
 # 1    BRL
 # 2    CAD
