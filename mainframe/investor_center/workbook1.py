@@ -3924,7 +3924,7 @@ def delete_DB():
 # print(materials['Ticker'])
 # write_list_to_DB(missing)
 
-write_csvList_to_DB(consStaples) 
+write_csvList_to_DB(tech) 
 #utils, mats, 
 
 
