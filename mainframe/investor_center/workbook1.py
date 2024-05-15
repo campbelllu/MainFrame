@@ -1881,7 +1881,7 @@ def fillEmptyDivsGrowthRates(df):
             # fixTracker += 1  
             growthCol = grManualCalc(df_filled['shares'])
             df_filled['temp1'] = growthCol
-            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled.pop('temp1'))#['temp1'])
+            df_filled['sharesGrowthRate'] = df_filled['sharesGrowthRate'].fillna(df_filled.pop('temp1'))
             # df_filled = df_filled.drop(columns=['temp1'])
             # print('shares  GR')
             # print(df_filled)
@@ -1914,7 +1914,23 @@ def fillEmptyDivsGrowthRates(df):
             df_filled['temp6'] = growthCol
             df_filled['ROCTotalGrowthRate'] = df_filled['ROCTotalGrowthRate'].fillna(df_filled.pop('temp6'))#['temp2'])
 
-
+        if df_filled['dilutedShares'].isnull().all():
+            # print('dil shares all null')
+            df_filled['dilutedSharesGrowthRate'] = np.NaN
+        else:
+            # print('dil shares else')
+            # print(df_filled['dilutedShares'])
+            growthCol1 = grManualCalc(df_filled['dilutedShares'])
+            # print(growthCol1)
+            df_filled['dilutedSharesGrowthRate'] = growthCol1#['temp10'] = growthCol1
+            
+            # df_filled['dilutedSharesGrowthRate'] = df_filled['dilutedSharesGrowthRate'].fillna(df_filled.pop('temp10'))
+            # print('temp10, dilutedsharesGR')
+            # print(df_filled['temp10'])
+            # print(df_filled[['dilutedShares','dilutedSharesGrowthRate','year']])
+        # df_filled = df_filled.drop(columns=['temp10'],axis=1)
+        # for x in df_filled:
+        #     print(x)
         #     df_filled = df_filled.drop(columns=['temp2'],axis=1)
             # print('div GR')
             # print(df_filled)
@@ -2026,6 +2042,17 @@ def fillEmptyROICGrowthRates(df):
         df_filled['reportedBookValue'] = df_filled['ReportedTotalEquity'] / df_filled['shares']
         growthCol2 = grManualCalc(df_filled['reportedBookValue'])
         df_filled['reportedBookValueGrowthRate'] = growthCol2
+
+        #luke
+        growthCol3 = grManualCalc(df_filled['TotalDebt'])
+        df_filled['TotalDebtGrowthRate'] = growthCol3
+
+        growthCol4 = grManualCalc(df_filled['TotalEquity'])
+        df_filled['TotalEquityGrowthRate'] = growthCol4
+
+        growthCol5 = grManualCalc(df_filled['ReportedTotalEquity'])
+        df_filled['ReportedTotalEquityGrowthRate'] = growthCol5
+
 
         if fixTracker > 4:
             df_filled['ROICintegrityFlag'] = 'NeedsWork'
@@ -3758,7 +3785,21 @@ def write_list_to_DB(thelist):
         print(errorTickers)
 
 
-# write_csvList_to_DB(util) 
+
+
+# materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
+# comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
+# consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
+
+# consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
+# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
+# finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
+# health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
+# ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
+# realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
+# tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
+
+# util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
 
 # utillist = ['CEG', 'OPAL']
 # write_list_to_DB(utillist)
@@ -3772,11 +3813,13 @@ def print_DB():
     # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
     # query.execute(del_query)
     # conn.commit()
-    df12 = pd.read_sql('SELECT DISTINCT Ticker FROM Mega;', conn)
-    print(df12)
+    df12 = pd.read_sql('SELECT DISTINCT Ticker as ticker FROM Mega WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
+    # print(df12)
+    
 
     query.close()
     conn.close()
+    return df12
 
 def checkUnits_DB(ticker):
     conn = sql.connect(db_path)
@@ -3870,10 +3913,20 @@ def delete_DB():
     query.close()
     conn.close()
 #----------------------------------------------------------------------------------------------
-# print_DB()
-###### NO#######
-# delete_DB()
-########NO###########
+# dblist = print_DB()['ticker']
+# print(datlist)
+# sourcelist = materials['Ticker']
+
+# print(set(sourcelist).difference(dblist))
+
+# missing = ['SHWDY', 'HANNF', 'BITTF', 'MKDTY', 'MEXGF', 'GARWF', 'LISMF', 'CARCY', 'ZPHYF', 'GLNCY', 'GFGSF', 'LAC', 'VAUCF', 'DMXCF', 'SILS', 'MLLOF', 'SGMD', 'NMREF', 'TRBMF', 'TIGCF', 'EQTRF', 'NVDEF', 'WS', 'JSCPY', 'NSRCF', 'AVLNF', 'OUTKY', 'EGMCF', 'ALMMF', 'ERLFF', 'HDELY', 'CODQL', 'AIRRF', 'PTCAY', 'KOZAY', 'GSVRF', 'SILEF', 'GIGGF', 'SMDRF', 'PMCOF', 'RLEA', 'PDO', 'RSMXF', 'AGXPF', 'SMREF', 'CGOLF', 'FMNJ', 'GESI', 'BZZUY', 'BATXF', 'AMNL', 'JGLDF', 'RUPRF', 'EXNRF', 'EVGDF', 'KNGRF', 'CGSI', 'OCGSF', 'NULGF', 'UURAF', 'ORMNF', 'GXSFF', 'SVRSF', 'SHVLF', 'SPAZF', 'GSHRF', 'NVSGF', 'PAANF', 'SINC', 'LOMLF', 'CXXMF', 'SHECY', 'FEMFF', 'INUMF', 'AMLI', 'SMTSF', 'WMLLF', 'TETOF', 'RYTTF', 'SLVYY', 'JSHG', 'EQMEF', 'AUCUF', 'RTNTF', 'LNZNF', 'ABNAF', 'FFMGF', 'GNVR', 'SIXWF', 'PBMLF', 'MXSG', 'SRLZF', 'STCC', 'BMXI', 'HGLD', 'ORRCF', 'ABCFF', 'BBMPY', 'SGTM', 'BGAVF', 'VNTRD', 'MTLHY', 'BKTPF', 'MPVDF', 'MXROF', 'LILIF', 'PUTKY', 'FUPBY', 'BDNNY', 'UBEOF', 'ERDCF']
+
+# print(materials['Ticker'])
+# write_list_to_DB(missing)
+
+write_csvList_to_DB(consStaples) 
+#utils, mats, 
+
 
 
 
@@ -3906,6 +3959,10 @@ stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies
 # 8    INR
 # 9    KRW
 # 10   USD
+
+###### NO#######
+# delete_DB()
+########NO###########
 
 #---------------------------------------------------------------------
 #The testing zone - includes yahoo finance examples
@@ -3988,17 +4045,7 @@ version235 = '2'
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
 
-# materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
-# comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
-# consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
-# consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
-# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
-# finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
-# health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
-# ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
-# realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
-# tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
-# util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
+
 
 # checkYearsIntegritySector(util,0,10)
 

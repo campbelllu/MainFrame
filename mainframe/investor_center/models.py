@@ -120,10 +120,13 @@ class Mega(models.Model):
     reitEPSGrowthRate = models.FloatField(blank=True, null=True)
 
     TotalDebt = models.IntegerField(blank=True, null=True)
+    TotalDebtGrowthRate = models.FloatField(blank=True, null=True)
     assets = models.IntegerField(blank=True, null=True)
     liabilities = models.IntegerField(blank=True, null=True)
     TotalEquity = models.IntegerField(blank=True, null=True)
+    TotalEquityGrowthRate = models.FloatField(blank=True, null=True)
     ReportedTotalEquity = models.IntegerField(blank=True, null=True)
+    ReportedTotalEquityGrowthRate = models.FloatField(blank=True, null=True)
 
     nopat = models.IntegerField(blank=True, null=True)
     investedCapital = models.IntegerField(blank=True, null=True)
@@ -136,6 +139,7 @@ class Mega(models.Model):
     shares = models.IntegerField(blank=True, null=True)
     sharesGrowthRate = models.FloatField(blank=True, null=True)
     dilutedShares = models.IntegerField(blank=True, null=True)
+    dilutedSharesGrowthRate = models.FloatField(blank=True, null=True)
     reportedEPS = models.FloatField(blank=True, null=True)
     reportedEPSGrowthRate = models.FloatField(blank=True, null=True)
     calculatedEPS = models.FloatField(blank=True, null=True)
