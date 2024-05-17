@@ -3792,8 +3792,8 @@ def write_list_to_DB(thelist):
 # consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
 
 # consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
-# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
 
+# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
 # finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
 # health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
 # ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
@@ -3813,8 +3813,8 @@ def print_DB():
     # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
     # query.execute(del_query)
     # conn.commit()
-    df12 = pd.read_sql('SELECT DISTINCT Ticker as ticker FROM Mega WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
-    # print(df12)
+    df12 = pd.read_sql('SELECT COUNT(DISTINCT Ticker) as ticker FROM Mega;',conn)# WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
+    print(df12)
     
 
     query.close()
@@ -3916,6 +3916,7 @@ def delete_DB():
 # dblist = print_DB()['ticker']
 # print(datlist)
 # sourcelist = materials['Ticker']
+# print_DB()
 
 # print(set(sourcelist).difference(dblist))
 
@@ -3924,7 +3925,7 @@ def delete_DB():
 # print(materials['Ticker'])
 # write_list_to_DB(missing)
 
-write_csvList_to_DB(energy) 
+write_csvList_to_DB(consStaples) 
 #utils, mats, 
 
 
