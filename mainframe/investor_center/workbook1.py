@@ -3688,11 +3688,11 @@ def testIndies(ticker):
         print("test indies error: ")
         print(err)
     finally:
-        # for x in consol_table:
-            # print(x)
-        print(consol_table['Units'])
+        for x in consol_table:
+            print(x)
+        # print(consol_table['Units'])
 
-# testIndies('HTOO')
+# testIndies('MSFT')
 
 
 
@@ -3706,6 +3706,7 @@ def testIndies(ticker):
 # db connection and upload function - DONE
 #manually convert some currencies
 #omg it's happening!
+#check below and keep your ear to the grindstone.
 
 
 #---------------------------------------------------------------------
@@ -3785,8 +3786,6 @@ def write_list_to_DB(thelist):
         print(errorTickers)
 
 
-
-
 # materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
 # comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
 # consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
@@ -3800,24 +3799,40 @@ def write_list_to_DB(thelist):
 # util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
 
 # utillist = ['CEG', 'OPAL']
+
 # write_list_to_DB(utillist)
+
+# write_csvList_to_DB(consStaples) 
+
+##Tickers mixed Currencies
+# stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies, unsupported! :)
+
+# for x in stockstorecap:
+#     delete_ticker_DB(x)
+
+# write_list_to_DB(stockstorecap)
 
 
 ##DB EXAMPLES THAT WORK
 
-def print_DB():
+def print_DB(thequery, superflag):
     conn = sql.connect(db_path)
     query = conn.cursor()
     # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
     # query.execute(del_query)
     # conn.commit()
-    df12 = pd.read_sql('SELECT COUNT(DISTINCT Ticker) as ticker FROM Mega;',conn)# WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
-    print(df12)
     
 
+    df12 = pd.read_sql(thequery,conn)# WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
     query.close()
     conn.close()
-    return df12
+
+    if superflag == 'print':
+        print(df12)
+    elif superflag == 'return':
+        return df12
+    # else:
+
 
 def checkUnits_DB(ticker):
     conn = sql.connect(db_path)
@@ -3914,50 +3929,61 @@ def delete_DB():
 # dblist = print_DB()['ticker']
 # print(datlist)
 # sourcelist = materials['Ticker']
-# print_DB()
+
+#divs test for: 
+#sharesGrowthRate, dilutedSharesGrowthRate, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
+
+#debt equity test
+#TotalDebtGrowthRate, TotalEquityGrowthRate, ReportedTotalEquityGrowthRate, 
+
+#netincome test:
+#netIncomeGrowthRate, netIncomeNCIGrowthRate
+
+## possibly the cashflows
+
+# thequery = 'SELECT DISTINCT Ticker as ticker, Year, shares, sharesGrowthRate \
+#             FROM Mega \
+#             WHERE sharesGrowthRate > 50.0 \
+#             AND Sector LIKE \'%Real%\' \
+#             ;'
+thequery = 'SELECT DISTINCT Ticker \
+            FROM Mega \
+            WHERE sharesGrowthRate > 50.0 \
+            AND Sector LIKE \'%Real%\' \
+            ;'
+# print_DB(thequery,'print')
+
+divquery = 'SELECT Ticker, Year, shares, sharesGrowthRate, divsPaidPerShare as divPS, divGrowthRateBORPS as repPSdiv, calcDivsPerShare as divCALCPS, divGrowthRateBOCPS as calcPSdiv, \
+            (((divsPaidPerShare-calcDivsPerShare)/divsPaidPerShare)*100) as repMinusCalc_diff \
+            FROM Mega \
+            WHERE repMinusCalc_diff > 50.0 \
+            ORDER BY Ticker  \
+            ;'
+# divquery = 'SELECT Ticker, Year, shares, calcDivsPerShare as divCALCPS, (calcDivsPerShare / 4.0 ) as newDIVCALCPS  \
+#             FROM Mega \
+#             WHERE Ticker LIKE \'NEE\' \
+#             AND Year BETWEEN \'2006\' AND \'2018\' \
+#             ORDER BY Year  \
+#             ;'
+# print_DB(divquery,'print')
+
+#LUKE
+#Here's what we gotta do:
+#Make a function that takes in a column from DB as a list.
+#sort it. we gonna get an average out of it shortly.
+#first get the average.
+#next, get median. Make two more lists of either side of that median. Find the medians of those two lists too. Med1 = Q2. Q1,3 respectively.
+# Q3-Q1 = IQR. Q2 +/- IQR, I'm thinking, will give us an acceptable range with which to exclude other values as outliers, due to the data not necessarily following
+# ## a gaussian distribution.
+# The newly filtered data from Q2 +/- IQR is now used to compute a more accurate average for whichever field we're analyzing. We'll need a second DB table, I think.
+# New table: one row per ticker, most recent year in db, all the averages and relevant analyses. so reports pull from the second table? I like it!  
 
 # print(set(sourcelist).difference(dblist))
 
-# missing = ['SHWDY', 'HANNF', 'BITTF', 'MKDTY', 'MEXGF', 'GARWF', 'LISMF', 'CARCY', 'ZPHYF', 'GLNCY', 'GFGSF', 'LAC', 'VAUCF', 'DMXCF', 'SILS', 'MLLOF', 'SGMD', 'NMREF', 'TRBMF', 'TIGCF', 'EQTRF', 'NVDEF', 'WS', 'JSCPY', 'NSRCF', 'AVLNF', 'OUTKY', 'EGMCF', 'ALMMF', 'ERLFF', 'HDELY', 'CODQL', 'AIRRF', 'PTCAY', 'KOZAY', 'GSVRF', 'SILEF', 'GIGGF', 'SMDRF', 'PMCOF', 'RLEA', 'PDO', 'RSMXF', 'AGXPF', 'SMREF', 'CGOLF', 'FMNJ', 'GESI', 'BZZUY', 'BATXF', 'AMNL', 'JGLDF', 'RUPRF', 'EXNRF', 'EVGDF', 'KNGRF', 'CGSI', 'OCGSF', 'NULGF', 'UURAF', 'ORMNF', 'GXSFF', 'SVRSF', 'SHVLF', 'SPAZF', 'GSHRF', 'NVSGF', 'PAANF', 'SINC', 'LOMLF', 'CXXMF', 'SHECY', 'FEMFF', 'INUMF', 'AMLI', 'SMTSF', 'WMLLF', 'TETOF', 'RYTTF', 'SLVYY', 'JSHG', 'EQMEF', 'AUCUF', 'RTNTF', 'LNZNF', 'ABNAF', 'FFMGF', 'GNVR', 'SIXWF', 'PBMLF', 'MXSG', 'SRLZF', 'STCC', 'BMXI', 'HGLD', 'ORRCF', 'ABCFF', 'BBMPY', 'SGTM', 'BGAVF', 'VNTRD', 'MTLHY', 'BKTPF', 'MPVDF', 'MXROF', 'LILIF', 'PUTKY', 'FUPBY', 'BDNNY', 'UBEOF', 'ERDCF']
-
-# print(materials['Ticker'])
-# write_list_to_DB(missing)
-
-# write_csvList_to_DB(consStaples) 
-#utils, mats, 
-
-
-
-
 # print_ticker_DB('PAM')
-
-##Tickers mixed Currencies
-stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies, unsupported! :)
-
-# for x in stockstorecap:
-#     delete_ticker_DB(x)
-
-# write_list_to_DB(stockstorecap)
-
-#upload pam with list adder above - -  see above
 
 # find_badUnitsDB()
 # checkUnits_DB('HTOO') #again to see if it works. win! 
-
-
-
-##Curries other than USD that are present in DB
-# 0    ARS
-# 1    BRL
-# 2    CAD
-# 3    CLF
-# 4    CLP
-# 5    CNY
-# 6    EUR
-# 7    GBP
-# 8    INR
-# 9    KRW
-# 10   USD
 
 ###### NO#######
 # delete_DB()
