@@ -7,7 +7,7 @@ import matplotlib.dates as mdates
 import seaborn as sns
 import datetime as dt
 # import mplfinance as mpf
-import datetime as dt
+# import datetime as dt
 import time
 import yfinance as yf
 import json
@@ -25,6 +25,7 @@ converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_c
 curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 from datetime import date
+import time
 # from forex_python.converter import CurrencyRates
 
 import csv_modules as csv
@@ -3900,7 +3901,7 @@ def find_badUnitsDB():
     conn.close()
 
 
-def delete_DB():
+# def delete_DB():
     #only use this while testing, or suffer the consequences
     conn = sql.connect(db_path)
     query = conn.cursor()
@@ -3946,26 +3947,110 @@ def delete_DB():
 #             WHERE sharesGrowthRate > 50.0 \
 #             AND Sector LIKE \'%Real%\' \
 #             ;'
-thequery = 'SELECT DISTINCT Ticker \
+growthratequery = 'SELECT DISTINCT Ticker \
             FROM Mega \
             WHERE sharesGrowthRate > 50.0 \
             AND Sector LIKE \'%Real%\' \
             ;'
 # print_DB(thequery,'print')
 
-divquery = 'SELECT Ticker, Year, shares, sharesGrowthRate, divsPaidPerShare as divPS, divGrowthRateBORPS as repPSdiv, calcDivsPerShare as divCALCPS, divGrowthRateBOCPS as calcPSdiv, \
-            (((divsPaidPerShare-calcDivsPerShare)/divsPaidPerShare)*100) as repMinusCalc_diff \
+# (((divsPaidPerShare-calcDivsPerShare)/divsPaidPerShare)*100) as repMinusCalc_diff \
+
+divquery = 'SELECT Ticker, Year, shares, sharesGrowthRate, totalDivsPaid, revenue, netIncome, divsPaidPerShare as divPS, divGrowthRateBORPS as divPSrate, calcDivsPerShare as calcdivPS, divGrowthRateBOCPS as calcdivPSrate, payoutRatio, ffoPayoutRatio \
             FROM Mega \
-            WHERE repMinusCalc_diff > 50.0 \
-            ORDER BY Ticker  \
+            WHERE Ticker LIKE \'NEE\' \
+            AND Year > \'2006\' \
+            ORDER BY Year  \
             ;'
-# divquery = 'SELECT Ticker, Year, shares, calcDivsPerShare as divCALCPS, (calcDivsPerShare / 4.0 ) as newDIVCALCPS  \
-#             FROM Mega \
-#             WHERE Ticker LIKE \'NEE\' \
-#             AND Year BETWEEN \'2006\' AND \'2018\' \
-#             ORDER BY Year  \
-#             ;'
+incomequery = 'SELECT Ticker, Year, shares, sharesGrowthRate, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, reportedEPS,  calculatedEPS, reportedEPSGrowthRate, calculatedEPSGrowthRate, capEx, capExGrowthRate  \
+            FROM Mega \
+            WHERE Ticker LIKE \'AMZN\' \
+            AND Year > \'2006\'  \
+            ORDER BY Year  \
+            ;'
+
 # print_DB(divquery,'print')
+# print_DB(incomequery, 'print')
+
+testlistquery = 'SELECT sharesGrowthRate \
+                FROM Mega \
+                WHERE Ticker LIKE \'NEE\' \
+                ;'
+time1 = time.time()
+isitalist = print_DB(testlistquery, 'return')['sharesGrowthRate'].tolist()
+# print(isitalist)
+#numbers
+isitalist = [x for x in isitalist if not np.isnan(x)]
+
+q12 = np.percentile(isitalist, 25)
+q32 = np.percentile(isitalist, 75)
+iqr2 = q32-q12
+
+# print(isitalist)
+#strings
+# isitalist = [eval(i) for i in isitalist]
+# for x in isitalist:
+#     print(type(x))
+median = np.median(isitalist)
+print('median')
+print(median)
+q1list = []
+q2list = []
+i = 0
+j = 0
+length = len(isitalist)
+while i < length:
+    x = isitalist[i]
+    if x < median:
+        q1list.append(x)
+    i += 1
+# print(q1list)
+q1 = np.median(q1list)
+while j < length:
+    x = isitalist[j]
+    if x > median:
+        q2list.append(x)
+    j += 1
+# print(q2list)
+q3 = np.median(q2list)
+iqr_test = q3-q1
+ar_top = median + iqr_test
+ar_bottom = median - iqr_test
+ar_top2 = median + iqr2
+ar_bottom2 = median - iqr2
+# print(ar_top, ar_bottom)
+
+finalyearlist = []
+finalyearlist2 = []
+for x in isitalist:
+    if x < ar_top and x > ar_bottom:
+        finalyearlist.append(x)
+
+for x in isitalist:
+    if x < ar_top2 and x > ar_bottom2:
+        finalyearlist2.append(x)
+
+print('personal list')
+print(isitalist)
+print('filtered list')
+print(finalyearlist)
+print('average?')
+print(np.average(finalyearlist))
+print('average2?')
+print(np.average(finalyearlist2))
+time2 = time.time()
+print('time to complete')
+print((time2-time1)*1000)
+
+# def IQR_Average(thelist):
+#     try:
+        
+#     except Exception as err:
+#         print("IQR_avg error: ")
+#         print(err)
+#     finally:
+#         # return edited_list
+#         pass
 
 #LUKE
 #Here's what we gotta do:
