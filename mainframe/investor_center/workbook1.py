@@ -3972,96 +3972,142 @@ incomequery = 'SELECT Ticker, Year, shares, sharesGrowthRate, revenue, revenueGr
 # print_DB(divquery,'print')
 # print_DB(incomequery, 'print')
 
-testlistquery = 'SELECT sharesGrowthRate \
+sharesquery = 'SELECT sharesGrowthRate \
                 FROM Mega \
                 WHERE Ticker LIKE \'NEE\' \
                 ;'
-time1 = time.time()
-isitalist = print_DB(testlistquery, 'return')['sharesGrowthRate'].tolist()
-# print(isitalist)
-#numbers
-isitalist = [x for x in isitalist if not np.isnan(x)]
 
-q12 = np.percentile(isitalist, 25)
-q32 = np.percentile(isitalist, 75)
-iqr2 = q32-q12
+testlistquery = 'SELECT Year \
+                FROM Mega \
+                WHERE Ticker LIKE \'NEE\' \
+                ;'
 
-# print(isitalist)
-#strings
-# isitalist = [eval(i) for i in isitalist]
-# for x in isitalist:
-#     print(type(x))
-median = np.median(isitalist)
-print('median')
-print(median)
-q1list = []
-q2list = []
-i = 0
-j = 0
-length = len(isitalist)
-while i < length:
-    x = isitalist[i]
-    if x < median:
-        q1list.append(x)
-    i += 1
-# print(q1list)
-q1 = np.median(q1list)
-while j < length:
-    x = isitalist[j]
-    if x > median:
-        q2list.append(x)
-    j += 1
-# print(q2list)
-q3 = np.median(q2list)
-iqr_test = q3-q1
-ar_top = median + iqr_test
-ar_bottom = median - iqr_test
-ar_top2 = median + iqr2
-ar_bottom2 = median - iqr2
-# print(ar_top, ar_bottom)
+def IQR_Mean(list):
+    try:
+        cleaned_list = []
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+        elif isinstance(list[0],str):
+            cleaned_list = [eval(i) for i in list]
+        else:
+            print('IQR_Mean type was not string or float')
 
-finalyearlist = []
-finalyearlist2 = []
-for x in isitalist:
-    if x < ar_top and x > ar_bottom:
-        finalyearlist.append(x)
+        q1 = np.percentile(cleaned_list, 25)
+        q3 = np.percentile(cleaned_list, 75)
+        iqr = q3 - q1
+        median = np.median(cleaned_list)
+        ar_top = median + iqr
+        ar_bottom = median - iqr
 
-for x in isitalist:
-    if x < ar_top2 and x > ar_bottom2:
-        finalyearlist2.append(x)
-
-print('personal list')
-print(isitalist)
-print('filtered list')
-print(finalyearlist)
-print('average?')
-print(np.average(finalyearlist))
-print('average2?')
-print(np.average(finalyearlist2))
-time2 = time.time()
-print('time to complete')
-print((time2-time1)*1000)
-
-# def IQR_Average(thelist):
-#     try:
+        ar_list = []
+        for x in cleaned_list:
+            if x < ar_top and x > ar_bottom:
+                ar_list.append(x)
         
-#     except Exception as err:
-#         print("IQR_avg error: ")
-#         print(err)
-#     finally:
-#         # return edited_list
-#         pass
+        ar_Mean = np.mean(ar_list)
+    except Exception as err:
+        print("IQR Mean error: ")
+        print(err)
+    finally:
+        return ar_Mean
+
+def nan_strip_min(list):
+    try:
+        cleaned_list = []
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+        elif isinstance(list[0],str):# == <class 'str'>:
+            cleaned_list = [eval(i) for i in list]
+        else:
+            print('strip Min type was not int or float')
+
+        
+        ar_Min = np.min(cleaned_list)
+    except Exception as err:
+        print("strip Min error: ")
+        print(err)
+    finally:
+        return ar_Min
+
+def nan_strip_max(list):
+    try:
+        cleaned_list = []
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+        elif isinstance(list[0],str):# == <class 'str'>:
+            cleaned_list = [eval(i) for i in list]
+        else:
+            print('strip Max type was not int or float')
+
+        
+        ar_Max = np.max(cleaned_list)
+    except Exception as err:
+        print("strip Max error: ")
+        print(err)
+    finally:
+        return ar_Max
+
+def nan_strip_count(list):
+    try:
+        cleaned_list = []
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+        elif isinstance(list[0],str):# == <class 'str'>:
+            cleaned_list = [eval(i) for i in list]
+        else:
+            print('strip count type was not int or float')
+
+        
+        ar_count = len(cleaned_list)
+    except Exception as err:
+        print("strip count error: ")
+        print(err)
+    finally:
+        return ar_count
+
+isitalist = print_DB(testlistquery, 'return')['year'].tolist()
+shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
+
+print(nan_strip_min(shareslist))
+print(nan_strip_max(shareslist))
+print(nan_strip_count(shareslist))
+
+print(nan_strip_min(isitalist))
+print(nan_strip_max(isitalist))
+print(nan_strip_count(isitalist))
+
+# print(IQR_Mean(isitalist))
+
+# time1 = time.time()
+# time2 = time.time()
+# print('time to complete')
+# print((time2-time1)*1000)
 
 #LUKE
 #Here's what we gotta do:
-#Make a function that takes in a column from DB as a list.
-#sort it. we gonna get an average out of it shortly.
-#first get the average.
-#next, get median. Make two more lists of either side of that median. Find the medians of those two lists too. Med1 = Q2. Q1,3 respectively.
-# Q3-Q1 = IQR. Q2 +/- IQR, I'm thinking, will give us an acceptable range with which to exclude other values as outliers, due to the data not necessarily following
-# ## a gaussian distribution.
-# The newly filtered data from Q2 +/- IQR is now used to compute a more accurate average for whichever field we're analyzing. We'll need a second DB table, I think.
-# New table: one row per ticker, most recent year in db, all the averages and relevant analyses. so reports pull from the second table? I like it!  
+#list all fields relevant to a table analysis
+#make model for new table from relevant fields
+#compile their data into a dataframe, upload it to new table via loop that uses all tickers in db
+#year: max == latest year, and you can count members of averages calculated with nan strip count
+#average price
+#average nav, avg nav GR
+#avg book value, rep book value, avg growth rates, min and max could be useful
+#roic, adjroic, roce's, min max avg
+#fcfmargin min max avg
+#fcf gr min max avg
+#capex avg, capex GR avg
+#netcf avg, op cf avg, both growth rate averages
+#eps values, avg, growth rate min max avg
+#revenue growth rate min max avg
+#NI++ GR avg
+#ffo gr min max avg
+#t debt gr min max avg
+# equity x2 gr min max avg
+# roc gr avg , roc avg
+#payout ratios, min max avg
+#divs per share x2 avg, gr's x2 min max avg
+#total divs gr avg
+#shares x2 gr min max avg
 
 # print(set(sourcelist).difference(dblist))
 
@@ -4345,6 +4391,75 @@ version123 = '2'
 
 # f = open('./demoData.txt', 'r')
 # print(f.read())
+
+#neato percentile manual function
+# time1 = time.time()
+# isitalist = print_DB(testlistquery, 'return')['sharesGrowthRate'].tolist()
+# # print(isitalist)
+# #numbers
+# isitalist = [x for x in isitalist if not np.isnan(x)]
+
+# q12 = np.percentile(isitalist, 25)
+# q32 = np.percentile(isitalist, 75)
+# iqr2 = q32-q12
+
+# # print(isitalist)
+# #strings
+# # isitalist = [eval(i) for i in isitalist]
+# # for x in isitalist:
+# #     print(type(x))
+# median = np.median(isitalist)
+# print('median')
+# print(median)
+# q1list = []
+# q2list = []
+# i = 0
+# j = 0
+# length = len(isitalist)
+# while i < length:
+#     x = isitalist[i]
+#     if x < median:
+#         q1list.append(x)
+#     i += 1
+# # print(q1list)
+# q1 = np.median(q1list)
+# while j < length:
+#     x = isitalist[j]
+#     if x > median:
+#         q2list.append(x)
+#     j += 1
+# # print(q2list)
+# q3 = np.median(q2list)
+# iqr_test = q3-q1
+# ar_top = median + iqr_test
+# ar_bottom = median - iqr_test
+# ar_top2 = median + iqr2
+# ar_bottom2 = median - iqr2
+# # print(ar_top, ar_bottom)
+
+# finalyearlist = []
+# finalyearlist2 = []
+# for x in isitalist:
+#     if x < ar_top and x > ar_bottom:
+#         finalyearlist.append(x)
+
+# for x in isitalist:
+#     if x < ar_top2 and x > ar_bottom2:
+#         finalyearlist2.append(x)
+
+# print('personal list')
+# print(isitalist)
+# print('filtered list')
+# print(finalyearlist)
+# print('average?')
+# print(np.average(finalyearlist))
+# print('average2?')
+# print(np.average(finalyearlist2))
+# time2 = time.time()
+# print('time to complete')
+# print((time2-time1)*1000)
+
+
 
 #unused idea
 # def fillAllEmptyGrowthRates(df):
