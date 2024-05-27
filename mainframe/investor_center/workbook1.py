@@ -1479,7 +1479,8 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         # print(liabilities)
         # print('assets?')
         # print(assets)
-        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time. LUKE RETHINK THIS
+        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time.
+        # LUKE RETHINK THIS
         assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK','Units'], how='outer')
         
         # print('post merge ass and lias')
@@ -1692,20 +1693,6 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         # print('tot and pshare post fills and drops')
         # print(df_col_added)
         
-        # if shares.empty:# and total.empty and perShare.empty: #LUKE maybe double check everything's working via checks, but this work around is deprecated
-        #     cols = {'Units': -1, 'Ticker': -1, 'CIK': -1, 'year': -1, 'totalDivsPaid': -1, 'shares': -1,
-        #              'divsPaidPerShare': -1, 'sharesGrowthRate': -1, 'divGrowthRate': -1, 'integrityFlag': -1}#, 'Ticker': total['Ticker'] #'interestPaid': -1, 'start': -1, 'end': -1,
-        #     # vals = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
-        #     df_col_added = pd.DataFrame(cols, index=[0])
-        #     return df_col_added
-        #     # shares['val'] = 1
-        # else:
-            # sharesNperShare = pd.merge(shares, perShare, on=['year','Ticker','CIK'], how='outer')#'start','end',
-            # print('sharesNperShare: ')
-            # print(sharesNperShare)
-            # df_col_added = pd.merge(total, sharesNperShare, on=['year','Ticker','CIK'], how='outer')
-            # print('total + shares + per share: ')
-            # print(df_col_added)
         df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
         df_col_added['dilutedShares'] = df_col_added['dilutedShares'].ffill().bfill()
         # if df_col_added['shares'].empty:
@@ -1818,8 +1805,6 @@ def fillEmptyIncomeGrowthRates(df):
         df_filled['payoutRatio'] = df_filled['totalDivsPaid'] / df_filled['netIncome']
         df_filled['fcfPayoutRatio'] = df_filled['totalDivsPaid'] / df_filled['fcf']
         df_filled['ffoPayoutRatio'] = df_filled['totalDivsPaid'] / df_filled['ffo']
-        #luke consider putting ffo / int + divs
-        #think of some others. add them. then edit your face off and prosper!
 
         if fixTracker > 4:
             df_filled['INCintegrityFlag'] = 'NeedsWork'
@@ -2044,7 +2029,6 @@ def fillEmptyROICGrowthRates(df):
         growthCol2 = grManualCalc(df_filled['reportedBookValue'])
         df_filled['reportedBookValueGrowthRate'] = growthCol2
 
-        #luke
         growthCol3 = grManualCalc(df_filled['TotalDebt'])
         df_filled['TotalDebtGrowthRate'] = growthCol3
 
@@ -2563,7 +2547,6 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print(nav_df.empty)
         # print(nav_df.isnull().any())
 
-        #Luke here op income might not exist. units null. breaks all. need to fill usd?
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
         # print('opIncNtax')
@@ -3561,7 +3544,6 @@ def mCTEDB(df, ticker):
         # print(nav_df.empty)
         # print(nav_df.isnull().any())
 
-        #Luke here op income might not exist. units null. breaks all. need to fill usd?
         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
         opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
         # print('opIncNtax')
@@ -3702,11 +3684,8 @@ def testIndies(ticker):
 ### LUKE
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
-# Clean code
+# Clean code: this includes packages up top, turns out.
 # Automate setup of initial ciks, tickers, up top
-# db connection and upload function - DONE
-#manually convert some currencies
-#omg it's happening!
 #check below and keep your ear to the grindstone.
 
 
@@ -3843,11 +3822,6 @@ def checkUnits_DB(ticker):
     # conn.commit()
     df12 = pd.read_sql('SELECT Ticker, Units FROM Mega WHERE Ticker Like \''+ticker+'\';',conn)# WHERE count(DISTINCT Units) > 1 GROUP BY Ticker;', conn)
     print(df12)
-    #LUKE this is tricky, trying to find the tickers with multiple units.
-    #i say make a new currency converter from notes.
-    #erase pam
-    #re put in pam
-    #check units below. win.
 
     query.close()
     conn.close()
@@ -3891,11 +3865,6 @@ def find_badUnitsDB():
                 WHERE Units NOT LIKE \'USD\''
     df12 = pd.read_sql(qentry,conn)
     print(df12)
-    #LUKE this is tricky, trying to find the tickers with multiple units.
-    #i say make a new currency converter from notes.
-    #erase pam
-    #re put in pam
-    #check units below. win.
 
     query.close()
     conn.close()
@@ -4065,16 +4034,134 @@ def nan_strip_count(list):
     finally:
         return ar_count
 
-isitalist = print_DB(testlistquery, 'return')['year'].tolist()
-shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
+# isitalist = print_DB(testlistquery, 'return')['year'].tolist()
+# shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
 
-print(nan_strip_min(shareslist))
-print(nan_strip_max(shareslist))
-print(nan_strip_count(shareslist))
+# print(nan_strip_min(shareslist))
+# print(nan_strip_max(shareslist))
+# print(nan_strip_count(shareslist))
 
-print(nan_strip_min(isitalist))
-print(nan_strip_max(isitalist))
-print(nan_strip_count(isitalist))
+# print(nan_strip_min(isitalist))
+# print(nan_strip_max(isitalist))
+# print(nan_strip_count(isitalist))
+
+def income_reading(ticker):
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        thequery = 'SELECT Ticker, Sector, Industry, Year, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, ffo, ffoGrowthRate, \
+                        reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
+                        fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, \
+                        price, priceGrowthRAte \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' \
+                    ORDER BY Year  \
+                    ;'
+        df1 = pd.read_sql(thequery,conn)
+        query.close()
+        conn.close()
+    except Exception as Err:
+        print('income reading error: ')
+        print(Err)
+    finally:
+        return df1
+
+def balanceSheet_reading(ticker):
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        thequery = 'SELECT Ticker, Sector, Industry, Year, TotalDebt, TotalDebtGrowthRate, assets, liabilities, \
+                        ReportedTotalEquity, ReportedTotalEquityGrowthRate, TotalEquity, TotalEquityGrowthRate \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' \
+                    ORDER BY Year  \
+                    ;'
+
+        df1 = pd.read_sql(thequery,conn)
+        query.close()
+        conn.close()
+    except Exception as Err:
+        print('income reading error: ')
+        print(Err)
+    finally:
+        return df1
+
+def cashFlow_reading(ticker):
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingCashflow, operatingCashflowGrowthRate, investingCashFlow, investingCashFlowGrowthRate, \
+                        financingCashFlow, financingCashFlowGrowthRate, netCashFlow, netCashFlowGrowthRate, interestPaid, \
+                        capEx, capExGrowthRate, depreNAmor, gainSaleProp \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' \
+                    ORDER BY Year  \
+                    ;'
+
+        df1 = pd.read_sql(thequery,conn)
+        query.close()
+        conn.close()
+    except Exception as Err:
+        print('income reading error: ')
+        print(Err)
+    finally:
+        return df1
+
+def dividend_reading(ticker):
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        thequery = 'SELECT Ticker, Sector, Industry, Year, shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
+                        divsPaidPerShare, calcDivsPerShare, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, payoutRatio, \
+                        fcfPayoutRatio, ffoPayoutRatio, ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' \
+                    ORDER BY Year  \
+                    ;'
+
+        df1 = pd.read_sql(thequery,conn)
+        query.close()
+        conn.close()
+    except Exception as Err:
+        print('income reading error: ')
+        print(Err)
+    finally:
+        return df1
+
+def efficiency_reading(ticker):
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
+                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, calcBookValue, calcBookValueGrowthRate, \
+                        reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' \
+                    ORDER BY Year  \
+                    ;'
+        df1 = pd.read_sql(thequery,conn)
+        query.close()
+        conn.close()
+    except Exception as Err:
+        print('income reading error: ')
+        print(Err)
+    finally:
+        return df1
+
+#LUKE
+#now we generate useful meta data about what's being drawn out here: how are all these data relevant? how can they be visualized meaningfully?
+
+# print('roce rep then calc min:')
+# print(nan_strip_min(efficiency_reading('AMZN')['reportedRoce'].tolist()))
+# print(nan_strip_min(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
+
+# print('roce rep then calc max:')
+# print(nan_strip_max(efficiency_reading('AMZN')['reportedRoce'].tolist()))
+# print(nan_strip_max(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
+
+# print('roce rep then calc avg:')
+# print(IQR_Mean(efficiency_reading('AMZN')['reportedRoce'].tolist()))
+# print(IQR_Mean(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
 
 # print(IQR_Mean(isitalist))
 
