@@ -3900,16 +3900,7 @@ def find_badUnitsDB():
 # print(datlist)
 # sourcelist = materials['Ticker']
 
-#divs test for: 
-#sharesGrowthRate, dilutedSharesGrowthRate, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
 
-#debt equity test
-#TotalDebtGrowthRate, TotalEquityGrowthRate, ReportedTotalEquityGrowthRate, 
-
-#netincome test:
-#netIncomeGrowthRate, netIncomeNCIGrowthRate
-
-## possibly the cashflows
 
 # thequery = 'SELECT DISTINCT Ticker as ticker, Year, shares, sharesGrowthRate \
 #             FROM Mega \
@@ -4026,7 +4017,7 @@ def nan_strip_count(list):
         else:
             print('strip count type was not int or float')
 
-        
+        # print(cleaned_list)
         ar_count = len(cleaned_list)
     except Exception as err:
         print("strip count error: ")
@@ -4034,16 +4025,59 @@ def nan_strip_count(list):
     finally:
         return ar_count
 
+def nan_strip_list(list):
+    try:
+        cleaned_list = []
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+        elif isinstance(list[0],str):# == <class 'str'>:
+            cleaned_list = [eval(i) for i in list]
+        else:
+            print('strip count type was not int or float')
+
+        # print(cleaned_list)
+        # ar_count = len(cleaned_list)
+    except Exception as err:
+        print("strip list error: ")
+        print(err)
+    finally:
+        return cleaned_list
+
+def count_nonzeroes(list):
+    try:
+        cleaned_list = list
+        # if isinstance(list[0],float) or isinstance(list[0],int):
+        #     cleaned_list = [x for x in list if not np.isnan(x)]
+        # elif isinstance(list[0],str):# == <class 'str'>:
+        #     cleaned_list = [eval(i) for i in list]
+        # else:
+        #     print('strip count type was not int or float')
+        for x in cleaned_list:
+            if x in (0, 0.0, '0', '0.0'):
+                cleaned_list.remove(x)
+        # print(list)
+        ar_count = len(cleaned_list)
+    except Exception as err:
+        print("nonzero count error: ")
+        print(err)
+    finally:
+        return ar_count
+
 # isitalist = print_DB(testlistquery, 'return')['year'].tolist()
+# print(isitalist)
 # shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
+# print(shareslist)
 
 # print(nan_strip_min(shareslist))
 # print(nan_strip_max(shareslist))
 # print(nan_strip_count(shareslist))
+# print(nan_strip_list(shareslist))
 
 # print(nan_strip_min(isitalist))
 # print(nan_strip_max(isitalist))
-# print(nan_strip_count(isitalist))
+# print(len(shareslist))
+# print(nan_strip_count(shareslist))
+# print(count_nonzeroes(nan_strip_list(shareslist)))
 
 def income_reading(ticker):
     try:
@@ -4148,6 +4182,440 @@ def efficiency_reading(ticker):
     finally:
         return df1
 
+def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
+    try:
+        ticker = incomedf['Ticker']
+        latest_year = nan_strip_max(incomedf['year'])
+        numYearsAnalyzed = count_nonzeroes(nan_strip_list(incomedf['year']))
+        sector = incomedf['Sector']
+        industry = incomedf['Industry']
+
+        metadata = pd.DataFrame()
+        metadata['Ticker'] = ticker
+        metadata['LatestYear'] = latest_year
+        metadata['AveragedOverYears'] = numYearsAnalyzed
+        metadata['Sector'] = sector
+        metadata['Industry'] = industry
+
+        #Revenue, GR min, max, avg
+        revlist = incomedf['revenueGrowthRate'].tolist()
+        # revmin = nan_strip_min(revlist)
+        # revmax = nan_strip_max(revlist)
+        revavg = IQR_Mean(revlist)
+
+        metadata['revGrowthAVG'] = revavg
+
+        #netincome x2, gr's min, max, avg
+        netinclist = incomedf['netIncome'].tolist()
+        nimin = nan_strip_min(netinclist)
+        # nimax = nan_strip_max(netinclist)
+        # niavg = IQR_Mean(netinclist)
+
+        netincgrlist = incomedf['netIncomeGrowthRate'].tolist()
+        # nigrmin = nan_strip_min(netincgrlist)
+        # nigrmax = nan_strip_max(netincgrlist)
+        nigravg = IQR_Mean(netincgrlist)
+
+        netincNCIlist = incomedf['netIncomeNCI'].tolist()
+        nincimin = nan_strip_min(netincNCIlist)
+        # nincimax = nan_strip_max(netincNCIlist)
+        # ninciavg = IQR_Mean(netincNCIlist)
+
+        netincNCIgrlist = incomedf['netIncomeNCIGrowthRate'].tolist()
+        # nincigrmin = nan_strip_min(netincNCIgrlist)
+        # nincigrmax = nan_strip_max(netincNCIgrlist)
+        nincigravg = IQR_Mean(netincNCIgrlist)
+
+        metadata['netIncomeLow'] = nimin
+        metadata['netIncomeGrowthAVG'] = nigravg
+        metadata['netIncomeNCILow'] = nincimin
+        metadata['netIncomeNCIGrowthAVG'] = nincigravg
+
+        #ffo gr's min, max, avg
+        ffolist = incomedf['ffo'].tolist()
+        ffomin = nan_strip_min(ffolist)
+        # ffomax = nan_strip_max(ffolist)
+        # ffoavg = IQR_Mean(ffolist)
+
+        ffogrlist = incomedf['ffoGrowthRate'].tolist()
+        # ffogrmin = nan_strip_min(ffogrlist)
+        # ffogrmax = nan_strip_max(ffogrlist)
+        ffogravg = IQR_Mean(ffogrlist)
+
+        metadata['ffoLow'] = ffomin
+        metadata['ffoGrowthAVG'] = ffogravg
+
+        #fcf: gr min max avg
+        fcflist = incomedf['fcf'].tolist()
+        fcfmin = nan_strip_min(fcflist)
+        # fcfmax = nan_strip_max(fcflist)
+        fcfavg = IQR_Mean(fcflist)
+
+        fcfgrlist = incomedf['fcfGrowthRate'].tolist()
+        # fcfgrmin = nan_strip_min(fcfgrlist)
+        # fcfgrmax = nan_strip_max(fcfgrlist)
+        fcfgravg = IQR_Mean(fcfgrlist)
+
+        metadata['fcfLow'] = fcfmin
+        metadata['fcfGrowthAVG'] = fcfgravg
+
+        #fcfmargin: min max avg
+        fcfmarginlist = incomedf['fcfMargin'].tolist()
+        fcfmarginmin = nan_strip_min(fcfmarginlist)
+        fcfmarginmax = nan_strip_max(fcfmarginlist)
+        fcfmarginavg = IQR_Mean(fcfmarginlist)
+
+        metadata['fcfMarginLow'] = fcfmarginmin
+        metadata['fcfMarginHigh'] = fcfmarginmax
+        metadata['fcfMarginAVG'] = fcfmarginavg
+
+        #fcfmargin gr min max avg
+        fcfmargingrlist = incomedf['fcfMarginGrowthRate'].tolist()
+        # fcfmargingrmin = nan_strip_min(fcfmargingrlist)
+        # fcfmargingrmax = nan_strip_max(fcfmargingrlist)
+        fcfmargingravg = IQR_Mean(fcfmargingrlist)
+
+        metadata['fcfMarginGrowthAVG'] = fcfmargingravg
+
+        #price min max avg, gr min max avg
+        pricelist = incomedf['price'].tolist()
+        pricemin = nan_strip_min(pricelist)
+        pricemax = nan_strip_max(pricelist)
+        priceavg = IQR_Mean(pricelist)
+        pricegrlist = incomedf['priceGrowthRate'].tolist()
+        # pricegrmin = nan_strip_min(pricegrlist)
+        # pricegrmax = nan_strip_max(pricegrlist)
+        pricegravg = IQR_Mean(pricegrlist)
+
+        metadata['priceLow'] = pricemin
+        metadata['priceHigh'] = pricemax
+        metadata['priceAVG'] = priceavg
+        metadata['priceGrowthAVG'] = pricegravg
+
+        #debt gr min max avg
+        debtlist = balancedf['TotalDebtGrowthRate'].tolist()
+        # debtmin = nan_strip_min(debtlist)
+        # debtmax = nan_strip_max(debtlist)
+        debtavg = IQR_Mean(debtlist)
+
+        metadata['debtGrowthAVG'] = debtavg
+
+        #rep equity gr min max avg
+        repeqlist = balancedf['ReportedTotalEquity'].tolist()
+        repeqmin = nan_strip_min(repeqlist)
+        # repeqmax = nan_strip_max(repeqlist)
+        # repeqavg = IQR_Mean(repeqlist)
+        repeqgrlist = balancedf['ReportedTotalEquityGrowthRate'].tolist()
+        # repeqgrmin = nan_strip_min(repeqgrlist)
+        # repeqgrmax = nan_strip_max(repeqgrlist)
+        repeqgravg = IQR_Mean(repeqgrlist)
+
+        metadata['reportedEquityLow'] = repeqmin
+        metadata['reportedEquityGrowthAVG'] = repeqgravg
+
+        #calcd equity gr min max avg
+        calceqlist = balancedf['TotalEquity'].tolist()
+        calceqmin = nan_strip_min(calceqlist)
+        # calceqmax = nan_strip_max(calceqlist)
+        # calceqavg = IQR_Mean(calceqlist)
+        calceqgrlist = balancedf['TotalEquityGrowthRate'].tolist()
+        # calceqgrmin = nan_strip_min(calceqgrlist)
+        # calceqgrmax = nan_strip_max(calceqgrlist)
+        calceqgravg = IQR_Mean(calceqgrlist)
+
+        metadata['calculatedEquityLow'] = calceqmin
+        metadata['calculatedEquityGrowthAVG'] = calceqgravg
+
+        #equity avg... avg'd
+        # aggeqmin = (repeqgrmin + calceqgrmin) / 2
+        # aggeqmax = (repeqgrmax + calceqgrmax) / 2
+        aggeqavg = (repeqgravg + calceqgravg) / 2
+
+        metadata['mixedEquityGrowthAVG'] = aggeqavg
+
+        #op cf min max avg
+        opcflist = cfdf['operatingCashFlow'].tolist()
+        opcfmin = nan_strip_min(opcflist)
+        # opcfmax = nan_strip_max(opcflist)
+        # opcfavg = IQR_Mean(opcflist)
+
+        metadata['operatingCashFlowLow'] = opcfmin
+
+        #op cf gr min max avg
+        opcfgrlist = cfdf['operatingCashFlowGrowthRate'].tolist()
+        # opcfgrmin = nan_strip_min(opcfgrlist)
+        # opcfgrmax = nan_strip_max(opcfgrlist)
+        opcfgravg = IQR_Mean(opcfgrlist)
+
+        metadata['operatingCashFlowGrowthAVG'] = opcfgravg
+
+        #inv cf min max avg
+        invcflist = cfdf['investingCashFlow'].tolist()
+        invcfmin = nan_strip_min(invcflist)
+        # invcfmax = nan_strip_max(invcflist)
+        # invcfavg = IQR_Mean(invcflist)
+
+        metadata['investingCashFlowLow'] = invcfmin
+
+        #inv cf gr min max avg
+        invcfgrlist = cfdf['investingCashFlowGrowthRate'].tolist()
+        # invcfgrmin = nan_strip_min(invcfgrlist)
+        # invcfgrmax = nan_strip_max(invcfgrlist)
+        invcfgravg = IQR_Mean(invcfgrlist)
+
+        metadata['investingCashFlowGrowthAVG'] = invcfgravg
+
+        #fin cf min max avg
+        fincflist = cfdf['financingCashFlow'].tolist()
+        fincfmin = nan_strip_min(fincflist)
+        # fincfmax = nan_strip_max(fincflist)
+        # fincfavg = IQR_Mean(fincflist)
+
+        metadata['financingCashFlowLow'] = fincfmin
+
+        #fin cf gr min max avg
+        fincfgrlist = cfdf['financingCashFlowGrowthRate'].tolist()
+        # fincfgrmin = nan_strip_min(fincfgrlist)
+        # fincfgrmax = nan_strip_max(fincfgrlist)
+        fincfgravg = IQR_Mean(fincfgrlist)
+
+        metadata['financingCashFlowGrowthAVG'] = fincfgravg
+
+        #net cf min max avg
+        netcflist = cfdf['netCashFlow'].tolist()
+        netcfmin = nan_strip_min(netcflist)
+        # netcfmax = nan_strip_max(netcflist)
+        # netcfavg = IQR_Mean(netcflist)
+
+        metadata['netCashFlowLow'] = netcfmin
+
+        #net cf gr min max avg
+        netcfgrlist = cfdf['netCashFlowGrowthRate'].tolist()
+        # netcfgrmin = nan_strip_min(netcfgrlist)
+        # netcfgrmax = nan_strip_max(netcfgrlist)
+        netcfgravg = IQR_Mean(netcfgrlist)
+
+        metadata['netCashFlowGrowthAVG'] = netcfgravg
+
+        #capex gr min max avg
+        capexlist = cfdf['capExGrowthRate'].tolist()
+        # capexmin = nan_strip_min(capexlist)
+        # capexmax = nan_strip_max(capexlist)
+        capexavg = IQR_Mean(capexlist)
+
+        metadata['capexGrowthAVG'] = capexavg
+
+        #shares gr min max avg
+        shareslist = divdf['sharesGrowthRate'].tolist()
+        # sharesmin = nan_strip_min(shareslist)
+        # sharesmax = nan_strip_max(shareslist)
+        sharesavg = IQR_Mean(shareslist)
+
+        metadata['sharesGrowthAVG'] = sharesavg
+
+        #dil shares same as above
+        dshareslist = divdf['dilutedSharesGrowthRate'].tolist()
+        # dsharesmin = nan_strip_min(dshareslist)
+        # dsharesmax = nan_strip_max(dshareslist)
+        dsharesavg = IQR_Mean(dshareslist)
+
+        metadata['dilutedSharesGrowthAVG'] = dsharesavg
+
+        #total divs
+        # tdivslist = divdf['totalDivsPaid'].tolist()
+        # tdivsmin = nan_strip_min(tdivslist)
+        # tdivsmax = nan_strip_max(tdivslist)
+        # tdivsavg = IQR_Mean(tdivslist)
+
+        #total divs gr divGrowthRateBOT
+        tdivsgrlist = divdf['divGrowthRateBOT'].tolist()
+        tdivsgrmin = nan_strip_min(tdivsgrlist)
+        tdivsgrmax = nan_strip_max(tdivsgrlist)
+        tdivsgravg = IQR_Mean(tdivsgrlist)
+
+        metadata['totalDivsPaidGrowthAVG'] = tdivsgravg
+
+        #calc dps
+        cdpslist = divdf['calcDivsPerShare'].tolist()
+        cdpsmin = nan_strip_min(cdpslist)
+        cdpsmax = nan_strip_max(cdpslist)
+        cdpsavg = IQR_Mean(cdpslist)
+
+        metadata['calcDivsPerShareLow'] = cdpsmin
+        metadata['calcDivsPerShareHigh'] = cdpsmax
+        metadata['calcDivsPerShareAVG'] = cdpsavg
+
+        #calc dps gr divGrowthRateBOCPS
+        cdpsgrlist = divdf['divGrowthRateBOCPS'].tolist()
+        cdpsgrmin = nan_strip_min(cdpsgrlist)
+        cdpsgrmax = nan_strip_max(cdpsgrlist)
+        cdpsgravg = IQR_Mean(cdpsgrlist)
+
+        metadata['calcDivsPerShareGrowthLow'] = cdpsgrmin
+        metadata['calcDivsPerShareGrowthHigh'] = cdpsgrmax
+        metadata['calcDivsPerShareGrowthAVG'] = cdpsgravg
+
+        #dps
+        dpslist = divdf['divsPaidPerShare'].tolist()
+        dpsmin = nan_strip_min(dpslist)
+        dpsmax = nan_strip_max(dpslist)
+        dpsavg = IQR_Mean(dpslist)
+
+        metadata['repDivsPerShareLow'] = dpsmin
+        metadata['repDivsPerShareHigh'] = dpsmax
+        metadata['repDivsPerShareAVG'] = dpsavg
+
+        #dps gr divGrowthRateBORPS
+        dpsgrlist = divdf['divGrowthRateBORPS'].tolist()
+        dpsgrmin = nan_strip_min(dpsgrlist)
+        dpsgrmax = nan_strip_max(dpsgrlist)
+        dpsgravg = IQR_Mean(dpsgrlist)
+
+        metadata['repDivsPerShareGrowthLow'] = dpsgrmin
+        metadata['repDivsPerShareGrowthHigh'] = dpsgrmax
+        metadata['repDivsPerShareGrowthAVG'] = dpsgravg
+
+        #agg ps
+        aggpsdivmin = (dpsmin + cdpsmin) / 2
+        aggpsdivmax = (dpsmax + cdpsmax) / 2
+        aggpsdivavg = (dpsavg + cdpsavg) / 2
+
+        metadata['PSaggDivsPerShareLow'] = aggpsdivmin
+        metadata['PSaggDivsPerShareHigh'] = aggpsdivmax
+        metadata['PSaggDivsPerShareAVG'] = aggpsdivavg
+
+        aggpsdivgrmin = (dpsgrmin + cdpsgrmin) / 2
+        aggpsdivgrmax = (dpsgrmax + cdpsgrmax) / 2
+        aggpsdivgravg = (dpsgravg + cdpsgravg) / 2
+
+        metadata['PSaggDivsPerShareGrowthLow'] = aggpsdivgrmin
+        metadata['PSaggDivsPerShareGrowthHigh'] = aggpsdivgrmax
+        metadata['PSaggDivsPerShareGrowthAVG'] = aggpsdivgravg
+
+        #agg ps + total avg
+        # aggbotnpsdivsmin = (tdivsmin + aggpsdivmin) / 2
+        # aggbotnpsdivsmax = (tdivsmax + aggpsdivmax) / 2
+        # aggbotnpsdivsavg = (tdivsavg + aggpsdivavg) / 2
+
+        aggbotnpsdivsgrmin = (tdivsgrmin + aggpsdivgrmin) / 2
+        aggbotnpsdivsgrmax = (tdivsgrmax + aggpsdivgrmax) / 2
+        aggbotnpsdivsgravg = (tdivsgravg + aggpsdivgravg) / 2
+
+        metadata['AggDivsPerShareGrowthLow'] = aggbotnpsdivsgrmin
+        metadata['AggDivsPerShareGrowthHigh'] = aggbotnpsdivsgrmax
+        metadata['AggDivsPerShareGrowthAVG'] = aggbotnpsdivsgravg
+
+        #payout ratio min max avg
+        prlist = divdf['payoutRatio'].tolist()
+        prmin = nan_strip_min(prlist)
+        prmax = nan_strip_max(prlist)
+        pravg = IQR_Mean(prlist)
+
+        metadata['payoutRatioLow'] = prmin
+        metadata['payoutRatioHigh'] = prmax
+        metadata['payoutRatioAVG'] = pravg
+
+        #fcfpayratio  min max avg
+        fcfprlist = divdf['fcfPayoutRatio'].tolist()
+        fcfprmin = nan_strip_min(fcfprlist)
+        fcfprmax = nan_strip_max(fcfprlist)
+        fcfpravg = IQR_Mean(fcfprlist)
+
+        metadata['fcfPayoutRatioLow'] = fcfprmin
+        metadata['fcfPayoutRatioHigh'] = fcfprmax
+        metadata['fcfPayoutRatioAVG'] = fcfpravg
+
+        #ffo payratio  min max avg
+        ffoprlist = divdf['ffoPayoutRatio'].tolist()
+        ffoprmin = nan_strip_min(ffoprlist)
+        ffoprmax = nan_strip_max(ffoprlist)
+        ffopravg = IQR_Mean(ffoprlist)
+
+        metadata['ffoPayoutRatioLow'] = ffoprmin
+        metadata['ffoPayoutRatioHigh'] = ffoprmax
+        metadata['ffoPayoutRatioAVG'] = ffopravg
+
+        #roc any payments
+        rocpscountlist = divdf['ROCperShare'].tolist()
+        rocpshowmanyyears = count_nonzeroes(rocpscountlist)
+        # rocpsmin = nan_strip_min(ffoprlist)
+        # ffoprmax = nan_strip_max(ffoprlist)
+        rocpsavg = IQR_Mean(rocpscountlist)
+
+        metadata['ROCpsAVG'] = rocpsavg
+        metadata['numYearsROCpaid'] = rocpshowmanyyears
+
+        #luke expand for the table below. test with amzn, o, make model, upload data to new db table.
+        #roic min max avg
+        roiclist = effdf['roic'].tolist()
+        roicmin = nan_strip_min(roiclist)
+        roicmax = nan_strip_max(roiclist)
+        roicavg = IQR_Mean(roiclist)
+        #adjroic min max avg
+        aroiclist = effdf['adjRoic'].tolist()
+        aroicmin = nan_strip_min(aroiclist)
+        aroicmax = nan_strip_max(aroiclist)
+        aroicavg = IQR_Mean(aroiclist)
+        #rep adj roic min max avg
+        raroiclist = effdf['reportedAdjRoic'].tolist()
+        raroicmin = nan_strip_min(raroiclist)
+        raroicmax = nan_strip_max(raroiclist)
+        raroicavg = IQR_Mean(raroiclist)
+        #agg adj roic
+        aggadjroicmin = (aroicmin + raroicmin) / 2
+        aggadjroicmax = (aroicmax + raroicmax) / 2
+        aggadjroicavg = (aroicavg + raroicavg) / 2
+        #calc roce min max avg
+        crocelist = effdf['calculatedRoce'].tolist()
+        crocemin = nan_strip_min(crocelist)
+        crocemax = nan_strip_max(crocelist)
+        croceavg = IQR_Mean(crocelist)
+        #rep roce min max avg
+        rrocelist = effdf['reportedRoce'].tolist()
+        rrocemin = nan_strip_min(rrocelist)
+        rrocemax = nan_strip_max(rrocelist)
+        rroceavg = IQR_Mean(rrocelist)
+        #agg calc rep roce
+        aggrocemin = (crocemin + rrocemin) / 2
+        aggrocemax = (crocemax + rrocemax) / 2
+        aggroceavg = (croceavg + rroceavg) / 2
+
+        #calc book value min max avg
+        cbvlist = effdf['calcBookValue'].tolist()
+        cbvmin = nan_strip_min(cbvlist)
+        cbvmax = nan_strip_max(cbvlist)
+        cbvavg = IQR_Mean(cbvlist)
+        #calc book gr min max avg
+        cbvgrlist = effdf['calcBookValueGrowthRate'].tolist()
+        cbvgrmin = nan_strip_min(cbvgrlist)
+        cbvgrmax = nan_strip_max(cbvgrlist)
+        cbvgravg = IQR_Mean(cbvgrlist)
+        #rep bv min max avg
+        rbvlist = effdf['reportedBookValue'].tolist()
+        rbvmin = nan_strip_min(rbvlist)
+        rbvmax = nan_strip_max(rbvlist)
+        rbvavg = IQR_Mean(rbvlist)
+        #rep bv gr min max avg
+        rbvgrlist = effdf['reportedBookValueGrowthRate'].tolist()
+        rbvgrmin = nan_strip_min(rbvgrlist)
+        rbvgrmax = nan_strip_max(rbvgrlist)
+        rbvgravg = IQR_Mean(rbvgrlist)
+        #nav min max avg
+        navlist = effdf['nav'].tolist()
+        navmin = nan_strip_min(navlist)
+        navmax = nan_strip_max(navlist)
+        navavg = IQR_Mean(navlist)
+        #nav gr min max avg
+        navgrlist = effdf['navGrowthRate'].tolist()
+        navgrmin = nan_strip_min(navgrlist)
+        navgrmax = nan_strip_max(navgrlist)
+        navgravg = IQR_Mean(navgrlist)
+
+    except Exception as err:
+        print('analyze revenue error: ')
+        print(err)
+    finally:
+        pass
 #LUKE
 #now we generate useful meta data about what's being drawn out here: how are all these data relevant? how can they be visualized meaningfully?
 
@@ -4169,32 +4637,6 @@ def efficiency_reading(ticker):
 # time2 = time.time()
 # print('time to complete')
 # print((time2-time1)*1000)
-
-#LUKE
-#Here's what we gotta do:
-#list all fields relevant to a table analysis
-#make model for new table from relevant fields
-#compile their data into a dataframe, upload it to new table via loop that uses all tickers in db
-#year: max == latest year, and you can count members of averages calculated with nan strip count
-#average price
-#average nav, avg nav GR
-#avg book value, rep book value, avg growth rates, min and max could be useful
-#roic, adjroic, roce's, min max avg
-#fcfmargin min max avg
-#fcf gr min max avg
-#capex avg, capex GR avg
-#netcf avg, op cf avg, both growth rate averages
-#eps values, avg, growth rate min max avg
-#revenue growth rate min max avg
-#NI++ GR avg
-#ffo gr min max avg
-#t debt gr min max avg
-# equity x2 gr min max avg
-# roc gr avg , roc avg
-#payout ratios, min max avg
-#divs per share x2 avg, gr's x2 min max avg
-#total divs gr avg
-#shares x2 gr min max avg
 
 # print(set(sourcelist).difference(dblist))
 
