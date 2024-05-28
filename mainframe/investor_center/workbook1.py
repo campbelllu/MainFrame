@@ -3945,10 +3945,19 @@ testlistquery = 'SELECT Year \
 def IQR_Mean(list):
     try:
         cleaned_list = []
+        if list[0] is None:
+            # print('nonetype detected, returning something')
+            # print(list[0])
+            ar_Mean = np.NaN
+            return ar_Mean
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
+            # print('nums cleaning nans')
+            # print(cleaned_list)
         elif isinstance(list[0],str):
             cleaned_list = [eval(i) for i in list]
+            # print('strings cleaning nans')
+            # print(cleaned_list)
         else:
             print('IQR_Mean type was not string or float')
 
@@ -3959,30 +3968,62 @@ def IQR_Mean(list):
         ar_top = median + iqr
         ar_bottom = median - iqr
 
+        # print('q1 q3 iqr artop arbot')
+        # print(q1)
+        # print(q3)
+        # print(iqr)
+        # print(ar_top)
+        # print(ar_bottom)
+
         ar_list = []
         for x in cleaned_list:
             if x < ar_top and x > ar_bottom:
                 ar_list.append(x)
-        
-        ar_Mean = np.mean(ar_list)
+
+        # print('final ar list')
+        # print(ar_list)
+        #When q1=q3, it leaves no mean found, the fix:
+        if len(ar_list) == 0:
+            ar_Mean = np.mean(cleaned_list)
+        else:
+            ar_Mean = np.mean(ar_list)
+        return ar_Mean
     except Exception as err:
         print("IQR Mean error: ")
         print(err)
-    finally:
-        return ar_Mean
+    # finally:
+    #     return ar_Mean
 
 def nan_strip_min(list):
     try:
         cleaned_list = []
+        # print('strip min test length')
+        # print(len(list))
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
-        elif isinstance(list[0],str):# == <class 'str'>:
+            ar_Min = np.min(cleaned_list)
+        elif isinstance(list[0], str):# == <class 'str'>:
             cleaned_list = [eval(i) for i in list]
+            ar_Min = np.min(cleaned_list)
+        elif list[0] is None:
+            # print('nonetype detected, returning something')
+            # print(list[0])
+            ar_Min = np.NaN
+            # for x in range(len(list)):
+                # cleaned_list[x] = np.NaN
+            # cleaned_list = -1
+            # print(list)
+            # print(cleaned_list)
         else:
-            print('strip Min type was not int or float')
+            print('strip Min type was not int, float or none')
+            # print(type(list[0]))
+            # print(list)
 
-        
-        ar_Min = np.min(cleaned_list)
+        # print('pre ar min')
+
+        # ar_Min = np.min(cleaned_list)
+        # print(ar_Min)
+        # print('post ar min')
     except Exception as err:
         print("strip Min error: ")
         print(err)
@@ -3994,13 +4035,19 @@ def nan_strip_max(list):
         cleaned_list = []
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
+            ar_Max = np.max(cleaned_list)
         elif isinstance(list[0],str):# == <class 'str'>:
             cleaned_list = [eval(i) for i in list]
+            ar_Max = np.max(cleaned_list)
+        elif list[0] is None:
+            # print('nonetype detected, returning something')
+            # print(list[0])
+            ar_Max = np.NaN
         else:
             print('strip Max type was not int or float')
 
         
-        ar_Max = np.max(cleaned_list)
+        # ar_Max = np.max(cleaned_list)
     except Exception as err:
         print("strip Max error: ")
         print(err)
@@ -4182,16 +4229,18 @@ def efficiency_reading(ticker):
     finally:
         return df1
 
-def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
+def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     try:
-        ticker = incomedf['Ticker']
+        ticker = incomedf['Ticker'].iloc[:1]
         latest_year = nan_strip_max(incomedf['year'])
+        first_year = nan_strip_min(incomedf['year'])
         numYearsAnalyzed = count_nonzeroes(nan_strip_list(incomedf['year']))
         sector = incomedf['Sector']
         industry = incomedf['Industry']
 
         metadata = pd.DataFrame()
         metadata['Ticker'] = ticker
+        metadata['FirstYear'] = first_year
         metadata['LatestYear'] = latest_year
         metadata['AveragedOverYears'] = numYearsAnalyzed
         metadata['Sector'] = sector
@@ -4207,6 +4256,7 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         #netincome x2, gr's min, max, avg
         netinclist = incomedf['netIncome'].tolist()
+        # print('pre min net income')
         nimin = nan_strip_min(netinclist)
         # nimax = nan_strip_max(netinclist)
         # niavg = IQR_Mean(netinclist)
@@ -4217,6 +4267,11 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         nigravg = IQR_Mean(netincgrlist)
 
         netincNCIlist = incomedf['netIncomeNCI'].tolist()
+        # print('pre min net income NCI')
+        # print(netincNCIlist)
+        # print(netincNCIlist[0])
+        # print(type(netincNCIlist[0]))
+        # print(type(netincNCIlist[0]) is None)
         nincimin = nan_strip_min(netincNCIlist)
         # nincimax = nan_strip_max(netincNCIlist)
         # ninciavg = IQR_Mean(netincNCIlist)
@@ -4230,6 +4285,9 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['netIncomeGrowthAVG'] = nigravg
         metadata['netIncomeNCILow'] = nincimin
         metadata['netIncomeNCIGrowthAVG'] = nincigravg
+
+        # print(metadata['netIncomeNCILow'])
+        # print( metadata['netIncomeNCIGrowthAVG'] )
 
         #ffo gr's min, max, avg
         ffolist = incomedf['ffo'].tolist()
@@ -4249,7 +4307,7 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         fcflist = incomedf['fcf'].tolist()
         fcfmin = nan_strip_min(fcflist)
         # fcfmax = nan_strip_max(fcflist)
-        fcfavg = IQR_Mean(fcflist)
+        # fcfavg = IQR_Mean(fcflist)
 
         fcfgrlist = incomedf['fcfGrowthRate'].tolist()
         # fcfgrmin = nan_strip_min(fcfgrlist)
@@ -4480,17 +4538,17 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         aggpsdivmax = (dpsmax + cdpsmax) / 2
         aggpsdivavg = (dpsavg + cdpsavg) / 2
 
-        metadata['PSaggDivsPerShareLow'] = aggpsdivmin
-        metadata['PSaggDivsPerShareHigh'] = aggpsdivmax
-        metadata['PSaggDivsPerShareAVG'] = aggpsdivavg
+        metadata['aggDivsPSLow'] = aggpsdivmin
+        metadata['aggDivsPSHigh'] = aggpsdivmax
+        metadata['aggDivsPSAVG'] = aggpsdivavg
 
         aggpsdivgrmin = (dpsgrmin + cdpsgrmin) / 2
         aggpsdivgrmax = (dpsgrmax + cdpsgrmax) / 2
         aggpsdivgravg = (dpsgravg + cdpsgravg) / 2
 
-        metadata['PSaggDivsPerShareGrowthLow'] = aggpsdivgrmin
-        metadata['PSaggDivsPerShareGrowthHigh'] = aggpsdivgrmax
-        metadata['PSaggDivsPerShareGrowthAVG'] = aggpsdivgravg
+        metadata['aggDivsPSGrowthLow'] = aggpsdivgrmin
+        metadata['aggDivsPSGrowthHigh'] = aggpsdivgrmax
+        metadata['aggDivsPSGrowthAVG'] = aggpsdivgravg
 
         #agg ps + total avg
         # aggbotnpsdivsmin = (tdivsmin + aggpsdivmin) / 2
@@ -4501,9 +4559,9 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         aggbotnpsdivsgrmax = (tdivsgrmax + aggpsdivgrmax) / 2
         aggbotnpsdivsgravg = (tdivsgravg + aggpsdivgravg) / 2
 
-        metadata['AggDivsPerShareGrowthLow'] = aggbotnpsdivsgrmin
-        metadata['AggDivsPerShareGrowthHigh'] = aggbotnpsdivsgrmax
-        metadata['AggDivsPerShareGrowthAVG'] = aggbotnpsdivsgravg
+        metadata['aggDivsGrowthLow'] = aggbotnpsdivsgrmin
+        metadata['aggDivsGrowthHigh'] = aggbotnpsdivsgrmax
+        metadata['aggDivsGrowthAVG'] = aggbotnpsdivsgravg
 
         #payout ratio min max avg
         prlist = divdf['payoutRatio'].tolist()
@@ -4545,7 +4603,6 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['ROCpsAVG'] = rocpsavg
         metadata['numYearsROCpaid'] = rocpshowmanyyears
 
-        #luke expand for the table below. test with amzn, o, make model, upload data to new db table.
         #roic min max avg
         roiclist = effdf['roic'].tolist()
         roicmin = nan_strip_min(roiclist)
@@ -4581,6 +4638,30 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         aggadjroicmax = (aroicmax + raroicmax) / 2
         aggadjroicavg = (aroicavg + raroicavg) / 2
 
+        #luke here
+        # print('aroic raroic min')
+        # print(aroicmin)
+        # print(raroicmin)
+        # print('agg aroic min avg')
+        # print(aggadjroicmin)
+        # print('aroic raroic max')
+        # print(aroicmax)
+        # print(raroicmax)
+        # print('agg aroic max avg')
+        # print(aggadjroicmax)
+        # print('aroic raroic avg')
+        # print(aroicavg)
+        # print(raroicavg)
+        # print('agg aroic avg avg')
+        # print(aggadjroicavg)
+        
+        # print('aroic avg')
+        # print(aroicavg)
+        # print('raroic avg')
+        # print(cdpsmax)
+        # print(dpsavg)
+        # print(cdpsavg)
+
         metadata['aggaroicLow'] = aggadjroicmin
         metadata['aggaroicHigh'] = aggadjroicmax
         metadata['aggaroicAVG'] = aggadjroicavg
@@ -4591,10 +4672,9 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         crocemax = nan_strip_max(crocelist)
         croceavg = IQR_Mean(crocelist)
 
-        ####luke we def left off here
-        metadata['aroicLow'] = crocemin
-        metadata['aroicHigh'] = crocemax
-        metadata['aroicAVG'] = croceavg
+        metadata['croceLow'] = crocemin
+        metadata['croceHigh'] = crocemax
+        metadata['croceAVG'] = croceavg
 
         #rep roce min max avg
         rrocelist = effdf['reportedRoce'].tolist()
@@ -4602,59 +4682,104 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         rrocemax = nan_strip_max(rrocelist)
         rroceavg = IQR_Mean(rrocelist)
 
-        ###
-        metadata['aroicLow'] = aggbotnpsdivsgrmin
-        metadata['aroicHigh'] = aggbotnpsdivsgrmax
-        metadata['aroicAVG'] = aggbotnpsdivsgravg
+        metadata['rroceLow'] = rrocemin
+        metadata['rroceHigh'] = rrocemax
+        metadata['rroceAVG'] = rroceavg
 
         #agg calc rep roce
         aggrocemin = (crocemin + rrocemin) / 2
         aggrocemax = (crocemax + rrocemax) / 2
         aggroceavg = (croceavg + rroceavg) / 2
 
-        #####
-        metadata['aroicLow'] = aggbotnpsdivsgrmin
-        metadata['aroicHigh'] = aggbotnpsdivsgrmax
-        metadata['aroicAVG'] = aggbotnpsdivsgravg
+        metadata['aggroceLow'] = aggrocemin
+        metadata['aggroceHigh'] = aggrocemax
+        metadata['aggroceAVG'] = aggroceavg
 
         #calc book value min max avg
         cbvlist = effdf['calcBookValue'].tolist()
         cbvmin = nan_strip_min(cbvlist)
-        cbvmax = nan_strip_max(cbvlist)
+        # cbvmax = nan_strip_max(cbvlist)
         cbvavg = IQR_Mean(cbvlist)
+
+        metadata['calcBookValueLow'] = cbvmin
+        metadata['calcBookValueAVG'] = cbvavg
+
         #calc book gr min max avg
         cbvgrlist = effdf['calcBookValueGrowthRate'].tolist()
-        cbvgrmin = nan_strip_min(cbvgrlist)
-        cbvgrmax = nan_strip_max(cbvgrlist)
+        # cbvgrmin = nan_strip_min(cbvgrlist)
+        # cbvgrmax = nan_strip_max(cbvgrlist)
         cbvgravg = IQR_Mean(cbvgrlist)
+
+        metadata['calcBookValueGrowthAVG'] = cbvgravg
+
         #rep bv min max avg
         rbvlist = effdf['reportedBookValue'].tolist()
         rbvmin = nan_strip_min(rbvlist)
-        rbvmax = nan_strip_max(rbvlist)
+        # rbvmax = nan_strip_max(rbvlist)
         rbvavg = IQR_Mean(rbvlist)
+
+        metadata['repBookValueLow'] = rbvmin
+        metadata['repBookValueAVG'] = rbvavg
+
         #rep bv gr min max avg
         rbvgrlist = effdf['reportedBookValueGrowthRate'].tolist()
-        rbvgrmin = nan_strip_min(rbvgrlist)
-        rbvgrmax = nan_strip_max(rbvgrlist)
+        # rbvgrmin = nan_strip_min(rbvgrlist)
+        # rbvgrmax = nan_strip_max(rbvgrlist)
         rbvgravg = IQR_Mean(rbvgrlist)
+
+        metadata['repBookValueGrowthAVG'] = rbvgravg
+
+        aggbvmin = (cbvmin + rbvmin) / 2
+        aggbvavg = (cbvavg + rbvavg) / 2
+        aggbvgravg = (cbvgravg + rbvgravg) / 2
+
+        metadata['aggBookValueLow'] = aggbvmin
+        metadata['aggBookValueAVG'] = aggbvavg
+        metadata['aggBookValueGrowthAVG'] = aggbvgravg
+
         #nav min max avg
         navlist = effdf['nav'].tolist()
-        navmin = nan_strip_min(navlist)
-        navmax = nan_strip_max(navlist)
+        # navmin = nan_strip_min(navlist)
+        # navmax = nan_strip_max(navlist)
         navavg = IQR_Mean(navlist)
+
+        metadata['navAVG'] = navavg
+        
         #nav gr min max avg
         navgrlist = effdf['navGrowthRate'].tolist()
-        navgrmin = nan_strip_min(navgrlist)
-        navgrmax = nan_strip_max(navgrlist)
+        # navgrmin = nan_strip_min(navgrlist)
+        # navgrmax = nan_strip_max(navgrlist)
         navgravg = IQR_Mean(navgrlist)
 
+        metadata['navGrowthAVG'] = navgravg
+
     except Exception as err:
-        print('analyze revenue error: ')
+        print('full analysis error: ')
         print(err)
     finally:
-        pass
-#LUKE
-#now we generate useful meta data about what's being drawn out here: how are all these data relevant? how can they be visualized meaningfully?
+        return metadata
+
+testticker11 = 'ARCC'
+# thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
+# for col in thedfofdfs:
+    # print(col)
+#     print(thedfofdfs[col])
+# print(dividend_reading(testticker11)['payoutRatio'])
+# print(efficiency_reading(testticker11))
+divtable = dividend_reading(testticker11)
+efftable = efficiency_reading(testticker11)
+incometable = income_reading(testticker11)
+balancetable = balanceSheet_reading(testticker11)
+cftable = cashFlow_reading(testticker11)
+
+for x in cftable:
+    if (cftable[x]==0).any():
+        print(x)
+        print(cftable[x])
+        #luke remove zeroes from IQR mean so as to get better readings
+        
+# ughlist = [13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 5.457825890843482, 17.6702751465945, 6.279434850863424, 13.588072493527365]
+# print(IQR_Mean(ughlist))
 
 # print('roce rep then calc min:')
 # print(nan_strip_min(efficiency_reading('AMZN')['reportedRoce'].tolist()))
