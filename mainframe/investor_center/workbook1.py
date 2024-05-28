@@ -4551,34 +4551,71 @@ def income_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         roicmin = nan_strip_min(roiclist)
         roicmax = nan_strip_max(roiclist)
         roicavg = IQR_Mean(roiclist)
+        
+        metadata['roicLow'] = roicmin
+        metadata['roicHigh'] = roicmax
+        metadata['roicAVG'] = roicavg
+
         #adjroic min max avg
         aroiclist = effdf['adjRoic'].tolist()
         aroicmin = nan_strip_min(aroiclist)
         aroicmax = nan_strip_max(aroiclist)
         aroicavg = IQR_Mean(aroiclist)
+
+        metadata['aroicLow'] = aroicmin
+        metadata['aroicHigh'] = aroicmax
+        metadata['aroicAVG'] = aroicavg
+
         #rep adj roic min max avg
         raroiclist = effdf['reportedAdjRoic'].tolist()
         raroicmin = nan_strip_min(raroiclist)
         raroicmax = nan_strip_max(raroiclist)
         raroicavg = IQR_Mean(raroiclist)
+
+        metadata['raroicLow'] = raroicmin
+        metadata['raroicHigh'] = raroicmax
+        metadata['raroicAVG'] = raroicavg
+
         #agg adj roic
         aggadjroicmin = (aroicmin + raroicmin) / 2
         aggadjroicmax = (aroicmax + raroicmax) / 2
         aggadjroicavg = (aroicavg + raroicavg) / 2
+
+        metadata['aggaroicLow'] = aggadjroicmin
+        metadata['aggaroicHigh'] = aggadjroicmax
+        metadata['aggaroicAVG'] = aggadjroicavg
+
         #calc roce min max avg
         crocelist = effdf['calculatedRoce'].tolist()
         crocemin = nan_strip_min(crocelist)
         crocemax = nan_strip_max(crocelist)
         croceavg = IQR_Mean(crocelist)
+
+        ####luke we def left off here
+        metadata['aroicLow'] = crocemin
+        metadata['aroicHigh'] = crocemax
+        metadata['aroicAVG'] = croceavg
+
         #rep roce min max avg
         rrocelist = effdf['reportedRoce'].tolist()
         rrocemin = nan_strip_min(rrocelist)
         rrocemax = nan_strip_max(rrocelist)
         rroceavg = IQR_Mean(rrocelist)
+
+        ###
+        metadata['aroicLow'] = aggbotnpsdivsgrmin
+        metadata['aroicHigh'] = aggbotnpsdivsgrmax
+        metadata['aroicAVG'] = aggbotnpsdivsgravg
+
         #agg calc rep roce
         aggrocemin = (crocemin + rrocemin) / 2
         aggrocemax = (crocemax + rrocemax) / 2
         aggroceavg = (croceavg + rroceavg) / 2
+
+        #####
+        metadata['aroicLow'] = aggbotnpsdivsgrmin
+        metadata['aroicHigh'] = aggbotnpsdivsgrmax
+        metadata['aroicAVG'] = aggbotnpsdivsgravg
 
         #calc book value min max avg
         cbvlist = effdf['calcBookValue'].tolist()
