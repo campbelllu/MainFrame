@@ -18,7 +18,8 @@ import math
 from collections import Counter as counter
 import sqlite3 as sql
 import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
 # import gc
 from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
 converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
@@ -3953,6 +3954,11 @@ def IQR_Mean(list):
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
             # print('nums cleaning nans')
+            print(cleaned_list)
+            # badNumbersMan = [0, 0.0]
+            # cleaned_list = [x for x in cleaned_list if x != 0]
+            # print(cleaned_list)
+            # cleaned_list = [x for x in cleaned_list if x != 0.0]
             # print(cleaned_list)
         elif isinstance(list[0],str):
             cleaned_list = [eval(i) for i in list]
@@ -3993,6 +3999,61 @@ def IQR_Mean(list):
         print(err)
     # finally:
     #     return ar_Mean
+
+def IQR_MeanNZ(list):
+    try:
+        cleaned_list = []
+        if list[0] is None:
+            # print('nonetype detected, returning something')
+            # print(list[0])
+            ar_Mean = np.NaN
+            return ar_Mean
+        if isinstance(list[0],float) or isinstance(list[0],int):
+            cleaned_list = [x for x in list if not np.isnan(x)]
+            # print('nums cleaning nans')
+            # print(cleaned_list)
+            # badNumbersMan = [0, 0.0]
+            cleaned_list = [x for x in cleaned_list if x != 0]
+            # print(cleaned_list)
+            # cleaned_list = [x for x in cleaned_list if x != 0.0]
+            # print(cleaned_list)
+        elif isinstance(list[0],str):
+            cleaned_list = [eval(i) for i in list]
+            # print('strings cleaning nans')
+            # print(cleaned_list)
+        else:
+            print('IQR_Mean type was not string or float')
+
+        q1 = np.percentile(cleaned_list, 25)
+        q3 = np.percentile(cleaned_list, 75)
+        iqr = q3 - q1
+        median = np.median(cleaned_list)
+        ar_top = median + iqr
+        ar_bottom = median - iqr
+
+        # print('q1 q3 iqr artop arbot')
+        # print(q1)
+        # print(q3)
+        # print(iqr)
+        # print(ar_top)
+        # print(ar_bottom)
+
+        ar_list = []
+        for x in cleaned_list:
+            if x < ar_top and x > ar_bottom:
+                ar_list.append(x)
+
+        # print('final ar list')
+        # print(ar_list)
+        #When q1=q3, it leaves no mean found, the fix:
+        if len(ar_list) == 0:
+            ar_Mean = np.mean(cleaned_list)
+        else:
+            ar_Mean = np.mean(ar_list)
+        return ar_Mean
+    except Exception as err:
+        print("IQR Mean error: ")
+        print(err)
 
 def nan_strip_min(list):
     try:
@@ -4251,6 +4312,11 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # revmin = nan_strip_min(revlist)
         # revmax = nan_strip_max(revlist)
         revavg = IQR_Mean(revlist)
+        #luke here
+        #think about counting zeroes in each list. ignore IQR_MEANNZ, and just add an integrity flag based on how many zeroes are in the data
+        #lots of zeroes? bad approximation
+        #a  few zeroes, ok
+        #no zeroes? awesome
 
         metadata['revGrowthAVG'] = revavg
 
@@ -4763,8 +4829,12 @@ testticker11 = 'ARCC'
 # thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 # for col in thedfofdfs:
     # print(col)
-#     print(thedfofdfs[col])
-# print(dividend_reading(testticker11)['payoutRatio'])
+    # print(thedfofdfs[col])
+# print(thedfofdfs['netIncomeGrowthAVG'])
+# print('orig poratio list')
+print(IQR_Mean(income_reading(testticker11)['netIncome']))
+print(income_reading(testticker11)['netIncome'])
+#luke here
 # print(efficiency_reading(testticker11))
 divtable = dividend_reading(testticker11)
 efftable = efficiency_reading(testticker11)
@@ -4772,10 +4842,10 @@ incometable = income_reading(testticker11)
 balancetable = balanceSheet_reading(testticker11)
 cftable = cashFlow_reading(testticker11)
 
-for x in cftable:
-    if (cftable[x]==0).any():
-        print(x)
-        print(cftable[x])
+# for x in cftable:
+#     if (cftable[x]==0).any():
+#         print(x)
+#         print(cftable[x])
         #luke remove zeroes from IQR mean so as to get better readings
         
 # ughlist = [13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 5.457825890843482, 17.6702751465945, 6.279434850863424, 13.588072493527365]
