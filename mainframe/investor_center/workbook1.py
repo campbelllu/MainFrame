@@ -3954,7 +3954,7 @@ def IQR_Mean(list):
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
             # print('nums cleaning nans')
-            print(cleaned_list)
+            # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
             # cleaned_list = [x for x in cleaned_list if x != 0]
             # print(cleaned_list)
@@ -4171,6 +4171,24 @@ def count_nonzeroes(list):
     finally:
         return ar_count
 
+def zeroIntegrity(list1):
+    try:
+        numzeroes = list1.count(0)
+        check = numzeroes / len(list1)
+        if check > 0.5:
+            integrityFlag = 'unreliable'
+        elif check < 0.5 and check >= 0.2:
+            integrityFlag = 'bad'
+        elif check < 0.2 and check >= 0.05:
+            integrityFlag = 'decent'
+        elif check < 0.05:
+            integrityFlag = 'good'
+    except Exception as err:
+        print('zero integrity error: ')
+        print(err)
+    finally:
+        return integrityFlag
+
 # isitalist = print_DB(testlistquery, 'return')['year'].tolist()
 # print(isitalist)
 # shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
@@ -4312,13 +4330,16 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # revmin = nan_strip_min(revlist)
         # revmax = nan_strip_max(revlist)
         revavg = IQR_Mean(revlist)
+        revavgnz = IQR_MeanNZ(revlist)
+        revavginteg = zeroIntegrity(revlist)
+        # print(revlist)
+        # print(zeroIntegrity(revlist))
         #luke here
-        #think about counting zeroes in each list. ignore IQR_MEANNZ, and just add an integrity flag based on how many zeroes are in the data
-        #lots of zeroes? bad approximation
-        #a  few zeroes, ok
-        #no zeroes? awesome
+        #see below and above for what needs to be done across the board
 
         metadata['revGrowthAVG'] = revavg
+        metadata['revGrowthAVGintegrity'] = revavginteg
+        metadata['revGrowthAVGnz'] = revavgnz
 
         #netincome x2, gr's min, max, avg
         netinclist = incomedf['netIncome'].tolist()
@@ -4826,14 +4847,17 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         return metadata
 
 testticker11 = 'ARCC'
-# thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
+thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 # for col in thedfofdfs:
     # print(col)
     # print(thedfofdfs[col])
-# print(thedfofdfs['netIncomeGrowthAVG'])
+print(thedfofdfs['revGrowthAVG'])
+print(thedfofdfs['revGrowthAVGintegrity'])
+print(thedfofdfs['revGrowthAVGnz'])
+
 # print('orig poratio list')
-print(IQR_Mean(income_reading(testticker11)['netIncome']))
-print(income_reading(testticker11)['netIncome'])
+# print(IQR_Mean(income_reading(testticker11)['netIncome']))
+# print(income_reading(testticker11)['netIncome'])
 #luke here
 # print(efficiency_reading(testticker11))
 divtable = dividend_reading(testticker11)
