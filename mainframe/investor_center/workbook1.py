@@ -4003,6 +4003,8 @@ def IQR_Mean(list):
 def IQR_MeanNZ(list):
     try:
         cleaned_list = []
+        # print(list)
+        #luke here
         if list[0] is None:
             # print('nonetype detected, returning something')
             # print(list[0])
@@ -4014,6 +4016,8 @@ def IQR_MeanNZ(list):
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
             cleaned_list = [x for x in cleaned_list if x != 0]
+            if len(cleaned_list) == 0:
+                return np.NaN
             # print(cleaned_list)
             # cleaned_list = [x for x in cleaned_list if x != 0.0]
             # print(cleaned_list)
@@ -4022,7 +4026,7 @@ def IQR_MeanNZ(list):
             # print('strings cleaning nans')
             # print(cleaned_list)
         else:
-            print('IQR_Mean type was not string or float')
+            print('IQR_Mean nz type was not string or float')
 
         q1 = np.percentile(cleaned_list, 25)
         q3 = np.percentile(cleaned_list, 75)
@@ -4052,7 +4056,7 @@ def IQR_MeanNZ(list):
             ar_Mean = np.mean(ar_list)
         return ar_Mean
     except Exception as err:
-        print("IQR Mean error: ")
+        print("IQR Mean nz error: ")
         print(err)
 
 def nan_strip_min(list):
@@ -4176,9 +4180,9 @@ def zeroIntegrity(list1):
         numzeroes = list1.count(0)
         check = numzeroes / len(list1)
         if check > 0.5:
-            integrityFlag = 'unreliable'
-        elif check < 0.5 and check >= 0.2:
             integrityFlag = 'bad'
+        elif check < 0.5 and check >= 0.2:
+            integrityFlag = 'unreliable'
         elif check < 0.2 and check >= 0.05:
             integrityFlag = 'decent'
         elif check < 0.05:
@@ -4332,10 +4336,6 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         revavg = IQR_Mean(revlist)
         revavgnz = IQR_MeanNZ(revlist)
         revavginteg = zeroIntegrity(revlist)
-        # print(revlist)
-        # print(zeroIntegrity(revlist))
-        #luke here
-        #see below and above for what needs to be done across the board
 
         metadata['revGrowthAVG'] = revavg
         metadata['revGrowthAVGintegrity'] = revavginteg
@@ -4352,6 +4352,8 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # nigrmin = nan_strip_min(netincgrlist)
         # nigrmax = nan_strip_max(netincgrlist)
         nigravg = IQR_Mean(netincgrlist)
+        nigravgnz = IQR_MeanNZ(netincgrlist)
+        nigravgint = zeroIntegrity(netincgrlist)
 
         netincNCIlist = incomedf['netIncomeNCI'].tolist()
         # print('pre min net income NCI')
@@ -4367,11 +4369,18 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # nincigrmin = nan_strip_min(netincNCIgrlist)
         # nincigrmax = nan_strip_max(netincNCIgrlist)
         nincigravg = IQR_Mean(netincNCIgrlist)
+        nincigravgnz = IQR_MeanNZ(netincNCIgrlist)
+        nincigrint = zeroIntegrity(netincNCIgrlist)
 
         metadata['netIncomeLow'] = nimin
         metadata['netIncomeGrowthAVG'] = nigravg
+        metadata['netIncomeGrowthAVGintegrity'] = nigravgint
+        metadata['netIncomeGrowthAVGnz'] = nigravgnz
+
         metadata['netIncomeNCILow'] = nincimin
         metadata['netIncomeNCIGrowthAVG'] = nincigravg
+        metadata['netIncomeNCIGrowthAVGintegrity'] = nincigrint
+        metadata['netIncomeNCIGrowthAVGnz'] = nincigravgnz
 
         # print(metadata['netIncomeNCILow'])
         # print( metadata['netIncomeNCIGrowthAVG'] )
@@ -4386,9 +4395,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # ffogrmin = nan_strip_min(ffogrlist)
         # ffogrmax = nan_strip_max(ffogrlist)
         ffogravg = IQR_Mean(ffogrlist)
+        ffogravgnz = IQR_MeanNZ(ffogrlist)
+        ffogravgint = zeroIntegrity(ffogrlist)
 
         metadata['ffoLow'] = ffomin
         metadata['ffoGrowthAVG'] = ffogravg
+        metadata['ffoGrowthAVGintegrity'] = ffogravgint
+        metadata['ffoGrowthAVGnz'] = ffogravgnz
+        
 
         #fcf: gr min max avg
         fcflist = incomedf['fcf'].tolist()
@@ -4400,27 +4414,39 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # fcfgrmin = nan_strip_min(fcfgrlist)
         # fcfgrmax = nan_strip_max(fcfgrlist)
         fcfgravg = IQR_Mean(fcfgrlist)
+        fcfgravgint = zeroIntegrity(fcfgrlist)
+        fcfgravgnz = IQR_MeanNZ(fcfgrlist)
 
         metadata['fcfLow'] = fcfmin
         metadata['fcfGrowthAVG'] = fcfgravg
+        metadata['fcfGrowthAVGintegrity'] = fcfgravgint
+        metadata['fcfGrowthAVGnz'] = fcfgravgnz
 
         #fcfmargin: min max avg
         fcfmarginlist = incomedf['fcfMargin'].tolist()
         fcfmarginmin = nan_strip_min(fcfmarginlist)
         fcfmarginmax = nan_strip_max(fcfmarginlist)
         fcfmarginavg = IQR_Mean(fcfmarginlist)
+        # fcfmarginavgint = zeroIntegrity(fcfmarginlist)
+        # fcfmarginavgnz = IQR_MeanNZ(fcfmarginlist)
 
         metadata['fcfMarginLow'] = fcfmarginmin
         metadata['fcfMarginHigh'] = fcfmarginmax
         metadata['fcfMarginAVG'] = fcfmarginavg
+        # metadata['fcfMarginAVGintegrity'] = fcfmarginavgint
+        # metadata['fcfMarginAVGnz'] = fcfmarginavgnz
 
         #fcfmargin gr min max avg
         fcfmargingrlist = incomedf['fcfMarginGrowthRate'].tolist()
         # fcfmargingrmin = nan_strip_min(fcfmargingrlist)
         # fcfmargingrmax = nan_strip_max(fcfmargingrlist)
         fcfmargingravg = IQR_Mean(fcfmargingrlist)
+        fcfmargingravgint = zeroIntegrity(fcfmargingrlist)
+        fcfmargingravgnz = IQR_MeanNZ(fcfmargingrlist)
 
         metadata['fcfMarginGrowthAVG'] = fcfmargingravg
+        metadata['fcfMarginGrowthAVGintegrity'] = fcfmargingravgint
+        metadata['fcfMarginGrowthAVGnz'] = fcfmargingravgnz
 
         #price min max avg, gr min max avg
         pricelist = incomedf['price'].tolist()
@@ -4454,9 +4480,13 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # repeqgrmin = nan_strip_min(repeqgrlist)
         # repeqgrmax = nan_strip_max(repeqgrlist)
         repeqgravg = IQR_Mean(repeqgrlist)
+        repeqgravgint = zeroIntegrity(repeqlist)
+        repeqgravgnz = IQR_MeanNZ(repeqgrlist)
 
         metadata['reportedEquityLow'] = repeqmin
         metadata['reportedEquityGrowthAVG'] = repeqgravg
+        metadata['reportedEquityGrowthAVGintegrity'] = repeqgravgint
+        metadata['reportedEquityGrowthAVGnz'] = repeqgravgnz
 
         #calcd equity gr min max avg
         calceqlist = balancedf['TotalEquity'].tolist()
@@ -4467,9 +4497,13 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # calceqgrmin = nan_strip_min(calceqgrlist)
         # calceqgrmax = nan_strip_max(calceqgrlist)
         calceqgravg = IQR_Mean(calceqgrlist)
+        calceqgravgint = zeroIntegrity(calceqlist)
+        calceqgravgnz = IQR_MeanNZ(calceqlist)
 
         metadata['calculatedEquityLow'] = calceqmin
         metadata['calculatedEquityGrowthAVG'] = calceqgravg
+        metadata['calculatedEquityGrowthAVGintegrity'] = calceqgravgint
+        metadata['calculatedEquityGrowthAVGnz'] = calceqgravgnz
 
         #equity avg... avg'd
         # aggeqmin = (repeqgrmin + calceqgrmin) / 2
@@ -4491,8 +4525,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # opcfgrmin = nan_strip_min(opcfgrlist)
         # opcfgrmax = nan_strip_max(opcfgrlist)
         opcfgravg = IQR_Mean(opcfgrlist)
+        opcfgravgint = zeroIntegrity(opcfgrlist)
+        opcfgravgnz = IQR_MeanNZ(opcfgrlist)
 
         metadata['operatingCashFlowGrowthAVG'] = opcfgravg
+        metadata['operatingCashFlowGrowthAVGintegrity'] = opcfgravgint
+        metadata['operatingCashFlowGrowthAVGnz'] = opcfgravgnz
 
         #inv cf min max avg
         invcflist = cfdf['investingCashFlow'].tolist()
@@ -4507,8 +4545,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # invcfgrmin = nan_strip_min(invcfgrlist)
         # invcfgrmax = nan_strip_max(invcfgrlist)
         invcfgravg = IQR_Mean(invcfgrlist)
+        invcfgravgint = zeroIntegrity(invcfgrlist)
+        invcfgravgnz = IQR_MeanNZ(invcfgrlist)
 
         metadata['investingCashFlowGrowthAVG'] = invcfgravg
+        metadata['investingCashFlowGrowthAVGintegrity'] = invcfgravgint
+        metadata['investingCashFlowGrowthAVGnz'] = invcfgravgnz
 
         #fin cf min max avg
         fincflist = cfdf['financingCashFlow'].tolist()
@@ -4523,8 +4565,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # fincfgrmin = nan_strip_min(fincfgrlist)
         # fincfgrmax = nan_strip_max(fincfgrlist)
         fincfgravg = IQR_Mean(fincfgrlist)
+        fincfgravgint = zeroIntegrity(fincfgrlist) 
+        fincfgravgnz = IQR_MeanNZ(fincfgrlist)
 
         metadata['financingCashFlowGrowthAVG'] = fincfgravg
+        metadata['financingCashFlowGrowthAVGintegrity'] = fincfgravgint
+        metadata['financingCashFlowGrowthAVGnz'] = fincfgravgnz
 
         #net cf min max avg
         netcflist = cfdf['netCashFlow'].tolist()
@@ -4539,16 +4585,24 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # netcfgrmin = nan_strip_min(netcfgrlist)
         # netcfgrmax = nan_strip_max(netcfgrlist)
         netcfgravg = IQR_Mean(netcfgrlist)
+        netcfgravgint = zeroIntegrity(netcfgrlist)
+        netcfgravgnz = IQR_MeanNZ(netcfgrlist)
 
         metadata['netCashFlowGrowthAVG'] = netcfgravg
+        metadata['netCashFlowGrowthAVGintegrity'] = netcfgravgint
+        metadata['netCashFlowGrowthAVGnz'] = netcfgravgnz
 
         #capex gr min max avg
         capexlist = cfdf['capExGrowthRate'].tolist()
         # capexmin = nan_strip_min(capexlist)
         # capexmax = nan_strip_max(capexlist)
         capexavg = IQR_Mean(capexlist)
+        capexavgint = zeroIntegrity(capexlist)
+        capexavgnz = IQR_MeanNZ(capexlist)
 
         metadata['capexGrowthAVG'] = capexavg
+        metadata['capexGrowthAVGintegrity'] = capexavgint
+        metadata['capexGrowthAVGnz'] = capexavgnz
 
         #shares gr min max avg
         shareslist = divdf['sharesGrowthRate'].tolist()
@@ -4577,8 +4631,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         tdivsgrmin = nan_strip_min(tdivsgrlist)
         tdivsgrmax = nan_strip_max(tdivsgrlist)
         tdivsgravg = IQR_Mean(tdivsgrlist)
+        tdivsgravgint = zeroIntegrity(tdivsgrlist)
+        tdivsgravgnz = IQR_MeanNZ(tdivsgrlist)
 
         metadata['totalDivsPaidGrowthAVG'] = tdivsgravg
+        metadata['totalDivsPaidGrowthAVGintegrity'] = tdivsgravgint
+        metadata['totalDivsPaidGrowthAVGnz'] = tdivsgravgnz
 
         #calc dps
         cdpslist = divdf['calcDivsPerShare'].tolist()
@@ -4595,10 +4653,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         cdpsgrmin = nan_strip_min(cdpsgrlist)
         cdpsgrmax = nan_strip_max(cdpsgrlist)
         cdpsgravg = IQR_Mean(cdpsgrlist)
+        cdpsgravgint = zeroIntegrity(cdpsgrlist)
+        cdpsgravgnz = IQR_MeanNZ(cdpsgrlist)
 
         metadata['calcDivsPerShareGrowthLow'] = cdpsgrmin
         metadata['calcDivsPerShareGrowthHigh'] = cdpsgrmax
         metadata['calcDivsPerShareGrowthAVG'] = cdpsgravg
+        metadata['calcDivsPerShareGrowthAVGintegrity'] = cdpsgravgint
+        metadata['calcDivsPerShareGrowthAVGnz'] = cdpsgravgnz
 
         #dps
         dpslist = divdf['divsPaidPerShare'].tolist()
@@ -4615,10 +4677,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         dpsgrmin = nan_strip_min(dpsgrlist)
         dpsgrmax = nan_strip_max(dpsgrlist)
         dpsgravg = IQR_Mean(dpsgrlist)
+        dpsgravgint = zeroIntegrity(dpsgrlist)
+        dpsgravgnz = IQR_MeanNZ(dpsgrlist)
 
         metadata['repDivsPerShareGrowthLow'] = dpsgrmin
         metadata['repDivsPerShareGrowthHigh'] = dpsgrmax
         metadata['repDivsPerShareGrowthAVG'] = dpsgravg
+        metadata['repDivsPerShareGrowthAVGintegrity'] = dpsgravgint
+        metadata['repDivsPerShareGrowthAVGnz'] = dpsgravgnz
 
         #agg ps
         aggpsdivmin = (dpsmin + cdpsmin) / 2
@@ -4655,30 +4721,42 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         prmin = nan_strip_min(prlist)
         prmax = nan_strip_max(prlist)
         pravg = IQR_Mean(prlist)
+        pravgint = zeroIntegrity(prlist)
+        pravgnz = IQR_MeanNZ(prlist)
 
         metadata['payoutRatioLow'] = prmin
         metadata['payoutRatioHigh'] = prmax
         metadata['payoutRatioAVG'] = pravg
+        metadata['payoutRatioAVGintegrity'] = pravgint
+        metadata['payoutRatioAVGnz'] = pravgnz
 
         #fcfpayratio  min max avg
         fcfprlist = divdf['fcfPayoutRatio'].tolist()
         fcfprmin = nan_strip_min(fcfprlist)
         fcfprmax = nan_strip_max(fcfprlist)
         fcfpravg = IQR_Mean(fcfprlist)
+        fcfpravgint = zeroIntegrity(fcfprlist)
+        fcfpravgnz = IQR_MeanNZ(fcfprlist)
 
         metadata['fcfPayoutRatioLow'] = fcfprmin
         metadata['fcfPayoutRatioHigh'] = fcfprmax
         metadata['fcfPayoutRatioAVG'] = fcfpravg
+        metadata['fcfPayoutRatioAVGintegrity'] = fcfpravgint
+        metadata['fcfPayoutRatioAVGnz'] = fcfpravgnz
 
         #ffo payratio  min max avg
         ffoprlist = divdf['ffoPayoutRatio'].tolist()
         ffoprmin = nan_strip_min(ffoprlist)
         ffoprmax = nan_strip_max(ffoprlist)
         ffopravg = IQR_Mean(ffoprlist)
+        ffopravgint = zeroIntegrity(ffoprlist)
+        ffopravgnz = IQR_MeanNZ(ffoprlist)
 
         metadata['ffoPayoutRatioLow'] = ffoprmin
         metadata['ffoPayoutRatioHigh'] = ffoprmax
         metadata['ffoPayoutRatioAVG'] = ffopravg
+        metadata['ffoPayoutRatioAVGintegrity'] = ffopravgint
+        metadata['ffoPayoutRatioAVGnz'] = ffopravgnz
 
         #roc any payments
         rocpscountlist = divdf['ROCperShare'].tolist()
@@ -4724,30 +4802,6 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         aggadjroicmin = (aroicmin + raroicmin) / 2
         aggadjroicmax = (aroicmax + raroicmax) / 2
         aggadjroicavg = (aroicavg + raroicavg) / 2
-
-        #luke here
-        # print('aroic raroic min')
-        # print(aroicmin)
-        # print(raroicmin)
-        # print('agg aroic min avg')
-        # print(aggadjroicmin)
-        # print('aroic raroic max')
-        # print(aroicmax)
-        # print(raroicmax)
-        # print('agg aroic max avg')
-        # print(aggadjroicmax)
-        # print('aroic raroic avg')
-        # print(aroicavg)
-        # print(raroicavg)
-        # print('agg aroic avg avg')
-        # print(aggadjroicavg)
-        
-        # print('aroic avg')
-        # print(aroicavg)
-        # print('raroic avg')
-        # print(cdpsmax)
-        # print(dpsavg)
-        # print(cdpsavg)
 
         metadata['aggaroicLow'] = aggadjroicmin
         metadata['aggaroicHigh'] = aggadjroicmax
@@ -4796,8 +4850,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # cbvgrmin = nan_strip_min(cbvgrlist)
         # cbvgrmax = nan_strip_max(cbvgrlist)
         cbvgravg = IQR_Mean(cbvgrlist)
+        cbvgravgint = zeroIntegrity(cbvgrlist)
+        cbvgravgnz = IQR_MeanNZ(cbvgrlist)
 
         metadata['calcBookValueGrowthAVG'] = cbvgravg
+        metadata['calcBookValueGrowthAVGintegrity'] = cbvgravgint
+        metadata['calcBookValueGrowthAVGnz'] = cbvgravgnz
 
         #rep bv min max avg
         rbvlist = effdf['reportedBookValue'].tolist()
@@ -4813,8 +4871,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # rbvgrmin = nan_strip_min(rbvgrlist)
         # rbvgrmax = nan_strip_max(rbvgrlist)
         rbvgravg = IQR_Mean(rbvgrlist)
+        rbvgravgint = zeroIntegrity(rbvgrlist)
+        rbvgravgnz = IQR_MeanNZ(rbvgrlist)
 
         metadata['repBookValueGrowthAVG'] = rbvgravg
+        metadata['repBookValueGrowthAVGintegrity'] = rbvgravgint
+        metadata['repBookValueGrowthAVGnz'] = rbvgravgnz
 
         aggbvmin = (cbvmin + rbvmin) / 2
         aggbvavg = (cbvavg + rbvavg) / 2
@@ -4846,14 +4908,15 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     finally:
         return metadata
 
-testticker11 = 'ARCC'
+testticker11 = 'ABR'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-# for col in thedfofdfs:
-    # print(col)
+for col in thedfofdfs:
+    print(col)
     # print(thedfofdfs[col])
-print(thedfofdfs['revGrowthAVG'])
-print(thedfofdfs['revGrowthAVGintegrity'])
-print(thedfofdfs['revGrowthAVGnz'])
+# print(thedfofdfs)
+# print(thedfofdfs['revGrowthAVG'])
+# print(thedfofdfs['revGrowthAVGintegrity'])
+# print(thedfofdfs['revGrowthAVGnz'])
 
 # print('orig poratio list')
 # print(IQR_Mean(income_reading(testticker11)['netIncome']))
