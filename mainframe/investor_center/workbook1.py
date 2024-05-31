@@ -4910,8 +4910,8 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
 testticker11 = 'ABR'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-for col in thedfofdfs:
-    print(col)
+# for col in thedfofdfs:
+    # print(col)
     # print(thedfofdfs[col])
 # print(thedfofdfs)
 # print(thedfofdfs['revGrowthAVG'])
