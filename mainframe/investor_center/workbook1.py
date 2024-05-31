@@ -3946,13 +3946,29 @@ testlistquery = 'SELECT Year \
 def IQR_Mean(list):
     try:
         cleaned_list = []
-        if list[0] is None:
-            # print('nonetype detected, returning something')
-            # print(list[0])
+        nonechecker = 0
+        infchecker = 0
+        for x in list:
+            if x is None:
+                nonechecker += 1
+            if x == np.inf:
+                infchecker += 1
+
+        if nonechecker == len(list):
             ar_Mean = np.NaN
             return ar_Mean
+        if infchecker == len(list):
+            ar_Mean = np.NaN
+            return ar_Mean
+        # if list[0] is None:
+        #     # print('nonetype detected, returning something')
+        #     # print(list[0])
+        #     ar_Mean = np.NaN
+        #     return ar_Mean
+
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
+            cleaned_list = [x for x in list if not np.isinf(x)]
             # print('nums cleaning nans')
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
@@ -4003,15 +4019,30 @@ def IQR_Mean(list):
 def IQR_MeanNZ(list):
     try:
         cleaned_list = []
-        # print(list)
-        #luke here
-        if list[0] is None:
-            # print('nonetype detected, returning something')
-            # print(list[0])
+        nonechecker = 0
+        infchecker = 0
+        for x in list:
+            if x is None:
+                nonechecker += 1
+            if x == np.inf:
+                infchecker += 1
+                
+        if nonechecker == len(list):
             ar_Mean = np.NaN
             return ar_Mean
+        if infchecker == len(list):
+            ar_Mean = np.NaN
+            return ar_Mean
+        # print(list)
+        #luke here
+        # if list[0] is None:
+        #     # print('nonetype detected, returning something')
+        #     # print(list[0])
+        #     ar_Mean = np.NaN
+        #     return ar_Mean
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
+            cleaned_list = [x for x in list if not np.isinf(x)]
             # print('nums cleaning nans')
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
@@ -4179,6 +4210,11 @@ def zeroIntegrity(list1):
     try:
         numzeroes = list1.count(0)
         check = numzeroes / len(list1)
+        numnans = list1.count(np.NaN)
+        checknan = numnans / len(list1)
+        # print('len list, numnans:')
+        # print(len(list1))
+        # print(numnans)
         if check > 0.5:
             integrityFlag = 'bad'
         elif check < 0.5 and check >= 0.2:
@@ -4187,6 +4223,9 @@ def zeroIntegrity(list1):
             integrityFlag = 'decent'
         elif check < 0.05:
             integrityFlag = 'good'
+
+        if checknan == 1:
+            integrityFlag = 'all NaNs'
     except Exception as err:
         print('zero integrity error: ')
         print(err)
@@ -4924,6 +4963,9 @@ def fillMetadata(sector):
 # uploadToDB(table,'Metadata')
 #luke here
 #edit zero integrity to handle nan values. i'm getting good readings on 'inf' and 'nan'. test. figure out why. <3
+#need to handle inf and none values returned to zero integrity and iqr_mean functions.
+#luke final note: run what's open. find good flag for repBookValueGrowthAVGintegrity, find way to include flag above
+
 testticker11 = 'BEP'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 for col in thedfofdfs:
@@ -4936,6 +4978,8 @@ for col in thedfofdfs:
 
 # print('orig poratio list')
 # print(IQR_Mean(income_reading(testticker11)['netIncome']))
+
+
 # print(income_reading(testticker11)['netIncome'])
 #luke here
 # print(efficiency_reading(testticker11))
@@ -4944,6 +4988,25 @@ for col in thedfofdfs:
 # incometable = income_reading(testticker11)
 # balancetable = balanceSheet_reading(testticker11)
 # cftable = cashFlow_reading(testticker11)
+
+# print(efftable['nav'])
+# print('avg')
+# print(IQR_Mean(efftable['nav']))
+# print('no z')
+# print(IQR_MeanNZ(efftable['nav']))
+
+#BEP
+#None test: reportedRoce
+#Nan test: 
+#inf test: reportedBookValue
+#SO
+#None: nav
+# testluke = 'Select reportedBookValue from Mega Where Ticker LIKE \'BEP\''
+# print(print_DB(testluke, 'return'))
+# for x in efftable:
+#     print(efftable[x])
+# print(efftable)
+# ['reportedBookValue'])
 
 # for x in cftable:
 #     if (cftable[x]==0).any():
