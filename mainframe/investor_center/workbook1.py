@@ -3693,12 +3693,12 @@ def testIndies(ticker):
 #---------------------------------------------------------------------
 #DB interaction notes
 #---------------------------------------------------------------------
-def uploadToDB(table):
+def uploadToDB(upload,table):
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
     try:
         conn = sql.connect(db_path)
         query = conn.cursor()
-        table.to_sql('Mega', conn, if_exists='append', index=False)
+        upload.to_sql(table, conn, if_exists='append', index=False)
     except Exception as err:
         print("upload to DB error: ")
         print(err)
@@ -3750,7 +3750,7 @@ def write_list_to_DB(thelist):
                 consol_table = mCTEDB(company_data, i)
                 # print(consol_table)
                 time.sleep(0.1)
-                uploadToDB(consol_table)
+                uploadToDB(consol_table,'Mega')
                 print(i + ' uploaded to DB!')
                 # trackerNum += 1
                 # if trackerNum == 1:
@@ -4908,11 +4908,27 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     finally:
         return metadata
 
-testticker11 = 'ABR'
+def fillMetadata(sector):
+
+    tickerq = 'SELECT DISTINCT Ticker \
+                FROM Mega \
+                WHERE Sector LIKE \'' + sector + '\''
+    # print(print_DB(tickerq, 'return')['Ticker'])
+    tickerfetch = print_DB(tickerq, 'return')['Ticker']
+    for x in tickerfetch:
+        print('Working on ' + x)
+        faTable = full_analysis(income_reading(x), balanceSheet_reading(x), cashFlow_reading(x), dividend_reading(x), efficiency_reading(x))
+        print('Table made for: ' + x)
+        print(faTable)
+# fillMetadata('Utilities')
+# uploadToDB(table,'Metadata')
+#luke here
+#edit zero integrity to handle nan values. i'm getting good readings on 'inf' and 'nan'. test. figure out why. <3
+testticker11 = 'BEP'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-# for col in thedfofdfs:
-    # print(col)
-    # print(thedfofdfs[col])
+for col in thedfofdfs:
+    print(col)
+    print(thedfofdfs[col])
 # print(thedfofdfs)
 # print(thedfofdfs['revGrowthAVG'])
 # print(thedfofdfs['revGrowthAVGintegrity'])
@@ -4923,11 +4939,11 @@ thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(te
 # print(income_reading(testticker11)['netIncome'])
 #luke here
 # print(efficiency_reading(testticker11))
-divtable = dividend_reading(testticker11)
-efftable = efficiency_reading(testticker11)
-incometable = income_reading(testticker11)
-balancetable = balanceSheet_reading(testticker11)
-cftable = cashFlow_reading(testticker11)
+# divtable = dividend_reading(testticker11)
+# efftable = efficiency_reading(testticker11)
+# incometable = income_reading(testticker11)
+# balancetable = balanceSheet_reading(testticker11)
+# cftable = cashFlow_reading(testticker11)
 
 # for x in cftable:
 #     if (cftable[x]==0).any():
