@@ -4491,6 +4491,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         pricelist = incomedf['price'].tolist()
         pricemin = nan_strip_min(pricelist)
         pricemax = nan_strip_max(pricelist)
+        pricelatest = pricelist[-1]
         priceavg = IQR_Mean(pricelist)
         pricegrlist = incomedf['priceGrowthRate'].tolist()
         # pricegrmin = nan_strip_min(pricegrlist)
@@ -4499,6 +4500,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         metadata['priceLow'] = pricemin
         metadata['priceHigh'] = pricemax
+        metadata['priceLatest'] = pricelatest
         metadata['priceAVG'] = priceavg
         metadata['priceGrowthAVG'] = pricegravg
 
@@ -4681,10 +4683,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         cdpslist = divdf['calcDivsPerShare'].tolist()
         cdpsmin = nan_strip_min(cdpslist)
         cdpsmax = nan_strip_max(cdpslist)
+        cdpslatest = cdpslist[-1]
         cdpsavg = IQR_Mean(cdpslist)
 
         metadata['calcDivsPerShareLow'] = cdpsmin
         metadata['calcDivsPerShareHigh'] = cdpsmax
+        metadata['calcDivsPerShareLatest'] = cdpslatest
         metadata['calcDivsPerShareAVG'] = cdpsavg
 
         #calc dps gr divGrowthRateBOCPS
@@ -4705,10 +4709,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         dpslist = divdf['divsPaidPerShare'].tolist()
         dpsmin = nan_strip_min(dpslist)
         dpsmax = nan_strip_max(dpslist)
+        dpslatest = dpslist[-1]
         dpsavg = IQR_Mean(dpslist)
 
         metadata['repDivsPerShareLow'] = dpsmin
         metadata['repDivsPerShareHigh'] = dpsmax
+        metadata['repDivsPerShareLatest'] = dpslatest
         metadata['repDivsPerShareAVG'] = dpsavg
 
         #dps gr divGrowthRateBORPS
@@ -4941,6 +4947,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         metadata['navGrowthAVG'] = navgravg
 
+        metadata['calcDivYieldLatest'] = cdpslatest / pricelatest * 100
+        metadata['calcDivYieldAVG'] = cdpsavg / priceavg * 100
+        metadata['repDivYieldLatest'] = dpslatest / pricelatest * 100
+        metadata['repDivYieldAVG'] = dpsavg / priceavg * 100
+        
+
     except Exception as err:
         print('full analysis error: ')
         print(err)
@@ -4965,6 +4977,7 @@ def fillMetadata(sector):
 #edit zero integrity to handle nan values. i'm getting good readings on 'inf' and 'nan'. test. figure out why. <3
 #need to handle inf and none values returned to zero integrity and iqr_mean functions.
 #luke final note: run what's open. find good flag for repBookValueGrowthAVGintegrity, find way to include flag above
+#then test NEE, AMZN, O, ARCC, MSFT, for any anomalies and call it good!
 
 testticker11 = 'BEP'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
@@ -4989,6 +5002,11 @@ for col in thedfofdfs:
 # balancetable = balanceSheet_reading(testticker11)
 # cftable = cashFlow_reading(testticker11)
 
+# divsPaidPerShare
+# calcDivsPerShare
+
+# print(divtable['divsPaidPerShare'].iloc[-1])
+# print(divtable['calcDivsPerShare'].iloc[-1])
 # print(efftable['nav'])
 # print('avg')
 # print(IQR_Mean(efftable['nav']))
