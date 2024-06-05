@@ -3945,7 +3945,7 @@ testlistquery = 'SELECT Year \
 
 def IQR_Mean(list):
     try:
-        cleaned_list = []
+        # cleaned_list = []
         nonechecker = 0
         infchecker = 0
         for x in list:
@@ -3968,7 +3968,7 @@ def IQR_Mean(list):
 
         if isinstance(list[0],float) or isinstance(list[0],int):
             cleaned_list = [x for x in list if not np.isnan(x)]
-            cleaned_list = [x for x in list if not np.isinf(x)]
+            cleaned_list = [x for x in cleaned_list if not np.isinf(x)]
             # print('nums cleaning nans')
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
@@ -4018,7 +4018,7 @@ def IQR_Mean(list):
 
 def IQR_MeanNZ(list):
     try:
-        cleaned_list = []
+        # cleaned_list = [] #hey luke you commented this out in testing
         nonechecker = 0
         infchecker = 0
         for x in list:
@@ -4026,7 +4026,9 @@ def IQR_MeanNZ(list):
                 nonechecker += 1
             if x == np.inf:
                 infchecker += 1
-                
+        # print('none checker then inf checker')
+        # print(nonechecker)
+        # print(infchecker)        
         if nonechecker == len(list):
             ar_Mean = np.NaN
             return ar_Mean
@@ -4034,31 +4036,35 @@ def IQR_MeanNZ(list):
             ar_Mean = np.NaN
             return ar_Mean
         # print(list)
-        #luke here
+        
         # if list[0] is None:
         #     # print('nonetype detected, returning something')
         #     # print(list[0])
         #     ar_Mean = np.NaN
         #     return ar_Mean
-        if isinstance(list[0],float) or isinstance(list[0],int):
+        if isinstance(list[0], float) or isinstance(list[0], int):
             cleaned_list = [x for x in list if not np.isnan(x)]
-            cleaned_list = [x for x in list if not np.isinf(x)]
+            cleaned_list = [x for x in cleaned_list if not np.isinf(x)]
             # print('nums cleaning nans')
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
             cleaned_list = [x for x in cleaned_list if x != 0]
+            # print('final cleaned list')
+            # print(cleaned_list)
             if len(cleaned_list) == 0:
                 return np.NaN
             # print(cleaned_list)
             # cleaned_list = [x for x in cleaned_list if x != 0.0]
             # print(cleaned_list)
-        elif isinstance(list[0],str):
+        elif isinstance(list[0], str):
             cleaned_list = [eval(i) for i in list]
             # print('strings cleaning nans')
             # print(cleaned_list)
         else:
             print('IQR_Mean nz type was not string or float')
 
+        # print('final cleaned list')
+        # print(cleaned_list)
         q1 = np.percentile(cleaned_list, 25)
         q3 = np.percentile(cleaned_list, 75)
         iqr = q3 - q1
@@ -4082,6 +4088,7 @@ def IQR_MeanNZ(list):
         # print(ar_list)
         #When q1=q3, it leaves no mean found, the fix:
         if len(ar_list) == 0:
+            # print('did filter it all to zero?')
             ar_Mean = np.mean(cleaned_list)
         else:
             ar_Mean = np.mean(ar_list)
@@ -4196,9 +4203,23 @@ def count_nonzeroes(list):
         # else:
         #     print('strip count type was not int or float')
         for x in cleaned_list:
-            if x in (0, 0.0, '0', '0.0'):
+            print(cleaned_list)
+            # if x in (0, 0.0, '0', '0.0'):
+            #     cleaned_list.remove(x)
+            #     print(cleaned_list)
+            if x == 0:
                 cleaned_list.remove(x)
+            if x == 0.0:
+                cleaned_list.remove(x)
+            if x == '0':
+                cleaned_list.remove(x)
+            if x == '0.0':
+                cleaned_list.remove(x)
+            print(cleaned_list)
+        for x in cleaned_list:
+            print(type(x))
         # print(list)
+        #luke here. count non zeroes isn't removing some zeros. trippy
         ar_count = len(cleaned_list)
     except Exception as err:
         print("nonzero count error: ")
@@ -4208,13 +4229,10 @@ def count_nonzeroes(list):
 
 def zeroIntegrity(list1):
     try:
+        #first check zeroes
         numzeroes = list1.count(0)
         check = numzeroes / len(list1)
-        numnans = list1.count(np.NaN)
-        checknan = numnans / len(list1)
-        # print('len list, numnans:')
-        # print(len(list1))
-        # print(numnans)
+
         if check > 0.5:
             integrityFlag = 'bad'
         elif check < 0.5 and check >= 0.2:
@@ -4224,8 +4242,31 @@ def zeroIntegrity(list1):
         elif check < 0.05:
             integrityFlag = 'good'
 
-        if checknan == 1:
-            integrityFlag = 'all NaNs'
+        #now solve empty/nan list returning 'good'
+        newlistdf = pd.DataFrame()
+        newlistdf['test'] = list1
+        newlistdf = newlistdf.replace([np.inf, -np.inf], np.NaN)
+        newlist = newlistdf['test'].dropna()#.tolist()
+        if len(newlist) == 0:
+            integrityFlag = 'emptyAVG'
+
+        # if numnans == len(list1):
+        #     integrityFlag = 'emptyAVG'
+        
+        # checknan = numnans / len(list1)
+        # if numnans > 0:
+        #     print('we counting nans bro')
+        # if numzeroes > 0:
+        #     print('we counting zeroes')
+        # print('len list, numnans:')
+        # print(len(list1))
+        # print(numnans)
+        # for x in list1:
+        #     if np.isinf(x):
+        #         print('found an inf!')
+
+        # if checknan == 1:
+        #     integrityFlag = 'all NaNs'
     except Exception as err:
         print('zero integrity error: ')
         print(err)
@@ -4974,19 +5015,35 @@ def fillMetadata(sector):
 # fillMetadata('Utilities')
 # uploadToDB(table,'Metadata')
 #luke here
-#edit zero integrity to handle nan values. i'm getting good readings on 'inf' and 'nan'. test. figure out why. <3
-#need to handle inf and none values returned to zero integrity and iqr_mean functions.
-#luke final note: run what's open. find good flag for repBookValueGrowthAVGintegrity, find way to include flag above
 #then test NEE, AMZN, O, ARCC, MSFT, for any anomalies and call it good!
+#MSFT: checking roc
+# ROCpsAVG
+# 0    0.0
 
-testticker11 = 'BEP'
+# numYearsROCpaid
+# 0    8
+
+testticker11 = 'MSFT'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-for col in thedfofdfs:
-    print(col)
-    print(thedfofdfs[col])
+# for col in thedfofdfs:
+#     print(col)
+#     print(thedfofdfs[col])
 # print(thedfofdfs)
-# print(thedfofdfs['revGrowthAVG'])
-# print(thedfofdfs['revGrowthAVGintegrity'])
+#luke i think your average isn't dropping nans before returning averages
+print('roc big table')
+print(thedfofdfs['numYearsROCpaid'])
+
+# metadata['revGrowthAVG'] = revavg
+        # metadata['revGrowthAVGintegrity'] = revavginteg
+        # metadata['revGrowthAVGnz'] = revavgnz
+
+        # metadata['netIncomeLow'] = nimin
+        # metadata['netIncomeGrowthAVG'] = nigravg
+        # metadata['netIncomeGrowthAVGintegrity'] = nigravgint
+        # metadata['netIncomeGrowthAVGnz'] = nigravgnz
+
+
+# print(thedfofdfs['repBookValueGrowthAVGintegrity'])
 # print(thedfofdfs['revGrowthAVGnz'])
 
 # print('orig poratio list')
@@ -4996,17 +5053,44 @@ for col in thedfofdfs:
 # print(income_reading(testticker11)['netIncome'])
 #luke here
 # print(efficiency_reading(testticker11))
-# divtable = dividend_reading(testticker11)
+divtable = dividend_reading(testticker11)
 # efftable = efficiency_reading(testticker11)
 # incometable = income_reading(testticker11)
 # balancetable = balanceSheet_reading(testticker11)
 # cftable = cashFlow_reading(testticker11)
+# for x in efftable:
+#     print(x)
+#     print(efftable[x])
+
+# print('roc lil table')
+# print(divtable[['year','ROCperShareGrowthRate']])
+
+# ROCTotal
+# ROCperShare
+# ROCperShareGrowthRate
+# ROCTotalGrowthRate
+
+
+# print('NI IQR ')
+# print((IQR_MeanNZ(incometable['netIncomeGrowthRate'])))
+
+# print('integrity:')
+# print((zeroIntegrity(efftable['reportedBookValue'].tolist())))
+# print('rep BV IQRnz ')
+# print((IQR_MeanNZ(efftable['reportedBookValue'])))
+
+# print('calc ROCE')
+# print(efftable['calculatedRoce'])
+# print('rep BV gr avg')
+# print(thedfofdfs['repBookValueGrowthAVG'])
+# print('above integrity')
+# print(thedfofdfs['repBookValueGrowthAVGintegrity'])
 
 # divsPaidPerShare
 # calcDivsPerShare
 
-# print(divtable['divsPaidPerShare'].iloc[-1])
 # print(divtable['calcDivsPerShare'].iloc[-1])
+
 # print(efftable['nav'])
 # print('avg')
 # print(IQR_Mean(efftable['nav']))
