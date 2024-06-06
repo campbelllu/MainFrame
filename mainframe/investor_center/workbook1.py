@@ -4044,12 +4044,15 @@ def IQR_MeanNZ(list):
         #     return ar_Mean
         if isinstance(list[0], float) or isinstance(list[0], int):
             cleaned_list = [x for x in list if not np.isnan(x)]
+            # print('clean list no nans')
+            # print(cleaned_list)
             cleaned_list = [x for x in cleaned_list if not np.isinf(x)]
-            # print('nums cleaning nans')
+            # print('nums cleaning infs')
             # print(cleaned_list)
             # badNumbersMan = [0, 0.0]
             cleaned_list = [x for x in cleaned_list if x != 0]
-            # print('final cleaned list')
+            # print('final cleaned list no zeroes')
+
             # print(cleaned_list)
             if len(cleaned_list) == 0:
                 return np.NaN
@@ -4195,31 +4198,31 @@ def nan_strip_list(list):
 
 def count_nonzeroes(list):
     try:
-        cleaned_list = list
+        cleaned_list = [n for n in list if n != 0]
         # if isinstance(list[0],float) or isinstance(list[0],int):
         #     cleaned_list = [x for x in list if not np.isnan(x)]
         # elif isinstance(list[0],str):# == <class 'str'>:
         #     cleaned_list = [eval(i) for i in list]
         # else:
         #     print('strip count type was not int or float')
-        for x in cleaned_list:
-            print(cleaned_list)
-            # if x in (0, 0.0, '0', '0.0'):
-            #     cleaned_list.remove(x)
-            #     print(cleaned_list)
-            if x == 0:
-                cleaned_list.remove(x)
-            if x == 0.0:
-                cleaned_list.remove(x)
-            if x == '0':
-                cleaned_list.remove(x)
-            if x == '0.0':
-                cleaned_list.remove(x)
-            print(cleaned_list)
-        for x in cleaned_list:
-            print(type(x))
+        # for x in cleaned_list:
+        #     print(cleaned_list)
+        #     # if x in (0, 0.0, '0', '0.0'):
+        #     #     cleaned_list.remove(x)
+        #     #     print(cleaned_list)
+        #     if x == 0:
+        #         cleaned_list.remove(x)
+        #     if x == 0.0:
+        #         cleaned_list.remove(x)
+        #     if x == '0':
+        #         cleaned_list.remove(x)
+        #     if x == '0.0':
+        #         cleaned_list.remove(x)
+        #     print(cleaned_list)
+        # for x in cleaned_list:
+        #     print(type(x))
         # print(list)
-        #luke here. count non zeroes isn't removing some zeros. trippy
+        
         ar_count = len(cleaned_list)
     except Exception as err:
         print("nonzero count error: ")
@@ -4233,7 +4236,9 @@ def zeroIntegrity(list1):
         numzeroes = list1.count(0)
         check = numzeroes / len(list1)
 
-        if check > 0.5:
+        if check == 1:
+            integrityFlag = 'allZeroes'
+        elif check > 0.5 and check < 1:
             integrityFlag = 'bad'
         elif check < 0.5 and check >= 0.2:
             integrityFlag = 'unreliable'
@@ -4579,8 +4584,8 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # calceqgrmin = nan_strip_min(calceqgrlist)
         # calceqgrmax = nan_strip_max(calceqgrlist)
         calceqgravg = IQR_Mean(calceqgrlist)
-        calceqgravgint = zeroIntegrity(calceqlist)
-        calceqgravgnz = IQR_MeanNZ(calceqlist)
+        calceqgravgint = zeroIntegrity(calceqgrlist)
+        calceqgravgnz = IQR_MeanNZ(calceqgrlist)
 
         metadata['calculatedEquityLow'] = calceqmin
         metadata['calculatedEquityGrowthAVG'] = calceqgravg
@@ -4592,15 +4597,20 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # aggeqmax = (repeqgrmax + calceqgrmax) / 2
         aggeqavg = (repeqgravg + calceqgravg) / 2
 
-        metadata['mixedEquityGrowthAVG'] = aggeqavg
+        metadata['aggEquityGrowthAVG'] = aggeqavg
 
         #op cf min max avg
         opcflist = cfdf['operatingCashFlow'].tolist()
         opcfmin = nan_strip_min(opcflist)
         # opcfmax = nan_strip_max(opcflist)
-        # opcfavg = IQR_Mean(opcflist)
+        opcfavg = IQR_Mean(opcflist)
+        opcfavgint = zeroIntegrity(opcflist)
+        opcfavgnz = IQR_MeanNZ(opcflist)
 
         metadata['operatingCashFlowLow'] = opcfmin
+        metadata['operatingCashFlowAVG'] = opcfavg
+        metadata['operatingCashFlowAVGintegrity'] = opcfavgint
+        metadata['operatingCashFlowAVGnz'] = opcfavgnz
 
         #op cf gr min max avg
         opcfgrlist = cfdf['operatingCashFlowGrowthRate'].tolist()
@@ -4618,9 +4628,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         invcflist = cfdf['investingCashFlow'].tolist()
         invcfmin = nan_strip_min(invcflist)
         # invcfmax = nan_strip_max(invcflist)
-        # invcfavg = IQR_Mean(invcflist)
+        invcfavg = IQR_Mean(invcflist)
+        invcfavgint = zeroIntegrity(invcflist)
+        invcfavgnz = IQR_MeanNZ(invcflist)
 
         metadata['investingCashFlowLow'] = invcfmin
+        metadata['investingCashFlowAVG'] = invcfavg
+        metadata['investingCashFlowAVGintegrity'] = invcfavgint
+        metadata['investingCashFlowAVGnz'] = invcfavgnz
 
         #inv cf gr min max avg
         invcfgrlist = cfdf['investingCashFlowGrowthRate'].tolist()
@@ -4638,9 +4653,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         fincflist = cfdf['financingCashFlow'].tolist()
         fincfmin = nan_strip_min(fincflist)
         # fincfmax = nan_strip_max(fincflist)
-        # fincfavg = IQR_Mean(fincflist)
+        fincfavg = IQR_Mean(fincflist)
+        fincfavgint = zeroIntegrity(fincflist)
+        fincfavgnz = IQR_MeanNZ(fincflist)
 
         metadata['financingCashFlowLow'] = fincfmin
+        metadata['financingCashFlowAVG'] = fincfavg
+        metadata['financingCashFlowAVGintegrity'] = fincfavgint
+        metadata['financingCashFlowAVGnz'] = fincfavgnz
 
         #fin cf gr min max avg
         fincfgrlist = cfdf['financingCashFlowGrowthRate'].tolist()
@@ -4658,9 +4678,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         netcflist = cfdf['netCashFlow'].tolist()
         netcfmin = nan_strip_min(netcflist)
         # netcfmax = nan_strip_max(netcflist)
-        # netcfavg = IQR_Mean(netcflist)
+        netcfavg = IQR_Mean(netcflist)
+        netcfavgint = zeroIntegrity(netcflist)
+        netcfavgnz = IQR_MeanNZ(netcflist)
 
         metadata['netCashFlowLow'] = netcfmin
+        metadata['netCashFlowAVG'] = netcfavg
+        metadata['netCashFlowAVGintegrity'] = netcfavgint
+        metadata['netCashFlowAVGnz'] = netcfavgnz
 
         #net cf gr min max avg
         netcfgrlist = cfdf['netCashFlowGrowthRate'].tolist()
@@ -4988,10 +5013,28 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         metadata['navGrowthAVG'] = navgravg
 
-        metadata['calcDivYieldLatest'] = cdpslatest / pricelatest * 100
-        metadata['calcDivYieldAVG'] = cdpsavg / priceavg * 100
-        metadata['repDivYieldLatest'] = dpslatest / pricelatest * 100
-        metadata['repDivYieldAVG'] = dpsavg / priceavg * 100
+        # print('type of none isn an?')
+        # print(pd.isnull(cdpslatest))
+        if pd.isnull(cdpslatest):
+            metadata['calcDivYieldLatest'] = 0
+        else:
+            metadata['calcDivYieldLatest'] = cdpslatest / pricelatest * 100
+
+        if pd.isnull(cdpsavg):
+            metadata['calcDivYieldAVG'] = 0
+        else:
+            metadata['calcDivYieldAVG'] = cdpsavg / priceavg * 100
+        
+        if pd.isnull(dpslatest):
+            metadata['repDivYieldLatest'] = 0
+        else:
+            metadata['repDivYieldLatest'] = dpslatest / pricelatest * 100
+        
+        if pd.isnull(dpsavg):
+            metadata['repDivYieldAVG'] = 0
+        else:
+            metadata['repDivYieldAVG'] = dpsavg / priceavg * 100
+        
         
 
     except Exception as err:
@@ -5015,23 +5058,22 @@ def fillMetadata(sector):
 # fillMetadata('Utilities')
 # uploadToDB(table,'Metadata')
 #luke here
-#then test NEE, AMZN, O, ARCC, MSFT, for any anomalies and call it good!
+#then test NEE, AMZN, O, ARCC, MSFT, NUE,
+#JPM, UNH, COST, LMT, XOM, VZ,  for any anomalies and call it good!
 #MSFT: checking roc
-# ROCpsAVG
-# 0    0.0
 
-# numYearsROCpaid
-# 0    8
 
-testticker11 = 'MSFT'
+testticker11 = 'NUE'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-# for col in thedfofdfs:
-#     print(col)
-#     print(thedfofdfs[col])
+for col in thedfofdfs:
+    print(col)
+    print(thedfofdfs[col])
 # print(thedfofdfs)
-#luke i think your average isn't dropping nans before returning averages
-print('roc big table')
-print(thedfofdfs['numYearsROCpaid'])
+
+# print('roc big table')
+# print(thedfofdfs['numYearsROCpaid'])
+# print('iqrnz mean of above')
+# print(IQR_MeanNZ(thedfofdfs['numYearsROCpaid']))
 
 # metadata['revGrowthAVG'] = revavg
         # metadata['revGrowthAVGintegrity'] = revavginteg
@@ -5053,7 +5095,7 @@ print(thedfofdfs['numYearsROCpaid'])
 # print(income_reading(testticker11)['netIncome'])
 #luke here
 # print(efficiency_reading(testticker11))
-divtable = dividend_reading(testticker11)
+# divtable = dividend_reading(testticker11)
 # efftable = efficiency_reading(testticker11)
 # incometable = income_reading(testticker11)
 # balancetable = balanceSheet_reading(testticker11)
@@ -5063,7 +5105,12 @@ divtable = dividend_reading(testticker11)
 #     print(efftable[x])
 
 # print('roc lil table')
-# print(divtable[['year','ROCperShareGrowthRate']])
+# print(divtable['ROCperShare'])
+# print('iqr iqrnz mean of above')
+# print(IQR_Mean(divtable['ROCperShare'].tolist()))
+# print(IQR_MeanNZ(divtable['ROCperShare'].tolist()))
+# print('integrity of above')
+# print(zeroIntegrity((divtable['ROCperShare'].tolist())))
 
 # ROCTotal
 # ROCperShare
