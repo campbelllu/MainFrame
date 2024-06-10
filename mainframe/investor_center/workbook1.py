@@ -4567,7 +4567,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # repeqgrmin = nan_strip_min(repeqgrlist)
         # repeqgrmax = nan_strip_max(repeqgrlist)
         repeqgravg = IQR_Mean(repeqgrlist)
-        repeqgravgint = zeroIntegrity(repeqlist)
+        repeqgravgint = zeroIntegrity(repeqgrlist)
         repeqgravgnz = IQR_MeanNZ(repeqgrlist)
 
         metadata['reportedEquityLow'] = repeqmin
@@ -5063,12 +5063,22 @@ def fillMetadata(sector):
 #MSFT: checking roc
 
 
-testticker11 = 'NUE'
+testticker11 = 'CEG'
 thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 for col in thedfofdfs:
     print(col)
-    print(thedfofdfs[col])
+#     print(thedfofdfs[col])
 # print(thedfofdfs)
+
+# elist = [0,1,2,3,4]#,5,6,7,8,9,10]
+# not10 = elist[-10:]
+# print(not10)
+#luke here. consider also displaying how many years a div has been paid in full analysis
+# geegee = 'Select year, totalDivsPaid, calcDivsPerShare, divsPaidPerShare From Mega WHERE Ticker Like \'COST\' Order by year'
+# dfdfdf = print_DB(geegee, 'return')
+# print(dfdfdf)
+# print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
+#########
 
 # print('roc big table')
 # print(thedfofdfs['numYearsROCpaid'])

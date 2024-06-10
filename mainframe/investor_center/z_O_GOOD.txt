@@ -1,0 +1,498 @@
+Ticker
+0    O
+Name: Ticker, dtype: object
+FirstYear
+0    2007
+Name: FirstYear, dtype: int64
+LatestYear
+0    2023
+Name: LatestYear, dtype: int64
+AveragedOverYears
+0    17
+Name: AveragedOverYears, dtype: int64
+Sector
+0    Real Estate
+Name: Sector, dtype: object
+Industry
+0    REIT - Retail
+Name: Industry, dtype: object
+revGrowthAVG
+0    11.139858
+Name: revGrowthAVG, dtype: float64
+revGrowthAVGintegrity
+0    decent
+Name: revGrowthAVGintegrity, dtype: object
+revGrowthAVGnz
+0    12.068179
+Name: revGrowthAVGnz, dtype: float64
+netIncomeLow
+0    130784000.0
+Name: netIncomeLow, dtype: float64
+netIncomeGrowthAVG
+0    1.97733
+Name: netIncomeGrowthAVG, dtype: float64
+netIncomeGrowthAVGintegrity
+0    decent
+Name: netIncomeGrowthAVGintegrity, dtype: object
+netIncomeGrowthAVGnz
+0    4.910586
+Name: netIncomeGrowthAVGnz, dtype: float64
+netIncomeNCILow
+0    157032000
+Name: netIncomeNCILow, dtype: int64
+netIncomeNCIGrowthAVG
+0    0.887273
+Name: netIncomeNCIGrowthAVG, dtype: float64
+netIncomeNCIGrowthAVGintegrity
+0    unreliable
+Name: netIncomeNCIGrowthAVGintegrity, dtype: object
+netIncomeNCIGrowthAVGnz
+0    7.900083
+Name: netIncomeNCIGrowthAVGnz, dtype: float64
+ffoLow
+0    221181000.0
+Name: ffoLow, dtype: float64
+ffoGrowthAVG
+0    9.495216
+Name: ffoGrowthAVG, dtype: float64
+ffoGrowthAVGintegrity
+0    good
+Name: ffoGrowthAVGintegrity, dtype: object
+ffoGrowthAVGnz
+0    9.495216
+Name: ffoGrowthAVGnz, dtype: float64
+fcfLow
+0   -994847000
+Name: fcfLow, dtype: int64
+fcfGrowthAVG
+0   -0.436005
+Name: fcfGrowthAVG, dtype: float64
+fcfGrowthAVGintegrity
+0    decent
+Name: fcfGrowthAVGintegrity, dtype: object
+fcfGrowthAVGnz
+0   -0.479605
+Name: fcfGrowthAVGnz, dtype: float64
+fcfMarginLow
+0   -156.366447
+Name: fcfMarginLow, dtype: float64
+fcfMarginHigh
+0    73.821097
+Name: fcfMarginHigh, dtype: float64
+fcfMarginAVG
+0   -22.797024
+Name: fcfMarginAVG, dtype: float64
+fcfMarginGrowthAVG
+0    3.20638
+Name: fcfMarginGrowthAVG, dtype: float64
+fcfMarginGrowthAVGintegrity
+0    decent
+Name: fcfMarginGrowthAVGintegrity, dtype: object
+fcfMarginGrowthAVGnz
+0    8.192788
+Name: fcfMarginGrowthAVGnz, dtype: float64
+priceLow
+0    22.063953
+Name: priceLow, dtype: float64
+priceHigh
+0    71.910004
+Name: priceHigh, dtype: float64
+priceLatest
+0    57.419998
+Name: priceLatest, dtype: float64
+priceAVG
+0    49.200479
+Name: priceAVG, dtype: float64
+priceGrowthAVG
+0    9.225149
+Name: priceGrowthAVG, dtype: float64
+debtGrowthAVG
+0   NaN
+Name: debtGrowthAVG, dtype: float64
+reportedEquityLow
+0    1488009000
+Name: reportedEquityLow, dtype: int64
+reportedEquityGrowthAVG
+0    13.203644
+Name: reportedEquityGrowthAVG, dtype: float64
+reportedEquityGrowthAVGintegrity
+0    good
+Name: reportedEquityGrowthAVGintegrity, dtype: object
+reportedEquityGrowthAVGnz
+0    13.203644
+Name: reportedEquityGrowthAVGnz, dtype: float64
+calculatedEquityLow
+0    1.488009e+09
+Name: calculatedEquityLow, dtype: float64
+calculatedEquityGrowthAVG
+0    11.31741
+Name: calculatedEquityGrowthAVG, dtype: float64
+calculatedEquityGrowthAVGintegrity
+0    decent
+Name: calculatedEquityGrowthAVGintegrity, dtype: object
+calculatedEquityGrowthAVGnz
+0    13.203644
+Name: calculatedEquityGrowthAVGnz, dtype: float64
+mixedEquityGrowthAVG
+0    12.260527
+Name: mixedEquityGrowthAVG, dtype: float64
+operatingCashFlowLow
+0    226707000
+Name: operatingCashFlowLow, dtype: int64
+operatingCashFlowAVG
+0    6.649373e+08
+Name: operatingCashFlowAVG, dtype: float64
+operatingCashFlowAVGintegrity
+0    good
+Name: operatingCashFlowAVGintegrity, dtype: object
+operatingCashFlowAVGnz
+0    6.649373e+08
+Name: operatingCashFlowAVGnz, dtype: float64
+operatingCashFlowGrowthAVG
+0    12.919603
+Name: operatingCashFlowGrowthAVG, dtype: float64
+operatingCashFlowGrowthAVGintegrity
+0    decent
+Name: operatingCashFlowGrowthAVGintegrity, dtype: object
+operatingCashFlowGrowthAVGnz
+0    12.919603
+Name: operatingCashFlowGrowthAVGnz, dtype: float64
+investingCashFlowLow
+0   -9.354854e+09
+Name: investingCashFlowLow, dtype: float64
+investingCashFlowAVG
+0   -1.282400e+09
+Name: investingCashFlowAVG, dtype: float64
+investingCashFlowAVGintegrity
+0    good
+Name: investingCashFlowAVGintegrity, dtype: object
+investingCashFlowAVGnz
+0   -1.282400e+09
+Name: investingCashFlowAVGnz, dtype: float64
+investingCashFlowGrowthAVG
+0   -17.934144
+Name: investingCashFlowGrowthAVG, dtype: float64
+investingCashFlowGrowthAVGintegrity
+0    decent
+Name: investingCashFlowGrowthAVGintegrity, dtype: object
+investingCashFlowGrowthAVGnz
+0   -19.926827
+Name: investingCashFlowGrowthAVGnz, dtype: float64
+financingCashFlowLow
+0   -222568000.0
+Name: financingCashFlowLow, dtype: float64
+financingCashFlowAVG
+0    7.186631e+08
+Name: financingCashFlowAVG, dtype: float64
+financingCashFlowAVGintegrity
+0    good
+Name: financingCashFlowAVGintegrity, dtype: object
+financingCashFlowAVGnz
+0    7.186631e+08
+Name: financingCashFlowAVGnz, dtype: float64
+financingCashFlowGrowthAVG
+0    9.12403
+Name: financingCashFlowGrowthAVG, dtype: float64
+financingCashFlowGrowthAVGintegrity
+0    decent
+Name: financingCashFlowGrowthAVGintegrity, dtype: object
+financingCashFlowGrowthAVGnz
+0    11.031426
+Name: financingCashFlowGrowthAVGnz, dtype: float64
+netCashFlowLow
+0   -518310000.0
+Name: netCashFlowLow, dtype: float64
+netCashFlowAVG
+0    1.142438e+07
+Name: netCashFlowAVG, dtype: float64
+netCashFlowAVGintegrity
+0    good
+Name: netCashFlowAVGintegrity, dtype: object
+netCashFlowAVGnz
+0    1.142438e+07
+Name: netCashFlowAVGnz, dtype: float64
+netCashFlowGrowthAVG
+0    67.947507
+Name: netCashFlowGrowthAVG, dtype: float64
+netCashFlowGrowthAVGintegrity
+0    decent
+Name: netCashFlowGrowthAVGintegrity, dtype: object
+netCashFlowGrowthAVGnz
+0    73.174238
+Name: netCashFlowGrowthAVGnz, dtype: float64
+capexGrowthAVG
+0    8.71337
+Name: capexGrowthAVG, dtype: float64
+capexGrowthAVGintegrity
+0    decent
+Name: capexGrowthAVGintegrity, dtype: object
+capexGrowthAVGnz
+0    9.681522
+Name: capexGrowthAVGnz, dtype: float64
+sharesGrowthAVG
+0    7.047493
+Name: sharesGrowthAVG, dtype: float64
+dilutedSharesGrowthAVG
+0    8.650942
+Name: dilutedSharesGrowthAVG, dtype: float64
+totalDivsPaidGrowthAVG
+0    13.56889
+Name: totalDivsPaidGrowthAVG, dtype: float64
+totalDivsPaidGrowthAVGintegrity
+0    good
+Name: totalDivsPaidGrowthAVGintegrity, dtype: object
+totalDivsPaidGrowthAVGnz
+0    13.56889
+Name: totalDivsPaidGrowthAVGnz, dtype: float64
+calcDivsPerShareLow
+0    1.676794
+Name: calcDivsPerShareLow, dtype: float64
+calcDivsPerShareHigh
+0    3.05041
+Name: calcDivsPerShareHigh, dtype: float64
+calcDivsPerShareLatest
+0    3.05041
+Name: calcDivsPerShareLatest, dtype: float64
+calcDivsPerShareAVG
+0    2.318634
+Name: calcDivsPerShareAVG, dtype: float64
+calcDivsPerShareGrowthLow
+0    0.303798
+Name: calcDivsPerShareGrowthLow, dtype: float64
+calcDivsPerShareGrowthHigh
+0    19.926699
+Name: calcDivsPerShareGrowthHigh, dtype: float64
+calcDivsPerShareGrowthAVG
+0    2.821127
+Name: calcDivsPerShareGrowthAVG, dtype: float64
+calcDivsPerShareGrowthAVGintegrity
+0    good
+Name: calcDivsPerShareGrowthAVGintegrity, dtype: object
+calcDivsPerShareGrowthAVGnz
+0    2.821127
+Name: calcDivsPerShareGrowthAVGnz, dtype: float64
+repDivsPerShareLow
+0    0.0
+Name: repDivsPerShareLow, dtype: float64
+repDivsPerShareHigh
+0    3.2135
+Name: repDivsPerShareHigh, dtype: float64
+repDivsPerShareLatest
+0    3.051
+Name: repDivsPerShareLatest, dtype: float64
+repDivsPerShareAVG
+0    2.409252
+Name: repDivsPerShareAVG, dtype: float64
+repDivsPerShareGrowthLow
+0   -100.0
+Name: repDivsPerShareGrowthLow, dtype: float64
+repDivsPerShareGrowthHigh
+0    19.926699
+Name: repDivsPerShareGrowthHigh, dtype: float64
+repDivsPerShareGrowthAVG
+0    2.777808
+Name: repDivsPerShareGrowthAVG, dtype: float64
+repDivsPerShareGrowthAVGintegrity
+0    good
+Name: repDivsPerShareGrowthAVGintegrity, dtype: object
+repDivsPerShareGrowthAVGnz
+0    2.777808
+Name: repDivsPerShareGrowthAVGnz, dtype: float64
+aggDivsPSLow
+0    0.838397
+Name: aggDivsPSLow, dtype: float64
+aggDivsPSHigh
+0    3.131955
+Name: aggDivsPSHigh, dtype: float64
+aggDivsPSAVG
+0    2.363943
+Name: aggDivsPSAVG, dtype: float64
+aggDivsPSGrowthLow
+0   -49.848101
+Name: aggDivsPSGrowthLow, dtype: float64
+aggDivsPSGrowthHigh
+0    19.926699
+Name: aggDivsPSGrowthHigh, dtype: float64
+aggDivsPSGrowthAVG
+0    2.799468
+Name: aggDivsPSGrowthAVG, dtype: float64
+aggDivsGrowthLow
+0   -74.924051
+Name: aggDivsGrowthLow, dtype: float64
+aggDivsGrowthHigh
+0    46.535269
+Name: aggDivsGrowthHigh, dtype: float64
+aggDivsGrowthAVG
+0    8.184179
+Name: aggDivsGrowthAVG, dtype: float64
+payoutRatioLow
+0    0.0
+Name: payoutRatioLow, dtype: float64
+payoutRatioHigh
+0    3.252209
+Name: payoutRatioHigh, dtype: float64
+payoutRatioAVG
+0    1.821735
+Name: payoutRatioAVG, dtype: float64
+payoutRatioAVGintegrity
+0    decent
+Name: payoutRatioAVGintegrity, dtype: object
+payoutRatioAVGnz
+0    1.821735
+Name: payoutRatioAVGnz, dtype: float64
+fcfPayoutRatioLow
+0   -1.282598
+Name: fcfPayoutRatioLow, dtype: float64
+fcfPayoutRatioHigh
+0    3.259525
+Name: fcfPayoutRatioHigh, dtype: float64
+fcfPayoutRatioAVG
+0   -0.058087
+Name: fcfPayoutRatioAVG, dtype: float64
+fcfPayoutRatioAVGintegrity
+0    decent
+Name: fcfPayoutRatioAVGintegrity, dtype: object
+fcfPayoutRatioAVGnz
+0   -0.06196
+Name: fcfPayoutRatioAVGnz, dtype: float64
+ffoPayoutRatioLow
+0    0.0
+Name: ffoPayoutRatioLow, dtype: float64
+ffoPayoutRatioHigh
+0    0.972978
+Name: ffoPayoutRatioHigh, dtype: float64
+ffoPayoutRatioAVG
+0    0.789246
+Name: ffoPayoutRatioAVG, dtype: float64
+ffoPayoutRatioAVGintegrity
+0    decent
+Name: ffoPayoutRatioAVGintegrity, dtype: object
+ffoPayoutRatioAVGnz
+0    0.796263
+Name: ffoPayoutRatioAVGnz, dtype: float64
+ROCpsAVG
+0    0.0
+Name: ROCpsAVG, dtype: float64
+numYearsROCpaid
+0    0
+Name: numYearsROCpaid, dtype: int64
+roicLow
+0   NaN
+Name: roicLow, dtype: float64
+roicHigh
+0   NaN
+Name: roicHigh, dtype: float64
+roicAVG
+0   NaN
+Name: roicAVG, dtype: float64
+aroicLow
+0    1.43042
+Name: aroicLow, dtype: float64
+aroicHigh
+0    8.860229
+Name: aroicHigh, dtype: float64
+aroicAVG
+0    4.576043
+Name: aroicAVG, dtype: float64
+raroicLow
+0    1.43042
+Name: raroicLow, dtype: float64
+raroicHigh
+0    56.713708
+Name: raroicHigh, dtype: float64
+raroicAVG
+0    4.725368
+Name: raroicAVG, dtype: float64
+aggaroicLow
+0    1.43042
+Name: aggaroicLow, dtype: float64
+aggaroicHigh
+0    32.786968
+Name: aggaroicHigh, dtype: float64
+aggaroicAVG
+0    4.650705
+Name: aggaroicAVG, dtype: float64
+croceLow
+0    1.43042
+Name: croceLow, dtype: float64
+croceHigh
+0    8.860229
+Name: croceHigh, dtype: float64
+croceAVG
+0    4.576043
+Name: croceAVG, dtype: float64
+rroceLow
+0    1.43042
+Name: rroceLow, dtype: float64
+rroceHigh
+0    56.713708
+Name: rroceHigh, dtype: float64
+rroceAVG
+0    4.725368
+Name: rroceAVG, dtype: float64
+aggroceLow
+0    1.43042
+Name: aggroceLow, dtype: float64
+aggroceHigh
+0    32.786968
+Name: aggroceHigh, dtype: float64
+aggroceAVG
+0    4.650705
+Name: aggroceAVG, dtype: float64
+calcBookValueLow
+0    14.36614
+Name: calcBookValueLow, dtype: float64
+calcBookValueAVG
+0    23.777213
+Name: calcBookValueAVG, dtype: float64
+calcBookValueGrowthAVG
+0    2.305357
+Name: calcBookValueGrowthAVG, dtype: float64
+calcBookValueGrowthAVGintegrity
+0    decent
+Name: calcBookValueGrowthAVGintegrity, dtype: object
+calcBookValueGrowthAVGnz
+0    2.535893
+Name: calcBookValueGrowthAVGnz, dtype: float64
+repBookValueLow
+0    2.22172
+Name: repBookValueLow, dtype: float64
+repBookValueAVG
+0    23.827887
+Name: repBookValueAVG, dtype: float64
+repBookValueGrowthAVG
+0    1.1394
+Name: repBookValueGrowthAVG, dtype: float64
+repBookValueGrowthAVGintegrity
+0    good
+Name: repBookValueGrowthAVGintegrity, dtype: object
+repBookValueGrowthAVGnz
+0    1.1394
+Name: repBookValueGrowthAVGnz, dtype: float64
+aggBookValueLow
+0    8.29393
+Name: aggBookValueLow, dtype: float64
+aggBookValueAVG
+0    23.80255
+Name: aggBookValueAVG, dtype: float64
+aggBookValueGrowthAVG
+0    1.722379
+Name: aggBookValueGrowthAVG, dtype: float64
+navAVG
+0   NaN
+Name: navAVG, dtype: float64
+navGrowthAVG
+0   NaN
+Name: navGrowthAVG, dtype: float64
+calcDivYieldLatest
+0    5.312453
+Name: calcDivYieldLatest, dtype: float64
+calcDivYieldAVG
+0    4.712625
+Name: calcDivYieldAVG, dtype: float64
+repDivYieldLatest
+0    5.31348
+Name: repDivYieldLatest, dtype: float64
+repDivYieldAVG
+0    4.896805
+Name: repDivYieldAVG, dtype: float64
