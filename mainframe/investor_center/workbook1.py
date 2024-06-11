@@ -389,6 +389,11 @@ deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','Deprecia
                     'AdjustmentsForDepreciationAndAmortisationExpense','DeferredTaxLiabilityAsset','AdjustmentsForDepreciationExpense']
 deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
 deprecAndAmor3 = ['DepreciationAndAmortization']
+#notes from below for above
+# missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
+#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
+#it looks like depre and amor isn't getting the full picture for the above stocks
+#realty income is good tho. interesting.
 
 netAssetValue = ['NetAssetValuePerShare'] 
 
@@ -1481,7 +1486,7 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         # print('assets?')
         # print(assets)
         #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time.
-        # LUKE RETHINK THIS
+        # LUKE RETHINK THIS...maybe
         assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK','Units'], how='outer')
         
         # print('post merge ass and lias')
@@ -3682,13 +3687,11 @@ def testIndies(ticker):
 
 #########################################################
 
-### LUKE
+### LUKE - ToDO
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # Clean code: this includes packages up top, turns out.
 # Automate setup of initial ciks, tickers, up top
-#check below and keep your ear to the grindstone.
-
 
 #---------------------------------------------------------------------
 #DB interaction notes
@@ -3804,7 +3807,7 @@ def print_DB(thequery, superflag):
     # conn.commit()
     
 
-    df12 = pd.read_sql(thequery,conn)# WHERE Sector LIKE \'Basic Mat%\'  ;', conn)
+    df12 = pd.read_sql(thequery,conn)
     query.close()
     conn.close()
 
@@ -3873,8 +3876,8 @@ def find_badUnitsDB():
 
 # def delete_DB():
     #only use this while testing, or suffer the consequences
-    conn = sql.connect(db_path)
-    query = conn.cursor()
+    # conn = sql.connect(db_path)
+    # query = conn.cursor()
 
     # q = 'SELECT * FROM Mega ;'
     # query.execute(q)
@@ -3885,17 +3888,17 @@ def find_badUnitsDB():
     # query.execute(thequery)
     # conn.commit()
 
-    del_query = 'DELETE FROM Mega;'
-    query.execute(del_query)
-    conn.commit()
+    # del_query = 'DELETE FROM Mega;'
+    # query.execute(del_query)
+    # conn.commit()
 
     # df12 = pd.DataFrame(query.execute('SELECT * FROM Revenue;'))
 
-    df12 = pd.read_sql('SELECT * FROM Mega;', conn)
-    print(df12)
+    # df12 = pd.read_sql('SELECT * FROM Mega;', conn)
+    # print(df12)
 
-    query.close()
-    conn.close()
+    # query.close()
+    # conn.close()
 #----------------------------------------------------------------------------------------------
 # dblist = print_DB()['ticker']
 # print(datlist)
@@ -4018,7 +4021,6 @@ def IQR_Mean(list):
 
 def IQR_MeanNZ(list):
     try:
-        # cleaned_list = [] #hey luke you commented this out in testing
         nonechecker = 0
         infchecker = 0
         for x in list:
@@ -4278,21 +4280,6 @@ def zeroIntegrity(list1):
     finally:
         return integrityFlag
 
-# isitalist = print_DB(testlistquery, 'return')['year'].tolist()
-# print(isitalist)
-# shareslist = print_DB(sharesquery, 'return')['sharesGrowthRate'].tolist()
-# print(shareslist)
-
-# print(nan_strip_min(shareslist))
-# print(nan_strip_max(shareslist))
-# print(nan_strip_count(shareslist))
-# print(nan_strip_list(shareslist))
-
-# print(nan_strip_min(isitalist))
-# print(nan_strip_max(isitalist))
-# print(len(shareslist))
-# print(nan_strip_count(shareslist))
-# print(count_nonzeroes(nan_strip_list(shareslist)))
 
 def income_reading(ticker):
     try:
@@ -4339,8 +4326,10 @@ def cashFlow_reading(ticker):
     try:
         conn = sql.connect(db_path)
         query = conn.cursor()
-        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingCashflow, operatingCashflowGrowthRate, investingCashFlow, investingCashFlowGrowthRate, \
-                        financingCashFlow, financingCashFlowGrowthRate, netCashFlow, netCashFlowGrowthRate, interestPaid, \
+        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingCashflow, operatingCashflowGrowthRate, \
+                        investingCashFlow, investingCashFlowGrowthRate, \
+                        financingCashFlow, financingCashFlowGrowthRate, \
+                        netCashFlow, netCashFlowGrowthRate, interestPaid, \
                         capEx, capExGrowthRate, depreNAmor, gainSaleProp \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
@@ -4487,6 +4476,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['ffoGrowthAVG'] = ffogravg
         metadata['ffoGrowthAVGintegrity'] = ffogravgint
         metadata['ffoGrowthAVGnz'] = ffogravgnz
+
+        # reportedEPS, 
+        
+        
+        
+        #reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate,
         
 
         #fcf: gr min max avg
@@ -5054,56 +5049,88 @@ def fillMetadata(sector):
         print('Working on ' + x)
         faTable = full_analysis(income_reading(x), balanceSheet_reading(x), cashFlow_reading(x), dividend_reading(x), efficiency_reading(x))
         print('Table made for: ' + x)
-        print(faTable)
-# fillMetadata('Utilities')
-# uploadToDB(table,'Metadata')
-#luke here
-#then test NEE, AMZN, O, ARCC, MSFT, NUE,
-#JPM, UNH, COST, LMT, XOM, VZ,  for any anomalies and call it good!
-#MSFT: checking roc
+        # print(faTable)
+        uploadToDB(faTable,'Metadata')
+# time1 = time.time()
+# time2 = time.time()
+# print('time to complete')
+# print((time2-time1)*1000)
+
+# fillMetadata('Consumer Defensive')
+
+# 0                Utilities
+# 1          Basic Materials
+# 2   Communication Services
+# 3        Consumer Cyclical
+# 4               Technology
+# 5              Real Estate
+# 6              Industrials
+# 7               Healthcare
+# 8       Financial Services
+# 9                   Energy
+# 10      Consumer Defensive
 
 
-testticker11 = 'CEG'
-thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-for col in thedfofdfs:
-    print(col)
+
+
+#luke here  Ticker, Sector, Industry, Year,
+#Growth analysis: revenue minimum, revenueGrowthRate, 
+                    #netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, 
+                    #ffo, ffoGrowthRate, 
+                    # reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
+                    # fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, \
+                    # price, priceGrowthRAte \
+
+#equity analysis:       TotalDebtGrowthRate, assets, liabilities, \
+                        # ReportedTotalEquity, ReportedTotalEquityGrowthRate, TotalEquity, TotalEquityGrowthRate
+
+#cashflow analysis:     operatingCashflow, operatingCashflowGrowthRate, \
+                        # investingCashFlow, investingCashFlowGrowthRate, \
+                        # financingCashFlow, financingCashFlowGrowthRate, \
+                        # netCashFlow, netCashFlowGrowthRate, interestPaid, \
+                        # capEx, capExGrowthRate, depreNAmor, gainSaleProp
+
+#dividend analysis:     shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
+                        # divsPaidPerShare, calcDivsPerShare, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, payoutRatio, \
+                        # fcfPayoutRatio, ffoPayoutRatio, ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate 
+
+#efficiency analysis:   operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
+                        # roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, calcBookValue, calcBookValueGrowthRate, \
+                        # reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate 
+
+# testticker11 = 'CEG'
+# thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
+# for col in thedfofdfs:
+    # print(col)
 #     print(thedfofdfs[col])
 # print(thedfofdfs)
 
-# elist = [0,1,2,3,4]#,5,6,7,8,9,10]
-# not10 = elist[-10:]
-# print(not10)
-#luke here. consider also displaying how many years a div has been paid in full analysis
-# geegee = 'Select year, totalDivsPaid, calcDivsPerShare, divsPaidPerShare From Mega WHERE Ticker Like \'COST\' Order by year'
+# geegee = 'Select distinct Ticker From Metadata WHERE Sector Like \'Utilities\''
 # dfdfdf = print_DB(geegee, 'return')
-# print(dfdfdf)
+# print(dfdfdf['Ticker'])
+# print(util['Ticker'])
 # print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
+
+# hehe = 'INSERT INTO Metadata_Backup SELECT * FROM Metadata'
+hehe = 'Select Count(distinct Ticker) From Metadata'
+gege = 'Select Count(distinct Ticker) From Metadata_Backup'
+# conn = sql.connect(db_path)
+# query = conn.cursor()
+# testluke = query.execute(hehe)
+# testluke2 = conn.commit()
+# query.close()
+# conn.close()
+
+# print(testluke)
+# print(testluke2)
+
+print_DB(hehe, 'print')
+print_DB(gege, 'print')
+#luke: you can rerun this to confirm, but it looks like the backup went swimmingly. now we just look at how to delete metadata, add in the missing fields, and repopulate the db altogether
+#sadness.jpg. but you got this!
 #########
 
-# print('roc big table')
-# print(thedfofdfs['numYearsROCpaid'])
-# print('iqrnz mean of above')
-# print(IQR_MeanNZ(thedfofdfs['numYearsROCpaid']))
-
-# metadata['revGrowthAVG'] = revavg
-        # metadata['revGrowthAVGintegrity'] = revavginteg
-        # metadata['revGrowthAVGnz'] = revavgnz
-
-        # metadata['netIncomeLow'] = nimin
-        # metadata['netIncomeGrowthAVG'] = nigravg
-        # metadata['netIncomeGrowthAVGintegrity'] = nigravgint
-        # metadata['netIncomeGrowthAVGnz'] = nigravgnz
-
-
-# print(thedfofdfs['repBookValueGrowthAVGintegrity'])
-# print(thedfofdfs['revGrowthAVGnz'])
-
-# print('orig poratio list')
-# print(IQR_Mean(income_reading(testticker11)['netIncome']))
-
-
-# print(income_reading(testticker11)['netIncome'])
-#luke here
+#testing each table here
 # print(efficiency_reading(testticker11))
 # divtable = dividend_reading(testticker11)
 # efftable = efficiency_reading(testticker11)
@@ -5121,86 +5148,25 @@ for col in thedfofdfs:
 # print(IQR_MeanNZ(divtable['ROCperShare'].tolist()))
 # print('integrity of above')
 # print(zeroIntegrity((divtable['ROCperShare'].tolist())))
-
-# ROCTotal
-# ROCperShare
-# ROCperShareGrowthRate
-# ROCTotalGrowthRate
-
-
 # print('NI IQR ')
 # print((IQR_MeanNZ(incometable['netIncomeGrowthRate'])))
-
 # print('integrity:')
 # print((zeroIntegrity(efftable['reportedBookValue'].tolist())))
 # print('rep BV IQRnz ')
 # print((IQR_MeanNZ(efftable['reportedBookValue'])))
-
 # print('calc ROCE')
 # print(efftable['calculatedRoce'])
 # print('rep BV gr avg')
 # print(thedfofdfs['repBookValueGrowthAVG'])
 # print('above integrity')
 # print(thedfofdfs['repBookValueGrowthAVGintegrity'])
-
-# divsPaidPerShare
-# calcDivsPerShare
-
 # print(divtable['calcDivsPerShare'].iloc[-1])
-
 # print(efftable['nav'])
 # print('avg')
 # print(IQR_Mean(efftable['nav']))
 # print('no z')
 # print(IQR_MeanNZ(efftable['nav']))
 
-#BEP
-#None test: reportedRoce
-#Nan test: 
-#inf test: reportedBookValue
-#SO
-#None: nav
-# testluke = 'Select reportedBookValue from Mega Where Ticker LIKE \'BEP\''
-# print(print_DB(testluke, 'return'))
-# for x in efftable:
-#     print(efftable[x])
-# print(efftable)
-# ['reportedBookValue'])
-
-# for x in cftable:
-#     if (cftable[x]==0).any():
-#         print(x)
-#         print(cftable[x])
-        #luke remove zeroes from IQR mean so as to get better readings
-        
-# ughlist = [13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 13.588072493527365, 5.457825890843482, 17.6702751465945, 6.279434850863424, 13.588072493527365]
-# print(IQR_Mean(ughlist))
-
-# print('roce rep then calc min:')
-# print(nan_strip_min(efficiency_reading('AMZN')['reportedRoce'].tolist()))
-# print(nan_strip_min(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
-
-# print('roce rep then calc max:')
-# print(nan_strip_max(efficiency_reading('AMZN')['reportedRoce'].tolist()))
-# print(nan_strip_max(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
-
-# print('roce rep then calc avg:')
-# print(IQR_Mean(efficiency_reading('AMZN')['reportedRoce'].tolist()))
-# print(IQR_Mean(efficiency_reading('AMZN')['calculatedRoce'].tolist()))
-
-# print(IQR_Mean(isitalist))
-
-# time1 = time.time()
-# time2 = time.time()
-# print('time to complete')
-# print((time2-time1)*1000)
-
-# print(set(sourcelist).difference(dblist))
-
-# print_ticker_DB('PAM')
-
-# find_badUnitsDB()
-# checkUnits_DB('HTOO') #again to see if it works. win! 
 
 ###### NO#######
 # delete_DB()
@@ -5214,12 +5180,6 @@ lickit = []
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
-
-#weird clean units error : hdb
-missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
-#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
-#it looks like depre and amor isn't getting the full picture for the above stocks
-#realty income is good tho. interesting.
 
 
 ticker235 = 'NEE'  #agnc, wmb, 
@@ -5282,12 +5242,9 @@ version235 = '2'
 
 # print(set(techmissingincomeyears).difference(techmissingroicyears))
 
-
 # print(set(wrong).difference(REincwrongendyear))
 # print(len(techmissingincomecapEx))
 # print(len(techmissingincomecapex2))
-
-
 
 # checkYearsIntegritySector(util,0,10)
 
@@ -5308,16 +5265,6 @@ version12 = '2'
 # print(ticker12 + ' divs and roic table: ')
 # table12 = makeConsolidatedTableEntry(ticker12, year12, version12, False)
 # print(table12['ReportedTotalEquity'])
-# print(table12['TotalEquity'])
-# print(table12[['year','depreNAmor']])
-# print(table12['netIncomeNCI'])
-# print(table12['Units'])
-# print(table12)
-# print(curConvert.currencies)
-
-# print(table12['netIncomeNCIGrowthRate'])
-# print(table12.loc[table12['Units']=='TWD']['netIncome'])
-# print(table12.loc[table12['Units']=='USD']['netIncome'])
 
 #################
 
@@ -5393,25 +5340,9 @@ version123 = '2'
 # print('AMZN roic: ')
 # print(makeROICtableEntry(ticker123,'2024',version123,False))
 
-# ticker = 'MSFT'
-# stock = yf.Ticker(ticker)
-# dict1 = stock.info
-# marketCap = dict1['marketCap']
 
-# # pe = dict1['pe']
-# # for x in dict1:
-# #     print(x)
-# print(marketCap)
 
-# print(set(fullNulls).difference(yearsOff))
-# print(set(fullNulls).difference(fullNulls))
 
-# print(set(divsYearsOff).intersection(incYearsOff))
-# fullNullOverlap = set(incFullNulls).intersection(divsFullNulls)
-# yearsOffOverlap = set(divsYearsOff).intersection(incYearsOff)
-# print(fullNullOverlap)
-# print(yearsOffOverlap)
-# print(set(fullNullOverlap).intersection(yearsOffOverlap))
 
 
 #---------------------------------------------------------------------
@@ -5453,7 +5384,35 @@ version123 = '2'
 # loopCheck(eps)
 # loopCheck(revenue)
 # loopCheck(ultimateList)
+###
+#time tests
+# time1 = time.time()
+# time2 = time.time()
+# print('time to complete')
+# print((time2-time1)*1000)
+###
+#yahoo stuff
+# ticker = 'MSFT'
+# stock = yf.Ticker(ticker)
+# dict1 = stock.info
+# marketCap = dict1['marketCap']
 
+# # pe = dict1['pe']
+# # for x in dict1:
+# #     print(x)
+# print(marketCap)
+###
+
+#set checks
+# print(set(fullNulls).difference(yearsOff))
+# print(set(fullNulls).difference(fullNulls))
+
+# print(set(divsYearsOff).intersection(incYearsOff))
+# fullNullOverlap = set(incFullNulls).intersection(divsFullNulls)
+# yearsOffOverlap = set(divsYearsOff).intersection(incYearsOff)
+# print(fullNullOverlap)
+# print(yearsOffOverlap)
+# print(set(fullNullOverlap).intersection(yearsOffOverlap))
 ###
 
 # Let’s quickly visualize some of the data we just downloaded. 
