@@ -3874,7 +3874,7 @@ def find_badUnitsDB():
     conn.close()
 
 
-# def delete_DB():
+# def delete_DB(table):
     #only use this while testing, or suffer the consequences
     # conn = sql.connect(db_path)
     # query = conn.cursor()
@@ -3888,7 +3888,7 @@ def find_badUnitsDB():
     # query.execute(thequery)
     # conn.commit()
 
-    # del_query = 'DELETE FROM Mega;'
+    # del_query = 'DELETE FROM \'' + table + '\';'
     # query.execute(del_query)
     # conn.commit()
 
@@ -4477,11 +4477,78 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['ffoGrowthAVGintegrity'] = ffogravgint
         metadata['ffoGrowthAVGnz'] = ffogravgnz
 
+
+        #luke here models
         # reportedEPS, 
+        repslist = incomedf['reportedEPS'].tolist()
+        repsmin = nan_strip_min(repslist)
+        repsavg = IQR_Mean(repslist)
+        repsavgint = zeroIntegrity(repslist)
+        repsavgnz = IQR_MeanNZ(repslist)
+
+        metadata['repsLow'] = repsmin
+        metadata['repsAVG'] = repsavg
+        metadata['repsAVGintegrity'] = repsavgint
+        metadata['repsAVGnz'] = repsavgnz
+        
+        #reportedEPSGrowthRate, 
+        repsgrlist = incomedf['reportedEPSGrowthRate'].tolist()
+        # repsgrmin = nan_strip_min(repsgrlist)
+        repsgravg = IQR_Mean(repsgrlist)
+        repsgrint = zeroIntegrity(repsgrlist)
+        repsgravgnz = IQR_MeanNZ(repsgrlist)
+
+        metadata['repsGrowthAVG'] = repsgravg
+        metadata['repsGrowthAVGintegrity'] = repsgrint
+        metadata['repsGrowthAVGnz'] = repsgravgnz
+
+        #calculatedEPS, 
+        cepslist = incomedf['calculatedEPS'].tolist()
+        cepsmin = nan_strip_min(cepslist)
+        cepsavg = IQR_Mean(cepslist)
+        cepsavgint = zeroIntegrity(cepslist)
+        cepsavgnz = IQR_MeanNZ(cepslist)
+
+        metadata['cepsLow'] = cepsmin
+        metadata['cepsAVG'] = cepsavg
+        metadata['cepsAVGintegrity'] = cepsavgint
+        metadata['cepsAVGnz'] = cepsavgnz
+        
+        #calculatedEPSGrowthRate, 
+        cepsgrlist = incomedf['calculatedEPSGrowthRate'].tolist()
+        # repsgrmin = nan_strip_min(repsgrlist)
+        cepsgravg = IQR_Mean(cepsgrlist)
+        cepsgrint = zeroIntegrity(cepsgrlist)
+        cepsgravgnz = IQR_MeanNZ(cepsgrlist)
+
+        metadata['cepsGrowthAVG'] = cepsgravg
+        metadata['cepsGrowthAVGintegrity'] = cepsgrint
+        metadata['cepsGrowthAVGnz'] = cepsgravgnz
+
+        
+        #reitEPS, 
+        reitepslist = incomedf['reitEPS'].tolist()
+        reitepsmin = nan_strip_min(reitepslist)
+        reitepsavg = IQR_Mean(reitepslist)
+        reitepsavgint = zeroIntegrity(reitepslist)
+        reitepsavgnz = IQR_MeanNZ(reitepslist)
+
+        metadata['reitepsLow'] = reitepsmin
+        metadata['reitepsAVG'] = reitepsavg
+        metadata['reitepsAVGintegrity'] = reitepsavgint
+        metadata['reitepsAVGnz'] = reitepsavgnz
         
         
-        
-        #reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate,
+        #reitEPSGrowthRate,
+        reitepsgrlist = incomedf['reitEPSGrowthRate'].tolist()
+        # repsgrmin = nan_strip_min(repsgrlist)
+        reitepsgravg = IQR_Mean(reitepsgrlist)
+        reitepsgrint = zeroIntegrity(reitepsgrlist)
+        reitepsgravgnz = IQR_MeanNZ(reitepsgrlist)
+
+        metadata['reitepsGrowthAVG'] = reitepsgravg
+        metadata['reitepsGrowthAVGintegrity'] = reitepsgrint
+        metadata['reitepsGrowthAVGnz'] = reitepsgravgnz
         
 
         #fcf: gr min max avg
@@ -5056,7 +5123,7 @@ def fillMetadata(sector):
 # print('time to complete')
 # print((time2-time1)*1000)
 
-# fillMetadata('Consumer Defensive')
+# fillMetadata('Utilities')
 
 # 0                Utilities
 # 1          Basic Materials
@@ -5098,10 +5165,10 @@ def fillMetadata(sector):
                         # roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, calcBookValue, calcBookValueGrowthRate, \
                         # reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate 
 
-# testticker11 = 'CEG'
+# testticker11 = 'MSFT'
 # thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 # for col in thedfofdfs:
-    # print(col)
+#     print(col)
 #     print(thedfofdfs[col])
 # print(thedfofdfs)
 
@@ -5112,17 +5179,16 @@ def fillMetadata(sector):
 # print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
 
 # hehe = 'INSERT INTO Metadata_Backup SELECT * FROM Metadata'
+# hehe = 'DELETE FROM Metadata'
 hehe = 'Select Count(distinct Ticker) From Metadata'
 gege = 'Select Count(distinct Ticker) From Metadata_Backup'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
-# testluke = query.execute(hehe)
-# testluke2 = conn.commit()
+# query.execute(hehe)
+# conn.commit()
 # query.close()
 # conn.close()
 
-# print(testluke)
-# print(testluke2)
 
 print_DB(hehe, 'print')
 print_DB(gege, 'print')

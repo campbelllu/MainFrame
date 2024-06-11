@@ -206,6 +206,35 @@ class Metadata(models.Model):
     ffoGrowthAVG = models.FloatField(blank=True, null=True)
     ffoGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     ffoGrowthAVGnz = models.FloatField(blank=True, null=True)
+
+    repsLow = models.FloatField(blank=True, null=True)
+    repsAVG = models.FloatField(blank=True, null=True)
+    repsAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    repsAVGnz = models.FloatField(blank=True, null=True)
+        
+    repsGrowthAVG = models.FloatField(blank=True, null=True)
+    repsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    repsGrowthAVGnz = models.FloatField(blank=True, null=True)
+
+    cepsLow = models.FloatField(blank=True, null=True)
+    cepsAVG = models.FloatField(blank=True, null=True)
+    cepsAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    cepsAVGnz = models.FloatField(blank=True, null=True)
+
+    cepsGrowthAVG = models.FloatField(blank=True, null=True)
+    cepsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    cepsGrowthAVGnz = models.FloatField(blank=True, null=True)
+
+    reitepsLow = models.FloatField(blank=True, null=True)
+    reitepsAVG = models.FloatField(blank=True, null=True)
+    reitepsAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    reitepsAVGnz = models.FloatField(blank=True, null=True)
+
+    reitepsGrowthAVG = models.FloatField(blank=True, null=True)
+    reitepsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    reitepsGrowthAVGnz = models.FloatField(blank=True, null=True)
+
+
     fcfLow = models.IntegerField(blank=True, null=True)
     fcfGrowthAVG = models.FloatField(blank=True, null=True)
     fcfGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
