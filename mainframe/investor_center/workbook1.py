@@ -5141,12 +5141,21 @@ def fillMetadata(sector):
 
 
 #luke here  Ticker, Sector, Industry, Year,
-#Growth analysis: revenue minimum, revenueGrowthRate, 
+#two sets of filters: sector leaders, and individual stock reports. 
+#individual stock reports will be trickY: what metrics are important? just bombard the reader with it all? or look at sector of ticker, then give relevant metrics?
+#sector reports will be more interesting: what are we looking for for each sector? do we just have filters we apply to each sector? like a growth/rev sorter?
+#or do we have a RE filter, that gives payout ratios, ffo, yield, etc?
+#Growth analysis: revenueGrowthRate, 
+
+#profitability analysis: 
                     #netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, 
                     #ffo, ffoGrowthRate, 
-                    # reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
+                    
                     # fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, \
+
+#eps and price analysis:
                     # price, priceGrowthRAte \
+                    # reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
 
 #equity analysis:       TotalDebtGrowthRate, assets, liabilities, \
                         # ReportedTotalEquity, ReportedTotalEquityGrowthRate, TotalEquity, TotalEquityGrowthRate
@@ -5169,7 +5178,7 @@ def fillMetadata(sector):
 # thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
 # for col in thedfofdfs:
 #     print(col)
-#     print(thedfofdfs[col])
+    # print(thedfofdfs[col])
 # print(thedfofdfs)
 
 # geegee = 'Select distinct Ticker From Metadata WHERE Sector Like \'Utilities\''
@@ -5178,10 +5187,16 @@ def fillMetadata(sector):
 # print(util['Ticker'])
 # print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
 
-# hehe = 'INSERT INTO Metadata_Backup SELECT * FROM Metadata'
+hehe = 'SELECT Ticker, round(repDivYieldAVG,2) as rdyield, round(calcDivYieldAVG, 2) as cdyield, AveragedOverYears as years \
+        FROM Metadata \
+        WHERE CAST(years as integer) > 10 \
+            AND rdyield is not null AND rdyield > 7 AND rdyield < 50 \
+            AND priceLatest > 10 \
+            AND Sector IN ( \'Real Estate\', \'Financial Services\') \
+        ORDER BY rdyield DESC;'#Where Sector LIKE \'Financial Services\' AND revGrowthAVG is null;'
 # hehe = 'DELETE FROM Metadata'
-hehe = 'Select Count(distinct Ticker) From Metadata'
-gege = 'Select Count(distinct Ticker) From Metadata_Backup'
+# hehe = 'Select Count(distinct Ticker) From Metadata'
+# gege = 'Select Count(distinct Ticker) From Metadata_Backup'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
 # query.execute(hehe)
@@ -5191,7 +5206,7 @@ gege = 'Select Count(distinct Ticker) From Metadata_Backup'
 
 
 print_DB(hehe, 'print')
-print_DB(gege, 'print')
+# print_DB(gege, 'print')
 #luke: you can rerun this to confirm, but it looks like the backup went swimmingly. now we just look at how to delete metadata, add in the missing fields, and repopulate the db altogether
 #sadness.jpg. but you got this!
 #########
