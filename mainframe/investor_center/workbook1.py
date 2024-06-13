@@ -4477,8 +4477,6 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['ffoGrowthAVGintegrity'] = ffogravgint
         metadata['ffoGrowthAVGnz'] = ffogravgnz
 
-
-        #luke here models
         # reportedEPS, 
         repslist = incomedf['reportedEPS'].tolist()
         repsmin = nan_strip_min(repslist)
@@ -5118,6 +5116,8 @@ def fillMetadata(sector):
         print('Table made for: ' + x)
         # print(faTable)
         uploadToDB(faTable,'Metadata')
+
+
 # time1 = time.time()
 # time2 = time.time()
 # print('time to complete')
@@ -5142,37 +5142,239 @@ def fillMetadata(sector):
 
 #luke here  Ticker, Sector, Industry, Year,
 #two sets of filters: sector leaders, and individual stock reports. 
-#individual stock reports will be trickY: what metrics are important? just bombard the reader with it all? or look at sector of ticker, then give relevant metrics?
-#sector reports will be more interesting: what are we looking for for each sector? do we just have filters we apply to each sector? like a growth/rev sorter?
-#or do we have a RE filter, that gives payout ratios, ffo, yield, etc?
-#Growth analysis: revenueGrowthRate, 
+#individual stock reports: go thru each section below. RATING each section as 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
 
-#profitability analysis: 
+#sector rankings have to provide each of the following, then calculate a weighted score, grading each stock in each sector
+##so out of 5: 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
+##then that score is multiplied by a weighting factor based on the user's preferences, or preset screens. (grade)(weighting) = overall score
+
+
+
+#Growth analysis: revenueGrowthRate, (revGrowthAVG, revGrowthAVGintegrity, revGrowthAVGnz)
+def rating_assignment(number, listcompare):
+    try:
+        if number >= listcompare[0]:
+            rating = 5
+        elif number < listcompare[0] and number >= listcompare[1]:
+            rating = 4
+        elif number < listcompare[1] and number >= listcompare[2]:
+            rating = 3
+        elif number < listcompare[2] and number >= listcompare[3]:
+            rating = 2
+        else:
+            rating = 1
+        
+    except Exception as err:
+        print('rating assignment error:')
+        print(err)
+    finally:
+        return rating
+
+def growth_rating(ticker):
+    try:
+        sqlq = 'SELECT revGrowthAVG as revavg, revGrowthAVGintegrity as integ, revGrowthAVGnz as revavgnz \
+                        FROM Metadata \
+                        WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        if resultsdf['integ'][0] in ('good','decent'):
+            avg = resultsdf['revavg'][0]
+        else:
+            avg = resultsdf['revavgnz'][0]
+        rulecompare = [15, 7, 3, 2]
+        finalrating = rating_assignment(avg, rulecompare)
+    except Exception as err:
+        print('growth analysis error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(growth_rating('CSWC'))
+# nicheck = 'SELECT Ticker, netIncomeLow as nilow, netIncomeNCILow as nincilow, (((netIncomeLow-netIncomeNCILow)/netIncomeLow)*100) as percdiff \
+#             FROM Metadata \
+#             WHERE percdiff < 100 and percdiff > 0 \
+#             ORDER BY percdiff DESC'
+            # WHERE percdiff > 10'
+
+#profitability analysis: luke here
                     #netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, 
-                    #ffo, ffoGrowthRate, 
-                    
-                    # fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, \
+def ni_rating(ticker):
+    try:
+        sqlq = 'SELECT netIncomeGrowthAVG as niavg, netIncomeGrowthAVGintegrity as niint, netIncomeGrowthAVGnz as niavgnz, \
+                        netIncomeNCIGrowthAVG as ninciavg, netIncomeNCIGrowthAVGintegrity as ninciint, netIncomeNCIGrowthAVGnz as ninciavgnz \
+                        FROM Metadata \
+                        WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #sort ni avg
+        if resultsdf['niint'][0] in ('good','decent'):
+            netincomeavg = resultsdf['niavg'][0]
+        else:
+            netincomeavg = resultsdf['niavgnz'][0]
+        #sort ninci avg
+        if resultsdf['ninciint'][0] in ('good','decent'):
+            nciavg = resultsdf['ninciavg'][0]
+        else:
+            nciavg = resultsdf['ninciavgnz'][0]
+        #determine NI avg
+        if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False and pd.isnull(nciavg) == False and np.isinf(nciavg) == False:      
+            if netincomeavg > nciavg:
+                avg = netincomeavg
+            else:
+                avg = nciavg
+        elif pd.isnull(nciavg) == True or np.isinf(nciavg) == True:
+            if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:
+                avg = netincomeavg
+            # else:
+            #     avg = 1 #arbitrary number, based below inflation due to lack of reporting
+        elif pd.isnull(netincomeavg) == True or np.isinf(netincomeavg) == True:
+            if pd.isnull(nciavg) == False and np.isinf(nciavg) == False:
+                avg = nciavg
+        else:
+            avg = 1 #arbitrary number, based below inflation due to lack of reporting
+        rulecompare = [90, 20, 5, 0]
+        finalrating = rating_assignment(avg, rulecompare)
+    except Exception as err:
+        print('ni rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(ni_rating('CSWC'))
+
+
+                
+def ffo_rating(ticker):
+    try:
+        sqlq = 'SELECT ffoGrowthAVG as ffoavg, ffoGrowthAVGintegrity as ffoint, ffoGrowthAVGnz as ffoavgnz \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #sort ni avg
+        if resultsdf['ffoint'][0] in ('good','decent'):
+            ffoavg = resultsdf['ffoavg'][0]
+        else:
+            ffoavg = resultsdf['ffoavgnz'][0]
+        #determine avg
+        if pd.isnull(ffoavg) == False and np.isinf(ffoavg) == False:      
+            avg = ffoavg
+        else:
+            avg = 1 #arbitrary number, based below inflation due to lack of reporting
+            
+        rulecompare = [20,10,3,0]#[100, 20, 3, 0]
+        finalrating = rating_assignment(avg, rulecompare)
+    except Exception as err:
+        print('ffo rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(ffo_rating('ABR'))
+
+def fcf_rating(ticker):  
+    try:
+        sqlq = 'SELECT fcfGrowthAVG as ffoavg, fcfGrowthAVGintegrity as ffoint, fcfGrowthAVGnz as ffoavgnz \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #sort ni avg
+        if resultsdf['ffoint'][0] in ('good','decent'):
+            ffoavg = resultsdf['ffoavg'][0]
+        else:
+            ffoavg = resultsdf['ffoavgnz'][0]
+        #determine avg
+        if pd.isnull(ffoavg) == False and np.isinf(ffoavg) == False:      
+            avg = ffoavg
+        else:
+            avg = 1 #arbitrary number, based below inflation due to lack of reporting
+        
+        print(avg)
+        rulecompare = [10,7,4,0]
+        finalrating = rating_assignment(avg, rulecompare)
+    except Exception as err:
+        print('fcf rating error:')
+        print(err)
+    finally:
+        return finalrating
+                   
+# print(fcf_rating('PLTR'))
+
+def fcfm_rating(ticker):
+    try:
+        sqlq = 'SELECT fcfMarginAVG as fcfmavg, fcfMarginGrowthAVG as fcfmgravg, fcfMarginGrowthAVGintegrity as fcfmint, fcfMarginGrowthAVGnz as fcfmgravgnz \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #sort avg
+        if resultsdf['fcfmint'][0] in ('good','decent'):
+            netincomeavg = resultsdf['fcfmgravg'][0]
+        else:
+            netincomeavg = resultsdf['fcfmgravgnz'][0]
+        
+        if pd.isnull(resultsdf['fcfmavg'][0]) == False and np.isinf(resultsdf['fcfmavg'][0]) == False:      
+            fcfmaverage = resultsdf['fcfmavg'][0]
+        else:
+            fcfmaverage = 1
+
+        fcfmrulecompare = [20,10,5,1]
+        fcfmfinalrating = rating_assignment(fcfmaverage,fcfmrulecompare)
+
+
+        print(fcfmfinalrating)
+
+        #determine avg
+        if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:      
+            avg = netincomeavg
+        else:
+            avg = 1
+        
+        rulecompare = [10, 7, 3, 0]
+        fcfmgrfinalrating = rating_assignment(avg, rulecompare)
+
+        print(fcfmgrfinalrating)
+
+
+        finalrating = math.floor((fcfmfinalrating + fcfmgrfinalrating) / 2)
+    except Exception as err:
+        print('fcfm rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(fcfm_rating('NSA'))
+
+# nicheck = 'SELECT avg(fcfMarginAVG) as ffoavg, avg(fcfMarginGrowthAVG) as ffonzavg, avg(fcfMarginGrowthAVGnz) as niavgnz,  avg(netIncomeNCIGrowthAVGnz) as nciavgnz \
+#             FROM Metadata '
+
+# print_DB(nicheck, 'print')
+#luke here. keep generating these rating generators. you got this!
 
 #eps and price analysis:
                     # price, priceGrowthRAte \
                     # reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
 
-#equity analysis:       TotalDebtGrowthRate, assets, liabilities, \
+#equity analysis:       TotalDebtGrowthRate, 
                         # ReportedTotalEquity, ReportedTotalEquityGrowthRate, TotalEquity, TotalEquityGrowthRate
+                        ##calcBookValue, calcBookValueGrowthRate, \
+                        # reportedBookValue, reportedBookValueGrowthRate, 
+                        #nav, navGrowthRate 
+                        #lessers: assets, liabilities, \
 
 #cashflow analysis:     operatingCashflow, operatingCashflowGrowthRate, \
                         # investingCashFlow, investingCashFlowGrowthRate, \
                         # financingCashFlow, financingCashFlowGrowthRate, \
-                        # netCashFlow, netCashFlowGrowthRate, interestPaid, \
-                        # capEx, capExGrowthRate, depreNAmor, gainSaleProp
+                        # netCashFlow, netCashFlowGrowthRate, , \
+                        #  capExGrowthRate, 
+                        #lessers: depreNAmor, gainSaleProp, capEx, interestPaid
 
 #dividend analysis:     shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
-                        # divsPaidPerShare, calcDivsPerShare, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, payoutRatio, \
-                        # fcfPayoutRatio, ffoPayoutRatio, ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate 
+                        # divsPaidPerShare, calcDivsPerShare, 
+                        # divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
+                        # payoutRatio, fcfPayoutRatio, ffoPayoutRatio, 
+                        # ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate (ROCpsAVG, numYearsROCpaid)
 
-#efficiency analysis:   operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
-                        # roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, calcBookValue, calcBookValueGrowthRate, \
-                        # reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate 
+#efficiency analysis:   lessers: operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
+                        # roic, adjRoic, reportedAdjRoic, 
+                        #calculatedRoce, reportedRoce, 
+                        
 
 # testticker11 = 'MSFT'
 # thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
@@ -5187,13 +5389,13 @@ def fillMetadata(sector):
 # print(util['Ticker'])
 # print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
 
-hehe = 'SELECT Ticker, round(repDivYieldAVG,2) as rdyield, round(calcDivYieldAVG, 2) as cdyield, AveragedOverYears as years \
-        FROM Metadata \
-        WHERE CAST(years as integer) > 10 \
-            AND rdyield is not null AND rdyield > 7 AND rdyield < 50 \
-            AND priceLatest > 10 \
-            AND Sector IN ( \'Real Estate\', \'Financial Services\') \
-        ORDER BY rdyield DESC;'#Where Sector LIKE \'Financial Services\' AND revGrowthAVG is null;'
+# hehe = 'SELECT Ticker, round(repDivYieldAVG,2) as rdyield, round(calcDivYieldAVG, 2) as cdyield, AveragedOverYears as years \
+#         FROM Metadata \
+#         WHERE CAST(years as integer) > 10 \
+#             AND rdyield is not null AND rdyield > 7 AND rdyield < 50 \
+#             AND priceLatest > 10 \
+#             AND Sector IN ( \'Real Estate\', \'Financial Services\') \
+#         ORDER BY rdyield DESC;'#Where Sector LIKE \'Financial Services\' AND revGrowthAVG is null;'
 # hehe = 'DELETE FROM Metadata'
 # hehe = 'Select Count(distinct Ticker) From Metadata'
 # gege = 'Select Count(distinct Ticker) From Metadata_Backup'
@@ -5205,7 +5407,7 @@ hehe = 'SELECT Ticker, round(repDivYieldAVG,2) as rdyield, round(calcDivYieldAVG
 # conn.close()
 
 
-print_DB(hehe, 'print')
+# print_DB(hehe, 'print')
 # print_DB(gege, 'print')
 #luke: you can rerun this to confirm, but it looks like the backup went swimmingly. now we just look at how to delete metadata, add in the missing fields, and repopulate the db altogether
 #sadness.jpg. but you got this!
