@@ -5188,15 +5188,6 @@ def growth_rating(ticker):
     finally:
         return finalrating
 
-# print(growth_rating('CSWC'))
-# nicheck = 'SELECT Ticker, netIncomeLow as nilow, netIncomeNCILow as nincilow, (((netIncomeLow-netIncomeNCILow)/netIncomeLow)*100) as percdiff \
-#             FROM Metadata \
-#             WHERE percdiff < 100 and percdiff > 0 \
-#             ORDER BY percdiff DESC'
-            # WHERE percdiff > 10'
-
-#profitability analysis: luke here
-                    #netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, 
 def ni_rating(ticker):
     try:
         sqlq = 'SELECT netIncomeGrowthAVG as niavg, netIncomeGrowthAVGintegrity as niint, netIncomeGrowthAVGnz as niavgnz, \
@@ -5230,7 +5221,7 @@ def ni_rating(ticker):
                 avg = nciavg
         else:
             avg = 1 #arbitrary number, based below inflation due to lack of reporting
-        rulecompare = [90, 20, 5, 0]
+        rulecompare = [90, 20, 5, 0.1]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('ni rating error:')
@@ -5239,8 +5230,6 @@ def ni_rating(ticker):
         return finalrating
 
 # print(ni_rating('CSWC'))
-
-
                 
 def ffo_rating(ticker):
     try:
@@ -5259,7 +5248,7 @@ def ffo_rating(ticker):
         else:
             avg = 1 #arbitrary number, based below inflation due to lack of reporting
             
-        rulecompare = [20,10,3,0]#[100, 20, 3, 0]
+        rulecompare = [20,10,3,0.1]#[100, 20, 3, 0]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('ffo rating error:')
@@ -5286,8 +5275,7 @@ def fcf_rating(ticker):
         else:
             avg = 1 #arbitrary number, based below inflation due to lack of reporting
         
-        print(avg)
-        rulecompare = [10,7,4,0]
+        rulecompare = [10,7,4,0.1]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('fcf rating error:')
@@ -5317,20 +5305,14 @@ def fcfm_rating(ticker):
         fcfmrulecompare = [20,10,5,1]
         fcfmfinalrating = rating_assignment(fcfmaverage,fcfmrulecompare)
 
-
-        print(fcfmfinalrating)
-
         #determine avg
         if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:      
             avg = netincomeavg
         else:
             avg = 1
         
-        rulecompare = [10, 7, 3, 0]
+        rulecompare = [10, 7, 3, 0.1]
         fcfmgrfinalrating = rating_assignment(avg, rulecompare)
-
-        print(fcfmgrfinalrating)
-
 
         finalrating = math.floor((fcfmfinalrating + fcfmgrfinalrating) / 2)
     except Exception as err:
@@ -5341,29 +5323,241 @@ def fcfm_rating(ticker):
 
 # print(fcfm_rating('NSA'))
 
-# nicheck = 'SELECT avg(fcfMarginAVG) as ffoavg, avg(fcfMarginGrowthAVG) as ffonzavg, avg(fcfMarginGrowthAVGnz) as niavgnz,  avg(netIncomeNCIGrowthAVGnz) as nciavgnz \
-#             FROM Metadata '
 
-# print_DB(nicheck, 'print')
-#luke here. keep generating these rating generators. you got this!
 
-#eps and price analysis:
-                    # price, priceGrowthRAte \
-                    # reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
+#EPS averages are insane. excluded from weighting because they're mostly a valuation metric, and we can weight net income and shares growth instead for a more accurate picture of security.
+# def reiteps_rating(ticker):
+#     try:
+#         sqlq = 'SELECT reitepsAVG as fcfmavg, reitepsAVGintegrity as repsavgint, reitepsAVGnz as repsavgnz fcfMarginGrowthAVG as fcfmgravg, fcfMarginGrowthAVGintegrity as fcfmint, fcfMarginGrowthAVGnz as fcfmgravgnz \
+#                     FROM Metadata \
+#                     WHERE Ticker LIKE \'' + ticker + '\';'
+#         resultsdf = print_DB(sqlq, 'return')
+#         #sort avg
+#         if resultsdf['fcfmint'][0] in ('good','decent'):
+#             netincomeavg = resultsdf['fcfmgravg'][0]
+#         else:
+#             netincomeavg = resultsdf['fcfmgravgnz'][0]
+        
+#         if pd.isnull(resultsdf['fcfmavg'][0]) == False and np.isinf(resultsdf['fcfmavg'][0]) == False:      
+#             fcfmaverage = resultsdf['fcfmavg'][0]
+#         else:
+#             fcfmaverage = 1
 
-#equity analysis:       TotalDebtGrowthRate, 
-                        # ReportedTotalEquity, ReportedTotalEquityGrowthRate, TotalEquity, TotalEquityGrowthRate
-                        ##calcBookValue, calcBookValueGrowthRate, \
-                        # reportedBookValue, reportedBookValueGrowthRate, 
-                        #nav, navGrowthRate 
-                        #lessers: assets, liabilities, \
+#         fcfmrulecompare = [20,10,5,1]
+#         fcfmfinalrating = rating_assignment(fcfmaverage,fcfmrulecompare)
 
+#         #determine avg
+#         if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:      
+#             avg = netincomeavg
+#         else:
+#             avg = 1
+        
+#         rulecompare = [10, 7, 3, 0]
+#         fcfmgrfinalrating = rating_assignment(avg, rulecompare)
+
+#         finalrating = math.floor((fcfmfinalrating + fcfmgrfinalrating) / 2)
+#     except Exception as err:
+#         print('reit eps rating error:')
+#         print(err)
+#     finally:
+#         return finalrating
+
+def debt_rating(ticker):
+    try:
+        sqlq = 'SELECT debtGrowthAVG as debtgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #sort avg
+        # if resultsdf['fcfmint'][0] in ('good','decent'):
+        #     netincomeavg = resultsdf['fcfmgravg'][0]
+        # else:
+        #     netincomeavg = resultsdf['fcfmgravgnz'][0]
+        
+        if pd.isnull(resultsdf['debtgravg'][0]) == False and np.isinf(resultsdf['debtgravg'][0]) == False:      
+            avg = resultsdf['debtgravg'][0]
+        else:
+            avg = 0
+        
+        #best to manually calculate a value here, rating function only counts higher as better
+        if avg <= 0:
+            finalrating = 5
+        elif avg > 0 and avg <= 1:
+            finalrating = 4
+        elif avg > 1 and avg <= 10:
+            finalrating = 3
+        elif avg > 10 and avg <= 20:
+            finalrating = 2
+        else:
+            finalrating = 1
+     
+    except Exception as err:
+        print('debt rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(debt_rating('PAYX'))
+
+def equity_rating(ticker):
+    try:
+        sqlq = 'SELECT reportedEquityGrowthAVG as rgravg, reportedEquityGrowthAVGnz as rgravgnz,\
+                 calculatedEquityGrowthAVG as cgravg, calculatedEquityGrowthAVGnz as cgravgnz \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        
+        if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:      
+            if resultsdf['rgravg'][0] > resultsdf['rgravgnz'][0]:
+                reqavg = resultsdf['rgravg'][0]
+            else:
+                reqavg = resultsdf['rgravgnz'][0]
+        elif pd.isnull(resultsdf['rgravg'][0]) == True or np.isinf(resultsdf['rgravg'][0]) == True:
+            if pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:
+                reqavg = resultsdf['rgravgnz'][0]
+            else:
+                reqavg = 0
+        
+        rrulecompare = [10,5,1,0.1]
+        rfinalrating = rating_assignment(reqavg,rrulecompare)
+
+        if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
+            if resultsdf['cgravg'][0] > resultsdf['cgravgnz'][0]:
+                ceqavg = resultsdf['cgravg'][0]
+            else:
+                ceqavg = resultsdf['cgravgnz'][0]
+        elif pd.isnull(resultsdf['cgravg'][0]) == True or np.isinf(resultsdf['cgravg'][0]) == True:
+            if pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:
+                ceqavg = resultsdf['cgravgnz'][0]
+            else:
+                ceqavg = 0
+        
+        rulecompare = [10, 5, 1, 0.1]
+        cfinalrating = rating_assignment(ceqavg, rulecompare)
+
+        finalrating = math.floor((rfinalrating + cfinalrating) / 2)
+    except Exception as err:
+        print('equity rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(equity_rating('DG'))
+
+def bvnav_rating(ticker):
+    try:
+        sqlq = 'SELECT repBookValueGrowthAVG as rgravg, repBookValueGrowthAVGnz as rgravgnz,\
+                 calcBookValueGrowthAVG as cgravg, calcBookValueGrowthAVGnz as cgravgnz, \
+                 navGrowthAVG as navgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        
+        if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:
+            reqavg = max(resultsdf['rgravg'][0], resultsdf['rgravgnz'][0])
+        else:
+            reqavg = 0
+
+        if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
+            ceqavg = max(resultsdf['cgravg'][0], resultsdf['cgravgnz'][0])
+        else:
+            ceqavg = 0
+        
+        avg = max(reqavg, ceqavg)
+
+        if pd.isnull(resultsdf['navgravg'][0]) == False and np.isinf(resultsdf['navgravg'][0]) == False:
+            navcompare = [10, 5, 1, 0]
+            navrating = rating_assignment(resultsdf['navgravg'][0], navcompare)
+            rulecompare = [10, 5, 1, 0]
+            cfinalrating = rating_assignment(avg, rulecompare)
+            finalrating = math.floor((navrating + cfinalrating) / 2)
+        else:
+            rulecompare = [10, 5, 1, 0]
+            cfinalrating = rating_assignment(avg, rulecompare)
+            finalrating = cfinalrating
+    except Exception as err:
+        print('book value rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(bvnav_rating('AMZN'))
+
+
+#roughly 700 missing avg netcf, 600 missing opcf
 #cashflow analysis:     operatingCashflow, operatingCashflowGrowthRate, \
                         # investingCashFlow, investingCashFlowGrowthRate, \
                         # financingCashFlow, financingCashFlowGrowthRate, \
                         # netCashFlow, netCashFlowGrowthRate, , \
                         #  capExGrowthRate, 
                         #lessers: depreNAmor, gainSaleProp, capEx, interestPaid
+# operatingCashFlowGrowthAVG
+# operatingCashFlowGrowthAVGintegrity
+# operatingCashFlowGrowthAVGnz
+# netCashFlowGrowthAVG
+# netCashFlowGrowthAVGintegrity
+# netCashFlowGrowthAVGnz
+# netCashFlowAVG
+
+def cf_rating(ticker):
+    try:
+        sqlq = 'SELECT netCashFlowGrowthAVG as rgravg, netCashFlowGrowthAVGnz as rgravgnz,\
+                 operatingCashFlowGrowthAVG as cgravg, operatingCashFlowGrowthAVGnz as cgravgnz, \
+                 netCashFlowAVG as navgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        #repping net cf
+        if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:
+            reqavg = max(resultsdf['rgravg'][0], resultsdf['rgravgnz'][0])
+        else:
+            reqavg = 0
+        #repping op cf
+        if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
+            ceqavg = max(resultsdf['cgravg'][0], resultsdf['cgravgnz'][0])
+        else:
+            ceqavg = 0
+        
+        # avg = max(reqavg, ceqavg)
+        #luke, need to decide what to do, how to rank op cf and net cf growth ranks, combine, combine with net cf avg below, final rating boom!
+
+        if pd.isnull(resultsdf['navgravg'][0]) == False and np.isinf(resultsdf['navgravg'][0]) == False:
+            # navcompare = [10, 5, 1, 0]
+            # navrating = rating_assignment(resultsdf['navgravg'][0], navcompare)
+            if resultsdf['navgravg'][0] > 0:
+                flatrating = 5
+            else:
+                flatrating = 1
+            # #luke here, editing netcashflow avg
+            # rulecompare = [10, 5, 1, 0]
+            # cfinalrating = rating_assignment(avg, rulecompare)
+            # finalrating = math.floor((navrating + cfinalrating) / 2)
+        else:
+            flatrating = 3
+
+        rulecompare = [10, 5, 1, 0]
+        cfinalrating = rating_assignment(avg, rulecompare)
+        finalrating = cfinalrating
+    except Exception as err:
+        print('cash flow rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+
+
+# nicheck = 'SELECT avg(TotalDebtGrowthRate) as repsavg, avg(calculatedEPS) as cepsavg, avg(reitEPS) as reiteps\
+#             FROM Mega '
+# nicheck = 'SELECT avg(reportedEquityGrowthAVG) as ravg, max(reportedEquityGrowthAVG) as rmax, min(reportedEquityGrowthAVG) as rmin, \
+#                 avg(calculatedEquityGrowthAVG) as cavg, max(calculatedEquityGrowthAVG) as crmax, min(calculatedEquityGrowthAVG) as crmin \
+#             FROM Metadata'
+nicheck = 'SELECT Ticker, netCashFlowAVG as cavg, calcBookValueGrowthAVGnz as cavgnz, repBookValueGrowthAVG as ravg, \
+            repBookValueGrowthAVGnz as ravgnz, navGrowthAVG as navgr \
+            FROM Metadata \
+            WHERE cavg is null' 
+            #(((reportedEquityGrowthAVG - reportedEquityGrowthAVGnz)/reportedEquityGrowthAVG)*100) as percdiff \
+
+print_DB(nicheck, 'print')
 
 #dividend analysis:     shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
                         # divsPaidPerShare, calcDivsPerShare, 
