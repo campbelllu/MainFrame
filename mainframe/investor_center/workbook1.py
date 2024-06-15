@@ -5206,21 +5206,20 @@ def ni_rating(ticker):
         else:
             nciavg = resultsdf['ninciavgnz'][0]
         #determine NI avg
-        if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False and pd.isnull(nciavg) == False and np.isinf(nciavg) == False:      
-            if netincomeavg > nciavg:
-                avg = netincomeavg
-            else:
-                avg = nciavg
+        if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False and pd.isnull(nciavg) == False and np.isinf(nciavg) == False:
+            avg = max(netincomeavg, nciavg)
         elif pd.isnull(nciavg) == True or np.isinf(nciavg) == True:
             if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:
                 avg = netincomeavg
-            # else:
-            #     avg = 1 #arbitrary number, based below inflation due to lack of reporting
+            else:
+                avg = 0 #arbitrary number, based below inflation due to lack of reporting
         elif pd.isnull(netincomeavg) == True or np.isinf(netincomeavg) == True:
             if pd.isnull(nciavg) == False and np.isinf(nciavg) == False:
                 avg = nciavg
+            else:
+                avg = 0 #arbitrary number, based below inflation due to lack of reporting
         else:
-            avg = 1 #arbitrary number, based below inflation due to lack of reporting
+            avg = 0 #arbitrary number, based below inflation due to lack of reporting
         rulecompare = [90, 20, 5, 0.1]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
@@ -5229,7 +5228,7 @@ def ni_rating(ticker):
     finally:
         return finalrating
 
-# print(ni_rating('CSWC'))
+# print(ni_rating('VENG'))
                 
 def ffo_rating(ticker):
     try:
@@ -5248,7 +5247,7 @@ def ffo_rating(ticker):
         else:
             avg = 1 #arbitrary number, based below inflation due to lack of reporting
             
-        rulecompare = [20,10,3,0.1]#[100, 20, 3, 0]
+        rulecompare = [15,10,3,0.1]#[100, 20, 3, 0]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('ffo rating error:')
@@ -5256,7 +5255,7 @@ def ffo_rating(ticker):
     finally:
         return finalrating
 
-# print(ffo_rating('ABR'))
+# print(ffo_rating('EARN'))
 
 def fcf_rating(ticker):  
     try:
@@ -5273,7 +5272,7 @@ def fcf_rating(ticker):
         if pd.isnull(ffoavg) == False and np.isinf(ffoavg) == False:      
             avg = ffoavg
         else:
-            avg = 1 #arbitrary number, based below inflation due to lack of reporting
+            avg = 0 #arbitrary number, based below inflation due to lack of reporting
         
         rulecompare = [10,7,4,0.1]
         finalrating = rating_assignment(avg, rulecompare)
@@ -5283,7 +5282,7 @@ def fcf_rating(ticker):
     finally:
         return finalrating
                    
-# print(fcf_rating('PLTR'))
+# print(fcf_rating('NLY'))
 
 def fcfm_rating(ticker):
     try:
@@ -5321,9 +5320,7 @@ def fcfm_rating(ticker):
     finally:
         return finalrating
 
-# print(fcfm_rating('NSA'))
-
-
+# print(fcfm_rating('AMZN'))
 
 #EPS averages are insane. excluded from weighting because they're mostly a valuation metric, and we can weight net income and shares growth instead for a more accurate picture of security.
 # def reiteps_rating(ticker):
@@ -5377,7 +5374,7 @@ def debt_rating(ticker):
         if pd.isnull(resultsdf['debtgravg'][0]) == False and np.isinf(resultsdf['debtgravg'][0]) == False:      
             avg = resultsdf['debtgravg'][0]
         else:
-            avg = 0
+            avg = 2 #arbitraily chosen to give a middling score due to non-reporting
         
         #best to manually calculate a value here, rating function only counts higher as better
         if avg <= 0:
@@ -5397,7 +5394,7 @@ def debt_rating(ticker):
     finally:
         return finalrating
 
-# print(debt_rating('PAYX'))
+# print(debt_rating('NLY'))
 
 def equity_rating(ticker):
     try:
@@ -5408,10 +5405,7 @@ def equity_rating(ticker):
         resultsdf = print_DB(sqlq, 'return')
         
         if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:      
-            if resultsdf['rgravg'][0] > resultsdf['rgravgnz'][0]:
-                reqavg = resultsdf['rgravg'][0]
-            else:
-                reqavg = resultsdf['rgravgnz'][0]
+            reqavg = max(resultsdf['rgravg'][0], resultsdf['rgravgnz'][0])
         elif pd.isnull(resultsdf['rgravg'][0]) == True or np.isinf(resultsdf['rgravg'][0]) == True:
             if pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:
                 reqavg = resultsdf['rgravgnz'][0]
@@ -5422,10 +5416,7 @@ def equity_rating(ticker):
         rfinalrating = rating_assignment(reqavg,rrulecompare)
 
         if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
-            if resultsdf['cgravg'][0] > resultsdf['cgravgnz'][0]:
-                ceqavg = resultsdf['cgravg'][0]
-            else:
-                ceqavg = resultsdf['cgravgnz'][0]
+            ceqavg = max(resultsdf['cgravg'][0], resultsdf['cgravgnz'][0])
         elif pd.isnull(resultsdf['cgravg'][0]) == True or np.isinf(resultsdf['cgravg'][0]) == True:
             if pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:
                 ceqavg = resultsdf['cgravgnz'][0]
@@ -5442,7 +5433,7 @@ def equity_rating(ticker):
     finally:
         return finalrating
 
-# print(equity_rating('DG'))
+# print(equity_rating('JNJ'))
 
 def bvnav_rating(ticker):
     try:
@@ -5456,12 +5447,12 @@ def bvnav_rating(ticker):
         if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:
             reqavg = max(resultsdf['rgravg'][0], resultsdf['rgravgnz'][0])
         else:
-            reqavg = 0
+            reqavg = 1
 
         if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
             ceqavg = max(resultsdf['cgravg'][0], resultsdf['cgravgnz'][0])
         else:
-            ceqavg = 0
+            ceqavg = 1
         
         avg = max(reqavg, ceqavg)
 
@@ -5481,23 +5472,7 @@ def bvnav_rating(ticker):
     finally:
         return finalrating
 
-# print(bvnav_rating('AMZN'))
-
-
-#roughly 700 missing avg netcf, 600 missing opcf
-#cashflow analysis:     operatingCashflow, operatingCashflowGrowthRate, \
-                        # investingCashFlow, investingCashFlowGrowthRate, \
-                        # financingCashFlow, financingCashFlowGrowthRate, \
-                        # netCashFlow, netCashFlowGrowthRate, , \
-                        #  capExGrowthRate, 
-                        #lessers: depreNAmor, gainSaleProp, capEx, interestPaid
-# operatingCashFlowGrowthAVG
-# operatingCashFlowGrowthAVGintegrity
-# operatingCashFlowGrowthAVGnz
-# netCashFlowGrowthAVG
-# netCashFlowGrowthAVGintegrity
-# netCashFlowGrowthAVGnz
-# netCashFlowAVG
+# print(bvnav_rating('JNJ'))
 
 def cf_rating(ticker):
     try:
@@ -5518,57 +5493,267 @@ def cf_rating(ticker):
         else:
             ceqavg = 0
         
-        # avg = max(reqavg, ceqavg)
-        #luke, need to decide what to do, how to rank op cf and net cf growth ranks, combine, combine with net cf avg below, final rating boom!
+        rcompare = [7,4,2,0.1] 
+        rrating = rating_assignment(reqavg,rcompare)
+        ccompare = [7,4,2,0.1]
+        crating = rating_assignment(ceqavg,ccompare)
 
         if pd.isnull(resultsdf['navgravg'][0]) == False and np.isinf(resultsdf['navgravg'][0]) == False:
-            # navcompare = [10, 5, 1, 0]
-            # navrating = rating_assignment(resultsdf['navgravg'][0], navcompare)
             if resultsdf['navgravg'][0] > 0:
                 flatrating = 5
             else:
                 flatrating = 1
-            # #luke here, editing netcashflow avg
-            # rulecompare = [10, 5, 1, 0]
-            # cfinalrating = rating_assignment(avg, rulecompare)
-            # finalrating = math.floor((navrating + cfinalrating) / 2)
         else:
             flatrating = 3
 
-        rulecompare = [10, 5, 1, 0]
-        cfinalrating = rating_assignment(avg, rulecompare)
-        finalrating = cfinalrating
+        finalrating = math.floor((rrating + crating + flatrating) / 3)
     except Exception as err:
         print('cash flow rating error:')
         print(err)
     finally:
         return finalrating
 
+# print(cf_rating('JNJ'))
+
+def shares_rating(ticker):
+    try:
+        sqlq = 'SELECT sharesGrowthAVG as rgravg, dilutedSharesGrowthAVG as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+        
+        if pd.isnull(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['cgravg'][0]) == False:
+            reqavg = max(resultsdf['rgravg'][0], resultsdf['cgravg'][0])
+        elif pd.isnull(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['cgravg'][0]) == True:
+            reqavg = resultsdf['rgravg'][0]
+        elif pd.isnull(resultsdf['rgravg'][0]) == True and pd.isnull(resultsdf['cgravg'][0]) == False:
+            reqavg = resultsdf['cgravg'][0]
+        else:
+            reqavg = 12
+       
+        if reqavg <= 0:
+            finalrating = 5
+        elif reqavg > 0 and reqavg <= 10:
+            finalrating = 4
+        elif reqavg > 10 and reqavg <= 15:
+            finalrating = 3
+        elif reqavg > 15 and reqavg <= 25:
+            finalrating = 2
+        else:
+            finalrating = 1
+
+    except Exception as err:
+        print('shares rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(shares_rating('O'))
+
+def divspaid_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('divs paid rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(divspaid_rating('MSFT'))
+
+# divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
+#luke here 
+def divgrowth_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('divs growth rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# payoutRatio, fcfPayoutRatio, ffoPayoutRatio, 
+#luke here 
+def payout_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('payout rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate (ROCpsAVG, numYearsROCpaid)
+#luke here 
+def roc_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('roc rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# roic, roicAVG,  
+#adjRoic, aroicAVG
+#luke here 
+#reportedAdjRoic, raroicAVG
+def roic_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('roic rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+#calculatedRoce, croceAVG
+#luke here 
+#reportedRoce, rroceAVG
+def roce_rating(ticker):
+    try:
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if (resultsdf['rgravg'][0] is None) == True:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        if (resultsdf['cgravg'][0] is None) == False:
+            rdivsrating = 1
+      
+        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+    except Exception as err:
+        print('roce rating error:')
+        print(err)
+    finally:
+        return finalrating
 
 
-# nicheck = 'SELECT avg(TotalDebtGrowthRate) as repsavg, avg(calculatedEPS) as cepsavg, avg(reitEPS) as reiteps\
-#             FROM Mega '
-# nicheck = 'SELECT avg(reportedEquityGrowthAVG) as ravg, max(reportedEquityGrowthAVG) as rmax, min(reportedEquityGrowthAVG) as rmin, \
+# nicheck = 'SELECT DISTINCT Ticker, Sector, totalDivsPaid as tdivp \
+#             FROM Mega \
+#             WHERE tdivp > 0 \
+#             AND divGrowthRateBOT > 9.9 \
+#             AND payoutRatio < 0.75 \
+#             ORDER BY tdivp DESC \
+#             LIMIT 25 '
+            # avg(ffoGrowthAVG) as repsavg, avg(ffoGrowthAVGnz) as cepsavg, avg(reitEPS) as reiteps\
+
+# nicheck = 'SELECT avg(fcfMarginGrowthAVG) as ravg, avg(fcfMarginGrowthAVGnz) as rmax, min(reportedEquityGrowthAVG) as rmin, \
 #                 avg(calculatedEquityGrowthAVG) as cavg, max(calculatedEquityGrowthAVG) as crmax, min(calculatedEquityGrowthAVG) as crmin \
 #             FROM Metadata'
-nicheck = 'SELECT Ticker, netCashFlowAVG as cavg, calcBookValueGrowthAVGnz as cavgnz, repBookValueGrowthAVG as ravg, \
+
+nicheck = 'SELECT Ticker, calcDivsPerShareLow as cavg, calcDivsPerShareLow as cavgnz, netIncomeGrowthAVGintegrity as ravg, \
             repBookValueGrowthAVGnz as ravgnz, navGrowthAVG as navgr \
             FROM Metadata \
-            WHERE cavg is null' 
+            WHERE cavg is null and cavgnz is null ' 
             #(((reportedEquityGrowthAVG - reportedEquityGrowthAVGnz)/reportedEquityGrowthAVG)*100) as percdiff \
 
 print_DB(nicheck, 'print')
+# sjg = print_DB(nicheck, 'return')['cavg']
+# print(sjg[0] is None)
 
-#dividend analysis:     shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
-                        # divsPaidPerShare, calcDivsPerShare, 
-                        # divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
-                        # payoutRatio, fcfPayoutRatio, ffoPayoutRatio, 
-                        # ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate (ROCpsAVG, numYearsROCpaid)
-
-#efficiency analysis:   lessers: operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
-                        # roic, adjRoic, reportedAdjRoic, 
-                        #calculatedRoce, reportedRoce, 
-                        
+# heggers = np.NaN
+# luke13 = 13
+# print(max(luke13, heggers))               
 
 # testticker11 = 'MSFT'
 # thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
