@@ -5548,11 +5548,11 @@ def shares_rating(ticker):
     finally:
         return finalrating
 
-# print(shares_rating('O'))
+# print(shares_rating('AAPL'))
 
 def divspaid_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg, calcDivsPerShareLatest clat, repDivsPerShareLatest rlat \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
@@ -5569,76 +5569,224 @@ def divspaid_rating(ticker):
             rdivsrating = 1
         if (resultsdf['cgravg'][0] is None) == False:
             rdivsrating = 1
+
+        if pd.isnull(resultsdf['clat'][0]) == False and resultsdf['clat'][0] > 0:
+            cdivsrating = 5
+        else:
+            cdivsrating = 1
+        if pd.isnull(resultsdf['rlat'][0]) == False and resultsdf['rlat'][0] > 0:
+            rdivsrating = 5
+        else:
+            rdivsrating = 1
+        
       
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+        finalrating = max(rdivsrating,cdivsrating)
     except Exception as err:
         print('divs paid rating error:')
         print(err)
     finally:
         return finalrating
 
-# print(divspaid_rating('MSFT'))
+# print(divspaid_rating('AMZN'))
 
-# divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, 
-#luke here 
 def divgrowth_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT calcDivsPerShareGrowthAVG as cavg, repDivsPerShareGrowthAVG as ravg \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
+                    #totalDivsPaidGrowthAVG as totavg,
         resultsdf = print_DB(sqlq, 'return')
+
+        # totedivs = resultsdf['totavg'][0]
+        # if totedivs is None:
+        #     totedivs = 0
+        calcdivs = resultsdf['cavg'][0]
+        if calcdivs is None:
+            calcdivs = 0
+        repdivs = resultsdf['ravg'][0]
+        if repdivs is None:
+            repdivs = 0
        
-        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
-            cdivsrating = 5
+        # if pd.isnull(totedivs) == False:# and totedivs is not None:
+        #     if totedivs >= 15:
+        #         totdivsrating = 5
+        #     elif totedivs < 15 and totedivs >= 10:
+        #         totdivsrating = 4
+        #     elif totedivs < 10 and totedivs >= 3:
+        #         totdivsrating = 3
+        #     elif totedivs < 3 and totedivs >= 0.1:
+        #         totdivsrating = 2
+        #     else:
+        #         totdivsrating = 1
+        # elif totedivs > 0: #this should never be tripped, but it catches any weird anomalies
+        #     totdivsrating = 3
+        # else:
+        #     totdivsrating = 1
+
+        if pd.isnull(calcdivs) == False:# and calcdivs is not None:
+            if calcdivs >= 15:
+                cdivsrating = 5
+            elif calcdivs < 15 and calcdivs >= 10:
+                cdivsrating = 4
+            elif calcdivs < 10 and calcdivs >= 3:
+                cdivsrating = 3
+            elif calcdivs < 3 and calcdivs >= 0.1:
+                cdivsrating = 2
+            else:
+                cdivsrating = 1
+        elif calcdivs > 0: #this should never be tripped, but it catches any weird anomalies
+            cdivsrating = 3
         else:
             cdivsrating = 1
-        if (resultsdf['rgravg'][0] is None) == True:
-            cdivsrating = 1
-        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
-            rdivsrating = 5
+
+        if pd.isnull(repdivs) == False:# and repdivs is not None:
+            if repdivs >= 15:
+                rdivsrating = 5
+            elif repdivs < 15 and repdivs >= 10:
+                rdivsrating = 4
+            elif repdivs < 10 and repdivs >= 3:
+                rdivsrating = 3
+            elif repdivs < 3 and repdivs >= 0.1:
+                rdivsrating = 2
+            else:
+                rdivsrating = 1
+        elif repdivs > 0: #this should never be tripped, but it catches any weird anomalies
+            rdivsrating = 3
         else:
-            rdivsrating = 1
-        if (resultsdf['cgravg'][0] is None) == False:
             rdivsrating = 1
       
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+        finalrating = max(cdivsrating, rdivsrating)#, totdivsrating)
     except Exception as err:
         print('divs growth rating error:')
         print(err)
     finally:
         return finalrating
 
-# payoutRatio, fcfPayoutRatio, ffoPayoutRatio, 
-#luke here 
+# print('aapl')
+# print(divgrowth_rating('AAPL'))
+# print('STAG')
+# print(divgrowth_rating('STAG'))
+# print('O')
+# print(divgrowth_rating('O'))
+# print('MSFT')
+# print(divgrowth_rating('MSFT'))
+# print('ARCC')
+# print(divgrowth_rating('ARCC'))
+# print('brk')
+# print(divgrowth_rating('BRK-B'))
+# print('AMZN')
+# print(divgrowth_rating('AMZN'))
+
 def payout_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT payoutRatioAVG as pra, payoutRatioAVGintegrity as praint, payoutRatioAVGnz as pranz, \
+                    fcfPayoutRatioAVG as fcfa, fcfPayoutRatioAVGintegrity as fcfaint, fcfPayoutRatioAVGnz as fcfanz, \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
        
-        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
+        if pd.isnull(resultsdf['pra'][0]) == False and np.isinf(resultsdf['pra'][0]) == False and resultsdf['pra'][0] is not None:     
+            if resultsdf['praint'][0] in ('good','decent'):
+                poravg = round(resultsdf['pra'][0] * 100, 2)
+            else:
+                if pd.isnull(resultsdf['pranz'][0]) == False and np.isinf(resultsdf['pranz'][0]) == False and resultsdf['pranz'][0] is not None:   
+                    poravg = round(resultsdf['pranz'][0] * 100, 2)
+                else:
+                    poravg = 0
+        else:
+            poravg = 0
+
+        if poravg < 1:
+            poravg = 0
+
+        if poravg <= 30:
             cdivsrating = 5
+        elif poravg > 30 and poravg <= 45:
+            cdivsrating = 4
+        elif poravg > 45 and poravg <= 80:
+            cdivsrating = 3
+        elif poravg > 80 and poravg <= 90:
+            cdivsrating = 2
         else:
             cdivsrating = 1
-        if (resultsdf['rgravg'][0] is None) == True:
-            cdivsrating = 1
-        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
-            rdivsrating = 5
+
+        if pd.isnull(resultsdf['fcfa'][0]) == False and np.isinf(resultsdf['fcfa'][0]) == False and resultsdf['fcfa'][0] is not None:     
+            if resultsdf['fcfaint'][0] in ('good','decent'):
+                fcfavg = round(resultsdf['fcfa'][0] * 100, 2)
+            else:
+                if pd.isnull(resultsdf['fcfanz'][0]) == False and np.isinf(resultsdf['fcfanz'][0]) == False and resultsdf['fcfanz'][0] is not None:   
+                    fcfavg = round(resultsdf['fcfanz'][0] * 100, 2)
+                else:
+                    fcfavg = 0
         else:
-            rdivsrating = 1
-        if (resultsdf['cgravg'][0] is None) == False:
-            rdivsrating = 1
-      
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+            fcfavg = 0
+
+        if fcfavg < 1:
+            fcfavg = 0
+
+        if fcfavg <= 30:
+            fdivsrating = 5
+        elif fcfavg > 30 and fcfavg <= 45:
+            fdivsrating = 4
+        elif fcfavg > 45 and fcfavg <= 80:
+            fdivsrating = 3
+        elif fcfavg > 80 and fcfavg <= 90:
+            fdivsrating = 2
+        else:
+            fdivsrating = 1
+
+        finalrating = math.floor((fdivsrating + cdivsrating) / 2)
     except Exception as err:
         print('payout rating error:')
         print(err)
     finally:
         return finalrating
 
+# print(payout_rating('JNJ'))
+
+def ffopayout_rating(ticker):
+    try:
+        sqlq = 'SELECT ffoPayoutRatioAVG as pra, ffoPayoutRatioAVGintegrity as praint, ffoPayoutRatioAVGnz as pranz \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['pra'][0]) == False and np.isinf(resultsdf['pra'][0]) == False and resultsdf['pra'][0] is not None:     
+            if resultsdf['praint'][0] in ('good','decent'):
+                poravg = round(resultsdf['pra'][0] * 100, 2)
+            else:
+                if pd.isnull(resultsdf['pranz'][0]) == False and np.isinf(resultsdf['pranz'][0]) == False and resultsdf['pranz'][0] is not None:   
+                    poravg = round(resultsdf['pranz'][0] * 100, 2)
+                else:
+                    poravg = 0
+        else:
+            poravg = 0
+
+        if poravg < 1:
+            poravg = 0
+
+        if poravg <= 45:
+            cdivsrating = 5
+        elif poravg > 45 and poravg <= 60:
+            cdivsrating = 4
+        elif poravg > 60 and poravg <= 80:
+            cdivsrating = 3
+        elif poravg > 80 and poravg <= 90:
+            cdivsrating = 2
+        else:
+            cdivsrating = 1
+
+        finalrating = cdivsrating
+    except Exception as err:
+        print('ffo payout rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+print(ffopayout_rating('O'))
+
 # ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate (ROCpsAVG, numYearsROCpaid)
-#luke here 
+#luke here call in num years paid, over years analyzed. judge it by that ratio. if it's high, bad score
 def roc_rating(ticker):
     try:
         sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
@@ -5728,8 +5876,10 @@ def roce_rating(ticker):
         return finalrating
 
 
-# nicheck = 'SELECT DISTINCT Ticker, Sector, totalDivsPaid as tdivp \
+# nicheck = 'SELECT DISTINCT Ticker, payoutRatio \
 #             FROM Mega \
+#             WHERE payoutRatio > 0 and payoutRatio is not null and payoutRatio is not inf\
+#             ORDER BY payoutRatio DESC'
 #             WHERE tdivp > 0 \
 #             AND divGrowthRateBOT > 9.9 \
 #             AND payoutRatio < 0.75 \
@@ -5737,17 +5887,22 @@ def roce_rating(ticker):
 #             LIMIT 25 '
             # avg(ffoGrowthAVG) as repsavg, avg(ffoGrowthAVGnz) as cepsavg, avg(reitEPS) as reiteps\
 
-# nicheck = 'SELECT avg(fcfMarginGrowthAVG) as ravg, avg(fcfMarginGrowthAVGnz) as rmax, min(reportedEquityGrowthAVG) as rmin, \
-#                 avg(calculatedEquityGrowthAVG) as cavg, max(calculatedEquityGrowthAVG) as crmax, min(calculatedEquityGrowthAVG) as crmin \
-#             FROM Metadata'
+# nicheck = 'SELECT avg(ROCpsAVG) as ravg, max(numYearsROCpaid) as rmax, min(ffoPayoutRatioAVG) as rmin, \
+#                 avg(ffoPayoutRatioAVGnz) as cavg, max(ffoPayoutRatioAVGnz) as crmax, min(ffoPayoutRatioAVGnz) as crmin \
+#             FROM Metadata '
+            # WHERE Sector LIKE \'Real Estate\''
 
-nicheck = 'SELECT Ticker, calcDivsPerShareLow as cavg, calcDivsPerShareLow as cavgnz, netIncomeGrowthAVGintegrity as ravg, \
-            repBookValueGrowthAVGnz as ravgnz, navGrowthAVG as navgr \
-            FROM Metadata \
-            WHERE cavg is null and cavgnz is null ' 
+# nicheck = 'SELECT Ticker, payoutRatioAVG as cavg, fcfPayoutRatioAVG as cavgnz, ffoPayoutRatioAVG as ravg, \
+#             repDivsPerShareGrowthAVGnz as ravgnz, calcDivsPerShareGrowthAVG as navgr, calcDivsPerShareGrowthAVGnz as navgrnz \
+#             FROM Metadata \
+#             WHERE Ticker LIKE \'MSFT\''
+            # cavg is not null \
+            # ORDER BY cavg DESC'
+            # WHERE cavg is null and cavgnz is null ' 
             #(((reportedEquityGrowthAVG - reportedEquityGrowthAVGnz)/reportedEquityGrowthAVG)*100) as percdiff \
 
-print_DB(nicheck, 'print')
+# print_DB(nicheck, 'print')
+
 # sjg = print_DB(nicheck, 'return')['cavg']
 # print(sjg[0] is None)
 
