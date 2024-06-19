@@ -5148,9 +5148,6 @@ def fillMetadata(sector):
 ##so out of 5: 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
 ##then that score is multiplied by a weighting factor based on the user's preferences, or preset screens. (grade)(weighting) = overall score
 
-
-
-#Growth analysis: revenueGrowthRate, (revGrowthAVG, revGrowthAVGintegrity, revGrowthAVGnz)
 def rating_assignment(number, listcompare):
     try:
         if number >= listcompare[0]:
@@ -5220,15 +5217,26 @@ def ni_rating(ticker):
                 avg = 0 #arbitrary number, based below inflation due to lack of reporting
         else:
             avg = 0 #arbitrary number, based below inflation due to lack of reporting
-        rulecompare = [90, 20, 5, 0.1]
-        finalrating = rating_assignment(avg, rulecompare)
+        #hardcode finalrating because some negative NI's have huge growth into positive numbers, skewing avg results
+        if avg < 0:
+            finalrating = 1
+        elif avg >= 0 and avg < 3:
+            finalrating = 2
+        elif avg >=3 and avg < 10:
+            finalrating = 4
+        elif avg >= 10 and avg <= 35:
+            finalrating = 5
+        elif avg > 35:
+            finalrating = 3
+        # rulecompare = [20, 10, 3, 0.1]
+        # finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('ni rating error:')
         print(err)
     finally:
         return finalrating
 
-# print(ni_rating('VENG'))
+# print(ni_rating('TXN'))
                 
 def ffo_rating(ticker):
     try:
@@ -5246,16 +5254,27 @@ def ffo_rating(ticker):
             avg = ffoavg
         else:
             avg = 1 #arbitrary number, based below inflation due to lack of reporting
-            
-        rulecompare = [15,10,3,0.1]#[100, 20, 3, 0]
-        finalrating = rating_assignment(avg, rulecompare)
+        #hardcode finalrating because some negative NI's have huge growth into positive numbers, skewing avg results
+        if avg < 0:
+            finalrating = 1
+        elif avg >= 0 and avg < 3:
+            finalrating = 2
+        elif avg >=3 and avg < 10:
+            finalrating = 4
+        elif avg >= 10 and avg <= 35:
+            finalrating = 5
+        elif avg > 35:
+            finalrating = 3
+
+        # rulecompare = [15,10,3,0.1]#[100, 20, 3, 0]
+        # finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('ffo rating error:')
         print(err)
     finally:
         return finalrating
 
-# print(ffo_rating('EARN'))
+# print(ffo_rating('STAG'))
 
 def fcf_rating(ticker):  
     try:
@@ -5433,7 +5452,7 @@ def equity_rating(ticker):
     finally:
         return finalrating
 
-# print(equity_rating('JNJ'))
+# print(equity_rating('MSFT'))
 
 def bvnav_rating(ticker):
     try:
@@ -5472,7 +5491,7 @@ def bvnav_rating(ticker):
     finally:
         return finalrating
 
-# print(bvnav_rating('JNJ'))
+# print(bvnav_rating('ARCC'))
 
 def cf_rating(ticker):
     try:
@@ -5513,7 +5532,7 @@ def cf_rating(ticker):
     finally:
         return finalrating
 
-# print(cf_rating('JNJ'))
+# print(cf_rating('PLTR'))
 
 def shares_rating(ticker):
     try:
@@ -5548,7 +5567,7 @@ def shares_rating(ticker):
     finally:
         return finalrating
 
-# print(shares_rating('AAPL'))
+# print(shares_rating('O'))
 
 def divspaid_rating(ticker):
     try:
@@ -5587,7 +5606,7 @@ def divspaid_rating(ticker):
     finally:
         return finalrating
 
-# print(divspaid_rating('AMZN'))
+# print(divspaid_rating('DIS'))
 
 def divgrowth_rating(ticker):
     try:
@@ -5662,28 +5681,16 @@ def divgrowth_rating(ticker):
     finally:
         return finalrating
 
-# print('aapl')
-# print(divgrowth_rating('AAPL'))
-# print('STAG')
-# print(divgrowth_rating('STAG'))
-# print('O')
-# print(divgrowth_rating('O'))
-# print('MSFT')
-# print(divgrowth_rating('MSFT'))
-# print('ARCC')
-# print(divgrowth_rating('ARCC'))
-# print('brk')
-# print(divgrowth_rating('BRK-B'))
-# print('AMZN')
-# print(divgrowth_rating('AMZN'))
+# print(divgrowth_rating('TXN'))
 
-def payout_rating(ticker):
+def payout_rating(ticker): #luke here, error?!?! fixed?!? lol
     try:
         sqlq = 'SELECT payoutRatioAVG as pra, payoutRatioAVGintegrity as praint, payoutRatioAVGnz as pranz, \
-                    fcfPayoutRatioAVG as fcfa, fcfPayoutRatioAVGintegrity as fcfaint, fcfPayoutRatioAVGnz as fcfanz, \
+                    fcfPayoutRatioAVG as fcfa, fcfPayoutRatioAVGintegrity as fcfaint, fcfPayoutRatioAVGnz as fcfanz \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
+        # print(resultsdf)
        
         if pd.isnull(resultsdf['pra'][0]) == False and np.isinf(resultsdf['pra'][0]) == False and resultsdf['pra'][0] is not None:     
             if resultsdf['praint'][0] in ('good','decent'):
@@ -5742,7 +5749,7 @@ def payout_rating(ticker):
     finally:
         return finalrating
 
-# print(payout_rating('JNJ'))
+# print(payout_rating('AMZN'))
 
 def ffopayout_rating(ticker):
     try:
@@ -5783,98 +5790,242 @@ def ffopayout_rating(ticker):
     finally:
         return finalrating
 
-print(ffopayout_rating('O'))
+# print(ffopayout_rating('PLD'))
 
-# ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate (ROCpsAVG, numYearsROCpaid)
-#luke here call in num years paid, over years analyzed. judge it by that ratio. if it's high, bad score
 def roc_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT AveragedOverYears as years, numYearsROCpaid as numyearsroc \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
-       
-        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
-            cdivsrating = 5
+        #rocyears/years gives an idea for how often the security COULD BE eroding NAV
+        if pd.isnull(resultsdf['numyearsroc'][0]) == False and np.isinf(resultsdf['numyearsroc'][0]) == False and resultsdf['numyearsroc'][0] is not None: 
+            rocavg = int(resultsdf['numyearsroc'][0]) / int(resultsdf['years'][0]) * 100
         else:
-            cdivsrating = 1
-        if (resultsdf['rgravg'][0] is None) == True:
-            cdivsrating = 1
-        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
-            rdivsrating = 5
+            rocavg = 0
+        
+        if rocavg == 0:
+            finalrating = 5
+        elif rocavg > 0 and rocavg <= 20:
+            finalrating = 4
+        elif rocavg > 20 and rocavg <= 30:
+            finalrating = 3
+        elif rocavg > 30 and rocavg <= 50:
+            finalrating = 2
         else:
-            rdivsrating = 1
-        if (resultsdf['cgravg'][0] is None) == False:
-            rdivsrating = 1
-      
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+            finalrating = 1
     except Exception as err:
         print('roc rating error:')
         print(err)
     finally:
         return finalrating
 
-# roic, roicAVG,  
-#adjRoic, aroicAVG
-#luke here 
-#reportedAdjRoic, raroicAVG
+# print(roc_rating('MSFT'))#SLRC
+
 def roic_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT roicAVG as roic, aroicAVG as ar, raroicAVG as rar \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
-       
-        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
-            cdivsrating = 5
+        
+        if pd.isnull(resultsdf['roic'][0]) == False and np.isinf(resultsdf['roic'][0]) == False and resultsdf['roic'][0] is not None:
+            roic = resultsdf['roic'][0]
         else:
-            cdivsrating = 1
-        if (resultsdf['rgravg'][0] is None) == True:
-            cdivsrating = 1
-        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
-            rdivsrating = 5
+            roic = 0
+
+        if pd.isnull(resultsdf['ar'][0]) == False and np.isinf(resultsdf['ar'][0]) == False and resultsdf['ar'][0] is not None:
+            aroic = resultsdf['ar'][0]
         else:
-            rdivsrating = 1
-        if (resultsdf['cgravg'][0] is None) == False:
-            rdivsrating = 1
-      
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+            aroic = 0
+
+        if pd.isnull(resultsdf['rar'][0]) == False and np.isinf(resultsdf['rar'][0]) == False and resultsdf['rar'][0] is not None:
+            raroic = resultsdf['rar'][0]
+        else:
+            raroic = 0
+
+        finalroic = max(roic, aroic, raroic)
+        roiccompare = [20,15,7,0.1]
+        finalrating = rating_assignment(finalroic,roiccompare)
     except Exception as err:
         print('roic rating error:')
         print(err)
     finally:
         return finalrating
 
-#calculatedRoce, croceAVG
-#luke here 
-#reportedRoce, rroceAVG
+# print(roic_rating('MSFT'))
+
 def roce_rating(ticker):
     try:
-        sqlq = 'SELECT calcDivsPerShareLow as rgravg, repDivsPerShareLow as cgravg \
+        sqlq = 'SELECT croceAVG as roic, rroceAVG as ar \
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
        
-        if pd.isnull(resultsdf['rgravg'][0]) == False and resultsdf['rgravg'][0] > 0:
-            cdivsrating = 5
+        if pd.isnull(resultsdf['roic'][0]) == False and np.isinf(resultsdf['roic'][0]) == False and resultsdf['roic'][0] is not None:
+            roic = resultsdf['roic'][0]
         else:
-            cdivsrating = 1
-        if (resultsdf['rgravg'][0] is None) == True:
-            cdivsrating = 1
-        if pd.isnull(resultsdf['cgravg'][0]) == False and resultsdf['cgravg'][0] > 0:
-            rdivsrating = 5
+            roic = 0
+
+        if pd.isnull(resultsdf['ar'][0]) == False and np.isinf(resultsdf['ar'][0]) == False and resultsdf['ar'][0] is not None:
+            aroic = resultsdf['ar'][0]
         else:
-            rdivsrating = 1
-        if (resultsdf['cgravg'][0] is None) == False:
-            rdivsrating = 1
-      
-        finalrating = math.floor((cdivsrating + rdivsrating) / 2)
+            aroic = 0
+
+        if aroic != 0:
+            finalroic = aroic
+        else:
+            finalroic = max(roic, aroic)
+        roiccompare = [25,15,7,0.1]
+        finalrating = rating_assignment(finalroic,roiccompare)
     except Exception as err:
         print('roce rating error:')
         print(err)
     finally:
         return finalrating
 
+# print(roce_rating('MSFT'))
+
+def yield_rating(ticker):
+    try:
+        sqlq = 'SELECT repDivYieldAVG as roic, calcDivYieldAVG as ar \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['roic'][0]) == False and np.isinf(resultsdf['roic'][0]) == False and resultsdf['roic'][0] is not None:
+            roic = resultsdf['roic'][0]
+        else:
+            roic = 0
+
+        if pd.isnull(resultsdf['ar'][0]) == False and np.isinf(resultsdf['ar'][0]) == False and resultsdf['ar'][0] is not None:
+            aroic = resultsdf['ar'][0]
+        else:
+            aroic = 0
+
+        avgyield = round((roic + aroic) / 2, 2)
+
+        if avgyield > 15 or avgyield <= 0:
+            finalrating = 1
+        elif avgyield <= 15 and avgyield >= 9:
+            finalrating = 5
+        elif avgyield < 9 and avgyield >= 7:
+            finalrating = 4
+        elif avgyield < 7 and avgyield >= 3:
+            finalrating = 3
+        elif avgyield < 3 and avgyield > 0:
+            finalrating = 2
+    
+    except Exception as err:
+        print('yield rating error:')
+        print(err)
+    finally:
+        return finalrating
+
+# print(yield_rating('STAG'))
+
+#ok you can take tickers from sector, for each ticker, you calculate the scoring, all ratings, save all ratings and scoring in new table
+def rank_Materials():
+    try:
+        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Basic Materials\''
+        tickers = print_DB(tickergrab, 'return')
+        uploaddf = pd.DataFrame()
+        x = tickers['ticker'][0]
+        # for x in tickers['ticker']:
+        uploaddf['Ticker'] = [x]
+        roce = uploaddf['roce'] = roce_rating(x)
+        roic = uploaddf['roic'] = roic_rating(x)
+        roc = uploaddf['roc'] = roc_rating(x)
+        ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+        po = uploaddf['po'] = payout_rating(x)
+        divgr = uploaddf['divgr'] = divgrowth_rating(x)
+        divpay = uploaddf['divpay'] = divspaid_rating(x)
+        shares = uploaddf['shares'] = shares_rating(x)
+        cf = uploaddf['cf'] = cf_rating(x)
+        bv = uploaddf['bv'] = bvnav_rating(x)
+        equity = uploaddf['equity'] = equity_rating(x)
+        debt = uploaddf['debt'] = debt_rating(x)
+        fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+        fcf = uploaddf['fcf'] = fcf_rating(x)
+        ffo = uploaddf['ffo'] = ffo_rating(x)
+        ni = uploaddf['ni'] = ni_rating(x)
+        rev = uploaddf['rev'] = growth_rating(x)
+        #v = value
+        rocev = 5
+        roicv = 5
+        rocv = 3
+        ffopov = 0
+        pov = 5
+        divgrv = 5
+        divpayv = 5
+        sharesv = 3
+        cfv = 5
+        bvv = 3
+        equityv = 5
+        debtv = 3
+        fcfmv = 5
+        fcfv = 5
+        ffov = 0
+        niv = 5
+        revv = 3
+
+        finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + (equityv * equity) + (bvv * bv) + (cfv * cf) +
+                        (sharesv * shares) + (divpayv * divpay) + (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce))
+        print(finalscore)
+
+        uploaddf['score'] = finalscore
+        print(uploaddf)
+    except Exception as err:
+        print('rank mats error: ')
+        print(err)
+    # finally:
+    #     return 
+
+rank_Materials()
+
+ # roce_rating(ticker):
+        # roic_rating(ticker):
+        # roc_rating(ticker): 
+        # ffopayout_rating(ticker): ranking
+        # payout_rating(ticker): ranking
+        # divgrowth_rating(ticker): 15 for 5
+        # divspaid_rating(ticker): binary
+        # shares_rating(ticker): trend
+        # cf_rating(ticker): t
+        # bvnav_rating(ticker): t
+        # equity_rating(ticker): trend
+        # debt_rating(ticker): trend
+        # fcfm_rating(ticker): trend
+        # fcf_rating(ticker): fcf trend [10,7,4,0.1]
+        # ffo_rating(ticker): trend 15,10,3,0
+        # ni_rating(ticker): trend [20, 10, 3, 0.1]
+        # growth_rating(ticker): rev growth[15, 7, 3, 2]
+
+
+# tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Basic Materials\''
+# tickers = print_DB(jeff, 'return')
+# n = 0
+# for x in tickers['ticker']:
+#     print(str(n) + ': ' + str(x))
+#     n += 1
+# print(tickers['ticker'])
+# roce_rating(ticker):
+# roic_rating(ticker):
+# roc_rating(ticker): 
+# ffopayout_rating(ticker): ranking
+# payout_rating(ticker): ranking
+# divgrowth_rating(ticker): 15 for 5
+# divspaid_rating(ticker): binary
+# shares_rating(ticker): trend
+# cf_rating(ticker): t
+# bvnav_rating(ticker): t
+# equity_rating(ticker): trend
+# debt_rating(ticker): trend
+# fcfm_rating(ticker): trend
+# fcf_rating(ticker): fcf trend [10,7,4,0.1]
+# ffo_rating(ticker): trend 15,10,3,0
+# ni_rating(ticker): trend [20, 10, 3, 0.1]
+# growth_rating(ticker): rev growth[15, 7, 3, 2]
 
 # nicheck = 'SELECT DISTINCT Ticker, payoutRatio \
 #             FROM Mega \
@@ -5887,16 +6038,16 @@ def roce_rating(ticker):
 #             LIMIT 25 '
             # avg(ffoGrowthAVG) as repsavg, avg(ffoGrowthAVGnz) as cepsavg, avg(reitEPS) as reiteps\
 
-# nicheck = 'SELECT avg(ROCpsAVG) as ravg, max(numYearsROCpaid) as rmax, min(ffoPayoutRatioAVG) as rmin, \
-#                 avg(ffoPayoutRatioAVGnz) as cavg, max(ffoPayoutRatioAVGnz) as crmax, min(ffoPayoutRatioAVGnz) as crmin \
+# nicheck = 'SELECT avg(repDivYieldAVG) as ravg, max(repDivYieldAVG) as rmax, min(repDivYieldAVG) as rmin, \
+#                 avg(calcDivYieldAVG) as cavg, max(calcDivYieldAVG) as crmax, min(calcDivYieldAVG) as crmin \
 #             FROM Metadata '
-            # WHERE Sector LIKE \'Real Estate\''
+           
 
-# nicheck = 'SELECT Ticker, payoutRatioAVG as cavg, fcfPayoutRatioAVG as cavgnz, ffoPayoutRatioAVG as ravg, \
+# nicheck = 'SELECT Ticker, croceAVG as cavg, rroceAVG as cavgnz, raroicAVG as ravg, \
 #             repDivsPerShareGrowthAVGnz as ravgnz, calcDivsPerShareGrowthAVG as navgr, calcDivsPerShareGrowthAVGnz as navgrnz \
 #             FROM Metadata \
-#             WHERE Ticker LIKE \'MSFT\''
-            # cavg is not null \
+#             WHERE cavg is null and cavgnz is null  '
+#             # cavg is not null \
             # ORDER BY cavg DESC'
             # WHERE cavg is null and cavgnz is null ' 
             #(((reportedEquityGrowthAVG - reportedEquityGrowthAVGnz)/reportedEquityGrowthAVG)*100) as percdiff \
@@ -5943,8 +6094,6 @@ def roce_rating(ticker):
 
 # print_DB(hehe, 'print')
 # print_DB(gege, 'print')
-#luke: you can rerun this to confirm, but it looks like the backup went swimmingly. now we just look at how to delete metadata, add in the missing fields, and repopulate the db altogether
-#sadness.jpg. but you got this!
 #########
 
 #testing each table here
@@ -5993,17 +6142,17 @@ def roce_rating(ticker):
 #The testing zone - includes yahoo finance examples
 #---------------------------------------------------------------------
 
-lickit = [] 
+# lickit = [] 
 # for x in lickit:
 #     write_Master_csv_from_EDGAR(x,ultimateTagsList,'2024','2')
 # checkYearsIntegrityList(lickit)
 
 
-ticker235 = 'NEE'  #agnc, wmb, 
+# ticker235 = 'NEE'  #agnc, wmb, 
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker235]+'.json')
 # write_Master_csv_from_EDGAR(ticker235,ultimateTagsList,'2024','2')
-year235 = '2024'
-version235 = '2'
+# year235 = '2024'
+# version235 = '2'
 # print(ticker235 + ' income:')
 # t235INC = makeIncomeTableEntry(ticker235,year235,version235,False)
 # print(ticker235 + ' divs:')
@@ -6066,11 +6215,11 @@ version235 = '2'
 # checkYearsIntegritySector(util,0,10)
 
 
-ticker12 = 'O' #ABR
+# ticker12 = 'O' #ABR
 # print('https://data.sec.gov/api/xbrl/companyfacts/CIK'+nameCikDict[ticker12]+'.json')
 # write_Master_csv_from_EDGAR(ticker12,ultimateTagsList,'2024','2')
-year12 = '2024'
-version12 = '2'
+# year12 = '2024'
+# version12 = '2'
 # print(ticker12 + ' income:')
 # print(makeIncomeTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs:')
@@ -6086,9 +6235,9 @@ version12 = '2'
 #################
 
 
-ticker100 = 'ARCC' #ABR
-year100 = '2024'
-version100 = '2'
+# ticker100 = 'ARCC' #ABR
+# year100 = '2024'
+# version100 = '2'
 # print(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False))
 # print(cleanDividends(consolidateSingleAttribute(ticker100, year100, version100, totalCommonStockDivsPaid, False), 
 #                                     consolidateSingleAttribute(ticker100, year100, version100, declaredORPaidCommonStockDivsPerShare, False),
@@ -6106,9 +6255,9 @@ version100 = '2'
 
 
 
-ticker13 = 'MSFT' 
-year13 = '2024'
-version13 = '2'
+# ticker13 = 'MSFT' 
+# year13 = '2024'
+# version13 = '2'
 # print(ticker13 + ' income:')
 # print(makeIncomeTableEntry(ticker13,'2024',version13,False))
 # print(ticker13 + ' divs:')
@@ -6116,9 +6265,9 @@ version13 = '2'
 # print(ticker13 + '  roic: ')
 # print(makeROICtableEntry(ticker13,'2024',version13,False))
 
-ticker12 = 'NEE' 
-year12 = '2024'
-version12 = '2'
+# ticker12 = 'NEE' 
+# year12 = '2024'
+# version12 = '2'
 # print(ticker12 + ' income:')
 # print(makeIncomeTableEntry(ticker12,'2024',version12,False))
 # print(ticker12 + ' divs:')
@@ -6126,9 +6275,9 @@ version12 = '2'
 # print(ticker12 + ' roic: ')
 # print(makeROICtableEntry(ticker12,'2024',version12,False))
 
-ticker14 = 'O' #EGP
-year14 = '2024'
-version14 = '2'
+# ticker14 = 'O' #EGP
+# year14 = '2024'
+# version14 = '2'
 # print(ticker14 + ' income:')
 # print(makeIncomeTableEntry(ticker14,year14,version14,False))
 # print(ticker14 + ' divs:')
@@ -6136,9 +6285,9 @@ version14 = '2'
 # print(ticker14 + '  roic: ')
 # print(makeROICtableEntry(ticker14,'2024',version14,False))
 
-ticker234 = 'ARCC'
-year234 = '2024'
-version234 = '2'
+# ticker234 = 'ARCC'
+# year234 = '2024'
+# version234 = '2'
 # print(ticker234 + ' income:')
 # print(makeIncomeTableEntry(ticker234,year234,version234,False))
 # print(ticker234 + ' divs:')
@@ -6147,9 +6296,9 @@ version234 = '2'
 # print(makeROICtableEntry(ticker234,year234,version234,False))
 
 
-ticker123 = 'AMZN' #AMZN
-year123 = '2024'
-version123 = '2'
+# ticker123 = 'AMZN' #AMZN
+# year123 = '2024'
+# version123 = '2'
 # print('AMZN income:')
 # print(makeIncomeTableEntry(ticker123,'2024',version123,False))
 # print('AMZN divs:')

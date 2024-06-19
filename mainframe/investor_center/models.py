@@ -384,6 +384,12 @@ class Metadata(models.Model):
     class Meta:
         db_table = 'Metadata'
 
+class Materials_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        db_table = 'Materials_Ranking'
+
 class Metadata_Backup(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
     FirstYear = models.CharField(max_length=4, blank=True, null=True)
