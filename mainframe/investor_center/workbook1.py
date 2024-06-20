@@ -6664,7 +6664,7 @@ def rank_Growth(): #luke here
                             (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
             uploaddf['score'] = finalscore
-            uploadToDB(uploaddf,'Growth_Ranking'):
+            uploadToDB(uploaddf,'Growth_Ranking')
     except Exception as err:
         print('rank growth error: ')
         print(err)
@@ -6723,7 +6723,7 @@ def rank_DivGrowth():
                             (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
             uploaddf['score'] = finalscore
-            uploadToDB(uploaddf,'DivGrowth_Ranking'):
+            uploadToDB(uploaddf,'DivGrowth_Ranking')
     except Exception as err:
         print('rank div growth error: ')
         print(err)
@@ -6783,14 +6783,14 @@ def rank_FullWeight(): #luke here
                             (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
             uploaddf['score'] = finalscore
-            uploadToDB(uploaddf,'FullWeight_Ranking'):
+            uploadToDB(uploaddf,'FullWeight_Ranking')
     except Exception as err:
         print('rank full weighting error: ')
         print(err)
 
-rank_Growth()
-rank_DivGrowth()
-rank_FullWeight()
+# rank_Growth()
+# rank_DivGrowth()
+# rank_FullWeight()
 
 
 def rank_REITFullWeight():
@@ -6851,12 +6851,12 @@ def rank_REITFullWeight():
         print('rank reit full weighting error: ')
         print(err)
 
-# testf = 'Select * From FullWeight_Ranking ORDER BY score DESC'
-# print_DB(testf, 'print')
-# testf = 'Select * From DivGrowth_Ranking ORDER BY score DESC'
-# print_DB(testf, 'print')
-# testf = 'Select * From Growth_Ranking ORDER BY score DESC'
-# print_DB(testf, 'print')
+testf = 'Select * From FullWeight_Ranking ORDER BY score DESC'
+print_DB(testf, 'print')
+testf = 'Select * From DivGrowth_Ranking ORDER BY score DESC'
+print_DB(testf, 'print')
+testf = 'Select * From Growth_Ranking ORDER BY score DESC'
+print_DB(testf, 'print')
 
  # roce_rating(ticker):
         # roic_rating(ticker):
