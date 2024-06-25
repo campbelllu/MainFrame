@@ -6025,444 +6025,483 @@ def yield_rating(ticker):
     finally:
         return finalrating
 
-# print(yield_rating('MO'))
-
-#luke here: editing sector rankings
-def rank_Materials(): #luke here edit to upload
+def rank_Materials():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Basic Materials\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 3
-            cfv = 5
-            bvv = 3
-            equityv = 5
-            debtv = 3
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 3
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'B'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 3
+                cfv = 5
+                bvv = 3
+                equityv = 5
+                debtv = 3
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 3
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank mats error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank mats error: ')
         print(err)
 
 # rank_Materials()
 
-def rank_Communications(): #luke here
+def rank_Communications(): 
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Communication Services\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 4
-            cfv = 5
-            bvv = 3
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 5
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'C'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 4
+                cfv = 5
+                bvv = 3
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 5
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank comms error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank comms error: ')
         print(err)
 
 # rank_Communications()
 
-def rank_ConsumerCyclical(): #luke here
+def rank_ConsumerCyclical():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Consumer Cyclical\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 4
-            cfv = 5
-            bvv = 3
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 5
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'Y'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 4
+                cfv = 5
+                bvv = 3
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 5
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank cons cyclic error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank Consumer Cyclical error: ')
         print(err)
 
 # rank_ConsumerCyclical()
 
-def rank_ConsumerDefensive(): #luke here
+def rank_ConsumerDefensive():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Consumer Defensive\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 4
-            cfv = 5
-            bvv = 3
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 3
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'P'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 4
+                cfv = 5
+                bvv = 3
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 3
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank cons staples error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank Consumer Def error: ')
         print(err)
 
 # rank_ConsumerDefensive()
 
-def rank_Energy(): #luke here
+def rank_Energy():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Energy\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 4
-            cfv = 5
-            bvv = 3
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 3
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'E'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 4
+                cfv = 5
+                bvv = 3
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 3
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank energy error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank energy error: ')
         print(err)
 
 # rank_Energy()
 
-def rank_Financials(): #luke here
+def rank_Financials():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Financial Services\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 5
-            cfv = 5
-            bvv = 5
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 3
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'F'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 5
+                cfv = 5
+                bvv = 5
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 3
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank financials error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank financials error: ')
         print(err)
 
 # rank_Financials()
 
-def rank_Healthcare(): #luke here
+def rank_Healthcare():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Healthcare\''
         tickers = print_DB(tickergrab, 'return')
-        # uploaddf = pd.DataFrame()
-        # x = tickers['ticker'][250]
+        length1 = len(tickers['ticker'])
+        n = 1
         
         for x in tickers['ticker']:
-            uploaddf = pd.DataFrame()
-            print(x)
-            uploaddf['Ticker'] = [x]
-            roce = uploaddf['roce'] = roce_rating(x)
-            roic = uploaddf['roic'] = roic_rating(x)
-            roc = uploaddf['roc'] = roc_rating(x)
-            ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-            po = uploaddf['po'] = payout_rating(x)
-            divgr = uploaddf['divgr'] = divgrowth_rating(x)
-            divpay = uploaddf['divpay'] = divspaid_rating(x)
-            shares = uploaddf['shares'] = shares_rating(x)
-            cf = uploaddf['cf'] = cf_rating(x)
-            bv = uploaddf['bv'] = bvnav_rating(x)
-            equity = uploaddf['equity'] = equity_rating(x)
-            debt = uploaddf['debt'] = debt_rating(x)
-            fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-            fcf = uploaddf['fcf'] = fcf_rating(x)
-            ffo = uploaddf['ffo'] = ffo_rating(x)
-            ni = uploaddf['ni'] = ni_rating(x)
-            rev = uploaddf['rev'] = growth_rating(x)
-            divyield = uploaddf['divyield'] = yield_rating(x)
-            #v = value to be VALUED at lol
-            rocev = 5
-            roicv = 5
-            rocv = 3
-            ffopov = 0
-            pov = 5
-            divgrv = 5
-            divpayv = 5
-            sharesv = 5
-            cfv = 5
-            bvv = 5
-            equityv = 5
-            debtv = 5
-            fcfmv = 5
-            fcfv = 5
-            ffov = 0
-            niv = 5
-            revv = 3
-            yieldv = 5
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'V'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 5
+                cfv = 5
+                bvv = 5
+                equityv = 5
+                debtv = 5
+                fcfmv = 5
+                fcfv = 5
+                ffov = 0
+                niv = 5
+                revv = 3
+                yieldv = 5
 
-            finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                            (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                            (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
-            uploaddf['score'] = finalscore
-            print(uploaddf)
-        # uploadToDB(uploaddf,'Materials_Ranking'):
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank healthcare error in loop for: ' + str(x))
+                print(err)
+                continue
     except Exception as err:
         print('rank healthcare error: ')
         print(err)
 
 # rank_Healthcare()
 
-def rank_Industrials(): #luke here rdy to analyze
+def rank_Industrials():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Industrials\''
         tickers = print_DB(tickergrab, 'return')
@@ -6474,6 +6513,7 @@ def rank_Industrials(): #luke here rdy to analyze
                 uploaddf = pd.DataFrame()
                 print(str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'I'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -6517,8 +6557,7 @@ def rank_Industrials(): #luke here rdy to analyze
                                 (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
                 uploaddf['score'] = finalscore
-                print(uploaddf)
-                uploadToDB(uploaddf,'Industrials_Ranking')
+                uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
                 print('rank inds error in loop for: ' + str(x))
@@ -6530,7 +6569,7 @@ def rank_Industrials(): #luke here rdy to analyze
 
 # rank_Industrials()
 
-def rank_RealEstate(): #luke here rdy to analyze
+def rank_RealEstate():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Real Estate\''
         tickers = print_DB(tickergrab, 'return')
@@ -6542,6 +6581,7 @@ def rank_RealEstate(): #luke here rdy to analyze
                 uploaddf = pd.DataFrame()
                 print(str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'RE'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -6585,7 +6625,7 @@ def rank_RealEstate(): #luke here rdy to analyze
                                 (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
                 uploaddf['score'] = finalscore
-                uploadToDB(uploaddf,'RealEstate_Ranking')
+                uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
                 print('rank RE error in loop for: ' + str(x))
@@ -6609,6 +6649,7 @@ def rank_Technology():
                 uploaddf = pd.DataFrame()
                 print(str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'K'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -6652,7 +6693,7 @@ def rank_Technology():
                                 (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
 
                 uploaddf['score'] = finalscore
-                uploadToDB(uploaddf,'Tech_Ranking')
+                uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
                 print('rank tech error in loop for: ' + str(x))
@@ -6665,7 +6706,7 @@ def rank_Technology():
 
 # rank_Technology()
 
-def rank_Utilities(): 
+def rank_Utilities():
     try:
         tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Utilities\''
         tickers = print_DB(tickergrab, 'return')
@@ -6677,6 +6718,7 @@ def rank_Utilities():
                 uploaddf = pd.DataFrame()
                 print(str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'U'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -6721,7 +6763,7 @@ def rank_Utilities():
 
                 uploaddf['score'] = finalscore
                 n += 1
-                uploadToDB(uploaddf,'Utilities_Ranking')
+                uploadToDB(uploaddf,'Sector_Rankings')
             except Exception as err:
                 print('rank utilities error in loop for: ' + str(x))
                 print(err)
@@ -6999,14 +7041,470 @@ def rank_REITFullWeight():
         print(err)
 
 # rank_REITFullWeight()
-
 # rank_Growth()
-
 # rank_DivGrowth()
-
 # rank_FullWeight()
 
-# testt = 'Select * From Tech_Ranking WHERE score > 200 ORDER BY score DESC LIMIT 25'
+#rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
+#ni: 2==2+, 3==4-7, same ffo
+#fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
+#fcfm: 1== >0
+#debt: 3 == 1-10+
+#eq: [10,5,1,0,-1,-2,-3,-4,-5]
+#bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
+#cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
+#shares: 2 lowest, <=10+
+#divspaid
+#divgrowth: 2== >=3
+#po: 2 == <80, ffo same
+#roic: [20,15,7,5,1,0,-1,-5,-7]
+#roce: [25,15,10,5,1,0,-1,-5,-10]
+#yield: 1 == 2-3%, 3+ ideal 3%+
+
+def LSMats():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'B\' \
+                    AND roce in (2,3,4,5) \
+                    AND roic in (2,3,4,5) \
+                    AND po > 1 \
+                    AND divgr in (2,3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LSMats error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
+        
+# LSMats()
+
+def OverAVGMats():
+    try:
+        # avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #  0.143251   0.84573   1.146006  -0.112948    -0.272727    2.493113    1.815427     0.903581    3.07438   0.066116  0.176309  0.198347  0.501377
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'B\' \
+                    AND roce >= 1 \
+                    AND roic >= 1 \
+                    AND po >= 2 \
+                    AND divpay > 0 \
+                    AND divgr > 0 \
+                    AND shares >= 3 \
+                    AND rev >= 1 \
+                    AND ni >= 1 \
+                    AND fcf >= 1 \
+                    AND fcfm >= 1 \
+                    AND cf >= 2 \
+                    AND equity >= 1 \
+                    AND debt >= 4 \
+                    ORDER BY score DESC'
+                    
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LSMats error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGMats', False)
+
+# OverAVGMats()
+
+def LSComms():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'C\' \
+                    AND roce in (2,3,4,5) \
+                    AND roic in (2,3,4,5) \
+                    AND po >= 2 \
+                    AND divgr in (2,3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSComms', False)
+
+# LSComms()
+
+def OverAVGComms():
+    try:
+        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #  -0.306061    0.30303  0.666667   -0.636364    -0.587879          2.0  1.981818     0.493939   3.118182   0.033333  0.257576 -0.009091  1.315152
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'C\' \
+                    AND roce >= 0 \
+                    AND roic >= 1 \
+                    AND po >= 1 \
+                    AND divpay > 0 \
+                    AND divgr > 0 \
+                    AND shares >= 3 \
+                    AND cf >= 2 \
+                    AND equity >= 1 \
+                    AND debt >= 4 \
+                    AND fcfm >= 1 \
+                    AND fcf >= 1 \
+                    AND ni >= 0 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGComs', False)
+
+# OverAVGComms()
+
+def LSEnergy():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'E\' \
+                    AND roce in (2,3,4,5) \
+                    AND roic in (2,3,4,5) \
+                    AND po >= 2 \
+                    AND divgr in (2,3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSEnergy', False)
+
+def OVERAVGEnergy():
+    try:
+        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #0.260135   0.898649  1.141892    0.327703    -0.108108     2.587838  2.043919     0.996622   3.135135   0.679054  0.726351  1.398649  1.577703
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'E\' \
+                    AND roce >= 1 \
+                    AND roic >= 1 \
+                    AND po >= 2 \
+                    AND divpay > 0 \
+                    AND divgr >= 1 \
+                    AND shares >= 3 \
+                    AND cf >= 3 \
+                    AND equity >= 1 \
+                    AND debt >= 4 \
+                    AND fcfm >= 1 \
+                    AND fcf >= 1 \
+                    AND ni >= 2 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGEnergy', False)
+
+# LSEnergy()
+# OVERAVGEnergy()
+
+def LSFin():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'F\' \
+                    AND roce in (2,3,4,5) \
+                    AND roic in (2,3,4,5) \
+                    AND po >= 2 \
+                    AND divgr in (2,3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND bv >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSFin', False)
+
+# LSFin()
+
+def OVERAVGFin():
+    try:
+        #aavg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #0.941738   1.746896  1.745941     0.64852     0.033429     2.946514  2.265521     1.906399   0.735435    0.91022  0.531996  1.052531  0.835721
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'F\' \
+                    AND roce >= 1 \
+                    AND roic >= 2 \
+                    AND po >= 2 \
+                    AND divpay > 0 \
+                    AND divgr >= 1 \
+                    AND shares >= 3 \
+                    AND cf >= 3 \
+                    AND bv >= 3 \
+                    AND equity >= 2 \
+                    AND debt >= 1 \
+                    AND fcfm >= 1 \
+                    AND fcf >= 1 \
+                    AND ni >= 2 \
+                    AND rev >= 1 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGFin', False)
+
+# OVERAVGFin()
+
+#luke here if you wanna do more of these;
+#luke i think this is the best way to currently screen: you get super judicious on what constitutes a good investment, and then go forward with building it out more
+#for average use.
+#yeah luke, the scoring system is already doing a pretty damn good job of finding those in overavgerage. makes it redundant i think.
+#meaningwhile, your personal picks could be fruitful in the shortterm, but i think making a stock report generator is what to do now. you havea  list of the best
+#how can we make that digestible for the user?
+#rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
+#ni: 2==2+, 3==4-7, same ffo
+#fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
+#fcfm: 1== >0
+#debt: 3 == 1-10+
+#equity: [10,5,1,0,-1,-2,-3,-4,-5]
+#bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
+#cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
+#shares: 2 lowest, <=10+
+#divspaid
+#divgrowth: 2== >=3
+#po: 2 == <80, ffo same
+#roic: [20,15,7,5,1,0,-1,-5,-7]
+#roce: [25,15,10,5,1,0,-1,-5,-10]
+#yield: 1 == 2-3%, 3+ ideal 3%+
+def LSInd():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'I\' \
+                    AND roce in (2,3,4,5) \
+                    AND roic in (2,3,4,5) \
+                    AND po >= 2 \
+                    AND divgr in (2,3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSInd', False)
+
+def OVERAVGInd():
+    try:
+        # avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)  avg(ni)  avg(rev)
+        #0.854356   1.361508  1.417425   -0.031209    -0.282185     2.626788  2.152146  2.270481     1.386216   3.015605   0.029909  0.163849  0.89987  1.496749
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'I\' \
+                    AND roce >= 1 \
+                    AND roic >= 2 \
+                    AND po >= 2 \
+                    AND divpay > 0 \
+                    AND divgr >= 0 \
+                    AND shares >= 3 \
+                    AND cf >= 3 \
+                    AND equity >= 2 \
+                    AND debt >= 3 \
+                    AND fcfm >= 1 \
+                    AND fcf >= 1 \
+                    AND ni >= 1 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGInd', False)
+
+# LSInd()
+# OVERAVGInd()
+
+def OVERAVGTech():
+    try:
+        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #-0.495403   0.503575  0.566905   -0.628192    -0.707865     1.945863  2.120531  1.621042     0.878447   3.258427  -0.037794   0.60572  0.354443  1.841675
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'K\' \
+                    AND roce >= 0 \
+                    AND roic >= 1 \
+                    AND po >= 1 \
+                    AND divgr >= 0 \
+                    AND shares >= 2 \
+                    AND cf >= 3 \
+                    AND equity >= 1 \
+                    AND debt >= 3 \
+                    AND fcfm >= 0 \
+                    AND fcf >= 1 \
+                    AND ni >= 1 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGTech', False)
+
+# OVERAVGTech()
+
+def OVERAVGStaples():
+    try:
+        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+        #0.60241   1.207831  0.834337   -0.548193    -0.457831     2.316265  2.159639  2.186747     1.069277    3.10241  -0.168675  0.442771  0.894578  1.295181
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'P\' \
+                    AND roce >= 1 \
+                    AND roic >= 2 \
+                    AND po >= 1 \
+                    AND divgr >= 0 \
+                    AND shares >= 3 \
+                    AND cf >= 3 \
+                    AND equity >= 2 \
+                    AND debt >= 3 \
+                    AND fcfm >= 0 \
+                    AND fcf >= 1 \
+                    AND ni >= 1 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGStaples', False)
+
+# OVERAVGStaples()
+
+def OVERAVGRE():
+    try:
+        #avg(roce)  avg(roic)  avg(ffopo)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(ffo)  avg(rev)
+        #0.277592   0.913043    1.220736     0.38796     0.371237      2.35786  2.501672  0.464883     1.013378   1.046823   0.826087  0.829431  1.020067  1.394649  2.123746
+        matspull = 'SELECT Ticker, roce, roic, ffopo, divgr, shares, debt, rev, ni, ffo, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'RE\' \
+                    AND roce >= 1 \
+                    AND roic >= 1 \
+                    AND ffopo >= 2 \
+                    AND divgr >= 1 \
+                    AND shares >= 3 \
+                    AND cf >= 3 \
+                    AND equity >= 2 \
+                    AND bv >= 1 \
+                    AND debt >= 1 \
+                    AND fcfm >= 1 \
+                    AND fcf >= 1 \
+                    AND ffo >= 2 \
+                    AND ni >= 1 \
+                    AND rev >= 2 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-OverAVGREALEST', False)
+
+# OVERAVGRE()
+
+def LSUlti():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+                    WHERE roce in (5) \
+                    AND roic in (5) \
+                    AND po in (3,4,5) \
+                    AND divgr in (3,4,5) \
+                    AND shares in (2,3,4,5) \
+                    AND rev in (2,3,4,5) \
+                    AND ni in (2,3,4,5) \
+                    AND fcf in (2,3,4,5) \
+                    AND fcfm in (2,3,4,5) \
+                    AND cf in (2,3,4,5) \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                    # AND debt >= 0 \
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LScoms error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-LSUlti', False)
+
+# LSUlti()
+
+# testsectorTop = 'Select avg(roce), avg(roic), avg(ffopo), avg(divgr), avg(divpay), avg(shares), avg(cf), avg(bv), avg(equity), avg(debt), \
+#                         avg(fcfm), avg(fcf), avg(ni), avg(ffo), avg(rev) From Sector_Rankings WHERE Sector LIKE \'RE\''
+# print_DB(testsectorTop, 'print')
+
+# testsector = 'Select * From Sector_Rankings WHERE roc < 5 ORDER BY score DESC'
+# print_DB(testsector, 'print')
+
+ohohmagic = 'Select * From Sector_Rankings WHERE Sector LIKE \'I\' ORDER BY score DESC LIMIT 50 '
+print_DB(ohohmagic, 'print')
+
+# testt = 'Select * From Tech_Ranking WHERE score > 200 ORDER BY score DESC LIMIT 25' #Tech_Ranking
 # print_DB(testt, 'print')
 
 # testu = 'Select * From Utilities_Ranking WHERE score > 100 ORDER BY score DESC LIMIT 25'
@@ -7037,31 +7535,13 @@ def rank_REITFullWeight():
 
 # testr = 'SELECT COUNT(Distinct Ticker) FROM REITFullWeight_Ranking'
 # testr = 'SELECT Ticker, score FROM REITFullWeight_Ranking  ORDER by score DESC LIMIT 25'
-# testr = 'SELECT Ticker, COUNT(*) FROM REITFullWeight_Ranking GROUP BY Ticker HAVING COUNT(*) > 1' #luke here checking what the heck is in that db
+# testr = 'SELECT Ticker, COUNT(*) FROM REITFullWeight_Ranking GROUP BY Ticker HAVING COUNT(*) > 1' 
 # print_DB(testr, 'print')
 
 # tickergrab = 'SELECT COUNT(DISTINCT Ticker) as ticker FROM Metadata WHERE Sector LIKE \'Real Estate\''
 # tickergrab = 'SELECT COUNT(Distinct Ticker) FROM Metadata'
 # print('distinct tickers in metadata: ')
 # print_DB(tickergrab, 'print')
-
- # roce_rating(ticker):
-        # roic_rating(ticker):
-        # roc_rating(ticker): 
-        # ffopayout_rating(ticker): ranking
-        # payout_rating(ticker): ranking
-        # divgrowth_rating(ticker): 15 for 5
-        # divspaid_rating(ticker): binary
-        # shares_rating(ticker): trend
-        # cf_rating(ticker): t
-        # bvnav_rating(ticker): t
-        # equity_rating(ticker): trend
-        # debt_rating(ticker): trend
-        # fcfm_rating(ticker): trend
-        # fcf_rating(ticker): fcf trend [10,7,4,0.1]
-        # ffo_rating(ticker): trend 15,10,3,0
-        # ni_rating(ticker): trend [20, 10, 3, 0.1]
-        # growth_rating(ticker): rev growth[15, 7, 3, 2]
 
 
 # tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Basic Materials\''
