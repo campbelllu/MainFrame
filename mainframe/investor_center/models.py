@@ -384,280 +384,6 @@ class Metadata(models.Model):
     class Meta:
         db_table = 'Metadata'
 
-class Materials_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Materials_Ranking'
-
-class Communications_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Communications_Ranking'
-
-class ConsumerCyclical_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'ConsumerCyclical_Ranking'
-
-class ConsumerDefensive_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'ConsumerDefensive_Ranking'
-
-class Energy_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Energy_Ranking'
-
-class Financials_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Financials_Ranking'
-
-class Healthcare_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Healthcare_Ranking'
-
-class Industrials_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Industrials_Ranking'
-
-class RealEstate_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'RealEstate_Ranking'
-
-class Tech_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Tech_Ranking'
-
-class Utilities_Ranking(models.Model):
-    Ticker = models.CharField(max_length=10, blank=True, null=True)
-    roce = models.IntegerField(blank=True, null=True)
-    roic = models.IntegerField(blank=True, null=True)
-    roc = models.IntegerField(blank=True, null=True)
-    ffopo = models.IntegerField(blank=True, null=True)
-    po = models.IntegerField(blank=True, null=True)
-    divgr = models.IntegerField(blank=True, null=True)
-    divpay = models.IntegerField(blank=True, null=True)
-    shares = models.IntegerField(blank=True, null=True)
-    cf = models.IntegerField(blank=True, null=True)
-    bv = models.IntegerField(blank=True, null=True)
-    equity = models.IntegerField(blank=True, null=True)
-    debt = models.IntegerField(blank=True, null=True)
-    fcfm = models.IntegerField(blank=True, null=True)
-    fcf = models.IntegerField(blank=True, null=True)
-    ffo = models.IntegerField(blank=True, null=True)
-    ni = models.IntegerField(blank=True, null=True)
-    rev = models.IntegerField(blank=True, null=True)
-    divyield = models.IntegerField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'Utilities_Ranking'
 
 class Sector_Rankings(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
@@ -985,3 +711,278 @@ class Metadata_Backup(models.Model):
 
     class Meta:
         db_table = 'Metadata_Backup'
+
+class Materials_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Materials_Ranking'
+
+class Communications_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Communications_Ranking'
+
+class ConsumerCyclical_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'ConsumerCyclical_Ranking'
+
+class ConsumerDefensive_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'ConsumerDefensive_Ranking'
+
+class Energy_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Energy_Ranking'
+
+class Financials_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Financials_Ranking'
+
+class Healthcare_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Healthcare_Ranking'
+
+class Industrials_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Industrials_Ranking'
+
+class RealEstate_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'RealEstate_Ranking'
+
+class Tech_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Tech_Ranking'
+
+class Utilities_Ranking(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Utilities_Ranking'

@@ -7068,11 +7068,11 @@ def investableUniverse(sector):
         print('investable uni error: ')
         print(err)
     finally:
-        name = 'z-InvUni-' + sector
-        csv.simple_saveDF_to_csv('', invUnidf, name, False)
-        # return invUnidf
+        # name = 'z-InvUni-' + sector
+        # csv.simple_saveDF_to_csv('', invUnidf, name, False)
+        return invUnidf
 
-investableUniverse('Y')
+# investableUniverse('E')
 
 def LSMats(invunidf):
     try:
@@ -7165,7 +7165,6 @@ def LSEnergy(invunidf):
                     AND equity >= 2 \
                     AND divpay > 0 \
                     AND debt >= 3 \
-                    AND divyield >= 1 \
                     ORDER BY score DESC'
         sqldf = print_DB(matspull, 'return')
 
@@ -7176,12 +7175,33 @@ def LSEnergy(invunidf):
             matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
                     WHERE Ticker LIKE \'' + x + '\''
             sqldf2 = print_DB(matspull2, 'return')
-            uploadToDB(sqldf2,'Investable_Universe')
+            # uploadToDB(sqldf2,'Investable_Universe')
+            print(sqldf2)
     except Exception as err:
         print('LSEnergy error: ')
         print(err)       
 
 # LSEnergy(investableUniverse('E'))
+
+energywtf = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'E\' \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
+                    AND po > 1 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 1 \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+print_DB(energywtf,'print')
+
+#      id Ticker Sector  roce  roic  roc  ffopo  po  divgr  divpay  shares  cf  bv  equity  debt  fcfm  fcf  ffo  ni  rev  divyield  score
+# 0  4730    XOM      E     4     4    5      5   3      2       1       4   1   3       3    -5    -2   -5   -4  -5    1         3     63
+# 1  4731    CVX      E     3     3    5      5   3      2       1       5   3   3       3    -1    -2   -5   -3  -5   -5         3     69
 
 def LSFin(invunidf):
     try:
@@ -7290,30 +7310,74 @@ def LSTech(invunidf):
         print('LSTech error: ')
         print(err)    
 
-# LSTech(investableUniverse('K')) #luke here filling in investable universe
+# LSTech(investableUniverse('K'))
 
+def LSRE(invunidf):
+    try:
+        matspull = 'SELECT Ticker, roce, roic, ffopo, po, divgr, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'RE\' \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
+                    AND ffopo >= 1 \
+                    AND divgr >= 1 \
+                    AND shares >= 2 \
+                    AND ni >= 1 \
+                    AND ffo >= 1 \
+                    AND rev >= 1 \
+                    AND fcf >= 1 \
+                    AND fcfm >= 1 \
+                    AND cf >= 2 \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                   
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+            # print(sqldf2)
+    except Exception as err:
+        print('LSRE error: ')
+        print(err)    
+
+# LSRE(investableUniverse('RE')) #luke here filling in investable universe
+
+def LSUlti():
+    try:
+        #sql pull, save as csv for now
+        matspull = 'SELECT Ticker, Sector, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE roce >= 3 \
+                    AND roic >= 3 \
+                    AND equity >= 2 \
+                    AND po >= 1 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND ni >= 2 \
+                    AND rev >= 1 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    AND bv >= 2 \
+                    ORDER BY Sector, score DESC'
+        themats = print_DB(matspull, 'return')
+    except Exception as err:
+        print('LSulti error: ')
+        print(err)
+    finally:
+        csv.simple_saveDF_to_csv('',themats,'z-UltiInvUniverse', False)
+
+# LSUlti()
 #roic: [20,15,7,5,1,0,-1,-5,-7]
-                    #roce: [25,15,10,5,1,0,-1,-5,-10]
-                    #rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
-                    #ni: 2==2+, 3==4-7, same ffo
-                    #fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
-                    #fcfm: 1== >0
-                    #debt: 3 == 1-10+
-                    #equity: [10,5,1,0,-1,-2,-3,-4,-5]
-                    #bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
-                    #cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
-                    #shares: 2 lowest, <=10+
-                    #divspaid
-                    #divgrowth: 2== >=3
-                    #po: 2 == <80, ffo same
-                    #yield: 1 == 2-3%, 3+ ideal 3%+
-
-#luke here if you wanna do more of these;
-#luke i think this is the best way to currently screen: you get super judicious on what constitutes a good investment, and then go forward with building it out more
-#for average use.
-#yeah luke, the scoring system is already doing a pretty damn good job of finding those in overavgerage. makes it redundant i think.
-#meaningwhile, your personal picks could be fruitful in the shortterm, but i think making a stock report generator is what to do now. you havea  list of the best
-#how can we make that digestible for the user?
+#roce: [25,15,10,5,1,0,-1,-5,-10]
 #rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
 #ni: 2==2+, 3==4-7, same ffo
 #fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
@@ -7326,44 +7390,50 @@ def LSTech(invunidf):
 #divspaid
 #divgrowth: 2== >=3
 #po: 2 == <80, ffo same
-#roic: [20,15,7,5,1,0,-1,-5,-7]
-#roce: [25,15,10,5,1,0,-1,-5,-10]
 #yield: 1 == 2-3%, 3+ ideal 3%+
 
+# bdcRanks = 'Select * From Sector_Rankings \
+#             WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \'GBDC\', \
+#              \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \
+#             \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \
+#             \'SCM\', \'SLRC\', \'SSSS\', \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
+#             AND roce >= 2 \
+#             AND roic >= 2 \
+#             AND shares >= 2 \
+#             AND cf >= 0 \
+#             AND bv >= 2 \
+#             AND equity >= 0 \
+#             ORDER BY bv DESC'
 
+# print_DB(bdcRanks, 'print')
+# csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
 
-def LSUlti():
-    try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE roce in (5) \
-                    AND roic in (5) \
-                    AND po in (3,4,5) \
-                    AND divgr in (3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
-                    AND equity >= 2 \
-                    AND divpay > 0 \
-                    AND debt >= 3 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSUlti', False)
+# onlybanks = 'Select * From Sector_Rankings \
+#             WHERE fcfm >= 0 \
+#             AND fcf >= 0 \
+#             AND divpay > 0 \
+#             AND divgr >= 4 \
+#             AND roce >= 4 \
+#             AND roic >= 4 \
+#             AND shares >= 2 \
+#             AND cf >= 2 \
+#             AND bv >= 4 \
+#             AND po >= 2 \
+#             AND debt >= 0 \
+#             AND equity >= 3 \
+#             AND Sector LIKE \'F\' \
+#             ORDER BY divgr DESC'
 
-# LSUlti()
-# #Investable_Universe
-# testf = 'Select * From Sector_Rankings \
-#             WHERE Ticker IN (\'ARCC\', \'CSWC\', \'MAIN\', \'OCSL\', \'ORCC\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\', \'OBDC\') ORDER BY score DESC'
-testf = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
-print_DB(testf, 'print')
+# print_DB(onlybanks, 'print')
+# csv.simple_saveDF_to_csv('',print_DB(onlybanks, 'return'), 'z-Banklist', False)
+
+# testf = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
+
+# testindustries = 'SELECT Ticker FROM Mega WHERE Industry LIKE \'Basic Materials\''
+# print_DB(testindustries, 'print')
+
+# testindustries = 'SELECT DISTINCT(Industry), Sector FROM Mega WHERE Sector LIKE \'Utilities\''
+# csv.simple_saveDF_to_csv('',print_DB(testindustries, 'return'), 'z-Industries-util', False)
 
 # testsectorTop = 'Select avg(roce), avg(roic), avg(ffopo), avg(divgr), avg(divpay), avg(shares), avg(cf), avg(bv), avg(equity), avg(debt), \
 #                         avg(fcfm), avg(fcf), avg(ni), avg(ffo), avg(rev) From Sector_Rankings WHERE Sector LIKE \'RE\''
@@ -7375,17 +7445,15 @@ print_DB(testf, 'print')
 # ohohmagic = 'Select * From Sector_Rankings WHERE Sector LIKE \'I\' ORDER BY score DESC LIMIT 50 '
 # print_DB(ohohmagic, 'print')
 
-# testt = 'Select * From Tech_Ranking WHERE score > 200 ORDER BY score DESC LIMIT 25' #Tech_Ranking
-# print_DB(testt, 'print')
+# testg = 'Select * From DivGrowth_Ranking WHERE score > 200 AND Sector LIKE \'Real Estate\' ORDER BY score DESC'
+# print_DB(testg, 'print')
 
-# testu = 'Select * From Utilities_Ranking WHERE score > 100 ORDER BY score DESC LIMIT 25'
-# print_DB(testu, 'print')
-
-# testr = 'Select * From RealEstate_Ranking WHERE score > 200 ORDER BY score DESC LIMIT 25'
-# print_DB(testr, 'print')
+# testh = 'Select * From Growth_Ranking WHERE score > 100 ORDER BY score DESC LIMIT 25'
+# testh = 'SELECT COUNT(Distinct Ticker) FROM Growth_Ranking'
+# print_DB(testh, 'print')
 
 ###dangerous reset button
-# testd = 'DELETE From Investable_Universe'
+# testd = 'DELETE From RealEstate_Ranking'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
 # query.execute(testd)
@@ -7394,105 +7462,7 @@ print_DB(testf, 'print')
 # conn.close()
 ##dangerous delete button
 
-
-
-# testg = 'Select * From DivGrowth_Ranking WHERE score > 200 AND Sector LIKE \'Real Estate\' ORDER BY score DESC'
-# print_DB(testg, 'print')
-
-# testh = 'Select * From Growth_Ranking WHERE score > 100 ORDER BY score DESC LIMIT 25'
-# testh = 'SELECT COUNT(Distinct Ticker) FROM Growth_Ranking'
-# print_DB(testh, 'print')
-
-# testr = 'SELECT COUNT(Distinct Ticker) FROM REITFullWeight_Ranking'
-# testr = 'SELECT Ticker, score FROM REITFullWeight_Ranking  ORDER by score DESC LIMIT 25'
-# testr = 'SELECT Ticker, COUNT(*) FROM REITFullWeight_Ranking GROUP BY Ticker HAVING COUNT(*) > 1' 
-# print_DB(testr, 'print')
-
-# tickergrab = 'SELECT COUNT(DISTINCT Ticker) as ticker FROM Metadata WHERE Sector LIKE \'Real Estate\''
-# tickergrab = 'SELECT COUNT(Distinct Ticker) FROM Metadata'
-# print('distinct tickers in metadata: ')
-# print_DB(tickergrab, 'print')
-
-
-# tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Basic Materials\''
-# tickers = print_DB(jeff, 'return')
-# n = 0
-# for x in tickers['ticker']:
-#     print(str(n) + ': ' + str(x))
-#     n += 1
-# print(tickers['ticker'])
-# roce_rating(ticker):
-# roic_rating(ticker):
-# roc_rating(ticker): 
-# ffopayout_rating(ticker): ranking
-# payout_rating(ticker): ranking
-# divgrowth_rating(ticker): 15 for 5
-# divspaid_rating(ticker): binary
-# shares_rating(ticker): trend
-# cf_rating(ticker): t
-# bvnav_rating(ticker): t
-# equity_rating(ticker): trend
-# debt_rating(ticker): trend
-# fcfm_rating(ticker): trend
-# fcf_rating(ticker): fcf trend [10,7,4,0.1]
-# ffo_rating(ticker): trend 15,10,3,0
-# ni_rating(ticker): trend [20, 10, 3, 0.1]
-# growth_rating(ticker): rev growth[15, 7, 3, 2]
-
-# nicheck = 'SELECT DISTINCT Ticker, payoutRatio \
-#             FROM Mega \
-#             WHERE payoutRatio > 0 and payoutRatio is not null and payoutRatio is not inf\
-#             ORDER BY payoutRatio DESC'
-#             WHERE tdivp > 0 \
-#             AND divGrowthRateBOT > 9.9 \
-#             AND payoutRatio < 0.75 \
-#             ORDER BY tdivp DESC \
-#             LIMIT 25 '
-            # avg(ffoGrowthAVG) as repsavg, avg(ffoGrowthAVGnz) as cepsavg, avg(reitEPS) as reiteps\
-
-# nicheck = 'SELECT avg(repDivYieldAVG) as ravg, max(repDivYieldAVG) as rmax, min(repDivYieldAVG) as rmin, \
-#                 avg(calcDivYieldAVG) as cavg, max(calcDivYieldAVG) as crmax, min(calcDivYieldAVG) as crmin \
-#             FROM Metadata '
-           
-
-# nicheck = 'SELECT Ticker, croceAVG as cavg, rroceAVG as cavgnz, raroicAVG as ravg, \
-#             repDivsPerShareGrowthAVGnz as ravgnz, calcDivsPerShareGrowthAVG as navgr, calcDivsPerShareGrowthAVGnz as navgrnz \
-#             FROM Metadata \
-#             WHERE cavg is null and cavgnz is null  '
-#             # cavg is not null \
-            # ORDER BY cavg DESC'
-            # WHERE cavg is null and cavgnz is null ' 
-            #(((reportedEquityGrowthAVG - reportedEquityGrowthAVGnz)/reportedEquityGrowthAVG)*100) as percdiff \
-
-# print_DB(nicheck, 'print')
-
-# sjg = print_DB(nicheck, 'return')['cavg']
-# print(sjg[0] is None)
-
-# heggers = np.NaN
-# luke13 = 13
-# print(max(luke13, heggers))               
-
-# testticker11 = 'MSFT'
-# thedfofdfs = full_analysis(income_reading(testticker11), balanceSheet_reading(testticker11), cashFlow_reading(testticker11), dividend_reading(testticker11), efficiency_reading(testticker11))
-# for col in thedfofdfs:
-#     print(col)
-    # print(thedfofdfs[col])
-# print(thedfofdfs)
-
-# geegee = 'Select distinct Ticker From Metadata WHERE Sector Like \'Utilities\''
-# dfdfdf = print_DB(geegee, 'return')
-# print(dfdfdf['Ticker'])
-# print(util['Ticker'])
-# print(count_nonzeroes(dfdfdf['totalDivsPaid'])/len(dfdfdf['year']))
-
-# hehe = 'SELECT Ticker, round(repDivYieldAVG,2) as rdyield, round(calcDivYieldAVG, 2) as cdyield, AveragedOverYears as years \
-#         FROM Metadata \
-#         WHERE CAST(years as integer) > 10 \
-#             AND rdyield is not null AND rdyield > 7 AND rdyield < 50 \
-#             AND priceLatest > 10 \
-#             AND Sector IN ( \'Real Estate\', \'Financial Services\') \
-#         ORDER BY rdyield DESC;'#Where Sector LIKE \'Financial Services\' AND revGrowthAVG is null;'
+##oh god new delete button no touchie
 # hehe = 'DELETE FROM '
 # hehe = 'Select Count(distinct Ticker) From Metadata'
 # gege = 'Select Count(distinct Ticker) From Metadata_Backup'
@@ -7507,43 +7477,6 @@ print_DB(testf, 'print')
 # print_DB(hehe, 'print')
 # print_DB(gege, 'print')
 #########
-
-#testing each table here
-# print(efficiency_reading(testticker11))
-# divtable = dividend_reading(testticker11)
-# efftable = efficiency_reading(testticker11)
-# incometable = income_reading(testticker11)
-# balancetable = balanceSheet_reading(testticker11)
-# cftable = cashFlow_reading(testticker11)
-# for x in efftable:
-#     print(x)
-#     print(efftable[x])
-
-# print('roc lil table')
-# print(divtable['ROCperShare'])
-# print('iqr iqrnz mean of above')
-# print(IQR_Mean(divtable['ROCperShare'].tolist()))
-# print(IQR_MeanNZ(divtable['ROCperShare'].tolist()))
-# print('integrity of above')
-# print(zeroIntegrity((divtable['ROCperShare'].tolist())))
-# print('NI IQR ')
-# print((IQR_MeanNZ(incometable['netIncomeGrowthRate'])))
-# print('integrity:')
-# print((zeroIntegrity(efftable['reportedBookValue'].tolist())))
-# print('rep BV IQRnz ')
-# print((IQR_MeanNZ(efftable['reportedBookValue'])))
-# print('calc ROCE')
-# print(efftable['calculatedRoce'])
-# print('rep BV gr avg')
-# print(thedfofdfs['repBookValueGrowthAVG'])
-# print('above integrity')
-# print(thedfofdfs['repBookValueGrowthAVGintegrity'])
-# print(divtable['calcDivsPerShare'].iloc[-1])
-# print(efftable['nav'])
-# print('avg')
-# print(IQR_Mean(efftable['nav']))
-# print('no z')
-# print(IQR_MeanNZ(efftable['nav']))
 
 
 ###### NO#######
