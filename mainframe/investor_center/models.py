@@ -685,6 +685,32 @@ class Sector_Rankings(models.Model):
     class Meta:
         db_table = 'Sector_Rankings'
 
+class Investable_Universe(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    Sector = models.CharField(max_length=5, blank=True, null=True)
+    roce = models.IntegerField(blank=True, null=True)
+    roic = models.IntegerField(blank=True, null=True)
+    roc = models.IntegerField(blank=True, null=True)
+    ffopo = models.IntegerField(blank=True, null=True)
+    po = models.IntegerField(blank=True, null=True)
+    divgr = models.IntegerField(blank=True, null=True)
+    divpay = models.IntegerField(blank=True, null=True)
+    shares = models.IntegerField(blank=True, null=True)
+    cf = models.IntegerField(blank=True, null=True)
+    bv = models.IntegerField(blank=True, null=True)
+    equity = models.IntegerField(blank=True, null=True)
+    debt = models.IntegerField(blank=True, null=True)
+    fcfm = models.IntegerField(blank=True, null=True)
+    fcf = models.IntegerField(blank=True, null=True)
+    ffo = models.IntegerField(blank=True, null=True)
+    ni = models.IntegerField(blank=True, null=True)
+    rev = models.IntegerField(blank=True, null=True)
+    divyield = models.IntegerField(blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Investable_Universe'
+
 class Growth_Ranking(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
     Sector = models.CharField(max_length=30, blank=True, null=True)

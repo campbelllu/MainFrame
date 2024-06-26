@@ -27,6 +27,7 @@ curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 from datetime import date
 import time
+import statistics as stats
 # from forex_python.converter import CurrencyRates
 
 import csv_modules as csv
@@ -7045,258 +7046,267 @@ def rank_REITFullWeight():
 # rank_DivGrowth()
 # rank_FullWeight()
 
-#rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
-#ni: 2==2+, 3==4-7, same ffo
-#fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
-#fcfm: 1== >0
-#debt: 3 == 1-10+
-#eq: [10,5,1,0,-1,-2,-3,-4,-5]
-#bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
-#cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
-#shares: 2 lowest, <=10+
-#divspaid
-#divgrowth: 2== >=3
-#po: 2 == <80, ffo same
-#roic: [20,15,7,5,1,0,-1,-5,-7]
-#roce: [25,15,10,5,1,0,-1,-5,-10]
-#yield: 1 == 2-3%, 3+ ideal 3%+
-
-def LSMats():
+#Get the median/mean of sector scores, return list of tickers above that value
+def investableUniverse(sector):
     try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+        #avg(ffopo),
+        # avgpull = 'SELECT avg(roce), avg(roic), avg(po), avg(divgr), avg(divpay), avg(shares), avg(cf), avg(bv), avg(equity), avg(debt), \
+        #                 avg(fcfm), avg(fcf), avg(ffo), avg(ni), avg(rev), avg(divyield), avg(score) FROM Sector_Rankings WHERE Sector LIKE \'' + sector + '\''
+        avgpull = 'SELECT avg(score) as avg, max(score), min(score) FROM Sector_Rankings WHERE Sector LIKE \'' + sector + '\''
+        avgdf = print_DB(avgpull, 'return')
+        # print(avgdf)
+        avg = avgdf['avg'][0]
+        invUni = 'SELECT * FROM Sector_Rankings WHERE Sector LIKE \'' + sector + '\' AND score >= ' + str(avg) + ' ORDER BY score DESC'
+        invUnidf = print_DB(invUni, 'return')
+        # print(invUnidf['Ticker'])
+
+        # invUni2 = 'SELECT * FROM Sector_Rankings WHERE Sector LIKE \'' + sector + '\' AND score < ' + str(avg) + ' ORDER BY score DESC'
+        # invUnidf2 = print_DB(invUni2, 'print')
+                    
+        
+    except Exception as err:
+        print('investable uni error: ')
+        print(err)
+    finally:
+        name = 'z-InvUni-' + sector
+        csv.simple_saveDF_to_csv('', invUnidf, name, False)
+        # return invUnidf
+
+investableUniverse('Y')
+
+def LSMats(invunidf):
+    try:
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
                     WHERE Sector LIKE \'B\' \
-                    AND roce in (2,3,4,5) \
-                    AND roic in (2,3,4,5) \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
                     AND po > 1 \
-                    AND divgr in (2,3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND rev >= 2 \
+                    AND ni >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
                     AND equity >= 2 \
                     AND divpay > 0 \
                     AND debt >= 3 \
+                    AND divyield >= 1 \
                     ORDER BY score DESC'
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        # print(qualifiedtickers)
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
                     
-        themats = print_DB(matspull, 'return')
     except Exception as err:
         print('LSMats error: ')
         print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
+    # finally:
+        # csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
+        # return themats
         
-# LSMats()
-
-def OverAVGMats():
+def LSComms(invunidf):
     try:
-        # avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #  0.143251   0.84573   1.146006  -0.112948    -0.272727    2.493113    1.815427     0.903581    3.07438   0.066116  0.176309  0.198347  0.501377
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'B\' \
-                    AND roce >= 1 \
-                    AND roic >= 1 \
-                    AND po >= 2 \
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'C\' \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
+                    AND po > 1 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND rev >= 2 \
+                    AND ni >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
+                    AND equity >= 2 \
                     AND divpay > 0 \
-                    AND divgr > 0 \
-                    AND shares >= 3 \
-                    AND rev >= 1 \
+                    AND debt >= 3 \
+                    AND divyield >= 1 \
+                    ORDER BY score DESC'
+                    
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+    except Exception as err:
+        print('LSComms error: ')
+        print(err)          
+
+# LSComms(investableUniverse('C'))
+
+def LSEnergy(invunidf):
+    try:
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'E\' \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
+                    AND po > 1 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND rev >= 2 \
+                    AND ni >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    AND divyield >= 1 \
+                    ORDER BY score DESC'
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+    except Exception as err:
+        print('LSEnergy error: ')
+        print(err)       
+
+# LSEnergy(investableUniverse('E'))
+
+def LSFin(invunidf):
+    try:
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'F\' \
+                    AND roce >= 3 \
+                    AND roic >= 2 \
+                    AND po >= 1 \
+                    AND divgr >= 3 \
+                    AND shares >= 2 \
                     AND ni >= 1 \
                     AND fcf >= 1 \
                     AND fcfm >= 1 \
                     AND cf >= 2 \
-                    AND equity >= 1 \
-                    AND debt >= 4 \
-                    ORDER BY score DESC'
-                    
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LSMats error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGMats', False)
-
-# OverAVGMats()
-
-def LSComms():
-    try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'C\' \
-                    AND roce in (2,3,4,5) \
-                    AND roic in (2,3,4,5) \
-                    AND po >= 2 \
-                    AND divgr in (2,3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
                     AND equity >= 2 \
                     AND divpay > 0 \
                     AND debt >= 3 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSComms', False)
-
-# LSComms()
-
-def OverAVGComms():
-    try:
-        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #  -0.306061    0.30303  0.666667   -0.636364    -0.587879          2.0  1.981818     0.493939   3.118182   0.033333  0.257576 -0.009091  1.315152
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'C\' \
-                    AND roce >= 0 \
-                    AND roic >= 1 \
-                    AND po >= 1 \
-                    AND divpay > 0 \
-                    AND divgr > 0 \
-                    AND shares >= 3 \
-                    AND cf >= 2 \
-                    AND equity >= 1 \
-                    AND debt >= 4 \
-                    AND fcfm >= 1 \
-                    AND fcf >= 1 \
-                    AND ni >= 0 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGComs', False)
-
-# OverAVGComms()
-
-def LSEnergy():
-    try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'E\' \
-                    AND roce in (2,3,4,5) \
-                    AND roic in (2,3,4,5) \
-                    AND po >= 2 \
-                    AND divgr in (2,3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
-                    AND equity >= 2 \
-                    AND divpay > 0 \
-                    AND debt >= 3 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSEnergy', False)
-
-def OVERAVGEnergy():
-    try:
-        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #0.260135   0.898649  1.141892    0.327703    -0.108108     2.587838  2.043919     0.996622   3.135135   0.679054  0.726351  1.398649  1.577703
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'E\' \
-                    AND roce >= 1 \
-                    AND roic >= 1 \
-                    AND po >= 2 \
-                    AND divpay > 0 \
-                    AND divgr >= 1 \
-                    AND shares >= 3 \
-                    AND cf >= 3 \
-                    AND equity >= 1 \
-                    AND debt >= 4 \
-                    AND fcfm >= 1 \
-                    AND fcf >= 1 \
-                    AND ni >= 2 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGEnergy', False)
-
-# LSEnergy()
-# OVERAVGEnergy()
-
-def LSFin():
-    try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'F\' \
-                    AND roce in (2,3,4,5) \
-                    AND roic in (2,3,4,5) \
-                    AND po >= 2 \
-                    AND divgr in (2,3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
-                    AND equity >= 2 \
                     AND bv >= 2 \
-                    AND divpay > 0 \
-                    AND debt >= 3 \
+                    AND divyield >= 1 \
                     ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+            # print(sqldf2)
     except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSFin', False)
+        print('LSFin error: ')
+        print(err)    
 
-# LSFin()
+# LSFin(investableUniverse('F'))
 
-def OVERAVGFin():
+def LSInd(invunidf):
     try:
-        #aavg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #0.941738   1.746896  1.745941     0.64852     0.033429     2.946514  2.265521     1.906399   0.735435    0.91022  0.531996  1.052531  0.835721
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'F\' \
-                    AND roce >= 1 \
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'I\' \
+                    AND roce >= 2 \
                     AND roic >= 2 \
                     AND po >= 2 \
-                    AND divpay > 0 \
-                    AND divgr >= 1 \
-                    AND shares >= 3 \
-                    AND cf >= 3 \
-                    AND bv >= 3 \
-                    AND equity >= 2 \
-                    AND debt >= 1 \
-                    AND fcfm >= 1 \
-                    AND fcf >= 1 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
                     AND ni >= 2 \
-                    AND rev >= 1 \
+                    AND rev >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    AND divyield >= 1 \
                     ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGFin', False)
+                   
+        sqldf = print_DB(matspull, 'return')
 
-# OVERAVGFin()
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+            # print(sqldf2)
+    except Exception as err:
+        print('LSInd error: ')
+        print(err)    
+
+# LSInd(investableUniverse('I'))
+
+def LSTech(invunidf):
+    try:
+        matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Sector LIKE \'K\' \
+                    AND roce >= 2 \
+                    AND roic >= 2 \
+                    AND po >= 2 \
+                    AND divgr >= 2 \
+                    AND shares >= 2 \
+                    AND ni >= 2 \
+                    AND rev >= 2 \
+                    AND fcf >= 2 \
+                    AND fcfm >= 2 \
+                    AND cf >= 2 \
+                    AND equity >= 2 \
+                    AND divpay > 0 \
+                    AND debt >= 3 \
+                    ORDER BY score DESC'
+                   
+        sqldf = print_DB(matspull, 'return')
+
+        tickerslist = sqldf['Ticker'].tolist()
+        checklist = invunidf['Ticker'].tolist()
+        qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in qualifiedtickers:
+            matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+                    WHERE Ticker LIKE \'' + x + '\''
+            sqldf2 = print_DB(matspull2, 'return')
+            uploadToDB(sqldf2,'Investable_Universe')
+            # print(sqldf2)
+    except Exception as err:
+        print('LSTech error: ')
+        print(err)    
+
+# LSTech(investableUniverse('K')) #luke here filling in investable universe
+
+#roic: [20,15,7,5,1,0,-1,-5,-7]
+                    #roce: [25,15,10,5,1,0,-1,-5,-10]
+                    #rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
+                    #ni: 2==2+, 3==4-7, same ffo
+                    #fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
+                    #fcfm: 1== >0
+                    #debt: 3 == 1-10+
+                    #equity: [10,5,1,0,-1,-2,-3,-4,-5]
+                    #bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
+                    #cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
+                    #shares: 2 lowest, <=10+
+                    #divspaid
+                    #divgrowth: 2== >=3
+                    #po: 2 == <80, ffo same
+                    #yield: 1 == 2-3%, 3+ ideal 3%+
 
 #luke here if you wanna do more of these;
 #luke i think this is the best way to currently screen: you get super judicious on what constitutes a good investment, and then go forward with building it out more
@@ -7319,152 +7329,8 @@ def OVERAVGFin():
 #roic: [20,15,7,5,1,0,-1,-5,-7]
 #roce: [25,15,10,5,1,0,-1,-5,-10]
 #yield: 1 == 2-3%, 3+ ideal 3%+
-def LSInd():
-    try:
-        #sql pull, save as csv for now
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'I\' \
-                    AND roce in (2,3,4,5) \
-                    AND roic in (2,3,4,5) \
-                    AND po >= 2 \
-                    AND divgr in (2,3,4,5) \
-                    AND shares in (2,3,4,5) \
-                    AND rev in (2,3,4,5) \
-                    AND ni in (2,3,4,5) \
-                    AND fcf in (2,3,4,5) \
-                    AND fcfm in (2,3,4,5) \
-                    AND cf in (2,3,4,5) \
-                    AND equity >= 2 \
-                    AND divpay > 0 \
-                    AND debt >= 3 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-LSInd', False)
 
-def OVERAVGInd():
-    try:
-        # avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)  avg(ni)  avg(rev)
-        #0.854356   1.361508  1.417425   -0.031209    -0.282185     2.626788  2.152146  2.270481     1.386216   3.015605   0.029909  0.163849  0.89987  1.496749
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'I\' \
-                    AND roce >= 1 \
-                    AND roic >= 2 \
-                    AND po >= 2 \
-                    AND divpay > 0 \
-                    AND divgr >= 0 \
-                    AND shares >= 3 \
-                    AND cf >= 3 \
-                    AND equity >= 2 \
-                    AND debt >= 3 \
-                    AND fcfm >= 1 \
-                    AND fcf >= 1 \
-                    AND ni >= 1 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGInd', False)
 
-# LSInd()
-# OVERAVGInd()
-
-def OVERAVGTech():
-    try:
-        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #-0.495403   0.503575  0.566905   -0.628192    -0.707865     1.945863  2.120531  1.621042     0.878447   3.258427  -0.037794   0.60572  0.354443  1.841675
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'K\' \
-                    AND roce >= 0 \
-                    AND roic >= 1 \
-                    AND po >= 1 \
-                    AND divgr >= 0 \
-                    AND shares >= 2 \
-                    AND cf >= 3 \
-                    AND equity >= 1 \
-                    AND debt >= 3 \
-                    AND fcfm >= 0 \
-                    AND fcf >= 1 \
-                    AND ni >= 1 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGTech', False)
-
-# OVERAVGTech()
-
-def OVERAVGStaples():
-    try:
-        #avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
-        #0.60241   1.207831  0.834337   -0.548193    -0.457831     2.316265  2.159639  2.186747     1.069277    3.10241  -0.168675  0.442771  0.894578  1.295181
-        matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'P\' \
-                    AND roce >= 1 \
-                    AND roic >= 2 \
-                    AND po >= 1 \
-                    AND divgr >= 0 \
-                    AND shares >= 3 \
-                    AND cf >= 3 \
-                    AND equity >= 2 \
-                    AND debt >= 3 \
-                    AND fcfm >= 0 \
-                    AND fcf >= 1 \
-                    AND ni >= 1 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGStaples', False)
-
-# OVERAVGStaples()
-
-def OVERAVGRE():
-    try:
-        #avg(roce)  avg(roic)  avg(ffopo)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)   avg(bv)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(ffo)  avg(rev)
-        #0.277592   0.913043    1.220736     0.38796     0.371237      2.35786  2.501672  0.464883     1.013378   1.046823   0.826087  0.829431  1.020067  1.394649  2.123746
-        matspull = 'SELECT Ticker, roce, roic, ffopo, divgr, shares, debt, rev, ni, ffo, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'RE\' \
-                    AND roce >= 1 \
-                    AND roic >= 1 \
-                    AND ffopo >= 2 \
-                    AND divgr >= 1 \
-                    AND shares >= 3 \
-                    AND cf >= 3 \
-                    AND equity >= 2 \
-                    AND bv >= 1 \
-                    AND debt >= 1 \
-                    AND fcfm >= 1 \
-                    AND fcf >= 1 \
-                    AND ffo >= 2 \
-                    AND ni >= 1 \
-                    AND rev >= 2 \
-                    ORDER BY score DESC'
-                    # AND debt >= 0 \
-        themats = print_DB(matspull, 'return')
-    except Exception as err:
-        print('LScoms error: ')
-        print(err)
-    finally:
-        csv.simple_saveDF_to_csv('',themats,'z-OverAVGREALEST', False)
-
-# OVERAVGRE()
 
 def LSUlti():
     try:
@@ -7493,6 +7359,11 @@ def LSUlti():
         csv.simple_saveDF_to_csv('',themats,'z-LSUlti', False)
 
 # LSUlti()
+# #Investable_Universe
+# testf = 'Select * From Sector_Rankings \
+#             WHERE Ticker IN (\'ARCC\', \'CSWC\', \'MAIN\', \'OCSL\', \'ORCC\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\', \'OBDC\') ORDER BY score DESC'
+testf = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
+print_DB(testf, 'print')
 
 # testsectorTop = 'Select avg(roce), avg(roic), avg(ffopo), avg(divgr), avg(divpay), avg(shares), avg(cf), avg(bv), avg(equity), avg(debt), \
 #                         avg(fcfm), avg(fcf), avg(ni), avg(ffo), avg(rev) From Sector_Rankings WHERE Sector LIKE \'RE\''
@@ -7501,8 +7372,8 @@ def LSUlti():
 # testsector = 'Select * From Sector_Rankings WHERE roc < 5 ORDER BY score DESC'
 # print_DB(testsector, 'print')
 
-ohohmagic = 'Select * From Sector_Rankings WHERE Sector LIKE \'I\' ORDER BY score DESC LIMIT 50 '
-print_DB(ohohmagic, 'print')
+# ohohmagic = 'Select * From Sector_Rankings WHERE Sector LIKE \'I\' ORDER BY score DESC LIMIT 50 '
+# print_DB(ohohmagic, 'print')
 
 # testt = 'Select * From Tech_Ranking WHERE score > 200 ORDER BY score DESC LIMIT 25' #Tech_Ranking
 # print_DB(testt, 'print')
@@ -7514,7 +7385,7 @@ print_DB(ohohmagic, 'print')
 # print_DB(testr, 'print')
 
 ###dangerous reset button
-# testd = 'DELETE From DivGrowth_Ranking'
+# testd = 'DELETE From Investable_Universe'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
 # query.execute(testd)
@@ -7523,8 +7394,7 @@ print_DB(ohohmagic, 'print')
 # conn.close()
 ##dangerous delete button
 
-# testf = 'Select * From FullWeight_Ranking ORDER BY score DESC'
-# print_DB(testf, 'print')
+
 
 # testg = 'Select * From DivGrowth_Ranking WHERE score > 200 AND Sector LIKE \'Real Estate\' ORDER BY score DESC'
 # print_DB(testg, 'print')
@@ -8012,7 +7882,34 @@ print_DB(ohohmagic, 'print')
 # print('time to complete')
 # print((time2-time1)*1000)
 
-
+#saved for example, but decided to go another direction
+# def OverAVGMats():
+#     try:
+#         # avg(roce)  avg(roic)   avg(po)  avg(divgr)  avg(divpay)  avg(shares)   avg(cf)  avg(equity)  avg(debt)  avg(fcfm)  avg(fcf)   avg(ni)  avg(rev)
+#         #  0.143251   0.84573   1.146006  -0.112948    -0.272727    2.493113    1.815427     0.903581    3.07438   0.066116  0.176309  0.198347  0.501377
+#         matspull = 'SELECT Ticker, roce, roic, po, divgr, shares, debt, rev, ni, fcf, fcfm, cf, equity, score FROM Sector_Rankings \
+#                     WHERE Sector LIKE \'B\' \
+#                     AND roce >= 1 \
+#                     AND roic >= 1 \
+#                     AND po >= 2 \
+#                     AND divpay > 0 \
+#                     AND divgr > 0 \
+#                     AND shares >= 3 \
+#                     AND rev >= 1 \
+#                     AND ni >= 1 \
+#                     AND fcf >= 1 \
+#                     AND fcfm >= 1 \
+#                     AND cf >= 2 \
+#                     AND equity >= 1 \
+#                     AND debt >= 4 \
+#                     ORDER BY score DESC'
+                    
+#         themats = print_DB(matspull, 'return')
+#     except Exception as err:
+#         print('LSMats error: ')
+#         print(err)
+#     finally:
+#         csv.simple_saveDF_to_csv('',themats,'z-OverAVGMats', False)
 
 #unused idea
 # def fillAllEmptyGrowthRates(df):
