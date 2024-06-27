@@ -7074,45 +7074,39 @@ def investableUniverse(sector):
 
 # investableUniverse('E')
 
-def LSMats(invunidf):
+def LSMats(): #invunidf
     try:
         matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
                     WHERE Sector LIKE \'B\' \
-                    AND roce >= 2 \
-                    AND roic >= 2 \
+                    AND roce >= 1 \
+                    AND roic >= 3 \
                     AND po > 1 \
-                    AND divgr >= 2 \
-                    AND shares >= 2 \
-                    AND rev >= 2 \
-                    AND ni >= 2 \
-                    AND fcf >= 2 \
-                    AND fcfm >= 2 \
+                    AND divgr >= 3 \
                     AND cf >= 2 \
-                    AND equity >= 2 \
+                    AND equity >= 4 \
                     AND divpay > 0 \
-                    AND debt >= 3 \
-                    AND divyield >= 1 \
-                    ORDER BY score DESC'
+                    ORDER BY divgr DESC'
         sqldf = print_DB(matspull, 'return')
+        # print(sqldf)
 
         tickerslist = sqldf['Ticker'].tolist()
-        checklist = invunidf['Ticker'].tolist()
-        qualifiedtickers = [x for x in tickerslist if x in checklist]
-        # print(qualifiedtickers)
-        for x in qualifiedtickers:
+        # checklist = invunidf['Ticker'].tolist()
+        # qualifiedtickers = [x for x in tickerslist if x in checklist]
+        for x in tickerslist: #qualifiedtickers
             matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
                     WHERE Ticker LIKE \'' + x + '\''
             sqldf2 = print_DB(matspull2, 'return')
             uploadToDB(sqldf2,'Investable_Universe')
-                    
+            # print(sqldf2)        
     except Exception as err:
         print('LSMats error: ')
         print(err)
     # finally:
         # csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
         # return themats
+# LSMats()
         
-def LSComms(invunidf):
+def LSComms(invunidf): #luke here, find what makes these good
     try:
         matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
                     WHERE Sector LIKE \'C\' \
@@ -7183,21 +7177,21 @@ def LSEnergy(invunidf):
 
 # LSEnergy(investableUniverse('E'))
 
-energywtf = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-                    WHERE Sector LIKE \'E\' \
-                    AND roce >= 2 \
-                    AND roic >= 2 \
-                    AND po > 1 \
-                    AND divgr >= 2 \
-                    AND shares >= 2 \
-                    AND fcf >= 2 \
-                    AND fcfm >= 2 \
-                    AND cf >= 1 \
-                    AND equity >= 2 \
-                    AND divpay > 0 \
-                    AND debt >= 3 \
-                    ORDER BY score DESC'
-print_DB(energywtf,'print')
+# energywtf = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
+#                     WHERE Sector LIKE \'E\' \
+#                     AND roce >= 2 \
+#                     AND roic >= 2 \
+#                     AND po > 1 \
+#                     AND divgr >= 2 \
+#                     AND shares >= 2 \
+#                     AND fcf >= 2 \
+#                     AND fcfm >= 2 \
+#                     AND cf >= 1 \
+#                     AND equity >= 2 \
+#                     AND divpay > 0 \
+#                     AND debt >= 3 \
+#                     ORDER BY score DESC'
+# print_DB(energywtf,'print')
 
 #      id Ticker Sector  roce  roic  roc  ffopo  po  divgr  divpay  shares  cf  bv  equity  debt  fcfm  fcf  ffo  ni  rev  divyield  score
 # 0  4730    XOM      E     4     4    5      5   3      2       1       4   1   3       3    -5    -2   -5   -4  -5    1         3     63
@@ -7427,7 +7421,8 @@ def LSUlti():
 # print_DB(onlybanks, 'print')
 # csv.simple_saveDF_to_csv('',print_DB(onlybanks, 'return'), 'z-Banklist', False)
 
-# testf = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
+testf = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
+print_DB(testf,'print')
 
 # testindustries = 'SELECT Ticker FROM Mega WHERE Industry LIKE \'Basic Materials\''
 # print_DB(testindustries, 'print')
@@ -7453,7 +7448,7 @@ def LSUlti():
 # print_DB(testh, 'print')
 
 ###dangerous reset button
-# testd = 'DELETE From RealEstate_Ranking'
+# testd = 'DELETE From Investable_Universe'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
 # query.execute(testd)
