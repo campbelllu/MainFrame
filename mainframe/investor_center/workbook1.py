@@ -7265,7 +7265,9 @@ def LSEnergy(): #luke this is fun!
         print('LSEnergy error: ')
         print(err)       
 
-LSEnergy()
+# LSEnergy()
+
+
 
 def LSFin():
     try:
@@ -7811,7 +7813,6 @@ def LSY():
 # print_DB(testy,'print')
 
 
-
 # testsectorTop = 'Select avg(roce), avg(roic), avg(ffopo), avg(divgr), avg(divpay), avg(shares), avg(cf), avg(bv), avg(equity), avg(debt), \
 #                         avg(fcfm), avg(fcf), avg(ni), avg(ffo), avg(rev) From Sector_Rankings WHERE Sector LIKE \'RE\''
 # print_DB(testsectorTop, 'print')
@@ -7821,9 +7822,12 @@ def LSY():
 # ohohmagic = 'Select * From Sector_Rankings WHERE Sector LIKE \'I\' ORDER BY score DESC LIMIT 50 '
 # print_DB(ohohmagic, 'print')
 
+#check all tables in DB, nifty
+# tman = 'SELECT name FROM sqlite_master WHERE type = \'table\''
+# print_DB(tman, 'print')
 
 ###dangerous reset button
-# testd = 'DELETE From Sector_Rankings'
+# testd = 'DELETE From Metadata_Backup'
 # conn = sql.connect(db_path)
 # query = conn.cursor()
 # query.execute(testd)
