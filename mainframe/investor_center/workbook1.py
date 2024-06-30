@@ -7081,33 +7081,44 @@ def investableUniverse(sector):
 #luke here we start filling investable universe from notes sheet
 #############################################################################
 #luke here editing these don't forget to add the column/type: Type , indicating 'divs' or 'growth'
-def LSMats(): #invunidf
+def LSMats(): 
     try:
-        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, netCashFlowAVG, operatingCashFlowAVG, \
                     CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equitygr, \
                     CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG ELSE raroicAVG END roicavg, \
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roceavg \
                     FROM Metadata \
                     WHERE Sector LIKE \'Basic Materials\' \
-                    AND years >= 5 \
-                    AND revGrowthAVG >= 3 \
+                    AND years >= 1 \
+                    AND revGrowthAVG >= 0 \
                     AND netIncomeGrowthAVG >= 3 \
                     AND equitygr >= 0 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 5 \
+                    AND divgr >= 6 \
                     AND payoutRatioAVG <= 0.5 \
                     AND roicavg > 5 \
                     AND roceavg > 5 \
                     ORDER BY divgr;'
         sqldf = print_DB(matspull, 'return')
         print(sqldf)
-
-        # (CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END) as equity, \
-        # (CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END) as divgr \
-        # (CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END) as roic \
-        # (CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END) as roce \
+        #screening targets
+        # Ticker    years     revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG  equitygr      divgr   roicavg    roceavg
+        # 0    NUE     18  2.625312  10.085268        0.433444    2.014189e+08          1.715804e+09  5.590830   0.950187  9.209051  12.263205
+        # 1   STLD     18  4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08  8.801051  11.681113  7.843229  14.992343
+        # 2     RS     17  5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08  9.418193  17.718853  9.121950  12.131660
+        # 3    NEM     18  0.655908  13.195627        0.147077    1.930000e+08          2.648077e+09  0.112810  20.960141  3.464378   4.572959
+        #results from above:
+        #   Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG   equitygr      divgr    roicavg    roceavg
+        # 0   HWKN     15   7.921215   4.962971        0.350206    6.669091e+05          3.689775e+07   8.906628   6.526646  10.400827  12.637140
+        # 1    ECL     18   4.490953   9.545361        0.337469    2.669091e+07          1.723550e+09   6.456562   9.394432  16.869523  16.797879
+        # 2   BCPC     16   7.303757   8.769953        0.188848    1.968275e+07          1.068192e+08  12.840403  11.620022  10.711269  12.414149
+        # 3   STLD     18   4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08   8.801051  11.681113   7.843229  14.992343
+        # 4   UFPI     16  13.809333  25.466438        0.169407    6.471333e+06          1.308264e+08  11.629191  11.687335   9.462612  10.677567
+        # 5     RS     17   5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08   9.418193  17.718853   9.121950  12.131660
+        # 6   TGLS     13  14.174309   3.522493        0.066999    1.095124e+07          1.121103e+07  20.649606  35.979257   8.178108  22.319511
+        
 
         # tickerslist = sqldf['Ticker'].tolist()
         # # checklist = invunidf['Ticker'].tolist()
@@ -7124,40 +7135,12 @@ def LSMats(): #invunidf
     # finally:
         # csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
         # return themats
-    # try:
-    #     matspull = 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-    #                 WHERE Sector LIKE \'B\' \
-    #                 AND roce >= 1 \
-    #                 AND roic >= 3 \
-    #                 AND po > 1 \
-    #                 AND divgr >= 3 \
-    #                 AND cf >= 2 \
-    #                 AND equity >= 4 \
-    #                 AND divpay > 0 \
-    #                 ORDER BY divgr DESC'
-    #     sqldf = print_DB(matspull, 'return')
-    #     # print(sqldf)
-
-    #     tickerslist = sqldf['Ticker'].tolist()
-    #     # checklist = invunidf['Ticker'].tolist()
-    #     # qualifiedtickers = [x for x in tickerslist if x in checklist]
-    #     for x in tickerslist: #qualifiedtickers
-    #         matspull2 = 'SELECT Ticker, Sector, roce, roic, roc, ffopo, po, divgr, divpay, divyield, shares, debt, rev, ni, ffo, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-    #                 WHERE Ticker LIKE \'' + x + '\''
-    #         sqldf2 = print_DB(matspull2, 'return')
-    #         uploadToDB(sqldf2,'Investable_Universe')
-    #         # print(sqldf2)        
-    # except Exception as err:
-    #     print('LSMats error: ')
-    #     print(err)
-    # finally:
-        # csv.simple_saveDF_to_csv('',themats,'z-LSMats', False)
-        # return themats
+    
 # LSMats()
         
-def LSComms(): #luke try to find meta and googl!
+def LSComms(): 
     try:
-        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, netCashFlowAVG, operatingCashFlowAVG, \
                     CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
                     CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
@@ -7165,34 +7148,28 @@ def LSComms(): #luke try to find meta and googl!
                     FROM Metadata \
                     WHERE Sector LIKE \'Communication Services\' \
                     AND years >= 5 \
-                    AND revGrowthAVG >= 3 \
-                    AND netIncomeGrowthAVG >= 3 \
-                    AND equity >= 0 \
+                    AND revGrowthAVG >= 5 \
+                    AND netIncomeGrowthAVG >= 1 \
+                    AND divgr >= 5 \
+                    AND payoutRatioAVG <= 0.7 \
+                    AND equity >= 5 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 5 \
-                    AND payoutRatioAVG <= 0.9 \
-                    AND roic > 5 \
-                    AND roce > 5 \
+                    AND roic > 10 \
+                    AND roce > 10 \
                     ORDER BY divgr;'
-        
-        # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-        #             WHERE Sector LIKE \'C\' \
-        #             AND roce >= 2 \
-        #             AND roic >= 2 \
-        #             AND po > 1 \
-        #             AND divgr >= 2 \
-        #             AND shares >= 2 \
-        #             AND rev >= 2 \
-        #             AND ni >= 2 \
-        #             AND fcf >= 2 \
-        #             AND fcfm >= 2 \
-        #             AND cf >= 2 \
-        #             AND equity >= 2 \
-        #             AND divpay > 0 \
-        #             AND debt >= 3 \
-        #             AND divyield >= 1 \
-        #             ORDER BY score DESC'
+
+                    #screening targets
+                    #  Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG     equity       divgr       roic       roce
+                    # 0   META     14  47.335342  37.976751        0.000000    1.533636e+08          1.840508e+10  24.041229         NaN  17.842301  17.869286
+                    # 1  GOOGL     12  16.515023  16.308754        0.000240    8.296250e+08          5.796967e+10  13.143930 -100.000000  19.730637  20.391842
+                    # 2      T     18   1.231327   2.633111        0.702355    5.810769e+08          3.639192e+10   3.952106    2.157714   9.648406  10.361199
+                    # 3     VZ     17   3.357788 -13.410203        0.657019   -5.953077e+08          3.384829e+10   9.666178    2.586280  13.408076  14.311030
+                    #actual screen
+                    #  Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG     equity      divgr       roic       roce
+                    # 0   NTES     17  16.327206  22.105606        0.198972    1.573337e+07          1.214019e+09  26.167256   5.154560  22.976737  22.594944
+                    # 1   CABO     12   6.224846   2.479315        0.228958    2.829000e+06          3.930389e+08   7.040326  11.081614  17.981284  18.949085
+    
                     
         sqldf = print_DB(matspull, 'return')
         print(sqldf)
@@ -7211,7 +7188,7 @@ def LSComms(): #luke try to find meta and googl!
 
 # LSComms()
 
-def LSEnergy(): #luke this is fun!
+def LSEnergy(): 
     try:
         matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
                     CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
@@ -7220,35 +7197,32 @@ def LSEnergy(): #luke this is fun!
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
                     WHERE Sector LIKE \'Energy\' \
-                    AND years >= 5 \
-                    AND divgr >= 2 \
-                    AND equity >= 0 \
+                    AND years >= 10 \
+                    AND divgr >= 4 \
                     AND payoutRatioAVG <= 0.9 \
-                    AND roic > 10 \
-                    AND roce > 10 \
+                    AND operatingCashFlowAVG > 0 \
+                    AND equity >= 2 \
+                    AND roic > 15 \
+                    AND roce > 15 \
                     ORDER BY Ticker;'
-        
-        
-                    # AND operatingCashFlowAVG > 0 \
+
+                    #unneeded screens
+                    #  divgr <= 30 \
                     # AND netCashFlowAVG > 0 \
-        # AND revGrowthAVG >= 0 \
+                    # AND revGrowthAVG >= 0 \
                     # AND netIncomeGrowthAVG >= 0 \
-        # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-        #             WHERE Sector LIKE \'E\' \
-        #             AND roce >= 2 \
-        #             AND roic >= 2 \
-        #             AND po > 1 \
-        #             AND divgr >= 2 \
-        #             AND shares >= 2 \
-        #             AND rev >= 2 \
-        #             AND ni >= 2 \
-        #             AND fcf >= 2 \
-        #             AND fcfm >= 2 \
-        #             AND cf >= 2 \
-        #             AND equity >= 2 \
-        #             AND divpay > 0 \
-        #             AND debt >= 3 \
-        #             ORDER BY score DESC'
+                    #initial
+                    #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG    equity      divgr       roic       roce
+                    # 0    CVX     17  -4.591927 -15.175337        0.383902          2.960193e+10   -1.147769e+09  5.912741   6.242237  11.466649  12.525441
+                    # 1    EOG     18  29.641039  -0.779903        0.099695          5.260627e+09    3.922576e+08       NaN  14.501993  10.553666  14.424227
+                    # 2    PSX     15  -2.271819 -15.748739        0.158731          4.845786e+09   -1.333333e+07  0.684323  12.609659  17.878898  17.992002
+                    # 3    XOM     18   1.681971 -10.319898        0.377031          4.357575e+10   -1.946154e+08  2.361327   4.630759  17.360837  17.890969
+                    #screen
+                    #   Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity       divgr       roic       roce
+                    # 0   ARLP     16   6.387910  13.179572        0.148237          5.926950e+08   -2.178444e+07   9.860818   17.060478  23.576827  36.690378
+                    # 1    NOG     15  26.058289  68.351471        0.133021          2.156712e+08    2.635051e+06  11.069820  239.722663  17.142036  18.888567
+                    # 2    XOM     18   1.681971 -10.319898        0.377031          4.357575e+10   -1.946154e+08   2.361327    4.630759  17.360837  17.890969
+       
         sqldf = print_DB(matspull, 'return')
         print(sqldf)
 
@@ -7267,49 +7241,124 @@ def LSEnergy(): #luke this is fun!
 
 # LSEnergy()
 
-
-
-def LSFin():
+def LSFin(): #luke here, check each column, bv is including negative values somehow
     try:
-        matspull = 'SELECT Ticker, AveragedOverYears as years, \
-                    (CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END) as equity, \
-                    (CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END) as divgr \
-                    (CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END) as roic \
-                    (CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END) as roce \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
+                    CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
+                    CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                    CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                    CASE WHEN calcDivsPerShareGrowthAVG IS NULL THEN repDivsPerShareGrowthAVG END divgr2, \
+                    CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
+                    CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \’Financial Services\’ \
+                    WHERE Sector LIKE \'Financial Services\' \
                     AND years >= 5 \
-                    AND netIncomeGrowthAVG >= 0 \
-                    AND equity >= 0 \
+                    AND netIncomeGrowthAVG >= 3 \
+                    AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
+                    AND payoutRatioAVG <= 0.5 \
+                    AND bv >= 3 OR bv IS NULL \
+                    AND equity >= 3 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 5 \
-                    AND payoutRatioAVG <= 90 \
-                    AND roic > 5 \
-                    AND roce > 5 \
-                    ORDER BY divgr;'
-
-        
-        
-        # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-        #             WHERE Sector LIKE \'F\' \
-        #             AND roce >= 3 \
-        #             AND roic >= 2 \
-        #             AND po >= 1 \
-        #             AND divgr >= 3 \
-        #             AND shares >= 2 \
-        #             AND ni >= 1 \
-        #             AND fcf >= 1 \
-        #             AND fcfm >= 1 \
-        #             AND cf >= 2 \
-        #             AND equity >= 2 \
-        #             AND divpay > 0 \
-        #             AND debt >= 3 \
-        #             AND bv >= 2 \
-        #             AND divyield >= 1 \
-        #             ORDER BY score DESC'
+                    AND roic > 10 \
+                    AND roce > 10 \
+                    AND (revgr IS NULL OR revgr > 0) \
+                    AND Ticker NOT IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \'GBDC\', \
+                    \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \
+                    \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \
+                    \'SCM\', \'SLRC\', \'SSSS\', \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
+                    ORDER BY bv DESC;'
+                    
+                    #unused
+                    # AND revgr > 2 \
+                    #  AND netIncomeGrowthAVG <= 35 \
+                    # AND equity <= 20 \
+                    
+                    #ini screen
+                    #   Ticker    years     revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
+                    # 0       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        NaN   5.271089        NaN  19.211963  19.534281
+                    # 1      MS     18   0.000000  -0.148192        0.284637          5.225062e+09    2.008750e+09   3.473520   3.626883  17.606352   6.349572   7.802749
+                    # 2      MA     18  12.455496   0.000000        0.220132          4.195150e+09    8.645765e+08   4.536454   5.868946  14.512999  29.242511  45.672711
+                    # 3     BLK     18  -0.007121   7.135477        0.439311          3.104143e+09    5.544615e+08   5.248478   3.454758  12.865347  11.986603  11.986603
+                    # 4     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
+                    # 5      GS     17        NaN -18.160193        0.205881          5.585571e+09    7.563500e+09   7.144024   5.992205  17.568776   4.195360   9.492229
+                    # 6     AXP     18   0.897985   1.415459        0.199070          9.634600e+09    3.587000e+09   7.263925   3.431624  10.370913  27.296490  27.296490
+                    # 7    TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
+                    # 8     DFS     18        NaN   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
+                    # 9    SCHW     18   9.540676  12.822463        0.298110          1.630538e+09    3.536214e+09  13.980383  14.609661   8.050996  11.682316  11.682316
+                    # 10   SPGI     18   6.269991   2.639047        0.289784          1.512441e+09    3.451868e+08  17.193617  14.629222  10.265943  36.527934  80.101654
+                    # 11   MSCI     17   9.260249  16.239868        0.212577          3.845744e+08    3.945708e+07  23.110777  15.839196  26.991692  13.766375   5.756975
+                    #used screen
+                    #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
+                    # 0    VRTS     16  13.040305   7.456337        0.183523          1.078420e+07    1.181044e+07   3.212039   6.596687  20.947018  14.965466  14.965466
+                    # 1    CBOE     16   5.750273   5.079322        0.326077          3.386985e+08    2.741245e+07   3.837188   4.511978  15.374275  38.581223  42.683023
+                    # 2     EVR     16  18.331600  22.317894        0.370345          3.618881e+08    5.463614e+07   4.185760  12.787413  12.468758  11.182558  12.243751
+                    # 3     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
+                    # 4    AMAL      7        NaN   5.229768        0.172647          9.084360e+07    1.503475e+07   6.123508   6.277142  12.068620  11.471995  11.471995
+                    # 5    PKBK     15        NaN   6.593012        0.138757          2.329791e+07    6.504273e+06   6.183721  11.341062  15.290316  11.769981  11.769981
+                    # 6    IBCP     16   1.472631   3.730695        0.214183          3.924746e+07    9.841500e+06   6.869070   6.172554  20.793666  12.841453  12.841453
+                    # 7    BMRC     16        NaN   3.745889        0.264360          2.798450e+07    1.122620e+07   7.162103   8.615283   9.176056  10.003633  10.003633
+                    # 8    WBHC     16        NaN  11.782969        0.299700          3.300315e+07    1.618620e+07   7.699656  10.075687   9.949213  10.318366  10.318366
+                    # 9    BANF     15        NaN  10.898194        0.290619          1.037163e+08    1.228401e+08   7.782769   7.735986   8.496325  10.360562  10.360562
+                    # 10   HOMB     16        NaN   8.269571        0.275089          2.290678e+08    4.733292e+07   8.145862   8.284793  12.288597  10.898371  10.898371
+                    # 11   MCBC     15        NaN  15.504816        0.206940          2.714800e+07    1.937010e+07   8.151405   7.729767  14.373761  11.161005  11.161005
+                    # 12   TSBK     15        NaN  18.833954        0.268649          1.359650e+07    5.481700e+06   8.226172   8.202580  19.540044  10.512741  10.512741
+                    # 13   FBIZ     15        NaN   8.952551        0.233029          2.314662e+07    3.557308e+06   8.290528   8.753330   8.919138  10.904099  10.904099
+                    # 14   FSBC      5        NaN   6.053695        0.336655          3.891400e+07    6.158500e+07   8.299129  10.298193   8.396286  19.834268  19.834268
+                    # 15    HLI     11   4.277589  10.900292        0.284412          2.160573e+08    3.466557e+07   8.389928   8.690058  14.735748  16.343182  16.343182
+                    # 16   EWBC     16   0.392843  13.137569        0.242371          5.965264e+08    1.958030e+08   9.470704   9.707992  15.845382  12.741205  12.741205
+                    # 17   LKFN     16   0.421180  10.712477        0.359306          7.465427e+07    1.676356e+07   9.703971   9.554622  13.397741  12.559943  12.559943
+                    # 18   MORN     17   9.456074   6.665626        0.258454          2.084215e+08    1.873925e+07   9.780428   9.144721   9.170133  13.550094  15.309525
+                    # 19   RVRF     11        NaN   7.503606        0.132173          1.150889e+07    3.871000e+06   9.973728  16.014361  11.476148  10.237092  10.237092
+                    # 20   SMMF     16   2.925580  22.869965        0.128453          2.754342e+07    2.679818e+06  10.297206   9.963001  13.008557  10.607655  10.633262
+                    # 21   GABC     16        NaN   9.890750        0.303955          5.585013e+07    1.079833e+06  10.695595  10.588582   8.933518  11.667619  11.667619
+                    # 22   TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
+                    # 23   FFIN     17        NaN   9.290995        0.404340          1.447214e+08    3.808771e+07  10.985973  11.642623   9.474985  13.246574  13.246574
+                    # 24   UNTY     15        NaN  17.898562        0.118966          1.951017e+07    2.014011e+07  11.211368  11.872413  17.070078  13.479777  13.479777
+                    # 25    FDS     16   8.672499   6.264525        0.291926          2.861254e+08    8.973154e+06  12.026213   8.767128  12.355834  38.355090  38.756416
+                    # 26    FNF     17   0.571561  21.528711        0.344516          6.837154e+08    1.825250e+08  12.466043  10.628373  12.161324  11.137798  11.137798
+                    # 27   SMBC     14        NaN   7.996740        0.100827          2.080074e+07    2.831147e+06  12.616015  14.625523  13.540765  10.270785  10.270785
+                    # 28     RM     15  13.340536  15.176922        0.000000          1.059070e+08    9.760000e+05  13.725478   9.417785  16.025362  12.716648  12.716648
+                    # 29   SCHW     18   9.540676  12.822463        0.298110          1.630538e+09    3.536214e+09  13.980383  14.609661   8.050996  11.682316  11.682316
+                    # 30   MKTX     16  10.599679  17.363076        0.327017          1.516245e+08    2.152080e+07  14.113844  12.578177  19.894321  25.273268  25.273268
+                    # 31    WAL     16   9.391333  29.260090        0.008569          1.772672e+08    2.678564e+07  14.376293  15.285335  16.606741  13.399665  14.059071
+                    # 32   ESNT     13  14.096181  23.444027        0.005868          4.015273e+08    6.789500e+06  14.679478  22.629254  16.170404  15.086386  15.086386
+                    # 33   SFBS     16        NaN  21.152715        0.088392          1.034671e+08    5.545582e+07  15.029097  17.598494  20.552155  15.053855  15.053855
+                    # 34    BFC      9        NaN  11.501782        0.178306          3.940629e+07    5.843125e+07  16.055323  25.914089  14.052770  12.107749  12.046424
+                    # 35   BSVN      9        NaN  15.022093        0.236995          2.664243e+07    2.311267e+07  18.215087  14.076838  15.107202  20.038906  20.038906
+                    # 36   KNSL     11  34.584700  41.876960        0.051583          1.220250e+08    9.939000e+06  23.253118  24.848427  15.346775  15.935472  15.940304
+                    # 37    MCO     18   8.411131  13.196907        0.237806          9.548071e+08    2.022917e+08  41.402706  42.062520  14.000140  27.835699  70.385781
+       
         sqldf = print_DB(matspull, 'return')
-        print(sqldf)
+        # df = df[df.line_race != 0]
+        sqldf2 = sqldf[sqldf.divgr2.notnull()]
+        sqldf = sqldf[sqldf.divgr.notnull()] 
+        sqldf2['divgr'] = sqldf2['divgr2']
+        # df_filled = df_filled.drop('Units',axis=1)
+        sqldf = sqldf.drop('divgr2', axis=1)
+        sqldf2 = sqldf2.drop('divgr2', axis=1)
+        # print(sqldf)
+        # print(sqldf2)
+        sqldf = pd.concat([sqldf, sqldf2], axis = 0)
+        # print(sqldf.to_string())
+        sqldf = sqldf[sqldf.roic.notnull()]
+        sqldf['bv'] = sqldf['bv'].fillna(10)
+        #luke here gotta re filter it looks like. weird null value pulls. wierd finance. despise this secgtor lol
+        sqldf = sqldf[sqldf.equity > 0]
+        # AND years >= 5 \
+        #             AND netIncomeGrowthAVG >= 3 \
+        #             AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
+        #             AND payoutRatioAVG <= 0.5 \
+        #             AND bv >= 3 OR bv IS NULL \
+        #             AND equity >= 3 \
+        #             AND operatingCashFlowAVG > 0 \
+        #             AND netCashFlowAVG > 0 \
+        #             AND roic > 10 \
+        #             AND roce > 10 \
+        
+        # returned_data = pd.concat([returned_data, held7], ignore_index = True)
+        print(sqldf.to_string())
+        
 
         # tickerslist = sqldf['Ticker'].tolist()
         # checklist = invunidf['Ticker'].tolist()
@@ -7324,28 +7373,36 @@ def LSFin():
         print('LSFin error: ')
         print(err)    
 
-# LSFin()
+LSFin()
+# jpm = 'SELECT calcBookValueAVG, calcBookValueGrowthAVG, repBookValueAVG, repBookValueGrowthAVG FROM Metadata WHERE Ticker LIKE \'V\''
+# jpmdf = print_DB(jpm, 'print')
+# for x in jpmdf:
+#     print(x)
+#     print(jpmdf[x])
 
 def LSInd():
     try:
-        matspull = 'SELECT Ticker, AveragedOverYears as years, \
-                    (CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END) as equity, \
-                    (CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END) as divgr \
-                    (CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END) as roic \
-                    (CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END) as roce \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
+                    CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                    CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                    CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
+                    CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \’Industrials\’ \
+                    WHERE Sector LIKE \'Industrials\' \
+                    AND Ticker IN (\'JPM\', \'GS\', \'MS\', \'SCHW\', \'V\', \'MA\', \'DFS\', \'SPGI\', \'AXP\', \'BLK\', \'MSCI\', \'TROW\') \
                     AND years >= 5 \
                     AND revGrowthAVG >= 0 \
                     AND netIncomeGrowthAVG >= 0 \
                     AND equity >= 0 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 5 \
-                    AND payoutRatioAVG <= 90 \
-                    AND roic > 5 \
-                    AND roce > 5 \
+                    AND divgr >= 10 AND divgr <= 90 \
+                    AND payoutRatioAVG <= 90.9 \
+                    AND roic > 10 \
+                    AND roce > 10 \
                     ORDER BY divgr;'
+
+                   
 
         
         
@@ -7385,28 +7442,34 @@ def LSInd():
 
 # LSInd()
 
+# lmt = 'SELECT * FROM Metadata WHERE Ticker LIKE \'LMT\''
+# lmtdf = print_DB(lmt, 'return')
+# for x in lmtdf:
+#     print(x)
+#     print(lmtdf[x])
+
+
 def LSTech():
     try:
-        matspull = 'SELECT Ticker, AveragedOverYears as years, \
-                    (CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END) as equity, \
-                    (CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END) as divgr \
-                    (CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END) as roic \
-                    (CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END) as roce \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
+                    CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                    CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                    CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
+                    CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \’Technology\’ \
-                    AND years >= 5 \
-                    AND revGrowthAVG >= 0 \
-                    AND netIncomeGrowthAVG >= 0 \
-                    AND equity >= 0 \
+                    WHERE Sector LIKE \'Technology\' \
+                    AND years >= 1 \
+                    AND netIncomeGrowthAVG > -100 \
+                    AND equity >= -100 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 5 \
-                    AND payoutRatioAVG <= 90 \
-                    AND roic > 5 \
-                    AND roce > 5 \
-                    ORDER BY divgr;'
+                    AND divgr >= 1 AND divgr <= 100\
+                    AND payoutRatioAVG <= 0.9 \
+                    AND roic > 1 \
+                    AND roce > 1 \
+                    ORDER BY Ticker;'
 
-        
+        #  AND revGrowthAVG >= 4 \
         
         # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
         #             WHERE Sector LIKE \'K\' \
@@ -7426,7 +7489,9 @@ def LSTech():
         #             ORDER BY score DESC'
                    
         sqldf = print_DB(matspull, 'return')
-        print(sqldf)
+        for x in sqldf['Ticker']:
+            print(x)
+        # print(sqldf)
 
         # tickerslist = sqldf['Ticker'].tolist()
         # checklist = invunidf['Ticker'].tolist()
@@ -7442,6 +7507,13 @@ def LSTech():
         print(err)    
 
 # LSTech()
+# thedf = pd.Dataframe(LSTech())
+# print(thedf)
+# txn = 'SELECT * FROM Metadata WHERE Ticker LIKE \'TXN\''
+# txndf = print_DB(txn, 'return')
+# for x in txndf:
+#     print(x)
+#     print(txndf[x])
 
 def LSP():
     try:
