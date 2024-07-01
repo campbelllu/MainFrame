@@ -7241,7 +7241,7 @@ def LSEnergy():
 
 # LSEnergy()
 
-def LSFin(): #luke here, check each column, bv is including negative values somehow
+def LSFin():
     try:
         matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
                     CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
@@ -7251,30 +7251,68 @@ def LSFin(): #luke here, check each column, bv is including negative values some
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \'Financial Services\' \
-                    AND years >= 5 \
-                    AND netIncomeGrowthAVG >= 3 \
-                    AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
-                    AND payoutRatioAVG <= 0.5 \
-                    AND bv >= 3 OR bv IS NULL \
-                    AND equity >= 3 \
-                    AND operatingCashFlowAVG > 0 \
-                    AND netCashFlowAVG > 0 \
-                    AND roic > 10 \
-                    AND roce > 10 \
-                    AND (revgr IS NULL OR revgr > 0) \
-                    AND Ticker NOT IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \'GBDC\', \
-                    \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \
-                    \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \
-                    \'SCM\', \'SLRC\', \'SSSS\', \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
-                    ORDER BY bv DESC;'
-                    
-                    #unused
-                    # AND revgr > 2 \
-                    #  AND netIncomeGrowthAVG <= 35 \
-                    # AND equity <= 20 \
-                    
-                    #ini screen
+                    WHERE Sector LIKE \'Financial Services\';'
+       
+        sqldf = print_DB(matspull, 'return')
+        # print(sqldf.to_string())
+        # df = df[df.line_race != 0]
+        sqldf2 = sqldf[sqldf.divgr2.notnull()]
+        sqldf = sqldf[sqldf.divgr.notnull()] 
+        sqldf2['divgr'] = sqldf2['divgr2']
+        # df_filled = df_filled.drop('Units',axis=1)
+        sqldf = sqldf.drop('divgr2', axis=1)
+        sqldf2 = sqldf2.drop('divgr2', axis=1)
+        # print(sqldf)
+        # print(sqldf2)
+        sqldf = pd.concat([sqldf, sqldf2], axis = 0)
+        # print(sqldf.to_string())
+        sqldf = sqldf[sqldf.roic.notnull()]
+        
+        #luke here gotta re filter it looks like. weird null value pulls. wierd finance. despise this secgtor lol
+
+        # AND years >= 5 \
+        sqldf = sqldf[sqldf.years >= 10]
+        # AND netIncomeGrowthAVG >= 3 \
+        sqldf = sqldf[sqldf.nigr >= 0]
+        # AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
+        sqldf = sqldf[sqldf.divgr.between(8,20)]
+        # AND payoutRatioAVG <= 0.5 \
+        sqldf = sqldf[sqldf.payoutRatioAVG <= 0.5]
+        # AND equity >= 3 \
+        sqldf = sqldf[sqldf.equity >= 3.5]
+        # AND operatingCashFlowAVG > 0 \
+        sqldf = sqldf[sqldf.operatingCashFlowAVG >= 1000000000]
+        # AND netCashFlowAVG > 0 \
+        sqldf = sqldf[sqldf.netCashFlowAVG >= 100000000]
+        # AND roic > 10 \
+        sqldf = sqldf[sqldf.roic >= 10]
+        # AND roce > 10 \
+        sqldf = sqldf[sqldf.roce >= 10]
+        # AND (revgr IS NULL OR revgr > 0) \
+        todrop = ['ARCC', 'BBDC', 'BCSF', 'BKCC', 'BXSL', 'CCAP', 'CGBD', 'FCRD', 'CSWC', 'GAIN', 'GBDC', 
+                                            'GECC', 'GLAD', 'GSBD', 'HRZN', 'ICMB', 'LRFC', 'MFIC', 'MAIN', 'MRCC', 'MSDL', 'NCDL', 
+                                            'NMFC', 'OBDC', 'OBDE', 'OCSL', 'OFS', 'OXSQ', 'PFLT', 'PFX', 'PNNT', 'PSBD', 'PSEC', 
+                                            'PTMN', 'RAND', 'RWAY', 'SAR', 'SCM', 'SLRC', 'SSSS', 'TCPC', 'TPVG', 'TRIN', 'TSLX', 
+                                            'WHF', 'HTGC', 'CION', 'FDUS', 'FSK']
+        sqldf = sqldf[~sqldf.Ticker.isin(todrop)]
+        # sqldf = sqldf[sqldf.revgr >= 0 | sqldf.revgr.isnull()]
+        # AND bv >= 3 OR bv IS NULL \
+        # sqldf['bv'] = sqldf['bv'].fillna(10)
+        
+        sqldf = sqldf.sort_values(by=['divgr'], ascending=False)
+        print(sqldf.to_string())
+        print(sqldf.shape)
+        #unused
+        # AND (divgr >= 0 AND divgr <= 30) OR (divgr2 >= 0) \
+        # AND revgr > 2 \
+        # AND netIncomeGrowthAVG <= 35 \
+        # AND equity <= 20 \
+        # AND Ticker NOT IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \'GBDC\', \
+        # \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \
+        # \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \
+        # \'SCM\', \'SLRC\', \'SSSS\', \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') 
+
+        #ini screen
                     #   Ticker    years     revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
                     # 0       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        NaN   5.271089        NaN  19.211963  19.534281
                     # 1      MS     18   0.000000  -0.148192        0.284637          5.225062e+09    2.008750e+09   3.473520   3.626883  17.606352   6.349572   7.802749
@@ -7290,74 +7328,13 @@ def LSFin(): #luke here, check each column, bv is including negative values some
                     # 11   MSCI     17   9.260249  16.239868        0.212577          3.845744e+08    3.945708e+07  23.110777  15.839196  26.991692  13.766375   5.756975
                     #used screen
                     #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
-                    # 0    VRTS     16  13.040305   7.456337        0.183523          1.078420e+07    1.181044e+07   3.212039   6.596687  20.947018  14.965466  14.965466
-                    # 1    CBOE     16   5.750273   5.079322        0.326077          3.386985e+08    2.741245e+07   3.837188   4.511978  15.374275  38.581223  42.683023
-                    # 2     EVR     16  18.331600  22.317894        0.370345          3.618881e+08    5.463614e+07   4.185760  12.787413  12.468758  11.182558  12.243751
-                    # 3     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
-                    # 4    AMAL      7        NaN   5.229768        0.172647          9.084360e+07    1.503475e+07   6.123508   6.277142  12.068620  11.471995  11.471995
-                    # 5    PKBK     15        NaN   6.593012        0.138757          2.329791e+07    6.504273e+06   6.183721  11.341062  15.290316  11.769981  11.769981
-                    # 6    IBCP     16   1.472631   3.730695        0.214183          3.924746e+07    9.841500e+06   6.869070   6.172554  20.793666  12.841453  12.841453
-                    # 7    BMRC     16        NaN   3.745889        0.264360          2.798450e+07    1.122620e+07   7.162103   8.615283   9.176056  10.003633  10.003633
-                    # 8    WBHC     16        NaN  11.782969        0.299700          3.300315e+07    1.618620e+07   7.699656  10.075687   9.949213  10.318366  10.318366
-                    # 9    BANF     15        NaN  10.898194        0.290619          1.037163e+08    1.228401e+08   7.782769   7.735986   8.496325  10.360562  10.360562
-                    # 10   HOMB     16        NaN   8.269571        0.275089          2.290678e+08    4.733292e+07   8.145862   8.284793  12.288597  10.898371  10.898371
-                    # 11   MCBC     15        NaN  15.504816        0.206940          2.714800e+07    1.937010e+07   8.151405   7.729767  14.373761  11.161005  11.161005
-                    # 12   TSBK     15        NaN  18.833954        0.268649          1.359650e+07    5.481700e+06   8.226172   8.202580  19.540044  10.512741  10.512741
-                    # 13   FBIZ     15        NaN   8.952551        0.233029          2.314662e+07    3.557308e+06   8.290528   8.753330   8.919138  10.904099  10.904099
-                    # 14   FSBC      5        NaN   6.053695        0.336655          3.891400e+07    6.158500e+07   8.299129  10.298193   8.396286  19.834268  19.834268
-                    # 15    HLI     11   4.277589  10.900292        0.284412          2.160573e+08    3.466557e+07   8.389928   8.690058  14.735748  16.343182  16.343182
-                    # 16   EWBC     16   0.392843  13.137569        0.242371          5.965264e+08    1.958030e+08   9.470704   9.707992  15.845382  12.741205  12.741205
-                    # 17   LKFN     16   0.421180  10.712477        0.359306          7.465427e+07    1.676356e+07   9.703971   9.554622  13.397741  12.559943  12.559943
-                    # 18   MORN     17   9.456074   6.665626        0.258454          2.084215e+08    1.873925e+07   9.780428   9.144721   9.170133  13.550094  15.309525
-                    # 19   RVRF     11        NaN   7.503606        0.132173          1.150889e+07    3.871000e+06   9.973728  16.014361  11.476148  10.237092  10.237092
-                    # 20   SMMF     16   2.925580  22.869965        0.128453          2.754342e+07    2.679818e+06  10.297206   9.963001  13.008557  10.607655  10.633262
-                    # 21   GABC     16        NaN   9.890750        0.303955          5.585013e+07    1.079833e+06  10.695595  10.588582   8.933518  11.667619  11.667619
-                    # 22   TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
-                    # 23   FFIN     17        NaN   9.290995        0.404340          1.447214e+08    3.808771e+07  10.985973  11.642623   9.474985  13.246574  13.246574
-                    # 24   UNTY     15        NaN  17.898562        0.118966          1.951017e+07    2.014011e+07  11.211368  11.872413  17.070078  13.479777  13.479777
-                    # 25    FDS     16   8.672499   6.264525        0.291926          2.861254e+08    8.973154e+06  12.026213   8.767128  12.355834  38.355090  38.756416
-                    # 26    FNF     17   0.571561  21.528711        0.344516          6.837154e+08    1.825250e+08  12.466043  10.628373  12.161324  11.137798  11.137798
-                    # 27   SMBC     14        NaN   7.996740        0.100827          2.080074e+07    2.831147e+06  12.616015  14.625523  13.540765  10.270785  10.270785
-                    # 28     RM     15  13.340536  15.176922        0.000000          1.059070e+08    9.760000e+05  13.725478   9.417785  16.025362  12.716648  12.716648
-                    # 29   SCHW     18   9.540676  12.822463        0.298110          1.630538e+09    3.536214e+09  13.980383  14.609661   8.050996  11.682316  11.682316
-                    # 30   MKTX     16  10.599679  17.363076        0.327017          1.516245e+08    2.152080e+07  14.113844  12.578177  19.894321  25.273268  25.273268
-                    # 31    WAL     16   9.391333  29.260090        0.008569          1.772672e+08    2.678564e+07  14.376293  15.285335  16.606741  13.399665  14.059071
-                    # 32   ESNT     13  14.096181  23.444027        0.005868          4.015273e+08    6.789500e+06  14.679478  22.629254  16.170404  15.086386  15.086386
-                    # 33   SFBS     16        NaN  21.152715        0.088392          1.034671e+08    5.545582e+07  15.029097  17.598494  20.552155  15.053855  15.053855
-                    # 34    BFC      9        NaN  11.501782        0.178306          3.940629e+07    5.843125e+07  16.055323  25.914089  14.052770  12.107749  12.046424
-                    # 35   BSVN      9        NaN  15.022093        0.236995          2.664243e+07    2.311267e+07  18.215087  14.076838  15.107202  20.038906  20.038906
-                    # 36   KNSL     11  34.584700  41.876960        0.051583          1.220250e+08    9.939000e+06  23.253118  24.848427  15.346775  15.935472  15.940304
-                    # 37    MCO     18   8.411131  13.196907        0.237806          9.548071e+08    2.022917e+08  41.402706  42.062520  14.000140  27.835699  70.385781
-       
-        sqldf = print_DB(matspull, 'return')
-        # df = df[df.line_race != 0]
-        sqldf2 = sqldf[sqldf.divgr2.notnull()]
-        sqldf = sqldf[sqldf.divgr.notnull()] 
-        sqldf2['divgr'] = sqldf2['divgr2']
-        # df_filled = df_filled.drop('Units',axis=1)
-        sqldf = sqldf.drop('divgr2', axis=1)
-        sqldf2 = sqldf2.drop('divgr2', axis=1)
-        # print(sqldf)
-        # print(sqldf2)
-        sqldf = pd.concat([sqldf, sqldf2], axis = 0)
-        # print(sqldf.to_string())
-        sqldf = sqldf[sqldf.roic.notnull()]
-        sqldf['bv'] = sqldf['bv'].fillna(10)
-        #luke here gotta re filter it looks like. weird null value pulls. wierd finance. despise this secgtor lol
-        sqldf = sqldf[sqldf.equity > 0]
-        # AND years >= 5 \
-        #             AND netIncomeGrowthAVG >= 3 \
-        #             AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
-        #             AND payoutRatioAVG <= 0.5 \
-        #             AND bv >= 3 OR bv IS NULL \
-        #             AND equity >= 3 \
-        #             AND operatingCashFlowAVG > 0 \
-        #             AND netCashFlowAVG > 0 \
-        #             AND roic > 10 \
-        #             AND roce > 10 \
-        
-        # returned_data = pd.concat([returned_data, held7], ignore_index = True)
-        print(sqldf.to_string())
+                    # 1       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        NaN   5.271089  17.626413  19.211963  19.534281
+                    # 68    DFS     18        NaN   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
+                    # 3      MA     18  12.455496   0.000000        0.220132          4.195150e+09    8.645765e+08   4.536454   5.868946  14.512999  29.242511  45.672711
+                    # 71   TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
+                    # 2     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
+                    # 10   SPGI     18   6.269991   2.639047        0.289784          1.512441e+09    3.451868e+08  17.193617  14.629222  10.265943  36.527934  80.101654
+                    # 15   SCHW     18   9.540676  12.822463        0.298110          1.630538e+09    3.536214e+09  13.980383  14.609661   8.050996  11.682316  11.682316
         
 
         # tickerslist = sqldf['Ticker'].tolist()
@@ -7373,7 +7350,7 @@ def LSFin(): #luke here, check each column, bv is including negative values some
         print('LSFin error: ')
         print(err)    
 
-LSFin()
+# LSFin()
 # jpm = 'SELECT calcBookValueAVG, calcBookValueGrowthAVG, repBookValueAVG, repBookValueGrowthAVG FROM Metadata WHERE Ticker LIKE \'V\''
 # jpmdf = print_DB(jpm, 'print')
 # for x in jpmdf:
@@ -7389,40 +7366,45 @@ def LSInd():
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
                     WHERE Sector LIKE \'Industrials\' \
-                    AND Ticker IN (\'JPM\', \'GS\', \'MS\', \'SCHW\', \'V\', \'MA\', \'DFS\', \'SPGI\', \'AXP\', \'BLK\', \'MSCI\', \'TROW\') \
                     AND years >= 5 \
                     AND revGrowthAVG >= 0 \
                     AND netIncomeGrowthAVG >= 0 \
-                    AND equity >= 0 \
+                    AND divgr >= 10 AND divgr <= 20 \
+                    AND payoutRatioAVG <= 0.75 \
+                    AND equity >= 1 \
                     AND operatingCashFlowAVG > 0 \
                     AND netCashFlowAVG > 0 \
-                    AND divgr >= 10 AND divgr <= 90 \
-                    AND payoutRatioAVG <= 90.9 \
                     AND roic > 10 \
                     AND roce > 10 \
-                    ORDER BY divgr;'
-
-                   
-
+                    ORDER BY Ticker;'
+                
+            #init
+            # Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity      divgr       roic       roce
+            # 0    CAT     18   1.641555 -15.957918        0.330153          6.583000e+09    5.275385e+08   5.994098   6.009861  11.471140  35.913091
+            # 1     WM     18   2.951983  -0.890013        0.538505          2.768714e+09   -4.350000e+07   0.531524   6.784685  22.062362  22.530457
+            # 2    RTX     18   4.441660   8.686486        0.349052          6.623875e+09    3.371333e+08   3.123065   7.483888  18.275310  18.326759
+            # 3     GE     18  -4.254855  18.906530        0.312470          2.169244e+10    1.565727e+09   0.667138   7.704522   9.480665   9.572312
+            # 4    RSG     18   3.193927  -0.021190        0.536223          1.807783e+09    8.092857e+06        NaN   7.759505  10.563221  10.672990
+            # 5    NOC     17   2.920955   1.109682        0.273852          2.833867e+09    1.491538e+08  10.567245   9.593496  16.809136  26.058515
+            # 6     GD     18   1.869071   1.631721        0.287132          3.173385e+09    1.496923e+08   6.568281  10.146197  15.065814  19.992949
+            # 7    LMT     18   1.926400   4.113817        0.441893          5.247824e+09    3.023529e+07  -7.412228  10.500326  33.664914  99.229021
+            # 8     DE     18  10.104561   9.981592        0.248744          2.778964e+09   -4.218182e+06   5.977654  11.622701   8.459864  30.365365
+            #run
+            # Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity      divgr       roic       roce
+            # 0     AME     17  11.669495  13.566476        0.139801          7.321566e+08    2.792631e+07  13.274516  14.546022  11.520536  16.907232
+            # 1     DLB     17   4.365741   3.925827        0.208562          3.502052e+08    4.820300e+07   6.161482  15.264467  12.114591  12.162470
+            # 2    EXPO     16   4.756921   8.557933        0.282977          6.612708e+07    1.575367e+07   6.586006  18.589796  19.456993  19.837206
+            # 3      GD     18   1.869071   1.631721        0.287132          3.173385e+09    1.496923e+08   6.568281  10.146197  15.065814  19.992949
+            # 4     HRI     17   8.754766  16.105328        0.006222          1.265007e+09    2.454915e+07   8.619919  13.848510  11.920595  11.615864
+            # 5     IEX     17   5.451147   8.377064        0.326201          3.883606e+08    8.426858e+07   9.380938  12.052875  11.513216  16.967746
+            # 6    POOL     17   6.931234  15.144808        0.331950          1.503296e+08    3.123385e+06   1.637345  16.854136  23.521539  46.736407
+            # 7     SNA     17   2.616076   9.863874        0.296946          6.264688e+08    9.288889e+06   9.099957  14.112095  15.113566  18.911209
+            # 8     SXI     14   4.084016   1.698475        0.124665          6.938155e+07    1.726467e+07   5.592689  13.136054  11.052315  13.706980
+            # 9     WAB     17   8.578566  16.696298        0.078748          5.533072e+08    3.746909e+07   8.352241  11.560519  10.697280  12.647773
+            # 10   WERN     17   1.793273   1.359433        0.255121          3.310144e+08    7.178889e+05  26.836940  14.153429  12.719533  13.279837
+            # 11    WWD     17   4.858690   4.155718        0.149933          2.794669e+08    1.531769e+06  10.975194  10.112709  10.076212  13.660002
         
         
-        # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-        #             WHERE Sector LIKE \'I\' \
-        #             AND roce >= 2 \
-        #             AND roic >= 2 \
-        #             AND po >= 2 \
-        #             AND divgr >= 2 \
-        #             AND shares >= 2 \
-        #             AND ni >= 2 \
-        #             AND rev >= 2 \
-        #             AND fcf >= 2 \
-        #             AND fcfm >= 2 \
-        #             AND cf >= 2 \
-        #             AND equity >= 2 \
-        #             AND divpay > 0 \
-        #             AND debt >= 3 \
-        #             AND divyield >= 1 \
-        #             ORDER BY score DESC'
                    
         sqldf = print_DB(matspull, 'return')
         print(sqldf)
@@ -7442,12 +7424,6 @@ def LSInd():
 
 # LSInd()
 
-# lmt = 'SELECT * FROM Metadata WHERE Ticker LIKE \'LMT\''
-# lmtdf = print_DB(lmt, 'return')
-# for x in lmtdf:
-#     print(x)
-#     print(lmtdf[x])
-
 
 def LSTech():
     try:
@@ -7458,40 +7434,74 @@ def LSTech():
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
                     WHERE Sector LIKE \'Technology\' \
-                    AND years >= 1 \
-                    AND netIncomeGrowthAVG > -100 \
-                    AND equity >= -100 \
+                    AND years >= 5 \
+                    AND netIncomeGrowthAVG > -5 \
+                    AND equity >= 1.5 \
                     AND operatingCashFlowAVG > 0 \
-                    AND netCashFlowAVG > 0 \
-                    AND divgr >= 1 AND divgr <= 100\
-                    AND payoutRatioAVG <= 0.9 \
-                    AND roic > 1 \
-                    AND roce > 1 \
-                    ORDER BY Ticker;'
+                    AND netCashFlowAVG > 10000000 \
+                    AND divgr >= 8 AND divgr <= 40 \
+                    AND payoutRatioAVG <= 0.75 AND payoutRatioAVG >= 0 \
+                    AND roic > 12 \
+                    AND roce > 10 \
+                    ORDER BY operatingCashFlowAVG;'
 
         #  AND revGrowthAVG >= 4 \
         
-        # 'SELECT Ticker, roce, roic, po, divgr, divyield, shares, debt, rev, ni, fcf, fcfm, cf, bv, equity, score FROM Sector_Rankings \
-        #             WHERE Sector LIKE \'K\' \
-        #             AND roce >= 2 \
-        #             AND roic >= 2 \
-        #             AND po >= 2 \
-        #             AND divgr >= 2 \
-        #             AND shares >= 2 \
-        #             AND ni >= 2 \
-        #             AND rev >= 2 \
-        #             AND fcf >= 2 \
-        #             AND fcfm >= 2 \
-        #             AND cf >= 2 \
-        #             AND equity >= 2 \
-        #             AND divpay > 0 \
-        #             AND debt >= 3 \
-        #             ORDER BY score DESC'
-                   
+        # init
+        #   Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity       divgr       roic       roce
+        # 0    AAPL     18   8.816089   6.581789        0.161836          5.399888e+10    2.430786e+09  -0.684364    8.732056  29.872809  36.495287
+        # 1     ACN     17   3.695180  13.231359        0.395505          4.800244e+09    5.457945e+08  15.989917   10.730739  41.955634  43.043044
+        # 2     ADI     17   5.889502   5.084997        0.627590          1.079013e+09    1.221677e+08   5.522134    9.542130  12.019164  12.163146
+        # 3    AMAT     18   7.088549  34.033102        0.230050          2.361674e+09    3.620124e+08   1.287084    8.403995  20.089036  24.192929
+        # 4     AMD     17   3.207412  22.172897        0.000000          5.361538e+07    4.445455e+07        NaN         NaN  11.539060  22.497147
+        # 5    ANET     13  41.593335  47.165121        0.000000          4.496792e+08    5.465564e+07  32.273795         NaN  22.112241  22.168602
+        # 6    ASML     16  12.660632  16.708757        0.229989          2.764633e+09    4.426604e+08  11.523360   11.290233  20.811058  23.503372
+        # 7    AVGO      9  12.677225  51.377072        0.568398          1.298238e+10    1.400000e+09  -0.593911   29.146302  12.969006  28.923214
+        # 8    CSCO     17   2.623500   3.267293        0.435724          1.283707e+10    6.404706e+08   7.603257    9.680117  15.763935  20.175566
+        # 9     IBM     18  -2.096716   3.703036        0.337966          1.702527e+10   -6.636923e+08   7.344961    8.916288  20.417317  61.815304
+        # 10   INTC     18   1.533952  -6.968304        0.379032          1.714146e+10   -8.600000e+08        NaN    6.115508  14.990948  18.068437
+        # 11   INTU     17  11.572977  10.392048        0.212399          1.477615e+09    1.769231e+07  10.066996   13.639516  20.362582  23.679682
+        # 12   KLAC     16  10.900095  11.488950        0.375356          8.921842e+08    1.914440e+08  11.875910   15.159376  18.103193  55.915187
+        # 13   LRCX     16  20.845737  20.066094        0.123370          1.564338e+09    2.616656e+08  12.589839   31.974256  17.759093  27.180024
+        # 14   MCHP     17  11.447419   0.877442        0.861432          8.870314e+08   -4.712064e+07        NaN    1.025195  11.350981  13.742577
+        # 15   MPWR     16  15.999371  24.766335        0.360900          9.693315e+07    1.654992e+07  20.919293   27.307130  12.722596  12.726359
+        # 16   MRVL      6   8.922568 -27.040050       -0.230760          1.133294e+09    6.142350e+07   0.000000    0.019605  -2.652105  -3.326828
+        # 17   MSFT     16   9.450247  15.781682        0.315768          3.193717e+10    5.213333e+08  18.639394   11.512707  22.720834  35.433912
+        # 18     MU     16   3.769690  32.952306       -0.000943          3.696917e+09    4.301000e+08  10.015289  163.449913  12.185228  14.495693
+        # 19   NVDA     18   8.321348  30.286784        0.054497          2.164909e+09    3.136199e+08  18.872270    8.210057  15.739399  19.671156
+        # 20   NXPI     14   4.552677  -9.697391        0.038412          2.491000e+09    1.750000e+08   3.099695   35.183781  19.265443  19.464295
+        # 21     ON     17   5.650164   5.999278        0.000000          6.041692e+08    5.193846e+07  10.686487         NaN   6.923268  11.472216
+        # 22   PANW     14  31.211709  -8.947647        0.000000          5.714248e+08    1.102403e+08   8.237812         NaN   1.121241   1.121241
+        # 23   QCOM     18   4.648874   0.581958        0.372119          5.952125e+09    4.318462e+08  10.602295    9.709177  18.447238  18.161972
+        # 24   SWKS     17   7.972981  -1.816635        0.150324          9.560881e+08    1.190425e+08  13.850989   13.331944  19.046871  19.220033
+        # 25    TSM     10   5.539021        NaN             NaN          2.655144e+10    3.551650e+09  14.023235   10.430306        NaN        NaN
+        # 26    TXN     17  -0.588669   5.793732        0.503148          4.605267e+09    7.542857e+07   1.667329   14.372670  24.365203  36.644384
+        #
+        #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity      divgr       roic       roce
+        # 0    MPWR     16  15.999371  24.766335        0.360900          9.693315e+07    1.654992e+07  20.919293  27.307130  12.722596  12.726359
+        # 1      UI     15  15.434508  28.126452        0.043073          1.458879e+08    7.025333e+07  27.252817  25.857526  42.165026  52.496036
+        # 2    LOGI     16   0.332295  13.273062        0.266094          2.523964e+08    7.873727e+07   7.868332  12.467254  15.509158  15.569094
+        # 3     CDW     16   8.181141  22.570100        0.139957          6.351286e+08    7.466154e+07  35.115608  33.095935  13.285208  57.986013
+        # 4    KLAC     16  10.900095  11.488950        0.375356          8.921842e+08    1.914440e+08  11.875910  15.159376  18.103193  55.915187
+        # 5     APH     18  -0.021315   7.721365        0.158075          9.177279e+08    1.265639e+08  19.699803  11.450744  20.627810  23.783900
+        # 6    SWKS     17   7.972981  -1.816635        0.150324          9.560881e+08    1.190425e+08  13.850989  13.331944  19.046871  19.220033
+        # 7     ADI     17   5.889502   5.084997        0.627590          1.079013e+09    1.221677e+08   5.522134   9.542130  12.019164  12.163146
+        # 8    INTU     17  11.572977  10.392048        0.212399          1.477615e+09    1.769231e+07  10.066996  13.639516  20.362582  23.679682
+        # 9    LRCX     16  20.845737  20.066094        0.123370          1.564338e+09    2.616656e+08  12.589839  31.974256  17.759093  27.180024
+        # 10   CTSH     18   9.243775  12.248982        0.030952          1.573747e+09    1.592833e+08  14.957784   9.749579  17.294141  19.140751
+        # 11    TEL     18  -0.535326   5.794455        0.270866          2.100714e+09    3.241429e+08   4.677149   9.559963  13.462648  16.990405
+        # 12   NVDA     18   8.321348  30.286784        0.054497          2.164909e+09    3.136199e+08  18.872270   8.210057  15.739399  19.671156
+        # 13   ASML     16  12.660632  16.708757        0.229989          2.764633e+09    4.426604e+08  11.523360  11.290233  20.811058  23.503372
+        # 14    TXN     17  -0.588669   5.793732        0.503148          4.605267e+09    7.542857e+07   1.667329  14.372670  24.365203  36.644384
+        # 15    ACN     17   3.695180  13.231359        0.395505          4.800244e+09    5.457945e+08  15.989917  10.730739  41.955634  43.043044
+        # 16   QCOM     18   4.648874   0.581958        0.372119          5.952125e+09    4.318462e+08  10.602295   9.709177  18.447238  18.161972
+        # 17   CSCO     17   2.623500   3.267293        0.435724          1.283707e+10    6.404706e+08   7.603257   9.680117  15.763935  20.175566
+        # 18   ORCL     17   2.065553   3.861761        0.210639          1.459892e+10    4.100000e+08   7.861781  13.029764  24.643717  24.643717
+        # 19   MSFT     16   9.450247  15.781682        0.315768          3.193717e+10    5.213333e+08  18.639394  11.512707  22.720834  35.433912
+                        
         sqldf = print_DB(matspull, 'return')
-        for x in sqldf['Ticker']:
-            print(x)
-        # print(sqldf)
+        print(sqldf)
+        
 
         # tickerslist = sqldf['Ticker'].tolist()
         # checklist = invunidf['Ticker'].tolist()
@@ -7507,23 +7517,19 @@ def LSTech():
         print(err)    
 
 # LSTech()
-# thedf = pd.Dataframe(LSTech())
-# print(thedf)
-# txn = 'SELECT * FROM Metadata WHERE Ticker LIKE \'TXN\''
-# txndf = print_DB(txn, 'return')
-# for x in txndf:
-#     print(x)
-#     print(txndf[x])
 
 def LSP():
     try:
-        matspull = 'SELECT Ticker, AveragedOverYears as years, \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
                     (CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END) as equity, \
                     (CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END) as divgr \
                     (CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END) as roic \
                     (CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END) as roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \’Consumer Defensive\’ \
+                    WHERE Sector LIKE \'Consumer Defensive\' \
+                    AND Ticker IN (\'MSFT\', \'AAPL\', \'CSCO\', \'ACN\', \'INTU\', \'IBM\', \'PANW\', \'SWKS\', \'ANET\', \'NVDA\', \'AMD\', \
+                    \'INTC\', \'TXN\', \'ADI\', \'MCHP\', \'AVGO\', \'TSM\', \'LRCX\', \'AMAT\', \'KLAC\', \'ASML\', \'MU\', \'MRVL\', \'QCOM\', \
+                    \'ON\', \'NXPI\', \'MPWR\') \
                     AND years >= 5 \
                     AND revGrowthAVG >= 0 \
                     AND netIncomeGrowthAVG >= 0 \
