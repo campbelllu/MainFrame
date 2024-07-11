@@ -1,46 +1,48 @@
 import numpy as np
 import pandas as pd
-# import pandas_datareader.data as web
-#docu: https://pandas-datareader.readthedocs.io/en/latest/ 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 import datetime as dt
-# import mplfinance as mpf
-# import datetime as dt
+# from datetime import date #leaving only because I'm not sure which I used. Probably neither.
 import time
-import yfinance as yf
 import json
-# import pyarrow
 import requests
 import math
-# from itertools import chain
+import yfinance as yf
+import statistics as stats
 from collections import Counter as counter
 import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
-# import gc
 from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
 converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
 curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
-from datetime import date
-import time
-import statistics as stats
-# from forex_python.converter import CurrencyRates
 
+#From fellow files
 import csv_modules as csv
+
+#unused, cleaning
+# import mplfinance as mpf
+# import pandas_datareader.data as web
+#docu: https://pandas-datareader.readthedocs.io/en/latest/ 
+# from itertools import chain
+# import pyarrow
+# import gc
+# from forex_python.converter import CurrencyRates
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
-### The initial fetching of CIKS and Tickers needs to have an automated function eventually. This part was skipped, having been harvested manually and data massaging and program setup began instead. 
-### A fun project for later once all this gets plugged into API calls on a website! :)
+### The initial fetching of CIKS and Tickers needs to have an automated function eventually. This part was skipped, having been harvested manually 
+###  and data massaging and program setup began instead. 
 # #Automated pulling of tickers and cik's
 # tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
 # tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
 # tickers_cik['cik_str'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
+# print(tickers_cik) #luke here, gives tickers ciks and name as title
 #Then you have to save said df to csv, done below manually.
 
 #We have to parse full SEC CIK list into a df
@@ -142,7 +144,8 @@ def updateTickersCiksSectors():
 # updateTickersCiksSectors()
 
 # ------------------------------------------
-# The above represents organizing ticker data, with the exception of sector csv's and duplicate cleanup, below is getting company data from API calls to SEC EDGAR.
+# The above represents organizing ticker data, with the exception of sector csv's and duplicate cleanup, 
+# below is getting company data from API calls to SEC EDGAR.
 # ------------------------------------------
 
 #EDGAR API Endpoints
@@ -7190,21 +7193,27 @@ def LSComms():
 
 def LSEnergy(): 
     try:
-        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
+        matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, \
+                    repsAVG as repsAVG, repsGrowthAVG as repsGRAvg, cepsAVG as cepsAVG, cepsGrowthAVG as cepsGRAVG, \
+                    payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \
                     CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                    debtGrowthAVG, \
                     CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \'Energy\' \
-                    AND years >= 10 \
-                    AND divgr >= 4 \
-                    AND payoutRatioAVG <= 0.9 \
-                    AND operatingCashFlowAVG > 0 \
-                    AND equity >= 2 \
-                    AND roic > 15 \
-                    AND roce > 15 \
+                    WHERE Ticker IN ( \'TXN\', \'ADI\',\'MCHP\') \
                     ORDER BY Ticker;'
+
+                    # \'UFPI\', \'PH\', \'FAST\', \'AAON\', \'FIX\', \'WSO\', \'ETN\'
+                    # Sector LIKE \'Energy\' \
+                    # AND years >= 10 \
+                    # AND divgr >= 4 \
+                    # AND payoutRatioAVG <= 0.9 \
+                    # AND operatingCashFlowAVG > 0 \
+                    # AND equity >= 2 \
+                    # AND roic > 15 \
+                    # AND roce > 15 \
 
                     #unneeded screens
                     #  divgr <= 30 \
@@ -7641,22 +7650,25 @@ def LSRE(): #revise a little but otherwise golden.
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Sector LIKE \'Real Estate\' \
-                    AND years >= 5 \
-                    AND revgr >= 0 \
-                    AND ffogr >= 5 \
-                    AND eps >= 1 \
-                    AND epsGR >= 0 \
-                    AND opcfAmount > 0 \
-                    AND opcfGRAVG >= 6 \
-                    AND equity > 3 \
-                    AND divgr >= -3 AND divgr <= 50 \
-                    AND ffopo <= 0.9 AND ffopo > 0 \
-                    AND yieldAVG > 0 \
-                    AND roic > 0 \
-                    AND roce > 0 \
+                    WHERE Ticker IN ( \'NSA\', \'PLD\', \'REXR\', \'TRNO\', \'EGP\') \
                     ORDER BY divgr DESC, ffogr DESC;'
         
+                    # \'O\', \'ADC\', \'NNN\',
+                    # WHERE Sector LIKE \'Real Estate\' \
+                    # AND years >= 5 \
+                    # AND revgr >= 0 \
+                    # AND ffogr >= 5 \
+                    # AND eps >= 1 \
+                    # AND epsGR >= 0 \
+                    # AND opcfAmount > 0 \
+                    # AND opcfGRAVG >= 6 \
+                    # AND equity > 3 \
+                    # AND divgr >= -3 AND divgr <= 50 \
+                    # AND ffopo <= 0.9 AND ffopo > 0 \
+                    # AND yieldAVG > 0 \
+                    # AND roic > 0 \
+                    # AND roce > 0 \
+
                     # AND revGrowthAVG >= 0 \
                     # AND ffoGrowthAVG >= 1 \
                     # AND equity >= 0 \
@@ -7979,15 +7991,60 @@ def LSQualNonDivPayers():
 
 # LSQualNonDivPayers()
 
-tsla = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG as opcfAmount, operatingCashFlowGrowthAVG as opcfGRAVG, netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
+#this gauges a popular etf, but also gives ideas for later screenings
+def semiETFavg():
+    try:
+        tsla = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, \
+                    CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                    payoutRatioAVG, \
+                    repsAVG as repsAVG, repsGrowthAVG as repsGRAvg, cepsAVG as cepsAVG, cepsGrowthAVG as cepsGRAVG, \
+                    operatingCashFlowAVG as opcfAmount, operatingCashFlowGrowthAVG as opcfGRAVG, netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
                     CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
                     CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
-                    CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                    debtGrowthAVG, \
                     CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
                     CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
                     FROM Metadata \
-                    WHERE Ticker LIKE \'TSLA\';'
-# print_DB(tsla, 'print')
+                    WHERE Ticker IN ( \'NVDA\', \'AMD\', \'GFS\', \'TER\', \'ENTG\', \'QRVO\', \'AMKR\', \'LSCC\', \'RMBS\', \'ALGM\', \'SWKS\', \'COHR\', \
+                            \'INTC\', \'TXN\', \'ADI\', \'MCHP\', \'AVGO\', \'TSM\', \'LRCX\', \'AMAT\', \'KLAC\', \'ASML\', \'MU\', \'MRVL\', \'QCOM\', \
+                            \'ON\', \'NXPI\', \'MPWR\') \
+                    ORDER BY years;'
+
+        # print_DB(tsla, 'print')
+        tslastore = print_DB(tsla, 'return')
+        soxq = pd.DataFrame()
+        soxq['revgr'] = [np.average(tslastore['revgr'].dropna())]
+        soxq['nigr'] = np.average(tslastore['nigr'].dropna())
+        soxq['repsAVG'] = np.average(tslastore['repsAVG'].dropna())
+        soxq['repsGRAvg'] = np.average(tslastore['repsGRAvg'].dropna())
+        soxq['cepsAVG'] = np.average(tslastore['cepsAVG'].dropna())
+        soxq['cepsGRAVG'] = np.average(tslastore['cepsGRAVG'].dropna())
+        soxq['divgr'] = np.average(tslastore['divgr'].dropna())
+        soxq['payoutRatioAVG'] = np.average(tslastore['payoutRatioAVG'].dropna())
+        soxq['opcfAmount'] = np.average(tslastore['opcfAmount'].dropna())
+        soxq['opcfGRAVG'] = np.average(tslastore['opcfGRAVG'].dropna())
+        soxq['netcfAmount'] = np.average(tslastore['netcfAmount'].dropna())
+        soxq['netcfGRAVG'] = np.average(tslastore['netcfGRAVG'].dropna())
+        soxq['equity'] = np.average(tslastore['equity'].dropna())
+        soxq['roic'] = np.average(tslastore['roic'].dropna())
+        soxq['roce'] = np.average(tslastore['roce'].dropna())
+        
+        print(soxq)
+        eps = soxq['repsAVG'][0]
+        filter = tslastore[tslastore['repsAVG'] >= eps]
+        divgr = soxq['divgr'][0]
+        filter = filter[filter['divgr'] >= divgr]
+        roic = soxq['roic'][0]
+        filter = filter[filter['roic'] >= roic]
+        # roce = soxq['roce'][0]
+        # filter = tslastore[tslastore['roce'] >= roce]
+        print(filter.sort_values('divgr'))
+
+    except Exception as err:
+        print('soxq error')
+        print(err)
+
+semiETFavg() #luke soxq for testing
 
 # AND Ticker IN (\'MSFT\', \'AAPL\', \'CSCO\', \'ACN\', \'INTU\', \'IBM\', \'PANW\', \'SWKS\', \'ANET\', \'NVDA\', \'AMD\', \
 #                     \'INTC\', \'TXN\', \'ADI\', \'MCHP\', \'AVGO\', \'TSM\', \'LRCX\', \'AMAT\', \'KLAC\', \'ASML\', \'MU\', \'MRVL\', \'QCOM\', \
