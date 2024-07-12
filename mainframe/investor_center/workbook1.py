@@ -24,142 +24,21 @@ curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 #From fellow files
 import csv_modules as csv
 
-#unused, cleaning
-# import mplfinance as mpf
-# import pandas_datareader.data as web
-#docu: https://pandas-datareader.readthedocs.io/en/latest/ 
-# from itertools import chain
-# import pyarrow
-# import gc
-# from forex_python.converter import CurrencyRates
-
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
-
-### The initial fetching of CIKS and Tickers needs to have an automated function eventually. This part was skipped, having been harvested manually 
-###  and data massaging and program setup began instead. 
-# #Automated pulling of tickers and cik's
-# tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
-# tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
-# tickers_cik['cik_str'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
-# print(tickers_cik) #luke here, gives tickers ciks and name as title
-#Then you have to save said df to csv, done below manually.
-
-#We have to parse full SEC CIK list into a df
-def convert_CIKdict_to_df(dictionary):
-    df = pd.DataFrame()
-    cik = "cik_str"
-    ticker = "ticker"
-    name = "title"
-    try:
-        #make dict into lists, easier to add to df
-        tlist = []
-        nlist = []
-        clist = []
-        for x in dictionary:
-            tlist.append(dictionary[x][ticker])
-            nlist.append(dictionary[x][name])
-            clist.append(dictionary[x][cik])
-        #append lists into appropriate columns of df1
-        df['Ticker'] = tlist
-        df['Company Name'] = nlist
-        df['CIK'] = clist
-        df['CIK'] = df['CIK'].astype(str).str.zfill(10) #check indentation upon copy
-    except Exception as err:
-        print(err)
-    else:
-        print("DF made! Here it is!")
-        # print(df)
-        return df
-# # Manual processing of data to generate ticker repo's
-# #Manually saved json of tickers and cik's from SEC. Methods for automating download to be added later(later added, above.).
-# json_path = './sec_related/full_cik_list.json'
-# #turn it into a dict to feed into above function
-# with open(json_path, 'r') as j:
-#     fcl_dict = json.loads(j.read())
-# #print(fcl_dict)
-# #Turn that dict into a df, check how it looks
-# df2 = convert_CIKdict_to_df(fcl_dict)
-# print(df2)
-# #Make the CSV, check name and save-location before executing!
-# csv.simple_saveDF_to_csv('./sec_related/', df2, 'full_tickers_and_ciks2', False)
-
-#Take full cik list and append sector, industry, marketcap info onto it
-def updateTickersCiksSectors():
-    #'quoteType' might be useful later to verify equity=stock vs etf=etf, uncertain, currently not included
-    try:
-        df2save = pd.DataFrame(columns=['Ticker','Company Name','CIK','Sector', 'Industry'])
-        cikList = []
-        tickerList = []
-        titleList = []
-        sectorList = []
-        industryList = []
-        marketCapList = []
-        print_tracker = 0
-        errorTracker = []
-        for i in range(math.floor(len(full_cik_list))):
-            print_tracker += 1
-            cik = full_cik_list['CIK'][i] 
-            ticker = full_cik_list['Ticker'][i]
-            title = full_cik_list['Company Name'][i]
-            try:
-
-                stock = yf.Ticker(ticker)
-                dict1 = stock.info
-
-                sector = dict1['sector']
-                industry = dict1['industry']
-                # marketCap = dict1['marketCap']
-
-                cikList.append(cik)
-                tickerList.append(ticker)
-                titleList.append(title)
-                sectorList.append(sector)
-                industryList.append(industry)
-                # marketCapList.append(marketCap)
-
-                time.sleep(0.1) #As a courtesy to yahoo finance, IDK if they have rate limits and will kick me, also.
-            except Exception as err:
-                print('try update tickers append lists error: ')
-                print('ticker, sector: ',ticker,sector)
-                errorTracker.append(ticker)
-                print(err)
-
-            if print_tracker % 10 == 0:
-                print("Finished data pull for(ticker): " + ticker)# + ', ' + str(marketCap))
-            
-        df2save['Ticker'] = tickerList
-        df2save['Company Name'] = titleList
-        df2save['CIK'] = cikList
-        df2save['Sector'] = sectorList
-        df2save['Industry'] = industryList
-        # df2save['Market Cap'] = marketCapList
-        # print(df2save)
-        df3 = pd.DataFrame(errorTracker)
-        csv.simple_saveDF_to_csv(fr_iC_toSEC, df3, 'badtickers',False)
-        csv.simple_saveDF_to_csv(fr_iC_toSEC, df2save, 'full_tickersCik_sectorsInd', False)
-    except Exception as err:
-        print('update tickerscikssectorsindustry error: ')
-        print(err)
-# updateTickersCiksSectors()
-
-# ------------------------------------------
-# The above represents organizing ticker data, with the exception of sector csv's and duplicate cleanup, 
-# below is getting company data from API calls to SEC EDGAR.
-# ------------------------------------------
-
 #EDGAR API Endpoints
 #companyconcept: returns all filing data from specific company, specific accounting item. timeseries for 'assets from apple'?
 #company facts: all data from filings for specific company 
 #frames: cross section of data from every company filed specific accnting item in specific period. quick company comparisons
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
-fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #..
+fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #will get deprecated LUKE
 fr_iC_toSEC_stocks = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/stocks/' 
 stock_data = './stockData/'
 
 db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
+##csv stuff will probably get deprecated luke
 #Set types for each column in df, to retain leading zeroes upon csv -> df loading.
 type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
 type_converter_full = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str, 'Market Cap': str}
@@ -176,29 +55,6 @@ nameCikDict = clean_stockList.set_index('Ticker')['CIK'].to_dict()
 nameSectorDict = clean_stockList.set_index('Ticker')['Sector'].to_dict()
 nameIndustryDict = clean_stockList.set_index('Ticker')['Industry'].to_dict()
 
-materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
-comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
-consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
-consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
-energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
-finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
-health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
-ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
-realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
-tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
-util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
-
-def cleanFCLduplicates(df):
-    try:
-        df_clean = df.drop_duplicates(subset='CIK', keep='first')
-        if 'Market Cap' in df_clean.columns:
-            df_clean = df_clean.drop(columns=['Market Cap']) #Removed after Market Cap tracked elsewhere.
-        csv.simple_saveDF_to_csv(fr_iC_toSEC, df_clean, 'full_stockList_clean2', False)
-    except Exception as err:
-        print("cleanFCLdupes error")
-        print(err)
-# cleanFCLduplicates(full_cik_sectInd_list)
-
 def makeSectorCSVs():
     try:
         full_list = clean_stockList
@@ -211,7 +67,86 @@ def makeSectorCSVs():
         print(err)
 # makeSectorCSVs()
 
-def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
+materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
+comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
+consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
+consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
+energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
+finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
+health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
+ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
+realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
+tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
+util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
+
+####finishing possible deprecation zone
+
+def uploadToDB(upload,table):
+    #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
+    try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        upload.to_sql(table, conn, if_exists='append', index=False)
+    except Exception as err:
+        print("upload to DB error: ")
+        print(err)
+    finally:
+        query.close()
+        conn.close()
+
+#Take full ticker, cik list and append sector, industry, upload to db
+def uploadCIKs():
+    try:
+        tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
+        time.sleep(0.1)
+        tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
+        tickers_cik['CIK'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
+        tickers_cik = tickers_cik.drop('cik_str',axis=1)
+        tickers_cik = tickers_cik.drop('title',axis=1)
+        tickers_cik = tickers_cik.drop_duplicates(subset='CIK', keep='first')
+
+        df2save = pd.DataFrame(columns=['Ticker','CIK','Sector', 'Industry'])
+        cikList = []
+        tickerList = []
+        sectorList = []
+        industryList = []
+        print_tracker = 0
+
+        for x in tickers_cik['ticker']:
+            print_tracker += 1
+            try:
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                sector = dict1['sector']
+                industry = dict1['industry']
+
+                cikList.append(tickers_cik.loc[tickers_cik['ticker'] == x, 'CIK'].iloc[0])
+                tickerList.append(x)
+                sectorList.append(sector)
+                industryList.append(industry)
+
+                time.sleep(0.1) #As a courtesy to yahoo finance, IDK if they have rate limits and will kick me, also.
+            except Exception as err:
+                print('try update tickers append lists error: ')
+                print(err)
+                continue
+
+            print(print_tracker)
+
+        df2save['Ticker'] = tickerList
+        df2save['CIK'] = cikList
+        df2save['Sector'] = sectorList
+        df2save['Industry'] = industryList
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC, df3, 'badtickers',False)
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC, df2save, 'full_tickersCik_sectorsInd', False)
+        uploadToDB(df2save,'stockList')
+    except Exception as err:
+        print('update tickerscikssectorsindustry error: ')
+        print(err)
+# uploadCIKs()
+# guh = 'SELECT * FROM stockList'
+
+def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame:
     try:
         cik = nameCikDict[ticker]
         url = ep["cf"] + 'CIK' + cik + '.json'
@@ -227,101 +162,31 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
             tags = list(response.json()['facts']['us-gaap'].keys())
 
         for x in filingList:
-            # if tag == None:
-            #     tags = list(response.json()['facts'][x].keys())
-            #     # print('in query tags: ')
-            #     # print(tags)
-            #     # if tags.empty or (len(tags) <= 0):
-            #     #     tags = list(response.json()['facts']['ifrs-full'].keys())
-            # else:
-            #     tags = tag
-
             for i in range(len(tags)):
                 try:
                     tag = tags[i] 
                     units = list(response.json()['facts'][x][tag]['units'].keys())#[0] 
-                    # print('units?')
-                    # print(units)
-                    # print('tags[i]')
-                    # print(tag)
                     for y in units:
-                        # print('y') #this is just money units, no worries
-                        # print(y)
                         data = pd.json_normalize(response.json()['facts'][x][tag]['units'][y])#[units])
-                        # print('data post json normal')
-                        # print(data)
                         data['Tag'] = tag
-                        # print('data post tag')
-                        # print(data)
                         data['Units'] = y
-                        # print('data post units')
-                        # print(data)
                         data['Ticker'] = ticker
                         data['CIK'] = cik
-                        # print('data at end before concat')
-                        # print(data)
                         held_data = pd.concat([held_data, data], ignore_index = True)
                     company_data = pd.concat([company_data, held_data], ignore_index = True)
-                    # print('company data')
-                    # print(company_data)
                 except Exception as err:
-                    # print(str(tags[i]) + ' not found for ' + ticker + ' in ' + x)
-                    # print('was it units,?')
-                    # print(y)
                     pass
                     # print("Edgar query error: ")
                     # print(err)
                 # finally:
                 #     time.sleep(0.1)
-
-            # if company_data.empty or str(type(company_data)) == "<class 'NoneType'>":
-            #     for i in range(len(tags)):
-            #         try:
-            #             tag = tags[i] 
-            #             units = list(response.json()['facts']['ifrs-full'][tag]['units'].keys())[0]
-            #             data = pd.json_normalize(response.json()['facts']['ifrs-full'][tag]['units'][units])
-            #             data['Tag'] = tag
-            #             data['Units'] = units
-            #             data['Ticker'] = ticker
-            #             data['CIK'] = cik
-            #             company_data = pd.concat([company_data, data], ignore_index = True)
-            #         except Exception as err:
-            #             print(str(tags[i]) + ' not found for ' + ticker + ' in ifrs-full.')
-            #             # print("Edgar query error: ")
-            #             # print(err)
-            #         finally:
-            #             time.sleep(0.1)
+                # deprecated, used on either side of calling e-query later
 
         return company_data
         # time.sleep(0.1)
     except Exception as err:
         print('edgar query super error')
         print(err)
-
-        ### DONT BREAK IT
-        # units = list(response.json()['facts'][x][tag]['units'].keys())[0] #
-        #             # print('units?')
-        #             # print(units)
-        #             # print('tags[i]')
-        #             # print(tag)
-        #             # for y in units:
-        #                 # print('y')
-        #                 # print(y)
-        #                 data = pd.json_normalize(response.json()['facts'][x][tag]['units'][units])
-        #                 # print('data post json normal')
-        #                 # print(data)
-        #                 data['Tag'] = tag
-        #                 # print('data post tag')
-        #                 # print(data)
-        #                 data['Units'] = units
-        #                 # print('data post units')
-        #                 # print(data)
-        #                 data['Ticker'] = ticker
-        #                 data['CIK'] = cik
-        #                 # print('data at end before concat')
-        #                 # print(data)
-        #                 company_data = pd.concat([company_data, data], ignore_index = True)
-
 
 ### amazing resource to check what each element is: https://www.calcbench.com/element/WeightedAverageNumberOfSharesIssuedBasic 
 ### LUKE THIS WILL TEACH YOU MUCH I THINK: https://xbrl.us/guidance/specific-non-controlling-interest-elements/ 
@@ -331,20 +196,23 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame: #cik,
 #                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
 #                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
 netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect', 
-                'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect', 'IncreaseDecreaseInCashAndCashEquivalents',
-                'CashAndCashEquivalentsPeriodIncreaseDecrease','IncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChanges'] #operCF + InvestCF + FinancingCF
-operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities','NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 
-                    'NetCashProvidedByUsedInContinuingOperations', 'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations','CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
+                'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect', 
+                'IncreaseDecreaseInCashAndCashEquivalents', 'CashAndCashEquivalentsPeriodIncreaseDecrease',
+                'IncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChanges'] #operCF + InvestCF + FinancingCF
+operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities',
+                        'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 'NetCashProvidedByUsedInContinuingOperations', 
+                        'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations','CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
 investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
 financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
 
-revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 'RealEstateRevenueNet', 
-            'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','GrossInvestmentIncomeOperating','RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating #totally not revenue how?!? 'RetainedEarnings',
+revenue = ['RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractsWithCustomers', 'SalesRevenueNet', 'Revenues', 
+            'RealEstateRevenueNet', 'Revenue','RevenueFromContractWithCustomerIncludingAssessedTax','GrossInvestmentIncomeOperating',
+            'RevenueFromRenderingOfTelecommunicationServices'] #banks?! GrossInvestmentIncomeOperating #totally not revenue how?!?
 
 netIncome = ['NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic']
 netIncomeNCI = ['ProfitLoss', 'ProfitLossAttributableToOwnersOfParent']
 
-operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities'] #IDK if REITS even have this filed with SEC. Finding it from SEC is hard right now.
+operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities']
 
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
 interestPaid = ['InterestExpense','FinanceCosts','InterestExpenseDebt','InterestAndDebtExpense','InterestIncomeExpenseNet','InterestIncomeExpenseNonoperatingNet',
@@ -364,23 +232,26 @@ nonCurrentAssets = ['NoncurrentAssets']
 totalLiabilities = ['Liabilities']
 currentLiabilities = ['LiabilitiesCurrent','CurrentLiabilities']
 nonCurrentLiabilities = ['LiabilitiesNoncurrent','NoncurrentLiabilities']
-shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest','EquityAttributableToOwnersOfParent','PartnersCapital','Equity',
-                        'MembersCapital']
+shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest',
+                        'EquityAttributableToOwnersOfParent','PartnersCapital','Equity', 'MembersCapital']
 
-exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually
+exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually, unlikely with curr.converter
 
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',
-        'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets','PaymentsToAcquireProductiveAssets',
-        'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment','PaymentsForProceedsFromProductiveAssets','PaymentsToDevelopRealEstateAssets',
+        'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets',
+        'PaymentsToAcquireProductiveAssets', 'PaymentsForCapitalImprovements','PaymentsToAcquireOtherPropertyPlantAndEquipment',
+        'PaymentsForProceedsFromProductiveAssets','PaymentsToDevelopRealEstateAssets',
         'PurchaseOfAvailableforsaleFinancialAssets','PaymentsToAcquireAndDevelopRealEstate'] 
 
 totalCommonStockDivsPaid = ['PaymentsOfDividendsCommonStock','PaymentsOfDividends','DividendsCommonStock','DividendsCommonStockCash',
-                            'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid','DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities',
-                            'PartnersCapitalAccountDistributions','DividendsPaidOrdinaryShares','DividendsPaidClassifiedAsOperatingActivities','PaymentsOfOrdinaryDividends'] 
-declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid','InvestmentCompanyDistributionToShareholdersPerShare',
-                                        'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit','DividendsPaidOrdinarySharesPerShare']
+                            'DividendsPaidClassifiedAsFinancingActivities','DividendsPaid',
+                            'DividendsPaidToEquityHoldersOfParentClassifiedAsFinancingActivities','PartnersCapitalAccountDistributions',
+                            'DividendsPaidOrdinaryShares','DividendsPaidClassifiedAsOperatingActivities','PaymentsOfOrdinaryDividends'] 
+declaredORPaidCommonStockDivsPerShare = ['CommonStockDividendsPerShareDeclared','CommonStockDividendsPerShareCashPaid',
+                                            'InvestmentCompanyDistributionToShareholdersPerShare',
+                                            'DistributionMadeToLimitedPartnerDistributionsPaidPerUnit','DividendsPaidOrdinarySharesPerShare']
 returnOfCapitalPerShare = ['InvestmentCompanyTaxReturnOfCapitalDistributionPerShare']
-totalReturnOfCapital = [' InvestmentCompanyTaxReturnOfCapitalDistribution']
+totalReturnOfCapital = ['InvestmentCompanyTaxReturnOfCapitalDistribution']
 
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
 basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
@@ -397,7 +268,6 @@ deprecAndAmor3 = ['DepreciationAndAmortization']
 # missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
 #LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
 #it looks like depre and amor isn't getting the full picture for the above stocks
-#realty income is good tho. interesting.
 
 netAssetValue = ['NetAssetValuePerShare'] 
 
@@ -413,37 +283,11 @@ ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'inte
                 'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
                 'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding', 'netIncomeNCI', 
                 'returnOfCapitalPerShare', 'totalReturnOfCapital']
-# removedFromUltList = [netCashFlow, cashOnHand, altVariables]
+# removedFromUltList = [cashOnHand, altVariables]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
-#Saves MASTER CSV containing data most pertinent to calculations.
-def write_Master_csv_from_EDGAR(ticker, tagList, year, version): # cik,
-    try:
-        company_data = EDGAR_query(ticker, header, tagList)#cik,
-        time.sleep(0.1)
-    except Exception as err:
-        print('write to csv from edgar error:')
-        print(err)                
-    finally:
-        csv.simple_saveDF_to_csv(stock_data, company_data, ticker + '_Master_' + year + '_V' + version, False)
-
-def harvestMasterCSVs(sectorTarget): #edit version as necessary!
-    try:
-        df_full = sectorTarget
-        tickerList = df_full['Ticker']
-        # cikList = df_full['CIK']
-    
-        for i in range(len(tickerList)):
-            write_Master_csv_from_EDGAR(tickerList[i], ultimateTagsList, '2024', '2')
-        
-        #full_cik_sectInd_list
-        # return null
-
-    except Exception as err:
-        print("harvestMasters error: ")
-        print(err)
-
+#luke here gotta clean all these
 #Begin data cleaning process
 def get_Only_10k_info(df):
     try:
@@ -1593,7 +1437,6 @@ def cleanInterestPaid(df):
         print("clean interestPaid error: ")
         print(err)
 
-#ASML case study: shares are working. per share works, but throws off data as nulls are filled because total paid loads fine, but then we try to fill nulls both ways and make a bunch of nulls.
 def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal): 
 
     try:
@@ -1754,8 +1597,6 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         print(err)
     finally:
         return df_col_added
-
-
 
 def fillEmptyIncomeGrowthRates(df):
     try:
@@ -3700,50 +3541,6 @@ def testIndies(ticker):
 #---------------------------------------------------------------------
 #DB interaction notes
 #---------------------------------------------------------------------
-def uploadToDB(upload,table):
-    #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
-    try:
-        conn = sql.connect(db_path)
-        query = conn.cursor()
-        upload.to_sql(table, conn, if_exists='append', index=False)
-    except Exception as err:
-        print("upload to DB error: ")
-        print(err)
-    finally:
-        query.close()
-        conn.close()
-
-def write_csvList_to_DB(df):
-    try:
-        # trackerNum = 0
-        errorTickers = []
-        for i in df['Ticker']:
-            print(i)
-            try:
-                company_data = EDGAR_query(i, header, ultimateTagsList)
-                # print('making big boi table now')
-                # revDF = cSADB(company_data, revenue)
-                consol_table = mCTEDB(company_data, i)
-                # print(consol_table)
-                time.sleep(0.1)
-                uploadToDB(consol_table)
-                print(i + ' uploaded to DB!')
-                # trackerNum += 1
-                # if trackerNum == 1:
-                #     break
-            except Exception as err1:
-                errorTickers.append(str(i))
-                print('write to DB in for loop error for: ' + i)
-                print(err1)
-                continue
-    except Exception as err:
-        print("write csvList to DB error: ")
-        print(err)
-        # continue
-    finally:
-        print(errorTickers)
-    
-    # pass
 
 def write_list_to_DB(thelist):
     try:
@@ -3757,7 +3554,7 @@ def write_list_to_DB(thelist):
                 consol_table = mCTEDB(company_data, i)
                 # print(consol_table)
                 time.sleep(0.1)
-                uploadToDB(consol_table,'Mega')
+                uploadToDB(consol_table, 'Mega')
                 print(i + ' uploaded to DB!')
                 # trackerNum += 1
                 # if trackerNum == 1:
@@ -3774,23 +3571,10 @@ def write_list_to_DB(thelist):
         print(errorTickers)
 
 
-# materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
-# comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
-# consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
-# consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
-# energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
-# finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
-# health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
-# ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
-# realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
-# tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
-# util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
-
 # utillist = ['CEG', 'OPAL']
 
 # write_list_to_DB(utillist)
 
-# write_csvList_to_DB(consStaples) 
 
 ##Tickers mixed Currencies
 # stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies, unsupported! :)
@@ -4283,7 +4067,6 @@ def zeroIntegrity(list1):
         print(err)
     finally:
         return integrityFlag
-
 
 def income_reading(ticker):
     try:
@@ -5121,28 +4904,10 @@ def fillMetadata(sector):
         # print(faTable)
         uploadToDB(faTable,'Metadata')
 
-
 # time1 = time.time()
 # time2 = time.time()
 # print('time to complete')
-# print((time2-time1)*1000)
-
-# fillMetadata('Utilities')
-
-# 0                Utilities
-# 1          Basic Materials
-# 2   Communication Services
-# 3        Consumer Cyclical
-# 4               Technology
-# 5              Real Estate
-# 6              Industrials
-# 7               Healthcare
-# 8       Financial Services
-# 9                   Energy
-# 10      Consumer Defensive
-
-
-
+# print((time2-time1))
 
 #luke here  Ticker, Sector, Industry, Year,
 #two sets of filters: sector leaders, and individual stock reports. 
@@ -8044,7 +7809,7 @@ def semiETFavg():
         print('soxq error')
         print(err)
 
-semiETFavg() #luke soxq for testing
+# semiETFavg() #luke soxq for testing
 
 # AND Ticker IN (\'MSFT\', \'AAPL\', \'CSCO\', \'ACN\', \'INTU\', \'IBM\', \'PANW\', \'SWKS\', \'ANET\', \'NVDA\', \'AMD\', \
 #                     \'INTC\', \'TXN\', \'ADI\', \'MCHP\', \'AVGO\', \'TSM\', \'LRCX\', \'AMAT\', \'KLAC\', \'ASML\', \'MU\', \'MRVL\', \'QCOM\', \
@@ -8066,7 +7831,7 @@ semiETFavg() #luke soxq for testing
 #po: 2 == <80, ffo same
 #yield: 1 == 2-3%, 3+ ideal 3%+
 
-
+print_DB(guh,'print') #luke here checking stockList
 
 # testinv = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
 # print_DB(testinv,'print')

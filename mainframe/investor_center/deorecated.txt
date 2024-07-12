@@ -1,0 +1,192 @@
+#unused, cleaning
+# import mplfinance as mpf
+# import pandas_datareader.data as web
+#docu: https://pandas-datareader.readthedocs.io/en/latest/ 
+# from itertools import chain
+# import pyarrow
+# import gc
+# from forex_python.converter import CurrencyRates
+
+#We have to parse full SEC CIK list into a df
+def convert_CIKdict_to_df(dictionary):
+    df = pd.DataFrame()
+    cik = "cik_str"
+    ticker = "ticker"
+    name = "title"
+    try:
+        #make dict into lists, easier to add to df
+        tlist = []
+        nlist = []
+        clist = []
+        for x in dictionary:
+            tlist.append(dictionary[x][ticker])
+            nlist.append(dictionary[x][name])
+            clist.append(dictionary[x][cik])
+        #append lists into appropriate columns of df1
+        df['Ticker'] = tlist
+        df['Company Name'] = nlist
+        df['CIK'] = clist
+        df['CIK'] = df['CIK'].astype(str).str.zfill(10) #check indentation upon copy
+    except Exception as err:
+        print(err)
+    else:
+        print("DF made! Here it is!")
+        # print(df)
+        return df
+# # Manual processing of data to generate ticker repo's
+# #Manually saved json of tickers and cik's from SEC. Methods for automating download to be added later(later added, above.).
+# json_path = './sec_related/full_cik_list.json'
+# #turn it into a dict to feed into above function
+# with open(json_path, 'r') as j:
+#     fcl_dict = json.loads(j.read())
+# #print(fcl_dict)
+# #Turn that dict into a df, check how it looks
+# df2 = convert_CIKdict_to_df(fcl_dict)
+# print(df2)
+# #Make the CSV, check name and save-location before executing!
+# csv.simple_saveDF_to_csv('./sec_related/', df2, 'full_tickers_and_ciks2', False)
+
+
+#Take full cik list and append sector, industry, marketcap info onto it
+def updateTickersCiksSectors():
+    #'quoteType' might be useful later to verify equity=stock vs etf=etf, uncertain, currently not included
+    try:
+        df2save = pd.DataFrame(columns=['Ticker','Company Name','CIK','Sector', 'Industry'])
+        cikList = []
+        tickerList = []
+        titleList = []
+        sectorList = []
+        industryList = []
+        marketCapList = []
+        print_tracker = 0
+        errorTracker = []
+        for i in range(math.floor(len(full_cik_list))):
+            print_tracker += 1
+            cik = full_cik_list['CIK'][i] 
+            ticker = full_cik_list['Ticker'][i]
+            title = full_cik_list['Company Name'][i]
+            try:
+
+                stock = yf.Ticker(ticker)
+                dict1 = stock.info
+
+                sector = dict1['sector']
+                industry = dict1['industry']
+                # marketCap = dict1['marketCap']
+
+                cikList.append(cik)
+                tickerList.append(ticker)
+                titleList.append(title)
+                sectorList.append(sector)
+                industryList.append(industry)
+                # marketCapList.append(marketCap)
+
+                time.sleep(0.1) #As a courtesy to yahoo finance, IDK if they have rate limits and will kick me, also.
+            except Exception as err:
+                print('try update tickers append lists error: ')
+                print('ticker, sector: ',ticker,sector)
+                errorTracker.append(ticker)
+                print(err)
+
+            if print_tracker % 10 == 0:
+                print("Finished data pull for(ticker): " + ticker)# + ', ' + str(marketCap))
+            
+        df2save['Ticker'] = tickerList
+        df2save['Company Name'] = titleList
+        df2save['CIK'] = cikList
+        df2save['Sector'] = sectorList
+        df2save['Industry'] = industryList
+        # df2save['Market Cap'] = marketCapList
+        # print(df2save)
+        df3 = pd.DataFrame(errorTracker)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC, df3, 'badtickers',False)
+        csv.simple_saveDF_to_csv(fr_iC_toSEC, df2save, 'full_tickersCik_sectorsInd', False)
+    except Exception as err:
+        print('update tickerscikssectorsindustry error: ')
+        print(err)
+# updateTickersCiksSectors()
+
+def cleanFCLduplicates(df):
+    try:
+        df_clean = df.drop_duplicates(subset='CIK', keep='first')
+        # if 'Market Cap' in df_clean.columns:
+        #     df_clean = df_clean.drop(columns=['Market Cap']) #Removed after Market Cap tracked elsewhere.
+        # csv.simple_saveDF_to_csv(fr_iC_toSEC, df_clean, 'full_stockList_clean2', False)
+        return df_clean
+    except Exception as err:
+        print("cleanFCLdupes error")
+        print(err)
+
+# tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
+# time.sleep(0.1)
+# tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
+# tickers_cik['Company Name'] = tickers_cik['title']
+# tickers_cik['CIK'] = tickers_cik['cik_str'].astype(str).str.zfill(10) #cik_str in first []
+# tickers_cik = tickers_cik.drop('cik_str',axis=1)
+# tickers_cik = tickers_cik.drop('title',axis=1)
+# tickers_cik = tickers_cik.drop_duplicates(subset='CIK', keep='first')
+
+
+
+# print(tickers_cik.loc[tickers_cik['ticker'] == 'AAPL', 'CIK'].iloc[0])
+
+#saving csv's from edgar
+#Saves MASTER CSV containing data most pertinent to calculations.
+def write_Master_csv_from_EDGAR(ticker, tagList, year, version): # cik,
+    try:
+        company_data = EDGAR_query(ticker, header, tagList)#cik,
+        time.sleep(0.1)
+    except Exception as err:
+        print('write to csv from edgar error:')
+        print(err)                
+    finally:
+        csv.simple_saveDF_to_csv(stock_data, company_data, ticker + '_Master_' + year + '_V' + version, False)
+
+def harvestMasterCSVs(sectorTarget): #edit version as necessary!
+    try:
+        df_full = sectorTarget
+        tickerList = df_full['Ticker']
+        # cikList = df_full['CIK']
+    
+        for i in range(len(tickerList)):
+            write_Master_csv_from_EDGAR(tickerList[i], ultimateTagsList, '2024', '2')
+        
+        #full_cik_sectInd_list
+        # return null
+
+    except Exception as err:
+        print("harvestMasters error: ")
+        print(err)
+
+def write_csvList_to_DB(df):
+    try:
+        # trackerNum = 0
+        errorTickers = []
+        for i in df['Ticker']:
+            print(i)
+            try:
+                company_data = EDGAR_query(i, header, ultimateTagsList)
+                # print('making big boi table now')
+                # revDF = cSADB(company_data, revenue)
+                consol_table = mCTEDB(company_data, i)
+                # print(consol_table)
+                time.sleep(0.1)
+                uploadToDB(consol_table)
+                print(i + ' uploaded to DB!')
+                # trackerNum += 1
+                # if trackerNum == 1:
+                #     break
+            except Exception as err1:
+                errorTickers.append(str(i))
+                print('write to DB in for loop error for: ' + i)
+                print(err1)
+                continue
+    except Exception as err:
+        print("write csvList to DB error: ")
+        print(err)
+        # continue
+    finally:
+        print(errorTickers)
+    
+    # pass
+        #############
