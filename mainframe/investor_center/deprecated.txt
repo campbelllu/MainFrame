@@ -190,3 +190,87 @@ def write_csvList_to_DB(df):
     
     # pass
         #############
+
+# thequery = 'SELECT DISTINCT Ticker as ticker, Year, shares, sharesGrowthRate \
+#             FROM Mega \
+#             WHERE sharesGrowthRate > 50.0 \
+#             AND Sector LIKE \'%Real%\' \
+#             ;'
+growthratequery = 'SELECT DISTINCT Ticker \
+            FROM Mega \
+            WHERE sharesGrowthRate > 50.0 \
+            AND Sector LIKE \'%Real%\' \
+            ;'
+# print_DB(thequery,'print')
+
+# (((divsPaidPerShare-calcDivsPerShare)/divsPaidPerShare)*100) as repMinusCalc_diff \
+
+divquery = 'SELECT Ticker, Year, shares, sharesGrowthRate, totalDivsPaid, revenue, netIncome, divsPaidPerShare as divPS, divGrowthRateBORPS as divPSrate, calcDivsPerShare as calcdivPS, divGrowthRateBOCPS as calcdivPSrate, payoutRatio, ffoPayoutRatio \
+            FROM Mega \
+            WHERE Ticker LIKE \'NEE\' \
+            AND Year > \'2006\' \
+            ORDER BY Year  \
+            ;'
+incomequery = 'SELECT Ticker, Year, shares, sharesGrowthRate, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, reportedEPS,  calculatedEPS, reportedEPSGrowthRate, calculatedEPSGrowthRate, capEx, capExGrowthRate  \
+            FROM Mega \
+            WHERE Ticker LIKE \'AMZN\' \
+            AND Year > \'2006\'  \
+            ORDER BY Year  \
+            ;'
+
+# print_DB(divquery,'print')
+# print_DB(incomequery, 'print')
+
+sharesquery = 'SELECT sharesGrowthRate \
+                FROM Mega \
+                WHERE Ticker LIKE \'NEE\' \
+                ;'
+
+testlistquery = 'SELECT Year \
+                FROM Mega \
+                WHERE Ticker LIKE \'NEE\' \
+                ;'
+
+#################
+##csv stuff will probably get deprecated luke
+#Set types for each column in df, to retain leading zeroes upon csv -> df loading.
+type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
+type_converter_full = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str, 'Market Cap': str}
+type_converter_full2 = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str}#, 'Market Cap': str}
+
+# full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
+# full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
+clean_stockList = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_stockList_clean', type_converter_full2)
+#/home/family/Documents/repos/MainFrame/mainframe/investor_center/workbook1.py
+#/home/family/Documents/repos/MainFrame/mainframe/sec_related/full_stockList_clean.csv
+# sec_related/full_stockList_clean.csv
+def makeSectorCSVs():
+    try:
+        full_list = clean_stockList
+        allSectors = clean_stockList['Sector'].unique()
+        for x in allSectors:
+            mask = full_list['Sector'].isin([x])
+            csv.simple_saveDF_to_csv(fr_iC_toSEC, full_list[mask], str(x) + '_Sector_clean', False)
+    except Exception as err:
+        print("make Sector CSV's error")
+        print(err)
+# makeSectorCSVs()
+
+materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
+comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
+consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
+consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
+energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
+finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
+health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
+ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
+realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
+tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
+util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
+
+####finishing possible deprecation zone
+###############
+# fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #will get deprecated LUKE
+# fr_iC_toSEC_stocks = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/stocks/' 
+# stock_data = './stockData/'
+#########

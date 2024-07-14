@@ -10,7 +10,6 @@ class stockList(models.Model):
         db_table = 'stockList'
 
 class Mega(models.Model):
-    
     revenue = models.IntegerField(blank=True, null=True)
     revenueGrowthRate = models.FloatField(blank=True, null=True)
     netIncome = models.IntegerField(blank=True, null=True)

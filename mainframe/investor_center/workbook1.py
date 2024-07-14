@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
-import datetime as dt
-# from datetime import date #leaving only because I'm not sure which I used. Probably neither.
+# import datetime as dt #leaving only because I'm not sure which I used.
+from datetime import date 
 import time
 import json
 import requests
@@ -32,54 +32,23 @@ header = {'User-Agent':'campbelllu3@gmail.com'}
 #frames: cross section of data from every company filed specific accnting item in specific period. quick company comparisons
 ep = {"cc":"https://data.sec.gov/api/xbrl/companyconcept/" , "cf":"https://data.sec.gov/api/xbrl/companyfacts/" , "f":"https://data.sec.gov/api/xbrl/frames/"}
 
-fr_iC_toSEC = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/' #will get deprecated LUKE
-fr_iC_toSEC_stocks = '/home/family/Documents/repos/MainFrame/mainframe/sec_related/stocks/' 
-stock_data = './stockData/'
-
 db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
-##csv stuff will probably get deprecated luke
-#Set types for each column in df, to retain leading zeroes upon csv -> df loading.
-type_converter = {'Ticker': str, 'Company Name': str, 'CIK': str}
-type_converter_full = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str, 'Market Cap': str}
-type_converter_full2 = {'Ticker': str, 'Company Name': str, 'CIK': str, 'Sector': str, 'Industry': str}#, 'Market Cap': str}
+def print_DB(thequery, superflag):
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
+    # query.execute(del_query)
+    # conn.commit()
+    
+    df12 = pd.read_sql(thequery,conn)
+    query.close()
+    conn.close()
 
-# full_cik_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickers_and_ciks', type_converter)
-# full_cik_sectInd_list = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_tickersCik_sectorsInd', type_converter_full)
-clean_stockList = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'full_stockList_clean', type_converter_full2)
-#/home/family/Documents/repos/MainFrame/mainframe/investor_center/workbook1.py
-#/home/family/Documents/repos/MainFrame/mainframe/sec_related/full_stockList_clean.csv
-# sec_related/full_stockList_clean.csv
-
-nameCikDict = clean_stockList.set_index('Ticker')['CIK'].to_dict()
-nameSectorDict = clean_stockList.set_index('Ticker')['Sector'].to_dict()
-nameIndustryDict = clean_stockList.set_index('Ticker')['Industry'].to_dict()
-
-def makeSectorCSVs():
-    try:
-        full_list = clean_stockList
-        allSectors = clean_stockList['Sector'].unique()
-        for x in allSectors:
-            mask = full_list['Sector'].isin([x])
-            csv.simple_saveDF_to_csv(fr_iC_toSEC, full_list[mask], str(x) + '_Sector_clean', False)
-    except Exception as err:
-        print("make Sector CSV's error")
-        print(err)
-# makeSectorCSVs()
-
-materials = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Basic Materials_Sector_clean', type_converter_full2)
-comms = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Communication Services_Sector_clean', type_converter_full2)
-consCyclical = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Cyclical_Sector_clean', type_converter_full2)
-consStaples = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Consumer Defensive_Sector_clean', type_converter_full2)
-energy = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Energy_Sector_clean', type_converter_full2)
-finance = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Financial Services_Sector_clean', type_converter_full2)
-health = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Healthcare_Sector_clean', type_converter_full2)
-ind = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Industrials_Sector_clean', type_converter_full2)
-realEstate = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Real Estate_Sector_clean', type_converter_full2)
-tech = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Technology_Sector_clean', type_converter_full2)
-util = csv.get_df_from_csv_with_typeset(fr_iC_toSEC, 'Utilities_Sector_clean', type_converter_full2)
-
-####finishing possible deprecation zone
+    if superflag == 'print':
+        print(df12)
+    elif superflag == 'return':
+        return df12
 
 def uploadToDB(upload,table):
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html 
@@ -144,21 +113,22 @@ def uploadCIKs():
         print('update tickerscikssectorsindustry error: ')
         print(err)
 # uploadCIKs()
-# guh = 'SELECT * FROM stockList'
 
-def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame:
-    try:
-        cik = nameCikDict[ticker]
+nsd = 'SELECT Ticker, CIK, Sector, Industry FROM stockList;'
+gSdf = print_DB(nsd, 'return')
+nameSectorDict = gSdf.set_index('Ticker')['Sector'].to_dict()
+#just for ciks #.astype(str).str.zfill(10).to_dict()
+nameIndustryDict = gSdf.set_index('Ticker')['Industry'].to_dict()
+
+def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
+    try:   
         url = ep["cf"] + 'CIK' + cik + '.json'
         response = requests.get(url, headers=header)
-        print('EDGAR response: ')
-        print(response)
         filingList = ['us-gaap','ifrs-full']
         company_data = pd.DataFrame()
         held_data = pd.DataFrame()
         tags = tag
         if len(tags) == 0:
-            print('change it to len()')
             tags = list(response.json()['facts']['us-gaap'].keys())
 
         for x in filingList:
@@ -176,32 +146,30 @@ def EDGAR_query(ticker, header, tag: list=None) -> pd.DataFrame:
                     company_data = pd.concat([company_data, held_data], ignore_index = True)
                 except Exception as err:
                     pass
-                    # print("Edgar query error: ")
-                    # print(err)
-                # finally:
-                #     time.sleep(0.1)
-                # deprecated, used on either side of calling e-query later
 
         return company_data
-        # time.sleep(0.1)
     except Exception as err:
         print('edgar query super error')
         print(err)
 
+### RESOURCES TO HELP WITH EDGAR JSON DECODING
 ### amazing resource to check what each element is: https://www.calcbench.com/element/WeightedAverageNumberOfSharesIssuedBasic 
-### LUKE THIS WILL TEACH YOU MUCH I THINK: https://xbrl.us/guidance/specific-non-controlling-interest-elements/ 
-#organizing data titles into variable lists
+### THIS WILL TEACH YOU MUCH I THINK: https://xbrl.us/guidance/specific-non-controlling-interest-elements/ 
 # altVariables = ['GrossProfit', 'OperatingExpenses', 'IncomeTaxesPaidNet']
 # cashOnHand = ['CashCashEquivalentsAndShortTermInvestments', 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents', 
 #                 'CashAndCashEquivalentsAtCarryingValue', 'CashEquivalentsAtCarryingValue', 
 #                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations']
+# incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations'] #never used?
+# exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #You'll want to know this is here eventually, unlikely with curr.converter
+
 netCashFlow = ['CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect', 
                 'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect', 
                 'IncreaseDecreaseInCashAndCashEquivalents', 'CashAndCashEquivalentsPeriodIncreaseDecrease',
                 'IncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChanges'] #operCF + InvestCF + FinancingCF
 operatingCashFlow = ['NetCashProvidedByUsedInOperatingActivities','CashFlowsFromUsedInOperatingActivities',
                         'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations', 'NetCashProvidedByUsedInContinuingOperations', 
-                        'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations','CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
+                        'CashFlowsFromUsedInOperationsBeforeChangesInWorkingCapital','CashFlowsFromUsedInOperations',
+                        'CashFlowsFromUsedInOperatingActivitiesContinuingOperations']
 investingCashFlow = ['CashFlowsFromUsedInInvestingActivities','NetCashProvidedByUsedInInvestingActivities']
 financingCashFlow = ['CashFlowsFromUsedInFinancingActivities', 'NetCashProvidedByUsedInFinancingActivities']
 
@@ -215,10 +183,8 @@ netIncomeNCI = ['ProfitLoss', 'ProfitLossAttributableToOwnersOfParent']
 operatingIncome = ['OperatingIncomeLoss','ProfitLossFromOperatingActivities']
 
 taxRate = ['EffectiveIncomeTaxRateContinuingOperations']
-interestPaid = ['InterestExpense','FinanceCosts','InterestExpenseDebt','InterestAndDebtExpense','InterestIncomeExpenseNet','InterestIncomeExpenseNonoperatingNet',
-                'FinancingInterestExpense','InterestPaidNet','InterestRevenueExpense']
-
-incomeTaxPaid = ['IncomeTaxExpenseContinuingOperations'] #LUKE never used?
+interestPaid = ['InterestExpense','FinanceCosts','InterestExpenseDebt','InterestAndDebtExpense','InterestIncomeExpenseNet',
+                'InterestIncomeExpenseNonoperatingNet', 'FinancingInterestExpense','InterestPaidNet','InterestRevenueExpense']
 
 shortTermDebt = ['LongTermDebtCurrent','ShorttermBorrowings']
 longTermDebt1 = ['LongTermDebtNoncurrent','NoncurrentPortionOfNoncurrentBondsIssued']#,'LongTermDebt']
@@ -234,8 +200,6 @@ currentLiabilities = ['LiabilitiesCurrent','CurrentLiabilities']
 nonCurrentLiabilities = ['LiabilitiesNoncurrent','NoncurrentLiabilities']
 shareHolderEquity = ['StockholdersEquity','StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest',
                         'EquityAttributableToOwnersOfParent','PartnersCapital','Equity', 'MembersCapital']
-
-exchangeRate = ['EffectOfExchangeRateChangesOnCashAndCashEquivalents'] #LUKE You'll want to know this is here eventually, unlikely with curr.converter
 
 capEx = ['PaymentsToAcquirePropertyPlantAndEquipment','PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',
         'PurchaseOfPropertyPlantAndEquipmentIntangibleAssetsOtherThanGoodwillInvestmentPropertyAndOtherNoncurrentAssets',
@@ -254,8 +218,8 @@ returnOfCapitalPerShare = ['InvestmentCompanyTaxReturnOfCapitalDistributionPerSh
 totalReturnOfCapital = ['InvestmentCompanyTaxReturnOfCapitalDistribution']
 
 eps = ['EarningsPerShareBasic','IncomeLossFromContinuingOperationsPerBasicShare','BasicEarningsLossPerShare']
-basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 'CommonStockSharesOutstanding',
-                            'NumberOfSharesIssued']
+basicSharesOutstanding = ['WeightedAverageNumberOfSharesOutstandingBasic', 'EntityCommonStockSharesOutstanding','WeightedAverageShares', 
+                            'CommonStockSharesOutstanding', 'NumberOfSharesIssued']
 dilutedSharesOutstanding = ['WeightedAverageNumberOfDilutedSharesOutstanding', 'WeightedAverageNumberOfShareOutstandingBasicAndDiluted']
 
 gainSaleProperty = ['GainLossOnSaleOfProperties', 'GainLossOnSaleOfPropertyPlantEquipment', 'GainLossOnSaleOfPropertiesBeforeApplicableIncomeTaxes',
@@ -264,71 +228,40 @@ deprecAndAmor = ['DepreciationDepletionAndAmortization','Depreciation','Deprecia
                     'AdjustmentsForDepreciationAndAmortisationExpense','DeferredTaxLiabilityAsset','AdjustmentsForDepreciationExpense']
 deprecAndAmor2 = ['AmortizationOfMortgageServicingRightsMSRs']
 deprecAndAmor3 = ['DepreciationAndAmortization']
-#notes from below for above
-# missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
-#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
-#it looks like depre and amor isn't getting the full picture for the above stocks
 
 netAssetValue = ['NetAssetValuePerShare'] 
 
 ultimateList = [revenue, netIncome, operatingIncome, taxRate, interestPaid, shortTermDebt, longTermDebt1, 
                 longTermDebt2, longTermDebt3, longTermDebt4, totalAssets, totalLiabilities, operatingCashFlow, capEx, totalCommonStockDivsPaid, 
                 declaredORPaidCommonStockDivsPerShare, eps, basicSharesOutstanding, gainSaleProperty, deprecAndAmor, netCashFlow, 
-                investingCashFlow, financingCashFlow, exchangeRate, incomeTaxPaid, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
+                investingCashFlow, financingCashFlow, currentLiabilities, nonCurrentLiabilities, deprecAndAmor2, 
                 deprecAndAmor3, shareHolderEquity, currentAssets, nonCurrentAssets, netAssetValue, dilutedSharesOutstanding, netIncomeNCI, 
                 returnOfCapitalPerShare, totalReturnOfCapital ]
 ultimateListNames = ['revenue', 'netIncome', 'operatingIncome', 'taxRate', 'interestPaid', 'shortTermDebt', 'longTermDebt1', 
                 'longTermDebt2', 'totalAssets', 'totalLiabilities', 'operatingCashFlow', 'capEx', 'totalCommonStockDivsPaid', 
                 'declaredORPaidCommonStockDivsPerShare', 'eps', 'basicSharesOutstanding', 'gainSaleProperty', 'deprecAndAmor', 'netCashFlow', 
-                'investingCashFlow', 'financingCashFlow', 'exchangeRate', 'longTermDebt3', 'longTermDebt4', 'incomeTaxPaid', 'currentLiabilities','nonCurrentLiabilities',
-                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding', 'netIncomeNCI', 
-                'returnOfCapitalPerShare', 'totalReturnOfCapital']
-# removedFromUltList = [cashOnHand, altVariables]
+                'investingCashFlow', 'financingCashFlow', 'longTermDebt3', 'longTermDebt4',  'currentLiabilities','nonCurrentLiabilities',
+                'deprecAndAmor2', 'deprecAndAmor3', 'shareHolderEquity', 'currentAssets','nonCurrentAssets', 'netAssetValue', 'dilutedSharesOutstanding', 
+                'netIncomeNCI', 'returnOfCapitalPerShare', 'totalReturnOfCapital']
+# removedFromUltList = [cashOnHand, altVariables, 'incomeTaxPaid',incomeTaxPaid,'exchangeRate',exchangeRate,]
 
 ultimateTagsList = [item for sublist in ultimateList for item in sublist]
 
-#luke here gotta clean all these
 #Begin data cleaning process
 def get_Only_10k_info(df):
     try:
         filtered_data = pd.DataFrame()
-        # returned_data = pd.concat([returned_data, held_data], ignore_index = True) #loop thru the options and just add it all together!
-        formList = ['10-K','20-F','40-F','6-K'] #
-
-        # filtered_data = df[df['form'].str.contains('10-K') == True]
-        filtered_data = df[df['form'].isin(formList) == True] #.str.contains
-        # filtered_data = pd.concat([filtered_data, filtered_data1], ignore_index = True)
-
-        # for x in formList:
-        #     filtered_data1 = df[df['form'].isin(formList) == True] #.str.contains
-        #     filtered_data = pd.concat([filtered_data, filtered_data1], ignore_index = True)
-            # print('filtered data')
-            # print(filtered_data)
-        # filtered_data1 = df[df['form'].str.contains('20-F') == True] #ADDED FOR ex-US stocks
-        # # print(filtered_data1)
-        # filtered_data2 = df[df['form'].str.contains('6-K') == True] #ADDED FOR ex-US stocks
+        formList = ['10-K','20-F','40-F','6-K']
+        filtered_data = df[df['form'].isin(formList) == True] 
     except Exception as err:
         print("10k filter error")
         print(err)
     finally:
-        # if str(type(filtered_data)) == "<class 'NoneType'>" or filtered_data.empty:
-        #     if str(type(filtered_data1)) == "<class 'NoneType'>" or filtered_data1.empty:
-        #         return filtered_data2
-        #     else:
-        #         return filtered_data1
-        # else:
-        #     return filtered_data
         return filtered_data
 
 def dropAllExceptFYRecords(df):
     try:
         testdf = df
-        # print('testdf')
-        # print(testdf)
-        # print('tag then df')
-        # print(df['Tag'])
-        # print(df)
-        # returned_data = pd.DataFrame()
         returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
         oneEnds = ['-01-','-02-']#'-12',
         twoEnds = ['-01-','-02-','-03-']
@@ -344,16 +277,7 @@ def dropAllExceptFYRecords(df):
         twelveEnds = ['-11-','-12-','-01-']
         countdown = ['-01-','-02-','-03-','-04-','-05-','-06-','-07-','-08-','-09-','-10-','-11-']
         revCD = reversed(countdown)
-        # print('reversed')
-        # for x in revCD:
-        #     print(x)
-        # print('forward')
-        # for x in countdown:
-        #     print(x)
-        # print(revCD)
-        # halfStarts = ['-01-','-06-','-07-']
-        # halfEnds = ['-06-','-07-','-12-']
-        #First we check for the full year reportings, includes start dates
+
         for x in oneEnds:
             # returned_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-12-')==True)]
             held_data = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True) & (df.end.str[:4] != df.start.str[:4])]
@@ -404,69 +328,26 @@ def dropAllExceptFYRecords(df):
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
         #Now checking for those halfies because some companies just file things weirdly. Still including start dates
         for x in revCD:
-            # print('x')
-            # print(x)
-            # print('df within the damn for????')
-            # print(df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-11-')==True)])
             held_data1 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains(x)==True)]
-            # print('held at beg of for')
-            # print(held_data1)
             if held_data1.empty:
-                # print('held empty')
                 continue
             else:
                 lastKnownLog = x
                 held_data2 = df[(df['start'].str.contains(lastKnownLog)==True) & (df['end'].str.contains('-12-')==True)]
-                
-                # print('held2 in else')
-                # print(held_data2)
-        # print('pine be empty')
                 held3 = pd.merge(held_data1, held_data2, on=['Ticker','CIK','Units','fp','fy','form','frame','filed','Tag','accn'], how='outer')
                 held3['val'] = held3['val_x'] + held3['val_y']
                 held3['start'] = held3['start_x']
                 held3['end'] = held3['end_y']
                 held3 = held3.drop(columns=['val_x','val_y','start_x','start_y','end_x','end_y'])
                 held3 = held3.dropna(subset=['val'])#,'start'])
-                # print('held3')
-                # print(held3)
                 returned_data = pd.concat([returned_data, held3], ignore_index = True)
-
-        #So you've gone x-y all numbers, and 1-x, x-12 and still nervous?
-        #1-2, 2-3, 3-4...
-        #for x in 1-11, mask for x-(x+1)
-        # held_data123 = df[(df['start'].str.contains('-01-')==True) & (df['end'].str.contains('-02-')==True)]
-        #dummy df['columnONE'] = that
-        #dumm df['columnTWO'] = mask for (x+1)-(x+2)
-        #held4['val'] = dummy1 + dumm2
-        #concat to returned data
-
-        
-        # print('pre check if empty')
-        # print(returned_data)
         
 
         # No start dates and some monthly reporters make things weird, empty here.
         # So just pass the whole data set to the sorter and duplicate trimmer, let them deal with it
         if returned_data.empty:
-            #if said month string is 12, year is end.str.year, if it's 01, it's year -1 ok ok
-            # listMax = df.end.str[5:7]
-            # # print('all the end months')
-            # # print(listMax.unique())
-            # tarMax = str(listMax.max())
-            # held_data = df[df['end'].str.contains(tarMax)==True] #held_data
-            # held_data2 = df[df['end'].str.contains('-01-')==True]
-            # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-            # returned_data = pd.concat([returned_data, held_data2], ignore_index = True)
-
-            # yeartest = df.end.str[:4]
-            # print(yeartest)
-            # held_data = df[df['end'].str.contains('2014')==True]
-            # print(held_data)
             returned_data = df
            
-        # print('post check if empty')
-        # print(returned_data)
-        # print(returned_data)
         return returned_data
     except Exception as err:
         print("drop all except FY data rows error")
@@ -484,59 +365,38 @@ def orderAttributeDF(df):
 
 def dropDuplicatesInDF(df):
     try:
-        # filtered_data = pd.DataFrame()
-        # print('pre drop dupes')
-        # print(df)
         filtered_data = df
         endYear = []
         endMonth = []
         startYear = []
         
         for x in filtered_data['end']: #Prep endyear-related for year calc's
-            # print(type(x))
             #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
-            # print('in end processor')
             endYear.append(int(x[:4]))
             endMonth.append(int(x[5:7]))
-            # print(filtered_data)
         filtered_data['endYear'] = endYear
         filtered_data['endMonth'] = endMonth
-        # print('end month col')
-        # print(filtered_data['endMonth'])
-        # print(type(filtered_data['endMonth'].loc[0]))
         yearMinusOne = list(filtered_data['endYear'] - 1)
         yearMinusOne = [str(x) for x in yearMinusOne]
         filtered_data['yearMinusOne'] = yearMinusOne
-        # print('end problem?')
-        # print(endYear)
-        # print(endMonth)
-        # print('pre start processing')
-        # print(filtered_data)
         if filtered_data['start'].isnull().all(): #Did we get a dataset that doesn't include starts?
-            # print(type(filtered_data['start'].loc[0]))
-            # print(filtered_data['start'].loc[0])
-            # filtered_data['start'] = filtered_data['start'].infer_objects(copy=False).fillna(0) #.replace(np.NaN,0) #this one
-            # print('start is bad')
-            # print(filtered_data['endMonth'])
-            
-            filtered_data['startYear'] = 0#filtered_data['start']#'0000-00-00' #this one
-            # endMonthCheck = [9,10,11,12]
+            filtered_data['startYear'] = 0
             filtered_data['year7'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 5)
             filtered_data['year8'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 6)
             filtered_data['year9'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 7)
             filtered_data['year10'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 8)
-            filtered_data['year11'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 9)  #, other=filtered_data['yearMinusOne'])
+            filtered_data['year11'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 9) 
             filtered_data['year12'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 10)
             filtered_data['year13'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 11)
             filtered_data['year14'] = filtered_data.end.str[:4].where(filtered_data['endMonth'] == 12)
 
 
-            filtered_data['year'] = filtered_data['year8'].fillna(filtered_data['year9'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year8'].fillna(filtered_data['year9'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year7'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year10'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year11'])
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year12'])#.infer_objects(copy=False)
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year13'])#.infer_objects(copy=False)
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year12'])
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year13'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year14'])
             filtered_data['year'] = filtered_data['year'].fillna(filtered_data['yearMinusOne'])
          
@@ -548,159 +408,66 @@ def dropDuplicatesInDF(df):
             filtered_data = filtered_data.drop('year12',axis=1)
             filtered_data = filtered_data.drop('year13',axis=1)
             filtered_data = filtered_data.drop('year14',axis=1)
-            # print('start null')
-            # print(filtered_data)
 
         else: #Otherwise fill necessary columns for year calc's
-            # print('start filled')
-            # print('we hit else anyway?')
             for x in filtered_data['start']:
-                # print('start?!?')
-                # print(filtered_data.where(filtered_data.isnull()))
-                # print(x)
-                # print(type(x))
                 #fill list, make col with the list, compare column vals, make new column of trues if they're x-apart
                 if type(x) == float:
                     startYear.append(0)
                 else:
                     startYear.append(int(x[:4]))
-                # print(filtered_data)
             filtered_data['startYear'] = startYear
-            # print('start problem?')
-            # print(startYear)
-            # print(filtered_data['startYear'])
-            ### TRY LEAVING START EMPTY. EASIER TO CHEKC. LESS ERRORS. MUCH CODE. WOW
-        # if filtered_data['start'].loc[0] == 0: #In the case of those null start datasets this one
-            # filtered_data['year'] = filtered_data.end.str[:4] #this one
-            # print('wtf start is zero')
-            # print(filtered_data['year'])
-        # else: #otherwise proceed as normal
-            # print('mean was not zero tyvm')
             filtered_data['yearDiff'] = (filtered_data['endYear'] - filtered_data['startYear']).where((filtered_data['endYear'] > filtered_data['startYear']))
             filtered_data['yearDiff2'] = (filtered_data['endYear'] - filtered_data['startYear']).where((filtered_data['endYear'] == filtered_data['startYear']))
-            # wrongOrder = pd.Series([3.0])
-            # filtered_data['yearDiff3'] = (wrongOrder).where((filtered_data['endYear'] < filtered_data['startYear']))
             filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(filtered_data['yearDiff2'])
-            # filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(filtered_data['yearDiff3'])
             filtered_data['yearDiff'] = filtered_data['yearDiff'].fillna(3.0)
             filtered_data = filtered_data.drop('yearDiff2',axis=1)
-            # filtered_data = filtered_data.drop('yearDiff3',axis=1)
-            # print(filtered_data)
-            # filtered_data['endMonth'] = endMonth
-            # print('pre fitler')
-            # print(filtered_data)
-            # print(filtered_data.shape)
-
-            
-            # print('post fitler')
-            # print(filtered_data)
-            # print(filtered_data.shape)
 
             ###Case: yearDiff == 3: drop that row because report given to sec is just wrong
             filtered_data = filtered_data[filtered_data['yearDiff'] < 3]
             
             ###Case: yearDiff == 2: year = (end - 1)
-            # yearMinusOne = list(filtered_data['endYear'] - 1)
-            # yearMinusOne = [str(x) for x in yearMinusOne]
-            # filtered_data['yearMinusOne'] = yearMinusOne
             filtered_data['year1'] = filtered_data['yearMinusOne'].where(filtered_data['yearDiff'] == 2)
-            # print('just 2s')
-            # print(filtered_data)
-
+           
             ###Case: yearDiff == 0: start=year
             startYearStrings = list(filtered_data['startYear'])
             startYearStrings = [str(x) for x in startYearStrings]
             filtered_data['startYear'] = startYearStrings
             filtered_data['year2'] = filtered_data['startYear'].where(filtered_data['yearDiff'] == 0)
-            # print('just 2s and 0s')
-            # print(filtered_data)
 
             ###Case: year diff == 1: if end month >= 6, year=end; else year = start
             endYearStrings = list(filtered_data['endYear'])
             endYearStrings = [str(x) for x in endYearStrings]
             filtered_data['endYear'] = endYearStrings
-            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 5)) #changed here from 6
+            filtered_data['year3'] = filtered_data['endYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] >= 5))
             filtered_data['year4'] = filtered_data['startYear'].where((filtered_data['yearDiff'] == 1) & (filtered_data['endMonth'] < 5))
-            # print('all three applied')
-            # print(filtered_data)
+          
             # filtered_data['year'] = filtered_data['year1'] + filtered_data['year2'] + filtered_data['year3']
-            filtered_data['year'] = filtered_data['year1'].fillna(filtered_data['year2'])#.infer_objects(copy=False)
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year3'])#.infer_objects(copy=False)
-            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year4'])#.infer_objects(copy=False)
-            #.replace(np.NaN,filtered_data['year4'])
+            filtered_data['year'] = filtered_data['year1'].fillna(filtered_data['year2'])
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year3'])
+            filtered_data['year'] = filtered_data['year'].fillna(filtered_data['year4'])
             filtered_data = filtered_data.drop('yearDiff',axis=1)
-            # print('post yeardiff drops')
-            # print(filtered_data)
-            # filtered_data = filtered_data.drop('endMonth',axis=1)
-            # print('post endmonth drops')
-            # print(filtered_data)
-            # filtered_data = filtered_data.drop('yearMinusOne',axis=1)
             filtered_data = filtered_data.drop('year1',axis=1)
             filtered_data = filtered_data.drop('year2',axis=1)
             filtered_data = filtered_data.drop('year3',axis=1)
             filtered_data = filtered_data.drop('year4',axis=1)
 
         # filtered_data = filtered_data.drop(['endYear','startYear','yearDiff','endMonth','yearMinusOne'],axis=1)
-        # print('pre pops')
-        # print(filtered_data)
         filtered_data = filtered_data.drop('endYear',axis=1)
-        # print('post end drops')
-        # print(filtered_data)
         filtered_data = filtered_data.drop('startYear',axis=1)
         filtered_data = filtered_data.drop('yearMinusOne',axis=1)
         filtered_data = filtered_data.drop('endMonth',axis=1)
-        # print('post start drops')
-        # print(filtered_data)
-        
-            
-        
-
-        
-        # filtered_data['year3']
-        # print('post year minus one drops')
-        # print('good results?')
-        # print(filtered_data)
-
-        filtered_data = filtered_data.drop_duplicates(subset=['year'],keep='last')#val #end
-        # print('seper')
-        # print(filtered_data)
+        filtered_data = filtered_data.drop_duplicates(subset=['year'],keep='last')
         
     except Exception as err:
         print("drop duplicates error")
         print(err)
     finally:
         return filtered_data
-        # #####
-        # if filtered_data.start.str[5:7].eq('02').all() & filtered_data.end.str[5:7].eq('01').all(): #starts feb, ends jan, hopefully one year later
-        #     filtered_data['year'] = filtered_data.start.str[:4]
-        # else:
-        #     filtered_data['compare'] = (filtered_data.end.str[5:7] == filtered_data.start.str[5:7]) #Where the months are the same
-        #     # print(filtered_data['compare'])
-
-        #     #2022-07 -> 2023-06 == end is year
-        #     #2022-01 -> 2022-12 == start or end is year
-        #     #2022-01 -> 2023-01 == start year is year
-        #     filtered_data['year'] = filtered_data.start.str[:4].where(filtered_data['compare'] == True, other=filtered_data.end.str[:4])
-
-
-
-        #     # filtered_data['intstart'] = filtered_data.start.str[5:7].astype(int)
-        #     # filtered_data['intend'] = filtered_data.end.str[5:7].astype(int)
-        #     # print(filtered_data['intstart'])
-
-
-        #     # if abs(filtered_data.start.str[5:7].astype(int)-filtered_data.end.str[5:7].astype(int)) == 1:
-        #     #     if abs(filtered_data.start.str[:4].astype(int)-filtered_data.end.str[:4].astype(int)) == 1:
-        #     #         if filtered_data.start.str[5:7].astype(int) < 3:
-        #     #             filtered_data['year'] = filtered_data.start.str[:4]
-
-        #     # filtered_data = filtered_data.drop(columns=['compare']) ##WHY DIDN'T DROP WORK?! guh
-        #     filtered_data = filtered_data.pop('compare')
-        #     #####
 
 def dropUselessColumns(df):
     try:
-        returned_data = df.drop(['start','end','accn','fy','fp','form','filed','frame','Tag'],axis=1) #start, end added  ,'compare'
+        returned_data = df.drop(['start','end','accn','fy','fp','form','filed','frame','Tag'],axis=1)
 
         return returned_data
     except Exception as err:
@@ -710,58 +477,20 @@ def dropUselessColumns(df):
 # Returns organized data pertaining to the tag(s) provided in form of DF
 def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
     try:
-        # print('taglist')
-        # print(tagList)
         #get csv to df from params
         filtered_data = csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
-        # print(filtered_data)
         held_data = pd.DataFrame()
         returned_data = pd.DataFrame()
     
         for x in tagList:
-            
             held_data = filtered_data[filtered_data['Tag'].eq(x) == True]
             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-            # print(x)
-            # if 'PerShare' in x:
-            #     print('in consolidate')
-            #     print(returned_data)
-        # print(returned_data['Tag'].unique())
-        # print(returned_data)
         returned_data = get_Only_10k_info(returned_data)
-        # print('10k data')
-        # print(returned_data)
-        # print(returned_data.shape)
-        
-        # print('pre drop fy records')
-        # print(returned_data)#.to_string())
-        # print(returned_data.shape)
-        # print(returned_data['Tag'].unique())
-        # print(returned_data['start'].min())
-        # print(returned_data['end'].min())
-        
-        returned_data = dropAllExceptFYRecords(returned_data) #was held data
-        # print('post drop fy records pre order')
-        # print(returned_data)#.to_string())
-        # print(returned_data.shape)
+        returned_data = dropAllExceptFYRecords(returned_data)
         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
-        # print('post order pre drop  dupes')
-        # print(returned_data.to_string())
-        # print(returned_data.shape)
-
         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
-        # print('post drop  dupes')
-        # print(returned_data)
-        # print(returned_data.shape)
-
-
         returned_data = dropUselessColumns(returned_data)
         
-        # print('consolidate all drops done')
-        # print(returned_data)
-
-        # csv.simple_saveDF_to_csv('./sec_related/stocks/',held_data, ticker+'_'+'dataFilter'+'_V'+outputVersion,False)
-        # csv.simple_saveDF_to_csv(fr_iC_toSEC_stocks, returned_data, ticker + '_' + year + '_' + outputName,False)
         return returned_data
 
     except Exception as err:
@@ -770,51 +499,28 @@ def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
 
 def grManualCalc(df_col):
     try:
-        # origList = []
         origList = df_col.tolist()
-        # print(origList)
-        # print(len(origList))
         growthList = []
-        growthList.append(np.NaN)
+        growthList.append(np.nan)
         for x in range(len(origList)-1):
             diff = abs((origList[x+1])-origList[x])
             if origList[x] > origList[x+1]:
                 diff = diff * -1
-            # print('x+1')
-            # print(origList[x+1])
-            # print('x')
-            # print(origList[x])
-            if abs(origList[x]) == 0:# and abs(origList[x+1]) == 0:
-                change = np.NaN
-            # elif abs(origList[x]) == 0 and abs(origList[x+1]) != 0:
-            #     placeHolder = 0.001
-            #     diff = abs((origList[x+1])-placeHolder)
-            #     change = diff / abs(placeHolder) * 100
+            if abs(origList[x]) == 0:
+                change = np.nan
             else:
                 change = diff / abs(origList[x]) * 100
-            # if change == 'inf':
-            #     print('inf tripped')
-            #     change = np.NaN
-            # print(change)
-            # print(type(change))
             growthList.append(change)
-            # print(change)
-            # print('x')
-            # print(origList[x])
-            # print('x-1')
-            # print(origList[x-1])
-
-        # print(growthList)
-        # print(len(growthList))
-        # print(growthList)
+         
         return growthList
 
     except Exception as err:
         print("grManualCalc error: ")
         print(err)
 
-def cleanUnits(df): 
-    #Add to EL below as conflicting currencies are found. Manually add them below in for loop. woof. You could just do an if in statement but the specificity must match the conversion rate
+def cleanUnits(df):
+    #Add to EL below as conflicting currencies are found. Manually add them below in for loop. woof. 
+    #You could just do an if in statement but the specificity must match the conversion rate
     # exclusionList = ['TWD']
     try:
         df_col_added = df
@@ -822,7 +528,6 @@ def cleanUnits(df):
         unitsFrom = df_col_added['Units'].tolist()
         datesFrom = df_col_added['year'].tolist()
         conRev = []
-       
         for i in range(len(origRev)):
             if unitsFrom[i] == 'TWD':
                 conRev.append(origRev[i] * 0.03)
@@ -842,62 +547,17 @@ def cleanUnits(df):
 
 def cleanRevenue(df):
     try:
-        # print('df')
-        # print(df)
-
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'revenue'})
-        # df_col_added = df.rename(columns={'val':'revenue'})
         if df_col_added.empty:
             return df_col_added
         else:
-            # if df_col_added['revenue'].empty:
-            #     df_col_added['revenueGrowthRate'] = np.NaN
-            # else:
-            # origRev = df_col_added['revenue'].tolist()
-            # unitsFrom = df_col_added['Units'].tolist()
-            # datesFrom = df_col_added['year'].tolist()
-            # # unitsTo
-            # conRev = []
-            # # print(len(origRev))
-            # # print(len(unitsFrom))
-            # for i in range(len(origRev)):
-            #     conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
-            # df_col_added['newRev'] = conRev
-            #     print(x + ', ' + y)
-            # df_col_added['convRev'] = curConvert.convert(df_col_added['revenue'], df_col_added['Units'], 'USD')
-            # print('did it convert?')
-            # print(df_col_added)
-
             growthCol = grManualCalc(df_col_added['revenue'])
-            df_col_added['revenueGrowthRate'] = growthCol#df_col_added['revenue'].pct_change()*100
-        # df_col_added['year'] = df_col_added.end.str[:4]
-
-        # df_col_added = df_col_added.drop(columns=['start','end'])
-        # print('df col added')
-        # print(df_col_added)
-    # try:#I like coding this part. It felt clean. Leaving it for future reference, but it's best handled elsewhere/in other ways.
-    #     df_col_added = pd.DataFrame()
-    #     if df.empty:
-    #         df_col_added['revenue'] = np.NaN
-    #         df_col_added['revenueGrowthRate'] = np.NaN
-    #         df_col_added['year'] = np.NaN
-    #         df_col_added['start'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
-    #         df_col_added['end'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
-    #         df_col_added['Ticker'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
-    #         df_col_added['CIK'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
-    #         df_col_added['Units'] = np.NaN # df_col_added['year'].replace(np.NaN, np.NaN)
-    #     else:
-    #         df_col_added = df.rename(columns={'val':'revenue'})
-    #         df_col_added['revenueGrowthRate'] = df_col_added['revenue'].pct_change()*100
-    #         df_col_added['year'] = df_col_added.end.str[:4]
-       
+            df_col_added['revenueGrowthRate'] = growthCol
             
-
     except Exception as err:
         print("cleanRevenue error: ")
         print(err)
-        # print(df_col_added)
     finally:
         return df_col_added
 
@@ -905,17 +565,11 @@ def cleanNetIncome(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'netIncome'})
-        # df_col_added = df.rename(columns={'val':'netIncome'})
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['netIncome'])
-            df_col_added['netIncomeGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
-
-            
+            df_col_added['netIncomeGrowthRate'] = growthCol
 
     except Exception as err:
         print("cleanNetIncome error: ")
@@ -927,17 +581,11 @@ def cleanNetIncomeNCI(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'netIncomeNCI'})
-        # df_col_added = df.rename(columns={'val':'netIncome'})
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['netIncomeNCI'])
-            df_col_added['netIncomeNCIGrowthRate'] = growthCol#df_col_added['netIncome'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
-
-            
+            df_col_added['netIncomeNCIGrowthRate'] = growthCol
 
     except Exception as err:
         print("cleanNetIncomeNCI error: ")
@@ -949,18 +597,11 @@ def cleanOperatingCashFlow(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'operatingCashFlow'})
-        # df_col_added = df.rename(columns={'val':'operatingCashFlow'})
-        # if df_col_added['operatingCashFlow'].isnull().any():
-        #     df_col_added['operatingCashFlow'] = df_col_added['operatingCashFlow'].ffill()
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['operatingCashFlow'])
-            df_col_added['operatingCashFlowGrowthRate'] = growthCol#df_col_added['operatingCashFlow'].pct_change()*100
-            # df_col_added['operatingCashFlowGrowthRate'] = df_col_added['operatingCashFlowGrowthRate'].replace(np.nan,0) #Replace NaN with zero? Uncertain.
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['operatingCashFlowGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -972,17 +613,11 @@ def cleanInvestingCashFlow(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'investingCashFlow'})
-        # df_col_added = df.rename(columns={'val':'investingCashFlow'})
-        # if df_col_added['investingCashFlow'].isnull().any():
-        #     df_col_added['investingCashFlow'] = df_col_added['investingCashFlow'].ffill()
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['investingCashFlow'])
-            df_col_added['investingCashFlowGrowthRate'] = growthCol#df_col_added['investingCashFlow'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['investingCashFlowGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -994,17 +629,11 @@ def cleanFinancingCashFlow(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'financingCashFlow'})
-        # df_col_added = df.rename(columns={'val':'financingCashFlow'})
-        # if df_col_added['financingCashFlow'].isnull().any():
-        #     df_col_added['financingCashFlow'] = df_col_added['financingCashFlow'].ffill()
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['financingCashFlow'])
-            df_col_added['financingCashFlowGrowthRate'] = growthCol#df_col_added['financingCashFlow'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['financingCashFlowGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -1016,18 +645,11 @@ def cleanNetCashFlow(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'netCashFlow'})
-        # df_col_added = df.rename(columns={'val':'netCashFlow'})
-        # if df_col_added['netCashFlowe'].empty:
-        #     df_col_added['netCashFlowGrowthRate'] = np.NaN
-        # else:
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['netCashFlow'])
-            df_col_added['netCashFlowGrowthRate'] = growthCol#df_col_added['netCashFlow'].pct_change()*100
-            # df_col_added['year'] = df_col_added.end.str[:4]
-
-            # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['netCashFlowGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -1039,15 +661,11 @@ def cleanCapEx(df):
     try:
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'capEx'})
-        # df_col_added = df.rename(columns={'val':'capEx'})
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['capEx'])
-            df_col_added['capExGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
-        # df_col_added['year'] = df_col_added.end.str[:4]
-
-        # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['capExGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -1061,18 +679,6 @@ def cleanEPS(df):
         growthCol = grManualCalc(df_col_added['reportedEPS'])
         df_col_added['reportedEPSGrowthRate'] = growthCol
         df_col_added = df_col_added.drop('Units', axis=1)
-        # returned_data = targetdf
-
-        # if df_col_added.empty:
-        #     return df_col_added
-        # else:
-        #     growthCol = grManualCalc(df_col_added['eps'])
-        #     df_col_added['epsGrowthRate'] = growthCol#df_col_added['eps'].pct_change()*100
-        #     # df_col_added['year'] = df_col_added.end.str[:4]
-
-        #     # df_col_added = df_col_added.drop(columns=['start','end']) 
-
-        #     return df_col_added
 
     except Exception as err:
         print("clean eps error: ")
@@ -1089,7 +695,6 @@ def cleanNAV(df):
         growthCol = grManualCalc(df_col_added['nav'])
         df_col_added['navGrowthRate'] = growthCol
         df_col_added = df_col_added.drop('Units', axis=1)
-        # print(df_col_added)
 
     except Exception as err:
         print("clean nav error: ")
@@ -1105,16 +710,9 @@ def cleanfcf(df): #Requires a pre-built DF include OCF and CapEX!!!
         df_col_added = df
         df_col_added['fcf'] = df_col_added['operatingCashFlow'] - df_col_added['capEx']
         growthCol = grManualCalc(df_col_added['fcf'])
-        df_col_added['fcfGrowthRate'] = growthCol#df_col_added['fcf'].pct_change(fill_method=None)*100
+        df_col_added['fcfGrowthRate'] = growthCol
 
         return df_col_added
-
-        # ERROR DETAILS
-        ### When empty we get this error. see: O ;; 413, 431
-        #         /home/user1/masterSword/MainFrame/mainframe/investor_center/workbook1.py:414: FutureWarning: The default fill_method='pad' in Series.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
-        #   df_col_added['fcfGrowthRate'] = df_col_added['fcf'].pct_change()*100
-        # /home/user1/masterSword/MainFrame/mainframe/investor_center/workbook1.py:427: FutureWarning: The default fill_method='pad' in Series.pct_change is deprecated and will be removed in a future version. Either fill in any non-leading NA values prior to calling pct_change or specify 'fill_method=None' to not fill NA values.
-        #   df_col_added['fcfMarginGrowthRate'] = df_col_added['fcfMargin'].pct_change()*100
 
     except Exception as err:
         print("clean fcf error: ")
@@ -1125,7 +723,7 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
         df_col_added = df
         df_col_added['fcfMargin'] = df_col_added['fcf'] / df_col_added['revenue'] * 100
         growthCol = grManualCalc(df_col_added['fcfMargin'])
-        df_col_added['fcfMarginGrowthRate'] = growthCol#df_col_added['fcfMargin'].pct_change(fill_method=None)*100
+        df_col_added['fcfMarginGrowthRate'] = growthCol
 
         return df_col_added
 
@@ -1135,24 +733,13 @@ def cleanfcfMargin(df): #Requires a pre-built DF including fcf!!!
 
 def cleanOperatingIncome(df):
     try:
-        # print('df')
-        # print(df)
         df_col_added = cleanUnits(df)
         df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
-        # df_col_added = df.rename(columns={'val':'operatingIncome'})
-        # print('renamed df')
-        # print(df_col_added)
         if df_col_added.empty:
             return df_col_added
         else:
             growthCol = grManualCalc(df_col_added['operatingIncome'])
-            df_col_added['operatingIncomeGrowthRate'] = growthCol #df_col_added['operatingIncome'].pct_change()*100
-            # print('growth col added df')
-            # print(df_col_added)
-
-        # df_col_added['year'] = df_col_added.end.str[:4]
-
-        # df_col_added = df_col_added.drop(columns=['start','end']) 
+            df_col_added['operatingIncomeGrowthRate'] = growthCol
 
             return df_col_added
 
@@ -1162,14 +749,8 @@ def cleanOperatingIncome(df):
 
 def cleanTaxRate(df):
     try:
-        # df_col_added = cleanUnits(df)
-        # df_col_added = df_col_added.rename(columns={'val':'taxRate'})
         df_col_added = df.rename(columns={'val':'taxRate'})
-        # df_col_added['taxRateGrowthRate'] = df_col_added['operatingIncome'].pct_change(periods=1)*100
-        # df_col_added['year'] = df_col_added.end.str[:4]
-
-        df_col_added = df_col_added.drop(columns=['Units']) #'start','end',
-
+        df_col_added = df_col_added.drop(columns=['Units'])
         return df_col_added
 
     except Exception as err:
@@ -1178,58 +759,23 @@ def cleanTaxRate(df):
 
 def cleanDebt(short, long1, long2, long3, long4): 
     try:
-        #take short, long1, long2 debt, create year column, reproduce df with just year and debt column 
-        # short['year'] = short.end.str[:4]
-        # long1['year'] = long1.end.str[:4]
-        # long2['year'] = long2.end.str[:4]
-        # long3['year'] = long3.end.str[:4]
-        # long4['year'] = long4.end.str[:4]
-
-        # short = short.drop(columns=['start','end']) 
-        # long1 = long1.drop(columns=['start','end']) 
-        # long2 = long2.drop(columns=['start','end']) 
-        # long3 = long3.drop(columns=['start','end']) 
-        # long4 = long4.drop(columns=['start','end']) 
-        # print('printing short')
-        # print(short)
-        # print('printing long1')
-        # print(long1)
-        # print('printing long2')
-        # print(long2)
-        # print('printing long3')
-        # print(long3)
-        # print('printing long4')
-        # print(long4)
         short = cleanUnits(short)
         long1 = cleanUnits(long1)
         long2 = cleanUnits(long2)
         long3 = cleanUnits(long3)
         long4 = cleanUnits(long4)
-        # df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
 
         shortNlong1 = pd.merge(short, long1, on=['year','Ticker','CIK','Units'], how='outer')
         shortNlong1['val_x'] = shortNlong1['val_x'].fillna(0)
         shortNlong1['val_y'] = shortNlong1['val_y'].fillna(0)
         shortNlong1['subTotalDebt'] = shortNlong1['val_x'] + shortNlong1['val_y']
         shortNlong1 = shortNlong1.drop(['val_x','val_y'],axis=1)
-
-        # print('shortnlong1')
-        # print(shortNlong1)
         
         plusLong2 = pd.merge(shortNlong1, long2, on=['year','Ticker','CIK','Units'], how='outer')
-        # print('pluslong2')
-        # print(plusLong2)
         plusLong2['val'] = plusLong2['val'].fillna(0)
         plusLong2['subTotalDebt'] = plusLong2['subTotalDebt'].fillna(0) 
-        # print('post fill na pluslong2')
-        # print(plusLong2)
         plusLong2['TotalDebt'] = plusLong2['subTotalDebt'] + plusLong2['val']
-        # print('total debt pluslong2')
-        # print(plusLong2)
         plusLong2 = plusLong2.drop(['subTotalDebt','val'],axis=1)
-
-        # print('pluslong2 dropped columns')
-        # print(plusLong2)
 
         plusLong3 = pd.merge(plusLong2, long3, on=['year','Ticker','CIK','Units'], how='outer')
         plusLong3['val'] = plusLong3['val'].fillna(0)
@@ -1237,17 +783,11 @@ def cleanDebt(short, long1, long2, long3, long4):
         plusLong3['TotalDebt'] = plusLong3['TotalDebt'] + plusLong3['val']
         plusLong3 = plusLong3.drop(['val'],axis=1)
 
-        # print('pluslong3')
-        # print(plusLong3)
-
         plusLong4 = pd.merge(plusLong3, long4, on=['year','Ticker','CIK','Units'], how='outer')
         plusLong4['val'] = plusLong4['val'].fillna(0)
         plusLong4['TotalDebt'] = plusLong4['TotalDebt'].fillna(0)
         plusLong4['TotalDebt'] = plusLong4['TotalDebt'] + plusLong4['val']
         plusLong4 = plusLong4.drop(['val'],axis=1)
-
-        # print('pluslong4')
-        # print(plusLong4)
 
         return plusLong4
 
@@ -1257,15 +797,8 @@ def cleanDebt(short, long1, long2, long3, long4):
 
 def cleanAssets(nonCurrent, current):
     try:
-        # nonCurrent['year'] = nonCurrent.end.str[:4]
-        # current['year'] = current.end.str[:4]
-
-        # nonCurrent = nonCurrent.drop(columns=['start','end'])
-        # current = current.drop(columns=['start','end'])
-
         nonCurrent = cleanUnits(nonCurrent)
         current = cleanUnits(current)
-        # df_col_added = df_col_added.rename(columns={'val':'operatingIncome'})
 
         anl = pd.merge(nonCurrent, current, on=['year','Ticker','CIK','Units'], how='outer')
         anl['val'] = anl['val_x'] + anl['val_y']
@@ -1278,12 +811,6 @@ def cleanAssets(nonCurrent, current):
 
 def cleanLiabilities(nonCurrent, current):
     try:
-        # nonCurrent['year'] = nonCurrent.end.str[:4]
-        # current['year'] = current.end.str[:4]
-
-        # nonCurrent = nonCurrent.drop(columns=['start','end'])
-        # current = current.drop(columns=['start','end'])
-
         nonCurrent = cleanUnits(nonCurrent)
         current = cleanUnits(current)
 
@@ -1298,47 +825,22 @@ def cleanLiabilities(nonCurrent, current):
 
 def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
     try:
-        #take assets and liabilities and get total equity from them
-        # assets['year'] = assets.end.str[:4]
-        # liabilities['year'] = liabilities.end.str[:4]
-
-        # assets = assets.drop(columns=['start','end'])
-        # liabilities = liabilities.drop(columns=['start','end'])
-
-        # print('weird reqport??E?')
-        # print(reportedEquity)
         if assets.empty:
             assets = cleanAssets(ncA, cuA)
         else:
-            # print('clean equity assets not empty else')
-            # print(assets)
             assets = cleanUnits(assets)
-
-        # print('clean equity assets not empty else post clean')
-        # print(assets)
-        
 
         if liabilities.empty:
             liabilities = cleanLiabilities(ncL, cuL)
         else:
-            # print('clean equity lias not empty else pre clean')
-            # print(liabilities)
             liabilities = cleanUnits(liabilities)
 
         reportedEquity = cleanUnits(reportedEquity)
         
-        # print('clean equity lias not empty else post clean')
-        # print(liabilities)
-        # print('liabilities?!?')
-        # print(liabilities)
-        # print('assets?')
-        # print(assets)
-        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean of all liabilities over time.
+        #Because Equity is important to calculations, we need to verify non-reported values as being a lower approximation of the mean 
+        #of all liabilities over time.
         # LUKE RETHINK THIS...maybe
         assAndLies = pd.merge(assets, liabilities, on=['year','Ticker','CIK','Units'], how='outer')
-        
-        # print('post merge ass and lias')
-        # print(assAndLies)
 
         assAndLies['assets'] = assAndLies['val_x']
         assetsMean = assAndLies['assets'].mean() #/ ((len(assAndLies['assets'])/2)+1)
@@ -1348,20 +850,12 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         assAndLies['liabilities'] = assAndLies['liabilities'].fillna(liaMean)
         assAndLies = assAndLies.drop(['val_x','val_y'],axis=1)
 
-        # print('post fill and drop ass and lias')
-        # print(assAndLies)
-
         assAndLies = pd.merge(assAndLies, reportedEquity, on=['Units','year','Ticker','CIK'], how='outer')
-        # print('post merge ass and lias and total equity')
-        # print(assAndLies)
 
         assAndLies['ReportedTotalEquity'] = assAndLies['val']
         assAndLies = assAndLies.drop(['val'],axis=1)
 
         assAndLies['TotalEquity'] = assAndLies['assets']-assAndLies['liabilities']
-        # assAndLies['ReportedTotalEquity'] = reportedEquity
-        # print('TEquity checker')
-        # print(assAndLies)
 
         return assAndLies
 
@@ -1369,6 +863,7 @@ def cleanTotalEquity(assets, liabilities, ncL, cuL, ncA, cuA, reportedEquity):
         print("clean totalEquity error: ")
         print(err)
 
+#luke resume cleaning here
 def cleanDeprNAmor(df):
     try:
         df_col_added = cleanUnits(df)
@@ -1399,7 +894,7 @@ def cleanDeprNAmor2(df1,df2):
 
 
         df_col_added2 = pd.merge(df_col_added, df2, on=['year','Ticker','CIK','Units'], how='outer')
-        df_col_added2['depreNAmor'] = df_col_added2['depreNAmor1'].replace(np.NaN, 0) + df_col_added2['depreNAmor2'].replace(np.NaN, 0)
+        df_col_added2['depreNAmor'] = df_col_added2['depreNAmor1'].replace(np.nan, 0) + df_col_added2['depreNAmor2'].replace(np.nan, 0)
         df_col_added2 = df_col_added2.drop(columns=['depreNAmor1','depreNAmor2'])
         # print(df_col_added2)
 
@@ -1549,7 +1044,7 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
         df_col_added['dilutedShares'] = df_col_added['dilutedShares'].ffill().bfill()
         # if df_col_added['shares'].empty:
-        #     df_col_added['sharesGrowthRate'] = np.NaN
+        #     df_col_added['sharesGrowthRate'] = np.nan
         # else:
         growthCol = grManualCalc(df_col_added['shares'])
         df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
@@ -1583,7 +1078,7 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         df_col_added['divGrowthRateBOCPS'] = growthCol5
         
         # if df_col_added['divsPaidPerShares'].empty:
-        #     df_col_added['divGrowthRate'] = np.NaN
+        #     df_col_added['divGrowthRate'] = np.nan
         # else:
         
         # print('average growth rate: ')
@@ -1611,7 +1106,7 @@ def fillEmptyIncomeGrowthRates(df):
             tarGrowthRate = x + 'GrowthRate'
             # meanReplacement = df_filled[x].mean()
             savedCol = df_filled[x]
-            # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
+            # df_filled[x] = df_filled[x].replace(np.nan, meanReplacement)#.ffill()  we trying backfilling instead
             df_filled[x] = df_filled[x].ffill().bfill()
 
             growthCol = grManualCalc(df_filled[x])
@@ -1689,18 +1184,18 @@ def fillEmptyDivsGrowthRates(df):
                 fixTracker += 1
             # fixTracker += 1    
             # print('it was total divs paid')
-            df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
+            df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.nan, 0)#.ffill()
         if df_filled['divsPaidPerShare'].isnull().any():
             percentNull = df_filled['divsPaidPerShare'].isnull().sum() / len(df_filled['divsPaidPerShare'])
             if percentNull > 0.4:
                 fixTracker += 1
             # fixTracker += 1   
             # print('it was per share divs paid')
-            df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
+            df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.nan, 0)#.ffill()
         if df_filled['shares'].isnull().all():
             # print('all shares null')
             fixTracker += 3
-            df_filled['shares'] = df_filled['shares'].replace(np.NaN, 0)
+            df_filled['shares'] = df_filled['shares'].replace(np.nan, 0)
         elif df_filled['shares'].isnull().any():
             percentNull = df_filled['shares'].isnull().sum() / len(df_filled['shares'])
             if percentNull > 0.4:
@@ -1709,8 +1204,8 @@ def fillEmptyDivsGrowthRates(df):
             # print('it was shares')
             df_filled['shares'] = df_filled['shares'].ffill().bfill() 
 
-        df_filled['ROCperShare'] = df_filled['ROCperShare'].replace(np.NaN, 0)
-        df_filled['ROCTotal'] = df_filled['ROCTotal'].replace(np.NaN, 0)
+        df_filled['ROCperShare'] = df_filled['ROCperShare'].replace(np.nan, 0)
+        df_filled['ROCTotal'] = df_filled['ROCTotal'].replace(np.nan, 0)
 
         # print('pre shares and div GR')
         # print(df_filled)
@@ -1753,7 +1248,7 @@ def fillEmptyDivsGrowthRates(df):
 
         if df_filled['dilutedShares'].isnull().all():
             # print('dil shares all null')
-            df_filled['dilutedSharesGrowthRate'] = np.NaN
+            df_filled['dilutedSharesGrowthRate'] = np.nan
         else:
             # print('dil shares else')
             # print(df_filled['dilutedShares'])
@@ -1839,7 +1334,7 @@ def fillEmptyROICGrowthRates(df):
             if percentNull > 0.4:
                 fixTracker += 1
             # print('it was int paid')
-            df_filled['TotalDebt'] = df_filled['TotalDebt'].replace(np.NaN, 0)
+            df_filled['TotalDebt'] = df_filled['TotalDebt'].replace(np.nan, 0)
         if df_filled['assets'].isnull().any():
             percentNull = df_filled['assets'].isnull().sum() / len(df_filled['assets'])
             # if df_filled['assets'].isnull().sum() > 1:
@@ -1948,7 +1443,7 @@ def fillPrice(df):
             try:
                 priceList.append(priceData[-1])
             except:
-                priceList.append(np.NaN)
+                priceList.append(np.nan)
                 continue
             # print('priceData')
             # print(priceData)
@@ -2277,8 +1772,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print('revNinc: ')
         # print(revNinc)
         if eps_df.empty:
-            revNinc['reportedEPS'] = np.NaN
-            revNinc['reportedEPSGrowthRate'] = np.NaN
+            revNinc['reportedEPS'] = np.nan
+            revNinc['reportedEPSGrowthRate'] = np.nan
         else:
             revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
         # revNinc['units'] = revNinc['Units_x']
@@ -2434,8 +1929,8 @@ def makeConsolidatedTableEntry(ticker, year, version, index_flag):
         # print('plustequity pre first merge')
         # print(plustEquity)
         if nav_df.empty:
-            plustEquity['nav'] = np.NaN
-            plustEquity['navGrowthRate'] = np.NaN
+            plustEquity['nav'] = np.nan
+            plustEquity['navGrowthRate'] = np.nan
         else:
             plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
         
@@ -3274,8 +2769,8 @@ def mCTEDB(df, ticker):
         # print('revNinc: ')
         # print(revNinc)
         if eps_df.empty:
-            revNinc['reportedEPS'] = np.NaN
-            revNinc['reportedEPSGrowthRate'] = np.NaN
+            revNinc['reportedEPS'] = np.nan
+            revNinc['reportedEPSGrowthRate'] = np.nan
         else:
             revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
         # revNinc['units'] = revNinc['Units_x']
@@ -3431,8 +2926,8 @@ def mCTEDB(df, ticker):
         # print('plustequity pre first merge')
         # print(plustEquity)
         if nav_df.empty:
-            plustEquity['nav'] = np.NaN
-            plustEquity['navGrowthRate'] = np.NaN
+            plustEquity['nav'] = np.nan
+            plustEquity['navGrowthRate'] = np.nan
         else:
             plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
         
@@ -3514,25 +3009,33 @@ def mCTEDB(df, ticker):
         return incDivsROIC
 
 
-def testIndies(ticker):
+def testEDGARdata(ticker,cik):
     try:
-        company_data = EDGAR_query(ticker, header, ultimateTagsList)
+        #luke here gotta change this to include cik needed for EDQ
+        company_data = EDGAR_query(ticker, cik, header, ultimateTagsList)
         consol_table = mCTEDB(company_data, ticker)
     except Exception as err:
         print("test indies error: ")
         print(err)
     finally:
-        for x in consol_table:
-            print(x)
-        # print(consol_table['Units'])
+        # for x in consol_table:
+        #     print(x)
+        print(consol_table)
 
-# testIndies('MSFT')
+# testEDGARdata('MSFT','0000789019')
 
 
 
 #########################################################
 
 ### LUKE - ToDO
+### depreciation and amor with a handful of stocks
+#notes from below for above
+# missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
+#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
+#it looks like depre and amor isn't getting the full picture for the above stocks
+####
+
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # Clean code: this includes packages up top, turns out.
@@ -3542,23 +3045,29 @@ def testIndies(ticker):
 #DB interaction notes
 #---------------------------------------------------------------------
 
-def write_list_to_DB(thelist):
+
+#this function calls in the ticker and cik from stockList
+    #make edgarq take in ticker and cik, easy
+    #tickers_cik['CIK'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
+    #to be safe, you could make a list and a dict, list has tickers, dict is key=ticker, val=cik, 
+    #so you get ciks from dict, from ele of list, feed ele to edgar
+    #dict_df = df.set_index('Ticker')['CIK'].to_dict()
+    #stockList['Ticker'].tolist()
+def write_full_EDGAR_to_Mega():
     try:
         errorTickers = []
-        for i in thelist:
+        getStocks = 'SELECT Ticker, CIK FROM stockList;'
+        gSdf = print_DB(getStocks, 'return')
+        tickerlist = gSdf['Ticker'].tolist()
+        cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
+        for i in tickerlist:
             print(i)
             try:
-                company_data = EDGAR_query(i, header, ultimateTagsList)
-                # print('making big boi table now')
-                # revDF = cSADB(company_data, revenue)
+                company_data = EDGAR_query(i, cik_dict[i], header, ultimateTagsList)
                 consol_table = mCTEDB(company_data, i)
-                # print(consol_table)
                 time.sleep(0.1)
                 uploadToDB(consol_table, 'Mega')
                 print(i + ' uploaded to DB!')
-                # trackerNum += 1
-                # if trackerNum == 1:
-                #     break
             except Exception as err1:
                 errorTickers.append(str(i))
                 print('write list to DB in for loop error for: ' + i)
@@ -3570,68 +3079,52 @@ def write_list_to_DB(thelist):
     finally:
         print(errorTickers)
 
-
 # utillist = ['CEG', 'OPAL']
-
 # write_list_to_DB(utillist)
 
+def update_Mega(latestyear):
+    try:
+        getStocks = 'SELECT Ticker, CIK FROM stockList;'
+        gSdf = print_DB(getStocks, 'return')
+        cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
+        #get list of tickers in mega
+        gettickers = 'SELECT DISTINCT(Ticker) FROM Mega;'
+        tickersinmega = print_DB(gettickers, 'return')['Ticker'].tolist()
+        for x in tickersinmega:
+            getyears = 'SELECT Ticker, year FROM Mega\
+                        WHERE Ticker IN (\'' + x + '\');'
+            yearsdf = print_DB(getyears, 'return')
+            newdf = yearsdf.max()
+            latestyearinDB = newdf['year']
+            if latestyearinDB != latestyear:
+                try:
+                    company_data = EDGAR_query(x, cik_dict[x], header, ultimateTagsList)
+                    consol_table = mCTEDB(company_data, x)
+                    time.sleep(0.1)
+                    #here we have to only upload the rows where year is greater than the latest year
+                    consol_table = consol_table[consol_table['year'] > latestyearinDB]
+                    if consol_table.empty:
+                        print('SEC records not updated yet for: ' + x)
+                        continue
+                    else:
+                        uploadToDB(consol_table, 'Mega')
+                    print(i + ' updated in DB!')
+                except Exception as err1:
+                    print('update  DB in for loop error for: ' + x)
+                    print(err1)
+                    continue
 
-##Tickers mixed Currencies
-# stockstorecap = ['ENIC','PAM','CEPU'] #need to manually convert these currencies, unsupported! :)
+    except Exception as err:
+        print("update mega DB error: ")
+        print(err)
 
-# for x in stockstorecap:
-#     delete_ticker_DB(x)
+# update_Mega('2023')
 
-# write_list_to_DB(stockstorecap)
+company_data = EDGAR_query('MSFT', '0000789019', header, ultimateTagsList)
+print(company_data)
 
 
 ##DB EXAMPLES THAT WORK
-
-def print_DB(thequery, superflag):
-    conn = sql.connect(db_path)
-    query = conn.cursor()
-    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
-    # query.execute(del_query)
-    # conn.commit()
-    
-
-    df12 = pd.read_sql(thequery,conn)
-    query.close()
-    conn.close()
-
-    if superflag == 'print':
-        print(df12)
-    elif superflag == 'return':
-        return df12
-    # else:
-
-
-def checkUnits_DB(ticker):
-    conn = sql.connect(db_path)
-    query = conn.cursor()
-    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
-    # query.execute(del_query)
-    # conn.commit()
-    df12 = pd.read_sql('SELECT Ticker, Units FROM Mega WHERE Ticker Like \''+ticker+'\';',conn)# WHERE count(DISTINCT Units) > 1 GROUP BY Ticker;', conn)
-    print(df12)
-
-    query.close()
-    conn.close()
-
-def print_ticker_DB(ticker):
-    conn = sql.connect(db_path)
-    query = conn.cursor()
-
-    # del_query = 'SELECT * FROM Mega WHERE Ticker = ' + ticker + ';'
-    # query.execute(del_query)
-    # conn.commit()
-
-    df12 = pd.read_sql('SELECT * FROM Mega WHERE Ticker LIKE \''+ticker+'\';',conn)# WHERE Ticker = ' + ticker + ';', conn)
-    print(df12)
-
-    query.close()
-    conn.close()
-
 def delete_ticker_DB(ticker):
     conn = sql.connect(db_path)
     query = conn.cursor()
@@ -3660,7 +3153,6 @@ def find_badUnitsDB():
 
     query.close()
     conn.close()
-
 
 # def delete_DB(table):
     #only use this while testing, or suffer the consequences
@@ -3692,48 +3184,6 @@ def find_badUnitsDB():
 # print(datlist)
 # sourcelist = materials['Ticker']
 
-
-
-# thequery = 'SELECT DISTINCT Ticker as ticker, Year, shares, sharesGrowthRate \
-#             FROM Mega \
-#             WHERE sharesGrowthRate > 50.0 \
-#             AND Sector LIKE \'%Real%\' \
-#             ;'
-growthratequery = 'SELECT DISTINCT Ticker \
-            FROM Mega \
-            WHERE sharesGrowthRate > 50.0 \
-            AND Sector LIKE \'%Real%\' \
-            ;'
-# print_DB(thequery,'print')
-
-# (((divsPaidPerShare-calcDivsPerShare)/divsPaidPerShare)*100) as repMinusCalc_diff \
-
-divquery = 'SELECT Ticker, Year, shares, sharesGrowthRate, totalDivsPaid, revenue, netIncome, divsPaidPerShare as divPS, divGrowthRateBORPS as divPSrate, calcDivsPerShare as calcdivPS, divGrowthRateBOCPS as calcdivPSrate, payoutRatio, ffoPayoutRatio \
-            FROM Mega \
-            WHERE Ticker LIKE \'NEE\' \
-            AND Year > \'2006\' \
-            ORDER BY Year  \
-            ;'
-incomequery = 'SELECT Ticker, Year, shares, sharesGrowthRate, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, reportedEPS,  calculatedEPS, reportedEPSGrowthRate, calculatedEPSGrowthRate, capEx, capExGrowthRate  \
-            FROM Mega \
-            WHERE Ticker LIKE \'AMZN\' \
-            AND Year > \'2006\'  \
-            ORDER BY Year  \
-            ;'
-
-# print_DB(divquery,'print')
-# print_DB(incomequery, 'print')
-
-sharesquery = 'SELECT sharesGrowthRate \
-                FROM Mega \
-                WHERE Ticker LIKE \'NEE\' \
-                ;'
-
-testlistquery = 'SELECT Year \
-                FROM Mega \
-                WHERE Ticker LIKE \'NEE\' \
-                ;'
-
 def IQR_Mean(list):
     try:
         # cleaned_list = []
@@ -3746,15 +3196,15 @@ def IQR_Mean(list):
                 infchecker += 1
 
         if nonechecker == len(list):
-            ar_Mean = np.NaN
+            ar_Mean = np.nan
             return ar_Mean
         if infchecker == len(list):
-            ar_Mean = np.NaN
+            ar_Mean = np.nan
             return ar_Mean
         # if list[0] is None:
         #     # print('nonetype detected, returning something')
         #     # print(list[0])
-        #     ar_Mean = np.NaN
+        #     ar_Mean = np.nan
         #     return ar_Mean
 
         if isinstance(list[0],float) or isinstance(list[0],int):
@@ -3820,17 +3270,17 @@ def IQR_MeanNZ(list):
         # print(nonechecker)
         # print(infchecker)        
         if nonechecker == len(list):
-            ar_Mean = np.NaN
+            ar_Mean = np.nan
             return ar_Mean
         if infchecker == len(list):
-            ar_Mean = np.NaN
+            ar_Mean = np.nan
             return ar_Mean
         # print(list)
         
         # if list[0] is None:
         #     # print('nonetype detected, returning something')
         #     # print(list[0])
-        #     ar_Mean = np.NaN
+        #     ar_Mean = np.nan
         #     return ar_Mean
         if isinstance(list[0], float) or isinstance(list[0], int):
             cleaned_list = [x for x in list if not np.isnan(x)]
@@ -3845,7 +3295,7 @@ def IQR_MeanNZ(list):
 
             # print(cleaned_list)
             if len(cleaned_list) == 0:
-                return np.NaN
+                return np.nan
             # print(cleaned_list)
             # cleaned_list = [x for x in cleaned_list if x != 0.0]
             # print(cleaned_list)
@@ -3904,9 +3354,9 @@ def nan_strip_min(list):
         elif list[0] is None:
             # print('nonetype detected, returning something')
             # print(list[0])
-            ar_Min = np.NaN
+            ar_Min = np.nan
             # for x in range(len(list)):
-                # cleaned_list[x] = np.NaN
+                # cleaned_list[x] = np.nan
             # cleaned_list = -1
             # print(list)
             # print(cleaned_list)
@@ -3938,7 +3388,7 @@ def nan_strip_max(list):
         elif list[0] is None:
             # print('nonetype detected, returning something')
             # print(list[0])
-            ar_Max = np.NaN
+            ar_Max = np.nan
         else:
             print('strip Max type was not int or float')
 
@@ -4040,7 +3490,7 @@ def zeroIntegrity(list1):
         #now solve empty/nan list returning 'good'
         newlistdf = pd.DataFrame()
         newlistdf['test'] = list1
-        newlistdf = newlistdf.replace([np.inf, -np.inf], np.NaN)
+        newlistdf = newlistdf.replace([np.inf, -np.inf], np.nan)
         newlist = newlistdf['test'].dropna()#.tolist()
         if len(newlist) == 0:
             integrityFlag = 'emptyAVG'
@@ -4061,7 +3511,7 @@ def zeroIntegrity(list1):
         #         print('found an inf!')
 
         # if checknan == 1:
-        #     integrityFlag = 'all NaNs'
+        #     integrityFlag = 'all nans'
     except Exception as err:
         print('zero integrity error: ')
         print(err)
@@ -4904,15 +4354,9 @@ def fillMetadata(sector):
         # print(faTable)
         uploadToDB(faTable,'Metadata')
 
-# time1 = time.time()
-# time2 = time.time()
-# print('time to complete')
-# print((time2-time1))
 
-#luke here  Ticker, Sector, Industry, Year,
-#two sets of filters: sector leaders, and individual stock reports. 
+#luke here
 #individual stock reports: go thru each section below. RATING each section as 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
-
 #sector rankings have to provide each of the following, then calculate a weighted score, grading each stock in each sector
 ##so out of 5: 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
 ##then that score is multiplied by a weighting factor based on the user's preferences, or preset screens. (grade)(weighting) = overall score
@@ -6929,7 +6373,7 @@ def LSComms():
 
                     #screening targets
                     #  Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG     equity       divgr       roic       roce
-                    # 0   META     14  47.335342  37.976751        0.000000    1.533636e+08          1.840508e+10  24.041229         NaN  17.842301  17.869286
+                    # 0   META     14  47.335342  37.976751        0.000000    1.533636e+08          1.840508e+10  24.041229         nan  17.842301  17.869286
                     # 1  GOOGL     12  16.515023  16.308754        0.000240    8.296250e+08          5.796967e+10  13.143930 -100.000000  19.730637  20.391842
                     # 2      T     18   1.231327   2.633111        0.702355    5.810769e+08          3.639192e+10   3.952106    2.157714   9.648406  10.361199
                     # 3     VZ     17   3.357788 -13.410203        0.657019   -5.953077e+08          3.384829e+10   9.666178    2.586280  13.408076  14.311030
@@ -6988,7 +6432,7 @@ def LSEnergy():
                     #initial
                     #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG    equity      divgr       roic       roce
                     # 0    CVX     17  -4.591927 -15.175337        0.383902          2.960193e+10   -1.147769e+09  5.912741   6.242237  11.466649  12.525441
-                    # 1    EOG     18  29.641039  -0.779903        0.099695          5.260627e+09    3.922576e+08       NaN  14.501993  10.553666  14.424227
+                    # 1    EOG     18  29.641039  -0.779903        0.099695          5.260627e+09    3.922576e+08       nan  14.501993  10.553666  14.424227
                     # 2    PSX     15  -2.271819 -15.748739        0.158731          4.845786e+09   -1.333333e+07  0.684323  12.609659  17.878898  17.992002
                     # 3    XOM     18   1.681971 -10.319898        0.377031          4.357575e+10   -1.946154e+08  2.361327   4.630759  17.360837  17.890969
                     #screen
@@ -7088,22 +6532,22 @@ def LSFin():
 
         #ini screen
                     #   Ticker    years     revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
-                    # 0       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        NaN   5.271089        NaN  19.211963  19.534281
+                    # 0       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        nan   5.271089        nan  19.211963  19.534281
                     # 1      MS     18   0.000000  -0.148192        0.284637          5.225062e+09    2.008750e+09   3.473520   3.626883  17.606352   6.349572   7.802749
                     # 2      MA     18  12.455496   0.000000        0.220132          4.195150e+09    8.645765e+08   4.536454   5.868946  14.512999  29.242511  45.672711
                     # 3     BLK     18  -0.007121   7.135477        0.439311          3.104143e+09    5.544615e+08   5.248478   3.454758  12.865347  11.986603  11.986603
                     # 4     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
-                    # 5      GS     17        NaN -18.160193        0.205881          5.585571e+09    7.563500e+09   7.144024   5.992205  17.568776   4.195360   9.492229
+                    # 5      GS     17        nan -18.160193        0.205881          5.585571e+09    7.563500e+09   7.144024   5.992205  17.568776   4.195360   9.492229
                     # 6     AXP     18   0.897985   1.415459        0.199070          9.634600e+09    3.587000e+09   7.263925   3.431624  10.370913  27.296490  27.296490
                     # 7    TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
-                    # 8     DFS     18        NaN   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
+                    # 8     DFS     18        nan   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
                     # 9    SCHW     18   9.540676  12.822463        0.298110          1.630538e+09    3.536214e+09  13.980383  14.609661   8.050996  11.682316  11.682316
                     # 10   SPGI     18   6.269991   2.639047        0.289784          1.512441e+09    3.451868e+08  17.193617  14.629222  10.265943  36.527934  80.101654
                     # 11   MSCI     17   9.260249  16.239868        0.212577          3.845744e+08    3.945708e+07  23.110777  15.839196  26.991692  13.766375   5.756975
                     #used screen
                     #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG         bv     equity      divgr       roic       roce
-                    # 1       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        NaN   5.271089  17.626413  19.211963  19.534281
-                    # 68    DFS     18        NaN   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
+                    # 1       V     18  11.782065  13.951760        0.192225          6.205125e+09    1.566154e+08        nan   5.271089  17.626413  19.211963  19.534281
+                    # 68    DFS     18        nan   1.585452        0.154129          4.362713e+09    1.179338e+09  12.256109   3.520530  16.556411  21.258176  21.258176
                     # 3      MA     18  12.455496   0.000000        0.220132          4.195150e+09    8.645765e+08   4.536454   5.868946  14.512999  29.242511  45.672711
                     # 71   TROW     18   0.345987  15.226549        0.439817          1.159050e+09    1.220083e+08  10.941966  11.569203  11.910636  23.768405  23.768405
                     # 2     JPM     17   2.600539   9.381052        0.321679          3.194575e+10    2.878083e+09   6.084620   3.909434  11.572023  10.508470  10.508470
@@ -7204,7 +6648,7 @@ def LSInd():
             # 1     WM     18   2.951983  -0.890013        0.538505          2.768714e+09   -4.350000e+07   0.531524   6.784685  22.062362  22.530457
             # 2    RTX     18   4.441660   8.686486        0.349052          6.623875e+09    3.371333e+08   3.123065   7.483888  18.275310  18.326759
             # 3     GE     18  -4.254855  18.906530        0.312470          2.169244e+10    1.565727e+09   0.667138   7.704522   9.480665   9.572312
-            # 4    RSG     18   3.193927  -0.021190        0.536223          1.807783e+09    8.092857e+06        NaN   7.759505  10.563221  10.672990
+            # 4    RSG     18   3.193927  -0.021190        0.536223          1.807783e+09    8.092857e+06        nan   7.759505  10.563221  10.672990
             # 5    NOC     17   2.920955   1.109682        0.273852          2.833867e+09    1.491538e+08  10.567245   9.593496  16.809136  26.058515
             # 6     GD     18   1.869071   1.631721        0.287132          3.173385e+09    1.496923e+08   6.568281  10.146197  15.065814  19.992949
             # 7    LMT     18   1.926400   4.113817        0.441893          5.247824e+09    3.023529e+07  -7.412228  10.500326  33.664914  99.229021
@@ -7274,28 +6718,28 @@ def LSTech():
         # 1     ACN     17   3.695180  13.231359        0.395505          4.800244e+09    5.457945e+08  15.989917   10.730739  41.955634  43.043044
         # 2     ADI     17   5.889502   5.084997        0.627590          1.079013e+09    1.221677e+08   5.522134    9.542130  12.019164  12.163146
         # 3    AMAT     18   7.088549  34.033102        0.230050          2.361674e+09    3.620124e+08   1.287084    8.403995  20.089036  24.192929
-        # 4     AMD     17   3.207412  22.172897        0.000000          5.361538e+07    4.445455e+07        NaN         NaN  11.539060  22.497147
-        # 5    ANET     13  41.593335  47.165121        0.000000          4.496792e+08    5.465564e+07  32.273795         NaN  22.112241  22.168602
+        # 4     AMD     17   3.207412  22.172897        0.000000          5.361538e+07    4.445455e+07        nan         nan  11.539060  22.497147
+        # 5    ANET     13  41.593335  47.165121        0.000000          4.496792e+08    5.465564e+07  32.273795         nan  22.112241  22.168602
         # 6    ASML     16  12.660632  16.708757        0.229989          2.764633e+09    4.426604e+08  11.523360   11.290233  20.811058  23.503372
         # 7    AVGO      9  12.677225  51.377072        0.568398          1.298238e+10    1.400000e+09  -0.593911   29.146302  12.969006  28.923214
         # 8    CSCO     17   2.623500   3.267293        0.435724          1.283707e+10    6.404706e+08   7.603257    9.680117  15.763935  20.175566
         # 9     IBM     18  -2.096716   3.703036        0.337966          1.702527e+10   -6.636923e+08   7.344961    8.916288  20.417317  61.815304
-        # 10   INTC     18   1.533952  -6.968304        0.379032          1.714146e+10   -8.600000e+08        NaN    6.115508  14.990948  18.068437
+        # 10   INTC     18   1.533952  -6.968304        0.379032          1.714146e+10   -8.600000e+08        nan    6.115508  14.990948  18.068437
         # 11   INTU     17  11.572977  10.392048        0.212399          1.477615e+09    1.769231e+07  10.066996   13.639516  20.362582  23.679682
         # 12   KLAC     16  10.900095  11.488950        0.375356          8.921842e+08    1.914440e+08  11.875910   15.159376  18.103193  55.915187
         # 13   LRCX     16  20.845737  20.066094        0.123370          1.564338e+09    2.616656e+08  12.589839   31.974256  17.759093  27.180024
-        # 14   MCHP     17  11.447419   0.877442        0.861432          8.870314e+08   -4.712064e+07        NaN    1.025195  11.350981  13.742577
+        # 14   MCHP     17  11.447419   0.877442        0.861432          8.870314e+08   -4.712064e+07        nan    1.025195  11.350981  13.742577
         # 15   MPWR     16  15.999371  24.766335        0.360900          9.693315e+07    1.654992e+07  20.919293   27.307130  12.722596  12.726359
         # 16   MRVL      6   8.922568 -27.040050       -0.230760          1.133294e+09    6.142350e+07   0.000000    0.019605  -2.652105  -3.326828
         # 17   MSFT     16   9.450247  15.781682        0.315768          3.193717e+10    5.213333e+08  18.639394   11.512707  22.720834  35.433912
         # 18     MU     16   3.769690  32.952306       -0.000943          3.696917e+09    4.301000e+08  10.015289  163.449913  12.185228  14.495693
         # 19   NVDA     18   8.321348  30.286784        0.054497          2.164909e+09    3.136199e+08  18.872270    8.210057  15.739399  19.671156
         # 20   NXPI     14   4.552677  -9.697391        0.038412          2.491000e+09    1.750000e+08   3.099695   35.183781  19.265443  19.464295
-        # 21     ON     17   5.650164   5.999278        0.000000          6.041692e+08    5.193846e+07  10.686487         NaN   6.923268  11.472216
-        # 22   PANW     14  31.211709  -8.947647        0.000000          5.714248e+08    1.102403e+08   8.237812         NaN   1.121241   1.121241
+        # 21     ON     17   5.650164   5.999278        0.000000          6.041692e+08    5.193846e+07  10.686487         nan   6.923268  11.472216
+        # 22   PANW     14  31.211709  -8.947647        0.000000          5.714248e+08    1.102403e+08   8.237812         nan   1.121241   1.121241
         # 23   QCOM     18   4.648874   0.581958        0.372119          5.952125e+09    4.318462e+08  10.602295    9.709177  18.447238  18.161972
         # 24   SWKS     17   7.972981  -1.816635        0.150324          9.560881e+08    1.190425e+08  13.850989   13.331944  19.046871  19.220033
-        # 25    TSM     10   5.539021        NaN             NaN          2.655144e+10    3.551650e+09  14.023235   10.430306        NaN        NaN
+        # 25    TSM     10   5.539021        nan             nan          2.655144e+10    3.551650e+09  14.023235   10.430306        nan        nan
         # 26    TXN     17  -0.588669   5.793732        0.503148          4.605267e+09    7.542857e+07   1.667329   14.372670  24.365203  36.644384
         #refined
         #  Ticker  years      revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     equity      divgr       roic       roce
@@ -7366,20 +6810,20 @@ def LSP():
 
                     #init ::: AND Ticker IN (\'KR\', \'COST\', \'WMT\', \'SFM\', \'PG\', \'PEP\', \'KO\', \'CL\', \'KMB\', \'SYY\', \'ADM\', \'HSY\', \'GIS\', \'CHD\', \'HRL\') \
                     #      Ticker  years   revgr       nigr  payoutRatioAVG  operatingCashFlowAVG  netCashFlowAVG     bv        equity      divgr       roic        roce
-                    # 0     SFM     14  0.672284  15.954637        0.000000          3.146795e+08    2.114025e+07  15.321938  11.491161        NaN  12.317866   23.113926
+                    # 0     SFM     14  0.672284  15.954637        0.000000          3.146795e+08    2.114025e+07  15.321938  11.491161        nan  12.317866   23.113926
                     # 1    COST     17  8.450071  15.874480        0.266252          4.198385e+09    3.809231e+08  11.478007  12.379436 -16.610309  13.603188   20.822293
-                    # 2     WMT     18  3.018433  -0.995369        0.375721          2.589423e+10    5.933846e+08        NaN        NaN   3.141014  11.889157   18.408654
+                    # 2     WMT     18  3.018433  -0.995369        0.375721          2.589423e+10    5.933846e+08        nan        nan   3.141014  11.889157   18.408654
                     # 3      CL     17  1.610136  -0.405310        0.623488          3.145000e+09    3.942857e+07  -6.261083  -3.470780   3.606261  29.956134  150.025664
                     # 4     SYY     17  0.382352   7.034560        0.582480          1.684833e+09   -5.579820e+07   2.745845   1.995446   4.163013  28.913539   31.237070
-                    # 5     KMB     17  1.069345   0.899082        0.645072          2.849333e+09   -7.800000e+07        NaN        NaN   4.648064  57.850925  131.275858
+                    # 5     KMB     17  1.069345   0.899082        0.645072          2.849333e+09   -7.800000e+07        nan        nan   4.648064  57.850925  131.275858
                     # 6     GIS     17  0.300916   6.694189        0.526021          2.707709e+09    3.026667e+07   5.931027   5.617303   5.418652  24.700704   25.127948
-                    # 7      KO     18  0.775930  -1.115576        0.692794          1.021915e+10    6.320000e+08        NaN        NaN   6.002045  14.836955   29.932706
+                    # 7      KO     18  0.775930  -1.115576        0.692794          1.021915e+10    6.320000e+08        nan        nan   6.002045  14.836955   29.932706
                     # 8     PEP     17  2.318789   4.633028        0.588480          9.979692e+09    1.358417e+09   5.593741   4.998578   6.774506  14.873945   44.854359
                     # 9     ADM     17 -1.829961  -3.508348        0.304042          2.523667e+09   -4.515385e+07   3.348879   2.524214   7.319883   7.477781   10.433476
                     # 10     PG     17  1.715124   1.022159        0.579380          1.514814e+10   -1.405333e+08  -0.602753  -2.286862   7.482243  15.182172   18.537180
                     # 11    CHD     17  1.224504   8.081264        0.355999          6.863774e+08    3.699154e+07   8.810537   9.744301   8.155390  13.527249   19.075527
                     # 12    HSY     18  3.521175  10.867016        0.532020          1.111915e+09    9.934692e+06  21.346222  17.535345   9.044399  28.392922   58.372306
-                    # 13    HRL     17  2.901532   7.761210        0.352526          9.323203e+08    3.088111e+07        NaN        NaN  11.336586  15.441286   16.273557
+                    # 13    HRL     17  2.901532   7.761210        0.352526          9.323203e+08    3.088111e+07        nan        nan  11.336586  15.441286   16.273557
                     # 14     KR     18 -0.066847   2.600030        0.216080          3.649500e+09    1.737143e+08   9.939171   6.484384  14.059554   8.916643   25.422762
                     #yes
                     #  Ticker  years     revgr       nigr  payoutRatioAVG    opcfAmount  opcfGRAVG   netcfAmount  netcfGRAVG         bv     equity      divgr       roic       roce
@@ -7448,7 +6892,7 @@ def LSRE(): #revise a little but otherwise golden.
                 # 3     FRT     17   5.519050  10.199265   5.101680    5.250925  1.202913  0.657902  3.690873e+08   6.954425  1.147125e+07   28.134541   4.328848   6.505314   2.887301  11.338018  11.338018   3.316554   3.299779
                 # 4     NNN     17   8.810333  13.817769  12.808287    2.412025  1.102692  0.728694  3.988139e+08  10.418153 -1.648500e+06  -42.177200   0.090047   5.448021   2.961793   6.199792   6.199792   4.525120   4.526938
                 # 5     FPI     13   9.501433  22.939135   7.687959    0.512156  0.597814  0.357860  9.588507e+06 -20.109146 -4.469333e+06    3.207090  -3.653778  27.128694   3.609124   2.433009   2.433009   3.065304   2.311055
-                # 6     IRM     17   0.462294  -1.179094   5.754689    2.805197  1.649241  0.725218  6.836071e+08   6.390874  3.122400e+07    8.384818        NaN        NaN   3.689258   4.004123  15.680956   7.610774   6.731443
+                # 6     IRM     17   0.462294  -1.179094   5.754689    2.805197  1.649241  0.725218  6.836071e+08   6.390874  3.122400e+07    8.384818        nan        nan   3.689258   4.004123  15.680956   7.610774   6.731443
                 # 7     WPC     17   7.994711  16.287523  12.097651    4.618143  1.427300  0.883796  5.157438e+08   6.514407  1.109273e+07   21.738059   0.511662   0.294825   3.751152   7.034948   7.034948   5.613932   5.577569
                 # 8     EGP     16   8.477091  12.457961  11.932193    3.991044  1.323689  0.639679  1.287662e+08   6.820333  8.890909e+04  207.514753  11.146744  15.826327   3.965242   8.307110   8.307110   3.201940   3.156567
                 # 9     DLR     16  15.420055  39.319976  17.088927    2.359779  1.657873  1.338220  1.054417e+09   9.609409  5.111455e+06   -8.621045   3.528066   8.569163   4.057466   5.268870   5.268870   4.417618   4.417618
@@ -7650,8 +7094,8 @@ def LSY():
                     ORDER BY divgr;'
 
         # Ticker  years      revgr       nigr  operatingCashFlowAVG  opcfGRAVG  netCashFlowAVG  netCashFlowGrowthAVG     equity      divgr  payoutRatioAVG       roic       roce
-        # 0   AMZN     18  25.158803   5.469834          1.602340e+10  27.755116    2.365615e+09             -6.442240  30.914254        NaN        0.000000   8.738340  14.292071
-        # 1   TSLA     16  55.815803  37.733530          8.608899e+08  14.331766    2.085190e+08             78.325071  20.272625        NaN        0.000000 -11.012581  -3.796099
+        # 0   AMZN     18  25.158803   5.469834          1.602340e+10  27.755116    2.365615e+09             -6.442240  30.914254        nan        0.000000   8.738340  14.292071
+        # 1   TSLA     16  55.815803  37.733530          8.608899e+08  14.331766    2.085190e+08             78.325071  20.272625        nan        0.000000 -11.012581  -3.796099
         # 2     HD     18   5.148000  14.820723          9.314800e+09   0.684573    4.073077e+08             92.754643 -16.044242  12.522931        0.433224  81.982101  52.936413
         #run
         # Ticker  years      revgr       nigr  operatingCashFlowAVG  opcfGRAVG  netCashFlowAVG  netCashFlowGrowthAVG     equity      divgr  payoutRatioAVG       roic       roce
@@ -7831,7 +7275,7 @@ def semiETFavg():
 #po: 2 == <80, ffo same
 #yield: 1 == 2-3%, 3+ ideal 3%+
 
-print_DB(guh,'print') #luke here checking stockList
+# print_DB(guh,'print') #luke here checking stockList
 
 # testinv = 'Select * From Investable_Universe ORDER BY Sector, score DESC'
 # print_DB(testinv,'print')
@@ -8558,7 +8002,7 @@ def rank_DivGrowth(): #not necessary, already baked into sector rankings, and ea
 #             tarGrowthRate = x + 'GrowthRate'
 #             # meanReplacement = df_filled[x].mean()
 #             savedCol = df_filled[x]
-#             # df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()  we trying backfilling instead
+#             # df_filled[x] = df_filled[x].replace(np.nan, meanReplacement)#.ffill()  we trying backfilling instead
 #             df_filled[x] = df_filled[x].ffill().bfill()
 
 #             growthCol = grManualCalc(df_filled[x])
@@ -8674,7 +8118,7 @@ def rank_DivGrowth(): #not necessary, already baked into sector rankings, and ea
 #             # print(df_col_added)
 #             df_col_added['shares'] = df_col_added['shares'].ffill().bfill() #.replace("", None) pre ffillbfill
 #             # if df_col_added['shares'].empty:
-#             #     df_col_added['sharesGrowthRate'] = np.NaN
+#             #     df_col_added['sharesGrowthRate'] = np.nan
 #             # else:
 #             growthCol = grManualCalc(df_col_added['shares'])
 #             df_col_added['sharesGrowthRate'] = growthCol #df_col_added['shares'].pct_change()*100 #now we can add the growth rate once nulls filled
@@ -8713,7 +8157,7 @@ def rank_DivGrowth(): #not necessary, already baked into sector rankings, and ea
 #             df_col_added['divGrowthRateBOPS'] = growthCol2
             
 #             # if df_col_added['divsPaidPerShares'].empty:
-#             #     df_col_added['divGrowthRate'] = np.NaN
+#             #     df_col_added['divGrowthRate'] = np.nan
 #             # else:
             
 #             # print('average growth rate: ')
@@ -9177,22 +8621,22 @@ def rank_DivGrowth(): #not necessary, already baked into sector rankings, and ea
 #         if df_filled['interestPaid'].isnull().any():
 #             fixTracker += 1
 #             # print('it was int paid')
-#             df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.NaN, None).ffill() 
+#             df_filled['interestPaid'] = df_filled['interestPaid'].ffill()#replace(np.nan, None).ffill() 
 #         if df_filled['totalDivsPaid'].isnull().any():
 #             fixTracker += 1    
 #             # print('it was total divs paid')
-#             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.NaN, 0)#.ffill()
+#             df_filled['totalDivsPaid'] = df_filled['totalDivsPaid'].replace(np.nan, 0)#.ffill()
 #         if df_filled['divsPaidPerShare'].isnull().any():
 #             fixTracker += 1   
 #             # print('it was per share divs paid')
-#             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.NaN, 0)#.ffill()
+#             df_filled['divsPaidPerShare'] = df_filled['divsPaidPerShare'].replace(np.nan, 0)#.ffill()
 #         if df_filled['shares'].isnull().all():
 #             print('all shares null')
 #         elif df_filled['shares'].isnull().any():
 #             fixTracker += 1  
 #             # print('it was shares')
-#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).ffill() 
-#             # df_filled['shares'] = df_filled['shares'].replace(np.NaN, None).bfill() 
+#             # df_filled['shares'] = df_filled['shares'].replace(np.nan, None).ffill() 
+#             # df_filled['shares'] = df_filled['shares'].replace(np.nan, None).bfill() 
 #             # df_filled['shares'] = df_filled['shares'].ffill().bfill() 
 #             # df_filled['shares'] = df_filled['shares'].bfill() 
 #         if df_filled['sharesGrowthRate'].isnull().any():
@@ -9205,7 +8649,7 @@ def rank_DivGrowth(): #not necessary, already baked into sector rankings, and ea
 #         #     tarGrowthRate = x + 'GrowthRate'
 #         #     meanReplacement = df_filled[x].mean()
 #         #     savedCol = df_filled[x]
-#         #     df_filled[x] = df_filled[x].replace(np.NaN, meanReplacement)#.ffill()
+#         #     df_filled[x] = df_filled[x].replace(np.nan, meanReplacement)#.ffill()
 #         #     df_filled[tarGrowthRate] = df_filled[x].pct_change()*100
 #             # if savedCol.equals(df_filled[x]):
 #             #     continue
