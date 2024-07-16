@@ -1080,6 +1080,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 def updateOrFillMetadata(sector):
     #Need to decide if we remove old records, or just add new records, latestyear and any stat changes will be only distinguishing between different
     #rows of data
+    #i believe we should save a snapshot, wipe, fill again: keep one for current records, one for trend data analysis later
     tickerq = 'SELECT DISTINCT Ticker \
                 FROM Mega \
                 WHERE Sector LIKE \'' + sector + '\''

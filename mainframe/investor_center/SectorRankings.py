@@ -62,9 +62,8 @@ def uploadToDB(upload,table):
 
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
-# Clean code: below
 #going to have to manually review all of these rankings, to verify the integrity of rankings is what our company stands by #luke
-# debate full clearing sector rankings, vs snapshots, vs just keeping them in for more metadata
+# debate full clearing sector rankings, vs snapshots, vs just keeping them in for more metadata; note below
 
 
 #rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
@@ -92,6 +91,8 @@ def uploadToDB(upload,table):
 
 ###
 # Each security scores according to its own financial records. Then it also has a weighted score for the sector it is in.
+# The first part is how we weight investment decisions as a whole, in a vacuum.
+# The sector weightings is how we would analyze a stock in that sector.
 # Thus is Sector Rankings.
 
 def rating_assignment(number, listcompare):
@@ -1402,6 +1403,25 @@ def rank_Financials():
                 revv = 1
                 yieldv = 3
 
+                #these brought out the best
+                sqldf = sqldf[sqldf.years >= 10]
+                # # AND netIncomeGrowthAVG >= 3 \
+                # sqldf = sqldf[sqldf.nigr >= 0]
+                # # AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
+                # sqldf = sqldf[sqldf.divgr.between(8,20)]
+                # # AND payoutRatioAVG <= 0.5 \
+                # sqldf = sqldf[sqldf.payoutRatioAVG <= 0.5]
+                # # AND equity >= 3 \
+                # sqldf = sqldf[sqldf.equity >= 3.5]
+                # # AND operatingCashFlowAVG > 0 \
+                # sqldf = sqldf[sqldf.operatingCashFlowAVG >= 1000000000]
+                # # AND netCashFlowAVG > 0 \
+                # sqldf = sqldf[sqldf.netCashFlowAVG >= 100000000]
+                # # AND roic > 10 \
+                # sqldf = sqldf[sqldf.roic >= 10]
+                # # AND roce > 10 \
+                # sqldf = sqldf[sqldf.roce >= 10]
+
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
 
@@ -1426,6 +1446,38 @@ def rank_Financials():
                 continue
     except Exception as err:
         print('rank financials error: ')
+        print(err)
+
+#This could be usefully added to sector rankings, but it may be tricky. Might need to add tickers there, 'not in' #luke
+def selectingBDC():
+    try:
+        bdcRanks = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG as po, \
+                        netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
+                        CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
+                        CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                        CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
+                        CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
+                    FROM Metadata \
+                    WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
+                                    \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
+                                    \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
+                                    \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
+                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
+                    AND years >= 1 \
+                    AND nigr >= -1 \
+                    AND divgr >= -10 AND divgr < 75 \
+                    AND payoutRatioAVG <= 0.9 \
+                    AND netcfGRAVG >= 0 \
+                    AND equity >= 0 \
+                    AND roic > 0 \
+                    AND roce > 0 \
+                    ORDER BY equity;'
+
+        print_DB(bdcRanks, 'print')
+        # csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
+    except Exception as err:
+        print('select bdc error:')
         print(err)
 
 def rank_Healthcare():

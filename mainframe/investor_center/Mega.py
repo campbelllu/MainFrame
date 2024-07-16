@@ -1671,6 +1671,8 @@ def update_Mega(latestyear):
         #get list of tickers in mega
         gettickers = 'SELECT DISTINCT(Ticker) FROM Mega;'
         tickersinmega = print_DB(gettickers, 'return')['Ticker'].tolist()
+        stillNotUpdated = []
+        updated = []
         for x in tickersinmega:
             getyears = 'SELECT Ticker, year FROM Mega\
                         WHERE Ticker IN (\'' + x + '\');'
@@ -1686,9 +1688,11 @@ def update_Mega(latestyear):
                     consol_table = consol_table[consol_table['year'] > latestyearinDB]
                     if consol_table.empty:
                         print('SEC records not updated yet for: ' + x)
+                        stillNotUpdated.append(x)
                         continue
                     else:
                         uploadToDB(consol_table, 'Mega')
+                        updated.append(x)
                     print(i + ' updated in DB!')
                 except Exception as err1:
                     print('update  DB in for loop error for: ' + x)
@@ -1698,6 +1702,12 @@ def update_Mega(latestyear):
     except Exception as err:
         print("update mega DB error: ")
         print(err)
+    finally:
+        #luke this will eventually be saved in logs
+        print('stocks still needing updates:')
+        print(stillNotUpdated)
+        print('those that just got updated:')
+        print(updated)
 
 # update_Mega('2023')
 

@@ -310,9 +310,6 @@ class Metadata(models.Model):
         db_table = 'Metadata'
 
 
-
-
-
 class Investable_Universe(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
     Sector = models.CharField(max_length=5, blank=True, null=True)
@@ -753,6 +750,28 @@ class ConsumerCyclical_Ranking(models.Model):
 
     class Meta:
         db_table = 'ConsumerCyclical_Ranking'
+
+class Valuations(models.Model):
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    Sector = models.CharField(max_length=5, blank=True, null=True)
+
+    currentPrice = models.FloatField(blank=True, null=True)
+    latestDiv = models.FloatField(blank=True, null=True)
+    currentValuation = models.FloatField(blank=True, null=True)
+
+    priceGR = tenYearDiv = models.FloatField(blank=True, null=True)
+    divGR = models.FloatField(blank=True, null=True)
+
+    tenYearPrice = models.FloatField(blank=True, null=True)
+    tenYearDiv = models.FloatField(blank=True, null=True)
+    tenYearValuation = models.FloatField(blank=True, null=True)
+    
+    twentyYearPrice = models.FloatField(blank=True, null=True)
+    twentyYearDiv = models.FloatField(blank=True, null=True)
+    twentyYearValuation = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Valuations'
 
 ############################
 # class Metadata_Backup(models.Model):

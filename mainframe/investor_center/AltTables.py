@@ -63,33 +63,10 @@ def uploadToDB(upload,table):
 
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
-# Clean code: below
-# figure out how to add bdc's to sector rankings
 #going to have to manually review all of these rankings, to verify the integrity of rankings is what our company stands by #luke
+#
 
-#This could be usefully added to sector rankings, but it may be tricky. Might need to add tickers there, 'not in' #luke
-def selectingBDC():
-    try:
-        bdcRanks = 'Select * From Sector_Rankings \
-                    WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
-                                    \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
-                                    \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
-                                    \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
-                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
-                                    
-                    AND roce >= 2 \
-                    AND roic >= 2 \
-                    AND shares >= 2 \
-                    AND cf >= 0 \
-                    AND bv >= 2 \
-                    AND equity >= 0 \
-                    ORDER BY bv DESC'
 
-        print_DB(bdcRanks, 'print')
-        csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
-    except Exception as err:
-        print('select bdc error:')
-        print(err)
 
 #############################################################################
 #luke here is where we start filling other tables 
@@ -272,7 +249,6 @@ def investableUniverse(sector):
 #############################################################################
 #luke here we start filling investable universe from notes sheet
 #############################################################################
-#luke here editing these don't forget to add the column/type: Type , indicating 'divs' or 'growth'
 def LSMats(): 
     try:
         matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, netCashFlowAVG, operatingCashFlowAVG, \
