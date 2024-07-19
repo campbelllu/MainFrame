@@ -65,78 +65,355 @@ def uploadToDB(upload,table):
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # Clean code: below
-#going to have to manually review all of these rankings, to verify the integrity of rankings is what our company stands by #luke
-#
+
+
+#this turned out well.
+#we will add more valuations, and different price changes thru the years
+#make it callable via a list input of tickers. that invalidates the table, removes need of updates, and works better for report generation
+
+def evaluatePD(listofstocktickers):
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        tupleforsql = tuple(listofstocktickers)
+        metafacts = 'SELECT Ticker, Sector, cast(AveragedOverYears as integer) as years, \
+                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                        priceGrowthAVG as pgr \
+                    FROM Metadata \
+                    WHERE Ticker IN ' + str(tupleforsql) + ';'
+        metadata = print_DB(metafacts, 'return')
+        # length1 = len(metadata['Ticker'])
+        for x in metadata['Ticker']:
+            try:
+                # print(str(round(n/length1,4)*100) + '% complete!')
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
+                price = dict1['previousClose']
+                pricegr = metadata.loc[metadata['Ticker'] == x, 'pgr'].iloc[0]
+                divrate = dict1['dividendRate']
+                divgr = metadata.loc[metadata['Ticker'] == x, 'divgr'].iloc[0]
+                tenYearPrice = price * ((1 + (pricegr/100)) ** 10)
+                tenYearDiv = divrate * ((1 + (divgr/100)) ** 10)
+                twentyYearPrice = price * ((1 + (pricegr/100)) ** 20)
+                twentyYearDiv = divrate * ((1 + (divgr/100)) ** 20)
+                toupload['Ticker'] = [x]
+                toupload['Sector'] = sector
+                toupload['currentPrice'] = price
+                toupload['currentDiv'] = divrate
+                toupload['currentValuation'] = price / divrate
+                toupload['priceGR'] = pricegr
+                toupload['divGR'] = divgr
+                toupload['tenYearPrice'] = tenYearPrice
+                toupload['tenYearDiv'] = tenYearDiv
+                toupload['tenYearValuation'] = tenYearPrice / tenYearDiv
+                toupload['tenYearFlatValuation'] = price / tenYearDiv
+                toupload['twentyYearPrice'] = twentyYearPrice
+                toupload['twentyYearDiv'] = twentyYearDiv
+                toupload['twentyYearValuation'] = twentyYearPrice / twentyYearDiv
+                toupload['twentyYearFlatValuation'] = price / twentyYearDiv
+                toupload['idealPriceCeiling'] = 25 * divrate
+                # uploadToDB(toupload,'PDValuation')
+                toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+
+            except Exception as err:
+                print('PD evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('evaulate err')
+        print(err)
+    finally:
+        return toreturn
+
+# print(evaluatePD(['MSFT','AAPL',])[['Ticker','currentValuation', 'idealPriceCeiling', 'tenYearValuation', 'twentyYearValuation', 'tenYearFlatValuation','twentyYearFlatValuation']])
+
+def evaluateDDM(listofstocktickers, ror):
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        tupleforsql = tuple(listofstocktickers)
+        metafacts = 'SELECT Ticker, Sector, \
+                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                        totalDivsPaidGrowthAVG as totaldivgr \
+                    FROM Metadata \
+                    WHERE Ticker IN ' + str(tupleforsql) + ';'
+        metadata = print_DB(metafacts, 'return')
+        # length1 = len(metadata['Ticker'])
+        for x in metadata['Ticker']:
+            try:
+                # Get latest FCF from the ticker, also FCF_1
+                # getfcf = 'Select year, fcf FROM Mega WHERE Ticker LIKE \'' + x + '\' ORDER BY year'
+                # fcf = print_DB(getfcf,'return')['fcf'].iloc[-1]
+                # print(fcf)
+                # print(str(round(n/length1,4)*100) + '% complete!')
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
+                # price = dict1['previousClose']
+                # pricegr = metadata.loc[metadata['Ticker'] == x, 'pgr'].iloc[0] / 100
+                # print(pricegr)
+                # divrate = dict1['dividendRate']
+                divrate = dict1['dividendRate']
+
+                divgr1 = metadata.loc[metadata['Ticker'] == x, 'divgr'].iloc[0]
+                divgr2 = metadata.loc[metadata['Ticker'] == x, 'totaldivgr'].iloc[0]
+                divgr = max(divgr1, divgr2)
+                # fcfgr = metadata.loc[metadata['Ticker'] == x, 'fcfgr'].iloc[0] / 100
+                # print(fcfgr)
+                # fiveYearPriceComparison = price * ((1 + (pricegr/100)) ** 5)
+                divp1 = divrate * ((1 + (divgr/100)) ** 1)
+                divp2 = divrate * ((1 + (divgr/100)) ** 2)
+                divp3 = divrate * ((1 + (divgr/100)) ** 3)
+                divp4 = divrate * ((1 + (divgr/100)) ** 4)
+                divp5 = divrate * ((1 + (divgr/100)) ** 5)
+                divgrafterfiveyears = 0.05
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = pvd5 * (1 + divgrafterfiveyears) / (1 - divgrafterfiveyears)
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                print(fairvalue)
+                #luke here, get fair value and stuff added to df and returned properly <3
+                # denom1 = (1 + ror) ** 1
+                # denom2 = (1 + ror) ** 2
+                # denom3 = (1 + ror) ** 3
+                # denom4 = (1 + ror) ** 4
+                # denom5 = (1 + ror) ** 5
+                # dcf = (fcfp1 / denom1) + (fcfp2 / denom2) + (fcfp3 / denom3) + (fcfp4 / denom4) + (fcfp5 / denom5)
+                # pvfcf1 = fcfp1 / ((1 + ror) ** 1)
+                # pvfcf2 = fcfp2 / ((1 + ror) ** 2)
+                # pvfcf3 = fcfp3 / ((1 + ror) ** 3)
+                # pvfcf4 = fcfp4 / ((1 + ror) ** 4)
+                # pvfcf5 = fcfp5 / ((1 + ror) ** 5)
+                # tvpvfcf5 = pvfcf5 * (1 + fcfgr) / (ror - fcfgr)
+                # pvpvfcf5 = (tvpvfcf5) / ((1 + ror) ** 5)
+                # print(pvpvfcf5)
+                # print(pvfcf1+pvfcf2+pvfcf3+pvfcf4+pvpvfcf5)
+
+
+                # print('sum of fcfs')
+                # print(fcfp1 + fcfp2+fcfp3+fcfp4+fcfp5)
+                # tv = fcfp5 * (1 + fcfgr) / (ror - fcfgr)
+                # pv = (tv)
+                # print(tv)
+                # tenYearPrice = price * ((1 + (pricegr/100)) ** 10)
+                # tenYearDiv = divrate * ((1 + (divgr/100)) ** 10)
+                # twentyYearPrice = price * ((1 + (pricegr/100)) ** 20)
+                # twentyYearDiv = divrate * ((1 + (divgr/100)) ** 20)
+                # toupload['Ticker'] = [x]
+                # toupload['Sector'] = sector
+                # toupload['currentPrice'] = price
+                # toupload['currentDiv'] = divrate
+                # toupload['currentValuation'] = price / divrate
+                # toupload['priceGR'] = pricegr
+                # toupload['divGR'] = divgr
+                # toupload['tenYearPrice'] = tenYearPrice
+                # toupload['tenYearDiv'] = tenYearDiv
+                # toupload['tenYearValuation'] = tenYearPrice / tenYearDiv
+                # toupload['tenYearFlatValuation'] = price / tenYearDiv
+                # toupload['twentyYearPrice'] = twentyYearPrice
+                # toupload['twentyYearDiv'] = twentyYearDiv
+                # toupload['twentyYearValuation'] = twentyYearPrice / twentyYearDiv
+                # toupload['twentyYearFlatValuation'] = price / twentyYearDiv
+                # # uploadToDB(toupload,'PDValuation')
+                # toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+
+            except Exception as err:
+                print('DDM evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('DDM evaulate err')
+        print(err)
+    # finally:
+    #     return toreturn
+
+# evaluateDDM(['STAG','PLD','O', 'ARCC', 'TXN'], 0.001)
 
 
 
 
-# print('divrates, literal, ttm')
-# print(divrate)
-# print('yields, literal, 5yr, ttm')
-# print(divyield)
-# print('price')
-# print(price)
-# print('valuation')
-# print(price / divrate)
-# print('yield valuation')
-# print(1 / divyield) #less good
+def evaluateDCF(listofstocktickers, ror):
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        tupleforsql = tuple(listofstocktickers)
+        metafacts = 'SELECT Ticker, Sector, cast(AveragedOverYears as integer) as years, \
+                        fcfGrowthAVG as fcfgr, \
+                        priceGrowthAVG as pgr \
+                    FROM Metadata \
+                    WHERE Ticker IN ' + str(tupleforsql) + ';'
+        metadata = print_DB(metafacts, 'return')
+        # length1 = len(metadata['Ticker'])
+        for x in metadata['Ticker']:
+            try:
+                # Get latest FCF from the ticker, also FCF_1
+                getfcf = 'Select year, fcf FROM Mega WHERE Ticker LIKE \'' + x + '\' ORDER BY year'
+                fcf = print_DB(getfcf,'return')['fcf'].iloc[-1]
+                # print(fcf)
+                # print(str(round(n/length1,4)*100) + '% complete!')
+                stock = yf.Ticker(x)
+                dict1 = stock.info
 
-# testing = 'SELECT Ticker FROM Metadata WHERE aggDivsPSGrowthAVG IS null;'
-# print_DB(testing, 'print')
+
+
+                sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
+
+                price = dict1['previousClose']
+                
+                pricegr = metadata.loc[metadata['Ticker'] == x, 'pgr'].iloc[0] / 100
+                # print(pricegr)
+                # divrate = dict1['dividendRate']
+                fcfgr = metadata.loc[metadata['Ticker'] == x, 'fcfgr'].iloc[0] / 100
+                # print(fcfgr)
+                fiveYearPriceComparison = price * ((1 + (pricegr/100)) ** 5)
+                fcfp1 = fcf * ((1 + (fcfgr/100)) ** 1)
+                fcfp2 = fcf * ((1 + (fcfgr/100)) ** 2)
+                fcfp3 = fcf * ((1 + (fcfgr/100)) ** 3)
+                fcfp4 = fcf * ((1 + (fcfgr/100)) ** 4)
+                fcfp5 = fcf * ((1 + (fcfgr/100)) ** 5)
+                denom1 = (1 + ror) ** 1
+                denom2 = (1 + ror) ** 2
+                denom3 = (1 + ror) ** 3
+                denom4 = (1 + ror) ** 4
+                denom5 = (1 + ror) ** 5
+                dcf = (fcfp1 / denom1) + (fcfp2 / denom2) + (fcfp3 / denom3) + (fcfp4 / denom4) + (fcfp5 / denom5)
+                pvfcf1 = fcfp1 / ((1 + ror) ** 1)
+                pvfcf2 = fcfp2 / ((1 + ror) ** 2)
+                pvfcf3 = fcfp3 / ((1 + ror) ** 3)
+                pvfcf4 = fcfp4 / ((1 + ror) ** 4)
+                pvfcf5 = fcfp5 / ((1 + ror) ** 5)
+                tvpvfcf5 = pvfcf5 * (1 + fcfgr) / (ror - fcfgr)
+                pvpvfcf5 = (tvpvfcf5) / ((1 + ror) ** 5)
+                print(pvpvfcf5)
+                print(pvfcf1+pvfcf2+pvfcf3+pvfcf4+pvpvfcf5)
+                # print('sum of fcfs')
+                # print(fcfp1 + fcfp2+fcfp3+fcfp4+fcfp5)
+                # tv = fcfp5 * (1 + fcfgr) / (ror - fcfgr)
+                # pv = (tv)
+                # print(tv)
+                # tenYearPrice = price * ((1 + (pricegr/100)) ** 10)
+                # tenYearDiv = divrate * ((1 + (divgr/100)) ** 10)
+                # twentyYearPrice = price * ((1 + (pricegr/100)) ** 20)
+                # twentyYearDiv = divrate * ((1 + (divgr/100)) ** 20)
+                # toupload['Ticker'] = [x]
+                # toupload['Sector'] = sector
+                # toupload['currentPrice'] = price
+                # toupload['currentDiv'] = divrate
+                # toupload['currentValuation'] = price / divrate
+                # toupload['priceGR'] = pricegr
+                # toupload['divGR'] = divgr
+                # toupload['tenYearPrice'] = tenYearPrice
+                # toupload['tenYearDiv'] = tenYearDiv
+                # toupload['tenYearValuation'] = tenYearPrice / tenYearDiv
+                # toupload['tenYearFlatValuation'] = price / tenYearDiv
+                # toupload['twentyYearPrice'] = twentyYearPrice
+                # toupload['twentyYearDiv'] = twentyYearDiv
+                # toupload['twentyYearValuation'] = twentyYearPrice / twentyYearDiv
+                # toupload['twentyYearFlatValuation'] = price / twentyYearDiv
+                # # uploadToDB(toupload,'PDValuation')
+                # toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+
+            except Exception as err:
+                print('DCF evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('DCF evaulate err')
+        print(err)
+    # finally:
+    #     return toreturn
+
+# evaluateDCF(['MSFT','AAPL'],0.2)
+
+# getpd = 'SELECT * FROM PDValuation \
+#             WHERE Ticker IN (\'ARCC\', \'HD\', \'O\', \'PLD\', \'STAG\', \'NNN\', \'ADC\', \'TSCO\', \'NUE\', \'COST\', \
+#                                 \'TXN\', \'ADI\', \'MCHP\') \
+#             ORDER BY currentValuation;'
+# print(print_DB(getpd, 'return').head(50))
+
+# eq = 'Select Ticker, Sector, calcBookValueAVG as cbv, repBookValueAVG as rbv, calculatedEquityGrowthAVG as ceq, reportedEquityGrowthAVG as req \
+#         FROM Metadata \
+#         WHERE cbv IS NULL \
+#         AND rbv IS NULL \
+#         AND ceq IS NULL \
+#         AND req IS NULL'
+# print_DB(eq, 'print')
+
+# AND currentValuation >= 25 \
+#             AND tenYearValuation < 45 \
+#             AND twentyYearValuation < 35 \
+#             AND divGR < 50 \
+
+# , \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
+#                                 \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
+#                                 \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
+#                                 \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\'
 
 
 
-# from metadata, get AveragedOverYears
-# priceGrowthAVG
-# 
-def evaluate():
+
+#probably will never be used 
+def evaluateAndUploadPD():
     try:
         toupload = pd.DataFrame()
         metafacts = 'SELECT Ticker, Sector, cast(AveragedOverYears as integer) as years, \
                         CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
                         priceGrowthAVG as pgr \
-                    FROM Metadata WHERE Ticker IN (\'MSFT\');'#, \'TXN\', \'O\', \'NEE\');'
+                    FROM Metadata;'
         metadata = print_DB(metafacts, 'return')
-        stock = yf.Ticker('MSFT')
-        dict1 = stock.info
-        price = dict1['previousClose']
-        divrate = dict1['dividendRate']
-        # divyield = dict1['dividendYield']
-        toupload['Ticker'] = 'MSFT'
-        toupload['Sector'] = metadata['Sector'][0]
-        toupload['currentPrice'] = price
-        # latestDiv = models.FloatField(blank=True, null=True)
-        # currentValuation = models.FloatField(blank=True, null=True)
+        length1 = len(metadata['Ticker'])
+        n = 1
+        time1 = time.time()
+        for x in metadata['Ticker']:
+            try:
+                print(str(round(n/length1,4)*100) + '% complete!')
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
+                price = dict1['previousClose']
+                pricegr = metadata.loc[metadata['Ticker'] == x, 'pgr'].iloc[0]
+                divrate = dict1['dividendRate']
+                divgr = metadata.loc[metadata['Ticker'] == x, 'divgr'].iloc[0]
+                tenYearPrice = price * ((1 + (pricegr/100)) ** 10)
+                tenYearDiv = divrate * ((1 + (divgr/100)) ** 10)
+                twentyYearPrice = price * ((1 + (pricegr/100)) ** 20)
+                twentyYearDiv = divrate * ((1 + (divgr/100)) ** 20)
+                toupload['Ticker'] = [x]
+                toupload['Sector'] = sector
+                toupload['currentPrice'] = price
+                toupload['currentDiv'] = divrate
+                toupload['currentValuation'] = price / divrate
+                toupload['priceGR'] = pricegr
+                toupload['divGR'] = divgr
+                toupload['tenYearPrice'] = tenYearPrice
+                toupload['tenYearDiv'] = tenYearDiv
+                toupload['tenYearValuation'] = tenYearPrice / tenYearDiv
+                toupload['twentyYearPrice'] = twentyYearPrice
+                toupload['twentyYearDiv'] = twentyYearDiv
+                toupload['twentyYearValuation'] = twentyYearPrice / twentyYearDiv
+                uploadToDB(toupload,'PDValuation')
 
-        # priceGR = tenYearDiv = models.FloatField(blank=True, null=True)
-        # divGR = models.FloatField(blank=True, null=True)
-
-        # tenYearPrice = models.FloatField(blank=True, null=True)
-        # tenYearDiv = models.FloatField(blank=True, null=True)
-        # tenYearValuation = models.FloatField(blank=True, null=True)
-
-        # twentyYearPrice = models.FloatField(blank=True, null=True)
-        # twentyYearDiv = models.FloatField(blank=True, null=True)
-        # twentyYearValuation = models.FloatField(blank=True, null=True)
-
-        #and don't forget to do migrations
-
+                n += 1
+            except Exception as err:
+                print('PD evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                n += 1
+                continue
     except Exception as err:
         print('evaulate err')
         print(err)
     finally:
-        return toupload
+        time2 = time.time()
+        print('time to complete:')
+        print((time2-time1)/60)
 
-#P/D, inverse yield, is a current valuation. <25 is great. <40 + gr>10% is still decent. >45 is no go. 40-45 debatable for enough quality, price history
-
-#div cagr * yield == alternative valuation, giving an idea into future value as well
-
-# priceGrowthAVG from metadata could also be useful in that:
-# PGAVG / divgrAVG gives us some idea of how quickly price vs yield changes.
-# the smaller the number, the more likely dividend grows while price stays sane
-
-#also, you can predict the future price by pGR * years analyzed, divGR * years analyzed, recalculating the P/Div. obviously using a(1+-r)^t
-
-
-
+# evaluateAndUploadPD()

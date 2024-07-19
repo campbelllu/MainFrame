@@ -572,12 +572,6 @@ def LSBDC():
 
 # LSBDC()
 
-# jpm = 'SELECT calcBookValueAVG, calcBookValueGrowthAVG, repBookValueAVG, repBookValueGrowthAVG FROM Metadata WHERE Ticker LIKE \'V\''
-# jpmdf = print_DB(jpm, 'print')
-# for x in jpmdf:
-#     print(x)
-#     print(jpmdf[x])
-
 def LSInd():
     try:
         matspull = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG, operatingCashFlowAVG, netCashFlowAVG, \

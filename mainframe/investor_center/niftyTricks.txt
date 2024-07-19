@@ -1,3 +1,12 @@
+testd = 'DELETE FROM PDValuation'
+conn = sql.connect(db_path)
+query = conn.cursor()
+query.execute(testd)
+conn.commit()
+query.close()
+conn.close()
+
+
 #nifty loop checking
 # print(len(revenue))
 # tar = eps
@@ -16,6 +25,11 @@
 # loopCheck(revenue)
 # loopCheck(ultimateList)
 ###
+
+# sqldf = pd.concat([sqldf, sqldf2], axis = 0)
+    # returned_data = pd.concat([returned_data, held_data], ignore_index = True)
+
+    
 #time tests
 # time1 = time.time()
 # time2 = time.time()
