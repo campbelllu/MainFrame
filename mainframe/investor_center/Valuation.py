@@ -236,7 +236,55 @@ def evaluateDDM(listofstocktickers, ror):
 
 # evaluateDDM(['STAG','PLD','O', 'ARCC', 'TXN'], 0.001)
 
+#luke here
+#turn the below into an etf valuation evaluator lol
 
+stock = yf.Ticker('SCHD')
+dict1 = stock.info
+# divrate = dict1['dividendRate']
+divies = stock.dividends
+# print(len(divies))
+# finalyd = divies[-1]*4
+# firstyd = divies[0]*4
+# divgr = (finalyd - firstyd) / firstyd 
+# print(divgr)
+divrate =  dict1['navPrice'] * dict1['yield']
+#dict1['previousClose']
+# print(divrate)
+# tl = [.12,.82]
+# time = math.ceil(len(tl)/4)
+time1 = (len(divies)/4)
+# print(time1)
+cagr = ((divies[-1]/divies[0]) ** (1/time1)) - 1
+# print((tl[-1]/tl[0]) ** (1/time1))
+# print(cagr)
+# for x in range(len(tl) - 1):
+    #compare x and x+1, find growth rate
+    # print(tl[x+1])
+    # print(x)
+
+{'phone': '1-800-435-4000', 
+'longBusinessSummary': 'To pursue its goal, the fund generally invests in stocks that are included in the index. \
+The index is designed to measure the performance of high dividend yielding stocks issued by U.S. companies that have a record of \
+consistently paying dividends, selected for fundamental strength relative to their peers, based on financial ratios. \
+The fund will invest at least 90% of its net assets in these stocks.', 
+'maxAge': 86400, 'priceHint': 2, 
+'previousClose': 81.61, 
+'open': 81.64, 'dayLow': 80.85, 
+'dayHigh': 81.8599, 'regularMarketPreviousClose': 81.61, 'regularMarketOpen': 81.64, 'regularMarketDayLow': 80.85, 'regularMarketDayHigh': 81.8599, 
+'trailingPE': 15.385382, 'volume': 2232073, 'regularMarketVolume': 2232073, 
+'averageVolume': 2826832, 'averageVolume10days': 3089350, 'averageDailyVolume10Day': 3089350, 
+'bid': 81.06, 'ask': 81.2, 'bidSize': 1100, 'askSize': 1100, 
+'yield': 0.0364, 
+'totalAssets': 54676262912, 'fiftyTwoWeekLow': 66.67, 'fiftyTwoWeekHigh': 82.94, 'fiftyDayAverage': 78.4938, 'twoHundredDayAverage': 75.93525, 
+'navPrice': 81.57, 'currency': 'USD', 'category': 'Large Value', 
+'ytdReturn': 0.101243295, 'beta3Year': 0.76, 
+'fundFamily': 'Schwab ETFs', 'fundInceptionDate': 1319068800, 'legalType': 'Exchange Traded Fund', 
+'threeYearAverageReturn': 0.066436, 'fiveYearAverageReturn': 0.1281362, 'exchange': 'PCX', 
+'quoteType': 'ETF', 'symbol': 'SCHD', 'underlyingSymbol': 'SCHD', 'shortName': 'Schwab US Dividend Equity ETF', 
+'longName': 'Schwab U.S. Dividend Equity ETF', 'firstTradeDateEpochUtc': 1319031000, 'timeZoneFullName': 'America/New_York', 
+'timeZoneShortName': 'EDT', 'uuid': '51763995-7570-386d-806d-a25eca52c2b1', 'messageBoardId': 'finmb_141947998', 'gmtOffSetMilliseconds': -14400000, 
+'trailingPegRatio': None}
 
 
 def evaluateDCF(listofstocktickers, ror):
