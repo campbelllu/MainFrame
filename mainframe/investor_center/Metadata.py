@@ -30,6 +30,13 @@ header = {'User-Agent':'campbelllu3@gmail.com'}
 
 db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
+#luke to do
+# updateOrFillMetadata fills metadata now. we need a function to backup metadata, then just rewrite it from scratch
+# after this first backup is done
+# we also need a function that checks differences between what is in metadata and what is just generated from mega
+# if different, original is snapshotted to backup DB
+# if same, new one is dropped and loop continues. I think that's how to do it.
+
 def print_DB(thequery, superflag):
     conn = sql.connect(db_path)
     query = conn.cursor()
@@ -58,9 +65,6 @@ def uploadToDB(upload,table):
     finally:
         query.close()
         conn.close()
-
-# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
-# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 
 def IQR_Mean(list):
     try:

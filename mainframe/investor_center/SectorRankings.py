@@ -60,8 +60,6 @@ def uploadToDB(upload,table):
         query.close()
         conn.close()
 
-# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
-# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 #going to have to manually review all of these rankings, to verify the integrity of rankings is what our company stands by #luke
 # debate full clearing sector rankings, vs snapshots, vs just keeping them in for more metadata; note below
 
@@ -1876,4 +1874,4 @@ def rank_Utilities():
 # rank_RealEstate()
 # rank_Utilities()
 # rank_Healthcare()
-# rank_ConsumerCyclical() #luke do this, check 3 custom tables, update models, fill 3 tables, 
+# rank_ConsumerCyclical() 

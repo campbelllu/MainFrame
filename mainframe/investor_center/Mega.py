@@ -1795,9 +1795,11 @@ def find_badUnitsDB():
 ### depreciation and amor with a handful of stocks
 #notes from below for above
 # missingDepreNAmor = ['MSFT', 'TSM', 'AVGO', 'ORCL', 'SAP', 'INTU', 'IBM', 'TXN']
-#LUKE possible amoritization add: CapitalizedComputerSoftwareAmortization1 
+#possible amoritization add: CapitalizedComputerSoftwareAmortization1 
 #it looks like depre and amor isn't getting the full picture for the above stocks
 ####
+#need to check differences between what is in stockList, from SEC filings, and what is in Mega,
+#so when you updateMega, great, records are updated, but any newbies are then also added fresh
 
 #---------------------------------------------------------------------
 #What each value is

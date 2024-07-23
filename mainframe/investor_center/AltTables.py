@@ -27,6 +27,11 @@ import Mega as mega
 import Metadata as metadata
 import SectorRankings as sr
 
+#luke
+#notes or to do
+# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
+# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
+
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
