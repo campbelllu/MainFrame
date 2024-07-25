@@ -159,7 +159,6 @@ class Metadata(models.Model):
     reitepsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     reitepsGrowthAVGnz = models.FloatField(blank=True, null=True)
 
-
     fcfLow = models.IntegerField(blank=True, null=True)
     fcfGrowthAVG = models.FloatField(blank=True, null=True)
     fcfGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
@@ -429,6 +428,7 @@ class DivGrowth_Ranking(models.Model):
 class Sector_Rankings(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
     Sector = models.CharField(max_length=5, blank=True, null=True)
+    reitroce = models.IntegerField(blank=True, null=True)
     roce = models.IntegerField(blank=True, null=True)
     roic = models.IntegerField(blank=True, null=True)
     roc = models.IntegerField(blank=True, null=True)
@@ -449,6 +449,7 @@ class Sector_Rankings(models.Model):
     divyield = models.IntegerField(blank=True, null=True)
     maxscore = models.IntegerField(blank=True, null=True)
     score = models.IntegerField(blank=True, null=True)
+    scorerank = models.FloatField(blank=True, null=True)
 
     class Meta:
         db_table = 'Sector_Rankings'
@@ -646,6 +647,7 @@ class ConsumerDefensive_Ranking(models.Model):
 class RealEstate_Ranking(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
     Sector = models.CharField(max_length=5, blank=True, null=True)
+    reitroce = models.IntegerField(blank=True, null=True)
     roce = models.IntegerField(blank=True, null=True)
     roic = models.IntegerField(blank=True, null=True)
     roc = models.IntegerField(blank=True, null=True)

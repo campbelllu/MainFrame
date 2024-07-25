@@ -180,11 +180,11 @@ def ni_rating(ticker):
         #hardcode finalrating because some negative NI's have huge growth into positive numbers, skewing avg results
         if avg == 0:
             finalrating = -1
-        elif avg > 0 and avg <= 2:
+        elif avg > 0 and avg <= 1:
             finalrating = 1
-        elif avg > 2 and avg <= 4:
+        elif avg > 1 and avg <= 3:
             finalrating = 2
-        elif avg > 4 and avg <= 7:
+        elif avg > 3 and avg <= 7:
             finalrating = 3
         elif avg > 7 and avg < 10:
             finalrating = 4
@@ -227,11 +227,11 @@ def ffo_rating(ticker):
         #hardcode finalrating because some negative NI's have huge growth into positive numbers, skewing avg results
         if avg == 0:
             finalrating = -1
-        elif avg > 0 and avg <= 2:
+        elif avg > 0 and avg <= 1:
             finalrating = 1
-        elif avg > 2 and avg <= 4:
+        elif avg > 1 and avg <= 3:
             finalrating = 2
-        elif avg > 4 and avg <= 7:
+        elif avg > 3 and avg <= 7:
             finalrating = 3
         elif avg > 7 and avg < 10:
             finalrating = 4
@@ -273,7 +273,7 @@ def fcf_rating(ticker):
         else:
             avg = 0 #arbitrary number, based below inflation due to lack of reporting
         
-        rulecompare = [10, 7, 4, 2, 0, -1, -2, -3, -4]
+        rulecompare = [10, 7, 3, 1, 0, -1, -2, -3, -4]
         finalrating = rating_assignment(avg, rulecompare)
     except Exception as err:
         print('fcf rating error:')
@@ -289,27 +289,27 @@ def fcfm_rating(ticker):
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
-        #sort avg
-        if resultsdf['fcfmint'][0] in ('good','decent'):
-            netincomeavg = resultsdf['fcfmgravg'][0]
-        else:
-            netincomeavg = resultsdf['fcfmgravgnz'][0]
         
+        #determine fcfm avg
         if pd.isnull(resultsdf['fcfmavg'][0]) == False and np.isinf(resultsdf['fcfmavg'][0]) == False:      
             fcfmaverage = resultsdf['fcfmavg'][0]
         else:
             fcfmaverage = 1
-
+        #grade fcfm avg
         fcfmrulecompare = [20, 10, 5, 2, 0, -1, -2, -3, -4]
         fcfmfinalrating = rating_assignment(fcfmaverage,fcfmrulecompare)
 
-        #determine avg
+        #set fcfmGRavg
+        if resultsdf['fcfmint'][0] in ('good','decent'):
+            netincomeavg = resultsdf['fcfmgravg'][0]
+        else:
+            netincomeavg = resultsdf['fcfmgravgnz'][0]
         if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:      
             avg = netincomeavg
         else:
             avg = 1
-        
-        rulecompare = [10, 7, 4, 2, 0, -1, -2, -3, -4]
+        #determine fcfm gr
+        rulecompare = [10, 7, 3, 1, 0, -1, -2, -3, -4]
         fcfmgrfinalrating = rating_assignment(avg, rulecompare)
 
         finalrating = math.floor((fcfmfinalrating + fcfmgrfinalrating) / 2)
@@ -409,7 +409,7 @@ def equity_rating(ticker):
                     FROM Metadata \
                     WHERE Ticker LIKE \'' + ticker + '\';'
         resultsdf = print_DB(sqlq, 'return')
-        
+        #assign reported equity gr
         if pd.isnull(resultsdf['rgravg'][0]) == False and np.isinf(resultsdf['rgravg'][0]) == False and pd.isnull(resultsdf['rgravgnz'][0]) == False and np.isinf(resultsdf['rgravgnz'][0]) == False:      
             reqavg = max(resultsdf['rgravg'][0], resultsdf['rgravgnz'][0])
         elif pd.isnull(resultsdf['rgravg'][0]) == True or np.isinf(resultsdf['rgravg'][0]) == True:
@@ -418,7 +418,7 @@ def equity_rating(ticker):
             else:
                 reqavg = 0
         
-        rrulecompare = [10,5,1,0,-1,-2,-3,-4,-5]
+        rrulecompare = [10,5,3,1,0,-1,-2,-3,-4]
         rfinalrating = rating_assignment(reqavg,rrulecompare)
 
         if pd.isnull(resultsdf['cgravg'][0]) == False and np.isinf(resultsdf['cgravg'][0]) == False and pd.isnull(resultsdf['cgravgnz'][0]) == False and np.isinf(resultsdf['cgravgnz'][0]) == False:      
@@ -429,10 +429,10 @@ def equity_rating(ticker):
             else:
                 ceqavg = 0
         
-        rulecompare = [10,5,1,0,-1,-2,-3,-4,-5]
+        rulecompare = [10,5,3,1,0,-1,-2,-3,-4]
         cfinalrating = rating_assignment(ceqavg, rulecompare)
 
-        finalrating = math.floor((rfinalrating + cfinalrating) / 2)
+        finalrating = max(rfinalrating, cfinalrating)
     except Exception as err:
         print('equity rating error:')
         print(err)
@@ -463,13 +463,13 @@ def bvnav_rating(ticker):
         avg = max(reqavg, ceqavg)
 
         if pd.isnull(resultsdf['navgravg'][0]) == False and np.isinf(resultsdf['navgravg'][0]) == False:
-            navcompare = [10,5,1,0,-1,-2,-3,-4,-5]
+            navcompare = [10,5,3,1,0,-1,-2,-3,-4]
             navrating = rating_assignment(resultsdf['navgravg'][0], navcompare)
-            rulecompare = [10,5,1,0,-1,-2,-3,-4,-5]
+            rulecompare = [10,5,3,1,0,-1,-2,-3,-4]
             cfinalrating = rating_assignment(avg, rulecompare)
             finalrating = math.floor((navrating + cfinalrating) / 2)
         else:
-            rulecompare = [10,5,1,0,-1,-2,-3,-4,-5]
+            rulecompare = [10,5,3,1,0,-1,-2,-3,-4]
             cfinalrating = rating_assignment(avg, rulecompare)
             finalrating = cfinalrating
     except Exception as err:
@@ -478,7 +478,7 @@ def bvnav_rating(ticker):
     finally:
         return finalrating
 
-# print(bvnav_rating('PLTR'))
+# print(bvnav_rating('MSFT'))
 
 def cf_rating(ticker):
     try:
@@ -507,6 +507,8 @@ def cf_rating(ticker):
         if pd.isnull(resultsdf['navgravg'][0]) == False and np.isinf(resultsdf['navgravg'][0]) == False:
             if resultsdf['navgravg'][0] > 0:
                 flatrating = 5
+            elif resultsdf['navgravg'][0] == 0:
+                flatrating = 3
             else:
                 flatrating = -1
         else:
@@ -518,7 +520,7 @@ def cf_rating(ticker):
     finally:
         return finalrating
 
-# print(cf_rating('BUD'))
+# print(cf_rating('NUE'))
 
 def shares_rating(ticker):
     try:
@@ -603,7 +605,7 @@ def divspaid_rating(ticker):
     finally:
         return finalrating
 
-# print(divspaid_rating('MSFT'))
+# print(divspaid_rating('AMZN'))
 
 def divgrowth_rating(ticker):
     try:
@@ -625,11 +627,11 @@ def divgrowth_rating(ticker):
                 cdivsrating = -1
             elif calcdivs >= 15:
                 cdivsrating = 5
-            elif calcdivs < 15 and calcdivs >= 12:
+            elif calcdivs < 15 and calcdivs >= 10:
                 cdivsrating = 4
-            elif calcdivs < 12 and calcdivs >= 7:
+            elif calcdivs < 10 and calcdivs >= 5:
                 cdivsrating = 3
-            elif calcdivs < 7 and calcdivs >= 3:
+            elif calcdivs < 5 and calcdivs >= 3:
                 cdivsrating = 2
             elif calcdivs < 3 and calcdivs > 0:
                 cdivsrating = 1
@@ -651,11 +653,11 @@ def divgrowth_rating(ticker):
                 rdivsrating = -1
             elif repdivs >= 15:
                 rdivsrating = 5
-            elif repdivs < 15 and repdivs >= 12:
+            elif repdivs < 15 and repdivs >= 10:
                 rdivsrating = 4
-            elif repdivs < 12 and repdivs >= 7:
+            elif repdivs < 10 and repdivs >= 5:
                 rdivsrating = 3
-            elif repdivs < 7 and repdivs >= 3:
+            elif repdivs < 5 and repdivs >= 3:
                 rdivsrating = 2
             elif repdivs < 3 and repdivs > 0:
                 rdivsrating = 1
@@ -699,7 +701,7 @@ def divgrowth_rating(ticker):
     finally:
         return finalrating
 
-# print(divgrowth_rating('HD'))
+# print(divgrowth_rating('PLD'))
 
 def payout_rating(ticker): 
     try:
@@ -769,14 +771,18 @@ def payout_rating(ticker):
         elif fcfavg > 100:
             fdivsrating = -5
 
-        finalrating = math.floor((fdivsrating + cdivsrating) / 2)
+        #if fcf po rating is higher than ni po, they deserve a better score
+        if fdivsrating > cdivsrating:
+            finalrating = math.ceil((fdivsrating + cdivsrating) / 2)
+        else:
+            finalrating = math.floor((fdivsrating + cdivsrating) / 2)
     except Exception as err:
         print('payout rating error:')
         print(err)
     finally:
         return finalrating
 
-# print(payout_rating('O'))
+# print(payout_rating('TXN'))
 
 def ffopayout_rating(ticker):
     try:
@@ -881,7 +887,7 @@ def roic_rating(ticker):
             raroic = 0
 
         finalroic = max(roic, aroic, raroic)
-        roiccompare = [20,15,7,5,1,0,-1,-5,-7]
+        roiccompare = [20,15,10,5,1,0,-1,-2,-3]
         finalrating = rating_assignment(finalroic,roiccompare)
     except Exception as err:
         print('roic rating error:')
@@ -912,7 +918,7 @@ def roce_rating(ticker):
             finalroic = aroic
         else:
             finalroic = max(roic, aroic)
-        roiccompare = [25,15,10,5,1,0,-1,-5,-10]
+        roiccompare = [25,15,10,5,1,0,-1,-2,-3]
         finalrating = rating_assignment(finalroic,roiccompare)
     except Exception as err:
         print('roce rating error:')
@@ -921,6 +927,42 @@ def roce_rating(ticker):
         return finalrating
 
 # print(roce_rating('O'))
+
+def reitroce_rating(ticker):
+    try:
+        #luke here
+        #add reitroce to all sector rankings
+        #migrate models
+        #you need ffo from mega, and TotalEquity, ReportedTotalEquity
+        #calc ffo / TE,RTE, , return which is higher
+        #then get average from that list
+        #then grade and return it. that's your reit roce my dude
+        sqlq = 'SELECT croceAVG as roic, rroceAVG as ar \
+                    FROM Metadata \
+                    WHERE Ticker LIKE \'' + ticker + '\';'
+        resultsdf = print_DB(sqlq, 'return')
+       
+        if pd.isnull(resultsdf['roic'][0]) == False and np.isinf(resultsdf['roic'][0]) == False and resultsdf['roic'][0] is not None:
+            roic = resultsdf['roic'][0]
+        else:
+            roic = 0
+
+        if pd.isnull(resultsdf['ar'][0]) == False and np.isinf(resultsdf['ar'][0]) == False and resultsdf['ar'][0] is not None:
+            aroic = resultsdf['ar'][0]
+        else:
+            aroic = 0
+
+        if aroic != 0:
+            finalroic = aroic
+        else:
+            finalroic = max(roic, aroic)
+        roiccompare = [25,15,10,5,1,0,-1,-2,-3]
+        finalrating = rating_assignment(finalroic,roiccompare)
+    except Exception as err:
+        print('roce rating error:')
+        print(err)
+    finally:
+        return finalrating
 
 def yield_rating(ticker):
     try:
@@ -1017,6 +1059,18 @@ def rank_Materials():
                 niv = 3
                 revv = 3
                 yieldv = 1
+                #screening targets
+                # Ticker    years     revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG  equitygr      divgr   roicavg    roceavg
+                # 0    NUE     18  2.625312  10.085268        0.433444    2.014189e+08          1.715804e+09  5.590830   0.950187  9.209051  12.263205
+                # 1   STLD     18  4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08  8.801051  11.681113  7.843229  14.992343
+                # 2     RS     17  5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08  9.418193  17.718853  9.121950  12.131660
+                # 3    NEM     18  0.655908  13.195627        0.147077    1.930000e+08          2.648077e+09  0.112810  20.960141  3.464378   4.572959
+                #results from above:
+                #   Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG   equitygr      divgr    roicavg    roceavg
+                # 0   HWKN     15   7.921215   4.962971        0.350206    6.669091e+05          3.689775e+07   8.906628   6.526646  10.400827  12.637140
+                # 3   STLD     18   4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08   8.801051  11.681113   7.843229  14.992343
+                # 4   UFPI     16  13.809333  25.466438        0.169407    6.471333e+06          1.308264e+08  11.629191  11.687335   9.462612  10.677567
+                # 5     RS     17   5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08   9.418193  17.718853   9.121950  12.131660
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1033,6 +1087,7 @@ def rank_Materials():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:

@@ -68,11 +68,6 @@ def uploadToDB(upload,table):
 #pd analysis of a list of stocks, or etf's, returns something to put on webpage eventually, but first saves it in csv or prints it
 #
 
-
-#this turned out well.
-#we will add more valuations, and different price changes thru the years
-#make it callable via a list input of tickers. that invalidates the table, removes need of updates, and works better for report generation
-
 def PD(listofstocktickers):
     try:
         toupload = pd.DataFrame()
@@ -84,10 +79,8 @@ def PD(listofstocktickers):
                     FROM Metadata \
                     WHERE Ticker IN ' + str(tupleforsql) + ';'
         metadata = print_DB(metafacts, 'return')
-        # length1 = len(metadata['Ticker'])
         for x in metadata['Ticker']:
             try:
-                # print(str(round(n/length1,4)*100) + '% complete!')
                 stock = yf.Ticker(x)
                 dict1 = stock.info
                 sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
@@ -103,6 +96,7 @@ def PD(listofstocktickers):
                 toupload['Sector'] = sector
                 toupload['currentPrice'] = price
                 toupload['currentDiv'] = divrate
+                toupload['currentYield'] = divrate / price
                 toupload['currentValuation'] = price / divrate
                 toupload['idealPriceCeiling'] = 25 * divrate
                 toupload['priceGR'] = pricegr
@@ -127,9 +121,9 @@ def PD(listofstocktickers):
         print('evaulate err')
         print(err)
     finally:
-        return toreturn
+        return toreturn.sort_values("currentValuation")
 
-# print(PD(['MSFT','AAPL'])[['Ticker','currentValuation', 'idealPriceCeiling', 'tenYearValuation', 'twentyYearValuation', 'tenYearFlatValuation','twentyYearFlatValuation']])
+# print(PD(['TXN','O'])[['Ticker','currentValuation', 'currentPrice','idealPriceCeiling', 'tenYearValuation', 'twentyYearValuation', 'tenYearFlatValuation','twentyYearFlatValuation']])
 
 def DDM(listofstocktickers):
     #Takes tickers to analyze, returns a 5%-50% price target, return rate fair value
@@ -271,18 +265,24 @@ def ETFPD(listofstocktickers):
                 divs = stock.dividends
                 growthList = []
 
+                # print(divs)
+
                 toupload['Ticker'] = [x]
 
-                for x in range(len(divs) - 1):
-                    diff = abs((divs[x+1])-divs[x])
-                    if divs[x] > divs[x+1]:
+                for i in range(len(divs) - 1):
+                    diff = abs((divs[i+1])-divs[i])
+                    if divs[i] > divs[i+1]:
                         diff = diff * -1
-                    if abs(divs[x]) == 0:
+                    if abs(divs[i]) == 0:
                         change = np.nan
                     else:
-                        change = diff / abs(divs[x]) * 4
+                        change = diff / abs(divs[i])
                     growthList.append(change)
-                divrate =  dict1['navPrice'] * dict1['yield']
+                try:
+                    divrate =  dict1['navPrice'] * dict1['yield']
+                except:
+                    divrate = divs[-1] * 12
+
                 price = dict1['previousClose']
                 
                 time1 = (len(divs)/4)
@@ -294,6 +294,7 @@ def ETFPD(listofstocktickers):
                 twentyYearDiv = divrate * ((1 + (divgr)) ** 20)
                 toupload['currentPrice'] = price
                 toupload['currentDiv'] = divrate
+                toupload['currentYield'] = divrate / price
                 toupload['currentValuation'] = price / divrate
                 toupload['idealPriceCeiling'] = 25 * divrate
                 toupload['divGR'] = divgr * 100
@@ -313,9 +314,9 @@ def ETFPD(listofstocktickers):
         print('etf pd err')
         print(err)
     finally:
-        return toreturn
+        return toreturn.sort_values("currentValuation")
 
-# print(ETFPD(['SCHD','DGRO','VIG','SOXX','SPY','QQQ','SCHG','JEPI','BITO']))
+# print(ETFPD(['DGRO','SCHD', 'VIG'])) #,'SOXX','SPY','QQQ','SCHG','JEPI','BITO'
 
 def ETFDDM(listofstocktickers):
     #Takes tickers to analyze, returns a 5%-50% price target, return rate fair value
@@ -339,9 +340,12 @@ def ETFDDM(listofstocktickers):
                     if abs(divs[x]) == 0:
                         change = np.nan
                     else:
-                        change = diff / abs(divs[x]) * 4
+                        change = diff / abs(divs[x])
                     growthList.append(change)
-                divrate =  dict1['navPrice'] * dict1['yield']
+                try:
+                    divrate =  dict1['navPrice'] * dict1['yield']
+                except:
+                    divrate = divs[-1] * 12
                 
                 time1 = (len(divs)/4)
                 cagr = ((divs[-1]/divs[0]) ** (1/time1)) - 1
@@ -451,50 +455,89 @@ def ETFDDM(listofstocktickers):
     finally:
         return toreturn
 
+# print(ETFDDM(['DGRO','SCHD', 'VIG'])) #,'VIG','SOXX','SPY','QQQ','SCHG','JEPI','BITO','IWM'
 
-# ETFDDM(['DGRO','SCHD','VIG','SOXX','SPY','QQQ','SCHG','JEPI','BITO','IWM']) #
+def growthValuation(listofstocktickers):
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        tupleforsql = tuple(listofstocktickers)
+        metafacts = 'SELECT Ticker, Sector, year, revenue \
+                    FROM Mega \
+                    WHERE Ticker IN ' + str(tupleforsql) + ' ORDER BY year;'
+        metadata = print_DB(metafacts, 'return')
+        for x in listofstocktickers:
+            try:
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                sector = metadata.loc[metadata['Ticker'] == x, 'Sector'].iloc[0]
+                # price = dict1['previousClose']
+                # pricegr = metadata.loc[metadata['Ticker'] == x, 'pgr'].iloc[0]
+                marketcap = dict1['marketCap']
+                revenue = metadata.loc[metadata['Ticker'] == x, 'revenue'].iloc[-1]
+                valuationratio = marketcap / revenue
+                # divrate = dict1['dividendRate']
+                # divgr = metadata.loc[metadata['Ticker'] == x, 'divgr'].iloc[0]
+                # tenYearPrice = price * ((1 + (pricegr/100)) ** 10)
+                # tenYearDiv = divrate * ((1 + (divgr/100)) ** 10)
+                # twentyYearPrice = price * ((1 + (pricegr/100)) ** 20)
+                # twentyYearDiv = divrate * ((1 + (divgr/100)) ** 20)
+                toupload['Ticker'] = [x]
+                toupload['Sector'] = sector
+                toupload['lastRevenue'] = revenue
+                toupload['marketCap'] = marketcap
+                toupload['valuation'] = valuationratio
+                
+
+                # toupload['currentValuation'] = price / divrate
+                # toupload['idealPriceCeiling'] = 25 * divrate
+                # toupload['priceGR'] = pricegr
+                # toupload['divGR'] = divgr
+                # toupload['tenYearPrice'] = tenYearPrice
+                # toupload['tenYearDiv'] = tenYearDiv
+                # toupload['tenYearValuation'] = tenYearPrice / tenYearDiv
+                # toupload['tenYearFlatValuation'] = price / tenYearDiv
+                # toupload['twentyYearPrice'] = twentyYearPrice
+                # toupload['twentyYearDiv'] = twentyYearDiv
+                # toupload['twentyYearValuation'] = twentyYearPrice / twentyYearDiv
+                # toupload['twentyYearFlatValuation'] = price / twentyYearDiv
+
+                toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+
+            except Exception as err:
+                print('growth evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('growth evaulate err')
+        print(err)
+    finally:
+        return toreturn
+
+
 
 stockmats = ['UFPI']
 stockenergy = ['CVX','XOM']
 stockfinance = ['ARCC','MAIN','HTGC','TSLX','CSWC','JPM']
 stockinds = ['FAST','PH','ETN','RSG','WM','CAT','WSO','FIX','CTAS','LMT']
-stocktech = ['TXN','ADI','MCHP','MSFT','AAPL','IBM']
+stocktech = ['TXN','ADI','MCHP','MSFT','AAPL','IBM','NVDA','PLTR','SMCI']
 stockstaples = ['COST','WMT','PG','KR']
 stockre = ['O','NNN','ADC','PLD','STAG','REXR','TRNO','FR','AMT','SBAC','CCI','DLR','EQIX']
 stockutil = ['NEE','SO','AWK','CPK','ATO']
 stockhealth = ['UNH','MCK','JNJ','ABBV']
 stockdisc = ['HD','TSCO','MCD','F','YUM']
 etflist = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','SCHH','XLU','XLV','XLY']
-print(ETFPD(etflist))
-print(ETFDDM(etflist))
-
-
-
-# getpd = 'SELECT * FROM PDValuation \
-#             WHERE Ticker IN (\'ARCC\', \'HD\', \'O\', \'PLD\', \'STAG\', \'NNN\', \'ADC\', \'TSCO\', \'NUE\', \'COST\', \
-#                                 \'TXN\', \'ADI\', \'MCHP\') \
-#             ORDER BY currentValuation;'
-# print(print_DB(getpd, 'return').head(50))
-
-# eq = 'Select Ticker, Sector, calcBookValueAVG as cbv, repBookValueAVG as rbv, calculatedEquityGrowthAVG as ceq, reportedEquityGrowthAVG as req \
-#         FROM Metadata \
-#         WHERE cbv IS NULL \
-#         AND rbv IS NULL \
-#         AND ceq IS NULL \
-#         AND req IS NULL'
-# print_DB(eq, 'print')
-
-# AND currentValuation >= 25 \
-#             AND tenYearValuation < 45 \
-#             AND twentyYearValuation < 35 \
-#             AND divGR < 50 \
-
-# , \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
-#                                 \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
-#                                 \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
-#                                 \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\'
-
-
+# etflist2 = []
+# etflist3 = 
+checkfireholdings = ['MSFO','AMZY','CONY','APLY','GOOY','FBY','NVDY','TSLY','XDTE','QDTE','FEPI','YMAX','YMAG', 'SCHD','SVOL','QQQI','DGRO','SCHH','DIVO']
+# print(ETFPD(etflist))
+# print(ETFDDM(etflist))
+# print(ETFPD(etflist2))
+# print(ETFDDM(etflist2))
+print(ETFPD(checkfireholdings))
+# print(ETFDDM(etflist3))
+# print(growthValuation(stocktech))
 
 ## ETF NOTES FROM YAHOO
 # {'phone': '1-800-435-4000', 
