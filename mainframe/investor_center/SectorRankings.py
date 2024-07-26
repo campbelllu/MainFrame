@@ -930,39 +930,34 @@ def roce_rating(ticker):
 
 def reitroce_rating(ticker):
     try:
-        #luke here
-        #add reitroce to all sector rankings
-        #migrate models
-        #you need ffo from mega, and TotalEquity, ReportedTotalEquity
-        #calc ffo / TE,RTE, , return which is higher
-        #then get average from that list
-        #then grade and return it. that's your reit roce my dude
-        sqlq = 'SELECT croceAVG as roic, rroceAVG as ar \
-                    FROM Metadata \
-                    WHERE Ticker LIKE \'' + ticker + '\';'
+        sqlq = 'SELECT year, ffo, TotalEquity, ReportedTotalEquity \
+                    FROM Mega \
+                    WHERE Ticker LIKE \'' + ticker + '\' ORDER BY year;'
         resultsdf = print_DB(sqlq, 'return')
-       
-        if pd.isnull(resultsdf['roic'][0]) == False and np.isinf(resultsdf['roic'][0]) == False and resultsdf['roic'][0] is not None:
-            roic = resultsdf['roic'][0]
+        
+        rroce = (resultsdf['ffo'] / resultsdf['ReportedTotalEquity']).tolist()
+        croce = (resultsdf['ffo'] / resultsdf['TotalEquity']).tolist()
+        rroceavg = metadata.IQR_Mean(rroce)
+        croceavg = metadata.IQR_Mean(croce)
+        
+        if rroceavg is None and croceavg is None:
+            reitroce = 0
+        elif rroceavg is None and croceavg is not None:
+            reitroce = croceavg
+        elif rroceavg is not None and croceavg is None:
+            reitroce = rroceavg
         else:
-            roic = 0
+            reitroce = max(rroceavg,croceavg) * 100
 
-        if pd.isnull(resultsdf['ar'][0]) == False and np.isinf(resultsdf['ar'][0]) == False and resultsdf['ar'][0] is not None:
-            aroic = resultsdf['ar'][0]
-        else:
-            aroic = 0
-
-        if aroic != 0:
-            finalroic = aroic
-        else:
-            finalroic = max(roic, aroic)
-        roiccompare = [25,15,10,5,1,0,-1,-2,-3]
-        finalrating = rating_assignment(finalroic,roiccompare)
+        roiccompare = [20,10,7,3,0,-1,-2,-3,-4]
+        finalrating = rating_assignment(reitroce,roiccompare)
     except Exception as err:
-        print('roce rating error:')
+        print('reit roce rating error:')
         print(err)
     finally:
         return finalrating
+
+# print(reitroce_rating('NNN'))
 
 def yield_rating(ticker):
     try:
@@ -1005,6 +1000,9 @@ def yield_rating(ticker):
         print(err)
     finally:
         return finalrating
+
+# guh = 'SELECT * FROM Sector_Rankings WHERE roce > 2 AND divgr > 0 AND fcfm > 1 AND equity > 0 and divpay > 0 and divyield > 0 and ni > 0'
+# print_DB(guh, 'print')
 
 #############################################################################
 #luke here start filling sector rankings, also fill the individual sector tables with raw scores, not weighted scores like sector rankings
@@ -1049,28 +1047,16 @@ def rank_Materials():
                 divgrv = 5
                 divpayv = 5
                 sharesv = 1
-                cfv = 5
+                cfv = 4
                 bvv = 0
                 equityv = 5
                 debtv = 1
-                fcfmv = 3
+                fcfmv = 5
                 fcfv = 3
                 ffov = 0
                 niv = 3
                 revv = 3
-                yieldv = 1
-                #screening targets
-                # Ticker    years     revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG  equitygr      divgr   roicavg    roceavg
-                # 0    NUE     18  2.625312  10.085268        0.433444    2.014189e+08          1.715804e+09  5.590830   0.950187  9.209051  12.263205
-                # 1   STLD     18  4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08  8.801051  11.681113  7.843229  14.992343
-                # 2     RS     17  5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08  9.418193  17.718853  9.121950  12.131660
-                # 3    NEM     18  0.655908  13.195627        0.147077    1.930000e+08          2.648077e+09  0.112810  20.960141  3.464378   4.572959
-                #results from above:
-                #   Ticker  years      revgr       nigr  payoutRatioAVG  netCashFlowAVG  operatingCashFlowAVG   equitygr      divgr    roicavg    roceavg
-                # 0   HWKN     15   7.921215   4.962971        0.350206    6.669091e+05          3.689775e+07   8.906628   6.526646  10.400827  12.637140
-                # 3   STLD     18   4.563829   4.415330        0.207457    1.110677e+08          7.234860e+08   8.801051  11.681113   7.843229  14.992343
-                # 4   UFPI     16  13.809333  25.466438        0.169407    6.471333e+06          1.308264e+08  11.629191  11.687335   9.462612  10.677567
-                # 5     RS     17   5.015402   3.829977        0.178590    1.103483e+07          6.411757e+08   9.418193  17.718853   9.121950  12.131660
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1138,16 +1124,16 @@ def rank_Communications():
                 divgrv = 5
                 divpayv = 5
                 sharesv = 1
-                cfv = 5
+                cfv = 4
                 bvv = 0
                 equityv = 5
                 debtv = 1
-                fcfmv = 3
+                fcfmv = 5
                 fcfv = 3
                 ffov = 0
                 niv = 3
                 revv = 3
-                yieldv = 1
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1173,6 +1159,197 @@ def rank_Communications():
                 continue
     except Exception as err:
         print('rank comms error: ')
+        print(err)
+
+def rank_Energy():
+    try:
+        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Energy\''
+        tickers = print_DB(tickergrab, 'return')
+        length1 = len(tickers['ticker'])
+        n = 1
+        
+        for x in tickers['ticker']:
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'E'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 0
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 1
+                cfv = 2
+                bvv = 0
+                equityv = 5
+                debtv = 2
+                fcfmv = 3
+                fcfv = 3
+                ffov = 0
+                niv = 1
+                revv = 1
+                yieldv = 3
+
+                justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
+                                (divgr) + (po) + (roic) + (roce) + (divyield))
+
+                maxscore = 70
+                uploaddf['maxscore'] = maxscore
+                uploaddf['score'] = justscore
+                uploadToDB(uploaddf,'Energy_Ranking')
+
+                srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+
+                uploaddf['maxscore'] = srmaxscore
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank energy error in loop for: ' + str(x))
+                print(err)
+                continue
+    except Exception as err:
+        print('rank energy error: ')
+        print(err)
+
+def rank_Financials():
+    try:
+        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Financial Services\' \
+                        AND Ticker NOT IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
+                                    \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
+                                    \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
+                                    \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
+                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \'
+        tickers = print_DB(tickergrab, 'return')
+        length1 = len(tickers['ticker'])
+        n = 1
+        
+        for x in tickers['ticker']:
+            try:
+                uploaddf = pd.DataFrame()
+                print(str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'F'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 1
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 3
+                cfv = 1
+                bvv = 5
+                equityv = 5
+                debtv = 3
+                fcfmv = 1
+                fcfv = 1
+                ffov = 0
+                niv = 3
+                revv = 1
+                yieldv = 5
+
+                justscore = ((rev) + (ni) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
+                                (divgr) + (po) + (roic) + (roce) + (divyield))
+
+                maxscore = 80
+                uploaddf['maxscore'] = maxscore
+                uploaddf['score'] = justscore
+                uploadToDB(uploaddf,'Financials_Ranking')
+
+                srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+
+                uploaddf['maxscore'] = srmaxscore
+                uploaddf['score'] = finalscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank financials error in loop for: ' + str(x))
+                print(err)
+                continue
+    except Exception as err:
+        print('rank financials error: ')
+        print(err)
+
+#luke here. once mega errors are found and fixed, edit this, delete the bdc's, then reupload the bdc's to metadata and you can add them to rankings.
+def selectingBDC():
+    try:
+        bdcRanks = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG as po, \
+                        netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
+                        CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
+                        CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
+                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
+                        CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
+                        CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
+                    FROM Metadata \
+                    WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
+                                    \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
+                                    \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
+                                    \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
+                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
+                    AND years >= 1 \
+                    AND nigr >= -1 \
+                    AND divgr >= -10 AND divgr < 75 \
+                    AND payoutRatioAVG <= 0.9 \
+                    AND netcfGRAVG >= 0 \
+                    AND equity >= 0 \
+                    AND roic > 0 \
+                    AND roce > 0 \
+                    ORDER BY equity;'
+
+        print_DB(bdcRanks, 'print')
+        # csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
+    except Exception as err:
+        print('select bdc error:')
         print(err)
 
 def rank_ConsumerCyclical():
@@ -1328,210 +1505,8 @@ def rank_ConsumerDefensive():
         print('rank Consumer Def error: ')
         print(err)
 
-def rank_Energy():
-    try:
-        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Energy\''
-        tickers = print_DB(tickergrab, 'return')
-        length1 = len(tickers['ticker'])
-        n = 1
-        
-        for x in tickers['ticker']:
-            try:
-                uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
-                uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'E'
-                roce = uploaddf['roce'] = roce_rating(x)
-                roic = uploaddf['roic'] = roic_rating(x)
-                roc = uploaddf['roc'] = roc_rating(x)
-                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-                po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divgrowth_rating(x)
-                divpay = uploaddf['divpay'] = divspaid_rating(x)
-                shares = uploaddf['shares'] = shares_rating(x)
-                cf = uploaddf['cf'] = cf_rating(x)
-                bv = uploaddf['bv'] = bvnav_rating(x)
-                equity = uploaddf['equity'] = equity_rating(x)
-                debt = uploaddf['debt'] = debt_rating(x)
-                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-                fcf = uploaddf['fcf'] = fcf_rating(x)
-                ffo = uploaddf['ffo'] = ffo_rating(x)
-                ni = uploaddf['ni'] = ni_rating(x)
-                rev = uploaddf['rev'] = growth_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
-                #v = value to be VALUED at lol
-                rocev = 5
-                roicv = 5
-                rocv = 0
-                ffopov = 0
-                pov = 5
-                divgrv = 5
-                divpayv = 5
-                sharesv = 1
-                cfv = 5
-                bvv = 0
-                equityv = 5
-                debtv = 5
-                fcfmv = 1
-                fcfv = 1
-                ffov = 0
-                niv = 1
-                revv = 1
-                yieldv = 1
 
-                justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
-                                (divgr) + (po) + (roic) + (roce) + (divyield))
 
-                maxscore = 70
-                uploaddf['maxscore'] = maxscore
-                uploaddf['score'] = justscore
-                uploadToDB(uploaddf,'Energy_Ranking')
-
-                srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
-                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
-
-                uploaddf['maxscore'] = srmaxscore
-                uploaddf['score'] = finalscore
-                uploadToDB(uploaddf,'Sector_Rankings')
-                n += 1
-            except Exception as err:
-                print('rank energy error in loop for: ' + str(x))
-                print(err)
-                continue
-    except Exception as err:
-        print('rank energy error: ')
-        print(err)
-
-def rank_Financials():
-    try:
-        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Financial Services\''
-        tickers = print_DB(tickergrab, 'return')
-        length1 = len(tickers['ticker'])
-        n = 1
-        
-        for x in tickers['ticker']:
-            try:
-                uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
-                uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'F'
-                roce = uploaddf['roce'] = roce_rating(x)
-                roic = uploaddf['roic'] = roic_rating(x)
-                roc = uploaddf['roc'] = roc_rating(x)
-                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
-                po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divgrowth_rating(x)
-                divpay = uploaddf['divpay'] = divspaid_rating(x)
-                shares = uploaddf['shares'] = shares_rating(x)
-                cf = uploaddf['cf'] = cf_rating(x)
-                bv = uploaddf['bv'] = bvnav_rating(x)
-                equity = uploaddf['equity'] = equity_rating(x)
-                debt = uploaddf['debt'] = debt_rating(x)
-                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
-                fcf = uploaddf['fcf'] = fcf_rating(x)
-                ffo = uploaddf['ffo'] = ffo_rating(x)
-                ni = uploaddf['ni'] = ni_rating(x)
-                rev = uploaddf['rev'] = growth_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
-                #v = value to be VALUED at lol
-                rocev = 5
-                roicv = 5
-                rocv = 1
-                ffopov = 0
-                pov = 5
-                divgrv = 5
-                divpayv = 5
-                sharesv = 3
-                cfv = 3
-                bvv = 5
-                equityv = 5
-                debtv = 3
-                fcfmv = 3
-                fcfv = 3
-                ffov = 0
-                niv = 3
-                revv = 1
-                yieldv = 3
-
-                #these brought out the best
-                sqldf = sqldf[sqldf.years >= 10]
-                # # AND netIncomeGrowthAVG >= 3 \
-                # sqldf = sqldf[sqldf.nigr >= 0]
-                # # AND (divgr >= 8 AND divgr <= 30) OR (divgr2 >= 8) \
-                # sqldf = sqldf[sqldf.divgr.between(8,20)]
-                # # AND payoutRatioAVG <= 0.5 \
-                # sqldf = sqldf[sqldf.payoutRatioAVG <= 0.5]
-                # # AND equity >= 3 \
-                # sqldf = sqldf[sqldf.equity >= 3.5]
-                # # AND operatingCashFlowAVG > 0 \
-                # sqldf = sqldf[sqldf.operatingCashFlowAVG >= 1000000000]
-                # # AND netCashFlowAVG > 0 \
-                # sqldf = sqldf[sqldf.netCashFlowAVG >= 100000000]
-                # # AND roic > 10 \
-                # sqldf = sqldf[sqldf.roic >= 10]
-                # # AND roce > 10 \
-                # sqldf = sqldf[sqldf.roce >= 10]
-
-                justscore = ((rev) + (ni) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
-                                (divgr) + (po) + (roic) + (roce) + (divyield))
-
-                maxscore = 80
-                uploaddf['maxscore'] = maxscore
-                uploaddf['score'] = justscore
-                uploadToDB(uploaddf,'Financials_Ranking')
-
-                srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
-                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
-                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
-
-                uploaddf['maxscore'] = srmaxscore
-                uploaddf['score'] = finalscore
-                uploadToDB(uploaddf,'Sector_Rankings')
-                n += 1
-            except Exception as err:
-                print('rank financials error in loop for: ' + str(x))
-                print(err)
-                continue
-    except Exception as err:
-        print('rank financials error: ')
-        print(err)
-
-#This could be usefully added to sector rankings, but it may be tricky. Might need to add tickers there, 'not in' #luke
-def selectingBDC():
-    try:
-        bdcRanks = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG as po, \
-                        netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
-                        CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
-                        CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
-                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
-                        CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
-                        CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
-                    FROM Metadata \
-                    WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
-                                    \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
-                                    \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
-                                    \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
-                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
-                    AND years >= 1 \
-                    AND nigr >= -1 \
-                    AND divgr >= -10 AND divgr < 75 \
-                    AND payoutRatioAVG <= 0.9 \
-                    AND netcfGRAVG >= 0 \
-                    AND equity >= 0 \
-                    AND roic > 0 \
-                    AND roce > 0 \
-                    ORDER BY equity;'
-
-        print_DB(bdcRanks, 'print')
-        # csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
-    except Exception as err:
-        print('select bdc error:')
-        print(err)
 
 def rank_Healthcare():
     try:
@@ -1702,6 +1677,7 @@ def rank_RealEstate():
                 uploaddf['Sector'] = 'RE'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1719,8 +1695,9 @@ def rank_RealEstate():
                 rev = uploaddf['rev'] = growth_rating(x)
                 divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
-                rocev = 5
-                roicv = 5
+                rocev = 3 #luke here debate this
+                roicv = 3
+                reitrocev = 5
                 rocv = 1
                 ffopov = 5
                 pov = 0
@@ -1739,7 +1716,7 @@ def rank_RealEstate():
                 yieldv = 1
 
                 justscore = ((rev) + (ni) + (ffo) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
-                                (divgr) + (ffopo) + (roic) + (roce) + (divyield))
+                                (divgr) + (ffopo) + (roic) + (roce) + (reitroce) + (divyield))
 
                 maxscore = 85
                 uploaddf['maxscore'] = maxscore
@@ -1919,6 +1896,118 @@ def rank_Utilities():
         print('rank utils error: ')
         print(err)
 
+def clear_rankings():
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    sector = 'DELETE FROM Sector_Rankings'
+    query.execute(sector)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    mats = 'DELETE FROM Materials_Ranking'
+    query.execute(mats)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    coms = 'DELETE FROM Communications_Ranking'
+    query.execute(coms)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    en = 'DELETE FROM Energy_Ranking'
+    query.execute(en)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    fin = 'DELETE FROM Financials_Ranking'
+    query.execute(fin)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    ind = 'DELETE FROM Industrials_Ranking'
+    query.execute(ind)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    tech = 'DELETE FROM Tech_Ranking'
+    query.execute(tech)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    stap = 'DELETE FROM ConsumerDefensive_Ranking'
+    query.execute(stap)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    re = 'DELETE FROM RealEstate_Ranking'
+    query.execute(re)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    util = 'DELETE FROM Utilities_Ranking'
+    query.execute(util)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    hc = 'DELETE FROM Healthcare_Ranking'
+    query.execute(hc)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    cd = 'DELETE FROM ConsumerCyclical_Ranking'
+    query.execute(cd)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    print_DB('SELECT * FROM Sector_Rankings','print')
+    print_DB('SELECT * FROM Materials_Ranking','print')
+    print_DB('SELECT * FROM Communications_Ranking','print')
+    print_DB('SELECT * FROM Energy_Ranking','print')
+    print_DB('SELECT * FROM Financials_Ranking','print')
+    print_DB('SELECT * FROM Industrials_Ranking','print')
+    print_DB('SELECT * FROM Tech_Ranking','print')
+    print_DB('SELECT * FROM ConsumerDefensive_Ranking','print')
+    print_DB('SELECT * FROM RealEstate_Ranking','print')
+    print_DB('SELECT * FROM Utilities_Ranking','print')
+    print_DB('SELECT * FROM Healthcare_Ranking','print')
+    print_DB('SELECT * FROM ConsumerCyclical_Ranking','print')
+
+
+
 # rank_Materials()
 # rank_Communications()
 # rank_Energy()
@@ -1930,3 +2019,28 @@ def rank_Utilities():
 # rank_Utilities()
 # rank_Healthcare()
 # rank_ConsumerCyclical() 
+
+def checkreitroce():
+    try:
+        getit = 'SELECT DISTINCT(Ticker) as ticker FROM Mega WHERE Sector LIKE \'%Real Est%\''
+        df = print_DB(getit, 'return')
+        gathered = []
+        n = 1
+        for x in df['ticker']:
+            val = reitroce_rating(x)
+            gathered.append(val)
+            print(str(round(n/len(df['ticker']),4)*100) + '% complete!')
+            n += 1
+
+        # print(min(gathered))
+        # print(max(gathered))
+        # print(sum(gathered)/len(gathered))
+    except Exception as err:
+        print(str(x) + ' failed for some reason:')
+        print(err)
+    finally:
+        print(min(gathered))
+        print(max(gathered))
+        print(sum(gathered)/len(gathered))
+
+# checkreitroce()

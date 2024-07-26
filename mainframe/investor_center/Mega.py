@@ -118,6 +118,7 @@ nsd = 'SELECT Ticker, CIK, Sector, Industry FROM stockList;'
 gSdf = print_DB(nsd, 'return')
 nameSectorDict = gSdf.set_index('Ticker')['Sector'].to_dict()
 #just for ciks #.astype(str).str.zfill(10).to_dict()
+cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
 nameIndustryDict = gSdf.set_index('Ticker')['Industry'].to_dict()
 
 def EDGAR_query(ticker, cik, header, tag: list=None) -> pd.DataFrame:
@@ -531,6 +532,8 @@ def cleanUnits(df):
         for i in range(len(origRev)):
             if unitsFrom[i] == 'TWD':
                 conRev.append(origRev[i] * 0.03)
+            elif unitsFrom[i] == 'USD/shares':
+                conRev.append(curConvert.convert(origRev[i], 'USD', 'USD', date=date(int(datesFrom[i]),12,31))) #luke here added
             else:
                 conRev.append(curConvert.convert(origRev[i], unitsFrom[i], 'USD', date=date(int(datesFrom[i]),12,31)))
         df_col_added['newVal'] = conRev
@@ -912,6 +915,7 @@ def cleanInterestPaid(df):
         print(err)
 
 def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal): 
+    #luke here, units aren't consolidating properly for fdus
     try:
         shares = shares.rename(columns={'val':'shares'})
         shares = shares.drop(columns=['Units'])
@@ -935,12 +939,14 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         roctotal = roctotal.rename(columns={'val':'ROCTotal'})
         if roctotal['Units'].isnull().all():
             roctotal = roctotal.drop(columns=['Units'])
-        
+        #luke here
         df_col_added = pd.merge(total, perShare, on=['year','Ticker','CIK'], how='outer')
         df_col_added = pd.merge(shares, df_col_added, on=['year','Ticker','CIK'], how='outer')
         df_col_added = pd.merge(dilutedShares, df_col_added, on=['year','Ticker','CIK'], how='outer')
         df_col_added = pd.merge(rocps, df_col_added, on=['year','Ticker','CIK'], how='outer')
         df_col_added = pd.merge(roctotal, df_col_added, on=['year','Ticker','CIK'], how='outer')
+        print('in clean divs')
+        print(df_col_added)
         
         #first we check for nans, keep them in mind for later
         nanList = []
@@ -1564,16 +1570,34 @@ def mCTEDB(df, ticker):
                                     cSADB(df, dilutedSharesOutstanding),
                                     cSADB(df, returnOfCapitalPerShare),
                                     cSADB(df, totalReturnOfCapital))
+        
+        # intPaid_df = fillUnits(intPaid_df) #luke here remove these
+        print('intpaid')
+        for x in intPaid_df:
+            print(x)
+            print(intPaid_df[x])
+        print(intPaid_df)
+        # divs_df = fillUnits(divs_df)
+        print('divs df')
+        for y in divs_df:
+            print(y)
+            print(divs_df[y])
 
         if 'Units' not in divs_df:
             intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
-        elif divs_df['Units'].isnull().any():
-            divs_df = divs_df.drop(columns=['Units'])
-            intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
-        else:
+        else: #luke you added this and commented that out
             intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer')
+        # elif divs_df['Units'].isnull().any():
+        #     divs_df = divs_df.drop(columns=['Units'])
+        #     intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
+        # else:
+        #     intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer')
         
         intNdivs = fillUnits(intNdivs)
+        # for x in intNdivs:
+        #     print(x)
+        #     print(intNdivs[x])
+        # print(plusSaleProp) #luke
         ### DIVS TABLE END
         
         ### ROIC TABLE START
@@ -1638,10 +1662,10 @@ def mCTEDB(df, ticker):
 def write_full_EDGAR_to_Mega():
     try:
         errorTickers = []
-        getStocks = 'SELECT Ticker, CIK FROM stockList;'
-        gSdf = print_DB(getStocks, 'return')
+        # getStocks = 'SELECT Ticker, CIK FROM stockList;'
+        # gSdf = print_DB(getStocks, 'return')
         tickerlist = gSdf['Ticker'].tolist()
-        cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
+        # cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
         for i in tickerlist:
             print(i)
             try:
@@ -1661,13 +1685,39 @@ def write_full_EDGAR_to_Mega():
     finally:
         print(errorTickers)
 
+def write_list_to_Mega(thelist):
+    try:
+        errorTickers = []
+        # getStocks = 'SELECT Ticker, CIK FROM stockList;'
+        # gSdf = print_DB(getStocks, 'return')
+        # tickerlist = tuple(thelist)
+        # cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
+        for i in thelist:
+            print(i)
+            try:
+                company_data = EDGAR_query(i, cik_dict[i], header, ultimateTagsList)
+                consol_table = mCTEDB(company_data, i)
+                uploadToDB(consol_table, 'Mega')
+                print(i + ' uploaded to DB!')
+                time.sleep(0.1)
+            except Exception as err1:
+                errorTickers.append(str(i))
+                print('write list to DB in for loop error for: ' + i)
+                print(err1)
+                continue
+    except Exception as err:
+        print("write List to DB error: ")
+        print(err)
+    finally:
+        print(errorTickers)
+
 #this gets all stocks and tickers available, then all tickers in Mega, checks latest year in Mega, 
 # gathers new data where necessary and uploads only that to Mega
 def update_Mega(latestyear):
     try:
-        getStocks = 'SELECT Ticker, CIK FROM stockList;'
-        gSdf = print_DB(getStocks, 'return')
-        cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
+        # getStocks = 'SELECT Ticker, CIK FROM stockList;'
+        # gSdf = print_DB(getStocks, 'return')
+        # cik_dict = gSdf.set_index('Ticker')['CIK'].astype(str).str.zfill(10).to_dict()
         #get list of tickers in mega
         gettickers = 'SELECT DISTINCT(Ticker) FROM Mega;'
         tickersinmega = print_DB(gettickers, 'return')['Ticker'].tolist()
@@ -1745,6 +1795,26 @@ def delete_ticker_DB(ticker):
     query.close()
     conn.close()
 
+# ohmylord = ['ARCC', 'BBDC', 'BCSF', 'BKCC', 'BXSL', 'CCAP', 'CGBD', 'FCRD', 'CSWC', 'GAIN', 
+#             'GBDC', 'GECC', 'GLAD', 'GSBD', 'HRZN', 'ICMB', 'LRFC', 'MFIC', 'MAIN', 'MRCC', 
+#             'MSDL', 'NCDL', 'NMFC', 'OBDC', 'OBDE', 'OCSL', 'OFS', 'OXSQ', 'PFLT', 'PFX', 
+#             'PNNT', 'PSBD', 'PSEC', 'PTMN', 'RAND', 'RWAY', 'SAR', 'SCM', 'SLRC', 'SSSS', 
+#             'TCPC', 'TPVG', 'TRIN', 'TSLX', 'WHF', 'HTGC', 'CION', 'FDUS', 'FSK']
+
+ohmylord = ['FDUS']
+# for i in ohmylord:
+#     delete_ticker_DB(i)
+
+# write_list_to_Mega(ohmylord)
+
+company_data = EDGAR_query('FDUS', cik_dict['FDUS'], header, ultimateTagsList)
+consol_table = mCTEDB(company_data, 'FDUS')
+# print(consol_table)
+
+# guh = 'SELECT * FROM Mega WHERE Ticker IN ' + str(tuple(ohmylord))+ ';'
+# guh = 'SELECT * FROM Mega WHERE Ticker LIKE \'FDUS\';'
+# print_DB(guh,'print')
+
 def find_badUnitsDB():
     conn = sql.connect(db_path)
     query = conn.cursor()
@@ -1800,6 +1870,9 @@ def find_badUnitsDB():
 ####
 #need to check differences between what is in stockList, from SEC filings, and what is in Mega,
 #so when you updateMega, great, records are updated, but any newbies are then also added fresh
+
+## clean units error usd/share not a supported currency for bbdc at least.
+#need to run a full scan of the bdc's. catch those errors and fix them. delete and refresh db with them. they're generating an extra column for some reason
 
 #---------------------------------------------------------------------
 #What each value is
@@ -1865,22 +1938,6 @@ def find_badUnitsDB():
         # print(t235DIVS[x])
 # for x in t235CON:
 #     print(x)
-
-# print((consolidateSingleAttribute(ticker235, year235, version235, revenue, False)))
-# print(consolidateSingleAttribute(ticker235, year235, version235, totalCommonStockDivsPaid, False)) #netIncome 
-# print(consolidateSingleAttribute(ticker235, year235, version235, declaredORPaidCommonStockDivsPerShare, False))
-# print(consolidateSingleAttribute(ticker235, year235, version235, basicSharesOutstanding, False))
-# totalCommonStockDivsPaid, declaredORPaidCommonStockDivsPerShare, basicSharesOutstanding
-
-# print(cleanTotalEquity(consolidateSingleAttribute(ticker235, year235, version235, totalAssets, False), 
-#                                     consolidateSingleAttribute(ticker235, year235, version235, totalLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentLiabilities, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, currentLiabilities, False), consolidateSingleAttribute(ticker235, year235, version235, nonCurrentAssets, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, currentAssets, False), consolidateSingleAttribute(ticker235, year235, version235, shareHolderEquity, False)))
-
-
-# print(cleanDebt(consolidateSingleAttribute(ticker235, year235, version235, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt1, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker235, year235, version235, longTermDebt3, False), consolidateSingleAttribute(ticker235, year235, version235, longTermDebt4, False)))
 
 # print(set(techmissingincomeyears).difference(techmissingroicyears))
 
