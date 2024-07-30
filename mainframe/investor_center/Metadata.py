@@ -1081,7 +1081,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     finally:
         return metadata
 
-def updateOrFillMetadata(sector):
+def sectorFillMetadata(sector):
     #Need to decide if we remove old records, or just add new records, latestyear and any stat changes will be only distinguishing between different
     #rows of data
     #i believe we should save a snapshot, wipe, fill again: keep one for current records, one for trend data analysis later
@@ -1089,11 +1089,67 @@ def updateOrFillMetadata(sector):
                 FROM Mega \
                 WHERE Sector LIKE \'' + sector + '\''
     tickerfetch = print_DB(tickerq, 'return')['Ticker']
-    for x in tickerfetch:
-        print('Working on ' + x)
-        faTable = full_analysis(income_reading(x), balanceSheet_reading(x), cashFlow_reading(x), dividend_reading(x), efficiency_reading(x))
-        print('Table made for: ' + x)
-        uploadToDB(faTable,'Metadata')
+    length1 = len(tickerfetch)
+    n = 1
 
-# testMetadata = 'SELECT * FROM Metadata;'
-# print_DB(testMetadata, 'print')
+    for x in tickerfetch:
+        # print('Working on ' + x)
+        try:
+            print(str(round(n/length1,4)*100) + '% complete!')
+            faTable = full_analysis(income_reading(x), balanceSheet_reading(x), cashFlow_reading(x), dividend_reading(x), efficiency_reading(x))
+            print('Table made for: ' + x)
+            uploadToDB(faTable,'Metadata')
+            n += 1
+        except Exception as err:
+            print('sector fill metadata err')
+            print(err)
+            continue
+
+def fullFillMetadata():
+    try:
+        getsectors = 'SELECT DISTINCT Sector FROM Mega;'
+        sectors = print_DB(getsectors, 'return')
+        for x in sectors['Sector']:
+            sectorFillMetadata(x)
+    except Exception as err:
+        print('full fill metadata')
+        print(err)
+
+# fullFillMetadata()
+
+##method to copy metadata to backup, don't forget to check it first, only add if rows don't match.
+
+#migrate metadata to backup
+#delete metadata and sector rankings
+#refill metadata
+#refill sector rankings
+#look at rankings, expand watchlist to plan rest of year investing
+##then need to decide: do we work on reports? do we get django rocking, htmx built, get things displayed, deployed, launch this thing pre report?
+
+def copyMD():
+    try:
+        #Luke Need to update this to compare each row, probably based on ticker, and only insert if the row contains differences along any column
+        copyit = 'INSERT INTO Metadata_Backup SELECT * FROM Metadata;'
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+        query.execute(copyit)
+        conn.commit()
+        query.close()
+        conn.close()
+        #then test if it filled
+        yes = 'select * from Metadata_Backup'
+        print_DB(yes,'print')
+    except Exception as err:
+        print('copy MD erro')
+        print(err)
+
+# copyMD()
+
+#instead of a delete function, luke, try to combine the above copy description with a copy and replace function. could cut run time down?
+#either you copy what you can, delete, refill totally.
+#or, get all tickers, then iterate thru each ticker row, compare to backup, if same, next, if diff, add row to backup, 
+#then clear from metadata, then fill metadata with it 
+#i'm learning towards first one. beacuse metadata fills from mega. mega gets updated. now you check backup, copy, delete, refill metadata with new mega data
+#streamlines it
+
+#which also means sector rankings will need backups. snapshots. to see thru the years. interesting.

@@ -60,26 +60,9 @@ def uploadToDB(upload,table):
         query.close()
         conn.close()
 
+###LUKE TO DO
 #going to have to manually review all of these rankings, to verify the integrity of rankings is what our company stands by #luke
 # debate full clearing sector rankings, vs snapshots, vs just keeping them in for more metadata; note below
-
-
-#rev: [15, 7, 3, 2, 0, -1, -2, -3, -4]
-#roic: [20,15,7,5,1,0,-1,-5,-7]
-#roce: [25,15,10,5,1,0,-1,-5,-10]
-
-#ni: 2==2+, 3==4-7, same ffo
-#fcf: [10, 7, 4, 2, 0, -1, -2, -3, -4]
-#fcfm: 1== >0
-#debt: 3 == 1-10+
-#equity: [10,5,1,0,-1,-2,-3,-4,-5]
-#bv/nav: ;[10,5,1,0,-1,-2,-3,-4,-5]
-#cf: [7,4,2,0,-1,-5,-7,-10,-15] op/netcf
-#shares: 2 lowest, <=10+
-#divspaid
-#divgrowth: 2== >=3
-#po: 2 == <80, ffo same
-#yield: 1 == 2-3%, 3+ ideal 3%+
 
 #luke here edit this to reflect actuality
 #individual stock reports: go thru each section below. RATING each section as 5=amazing, 4=good, 3=acceptable, 2=subpar, 1=bad
@@ -1017,7 +1000,7 @@ def rank_Materials():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Materials ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'B'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1063,6 +1046,7 @@ def rank_Materials():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Materials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1094,7 +1078,7 @@ def rank_Communications():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Comms ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'C'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1141,6 +1125,7 @@ def rank_Communications():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Communications_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1151,6 +1136,7 @@ def rank_Communications():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1171,7 +1157,7 @@ def rank_Energy():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Energy ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'E'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1218,6 +1204,7 @@ def rank_Energy():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Energy_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1228,6 +1215,7 @@ def rank_Energy():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1245,7 +1233,7 @@ def rank_Financials():
                                     \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
                                     \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
                                     \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
-                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \'
+                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\');'
         tickers = print_DB(tickergrab, 'return')
         length1 = len(tickers['ticker'])
         n = 1
@@ -1253,7 +1241,7 @@ def rank_Financials():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Fins ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'F'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1300,6 +1288,7 @@ def rank_Financials():
                 maxscore = 80
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Financials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1310,6 +1299,7 @@ def rank_Financials():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1320,36 +1310,89 @@ def rank_Financials():
         print('rank financials error: ')
         print(err)
 
-#luke here. once mega errors are found and fixed, edit this, delete the bdc's, then reupload the bdc's to metadata and you can add them to rankings.
-def selectingBDC():
+def rank_BDC():
     try:
-        bdcRanks = 'SELECT Ticker, cast(AveragedOverYears as integer) as years, revGrowthAVG as revgr, netIncomeGrowthAVG as nigr, payoutRatioAVG as po, \
-                        netCashFlowAVG as netcfAmount, netCashFlowGrowthAVG as netcfGRAVG, \
-                        CASE WHEN repBookValueGrowthAVG > calcBookValueGrowthAVG THEN repBookValueGrowthAVG ELSE calcBookValueGrowthAVG END bv, \
-                        CASE WHEN reportedEquityGrowthAVG > calculatedEquityGrowthAVG THEN reportedEquityGrowthAVG ELSE calculatedEquityGrowthAVG END equity, \
-                        CASE WHEN repDivsPerShareGrowthAVG > calcDivsPerShareGrowthAVG THEN repDivsPerShareGrowthAVG ELSE calcDivsPerShareGrowthAVG END divgr, \
-                        CASE WHEN aroicAVG > raroicAVG THEN aroicAVG  ELSE raroicAVG END roic, \
-                        CASE WHEN croceAVG > rroceAVG THEN croceAVG ELSE rroceAVG END roce \
-                    FROM Metadata \
-                    WHERE Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
+        tickergrab = 'SELECT Ticker as ticker FROM Metadata WHERE Sector Like \'Financial Services\' \
+                        AND Ticker IN (\'ARCC\', \'BBDC\', \'BCSF\', \'BKCC\', \'BXSL\', \'CCAP\', \'CGBD\', \'FCRD\', \'CSWC\', \'GAIN\', \
                                     \'GBDC\', \'GECC\', \'GLAD\', \'GSBD\', \'HRZN\', \'ICMB\', \'LRFC\', \'MFIC\', \'MAIN\', \'MRCC\', \
                                     \'MSDL\', \'NCDL\', \'NMFC\', \'OBDC\', \'OBDE\', \'OCSL\', \'OFS\', \'OXSQ\', \'PFLT\', \'PFX\', \
                                     \'PNNT\', \'PSBD\', \'PSEC\', \'PTMN\', \'RAND\', \'RWAY\', \'SAR\', \'SCM\', \'SLRC\', \'SSSS\', \
-                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\') \
-                    AND years >= 1 \
-                    AND nigr >= -1 \
-                    AND divgr >= -10 AND divgr < 75 \
-                    AND payoutRatioAVG <= 0.9 \
-                    AND netcfGRAVG >= 0 \
-                    AND equity >= 0 \
-                    AND roic > 0 \
-                    AND roce > 0 \
-                    ORDER BY equity;'
+                                    \'TCPC\', \'TPVG\', \'TRIN\', \'TSLX\', \'WHF\', \'HTGC\', \'CION\', \'FDUS\', \'FSK\');'
+        tickers = print_DB(tickergrab, 'return')
+        length1 = len(tickers['ticker'])
+        n = 1
+        
+        for x in tickers['ticker']:
+            try:
+                uploaddf = pd.DataFrame()
+                print('BDCs ' + str(round(n/length1,4)*100) + '% complete!')
+                uploaddf['Ticker'] = [x]
+                uploaddf['Sector'] = 'BDC'
+                roce = uploaddf['roce'] = roce_rating(x)
+                roic = uploaddf['roic'] = roic_rating(x)
+                roc = uploaddf['roc'] = roc_rating(x)
+                ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
+                po = uploaddf['po'] = payout_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
+                divpay = uploaddf['divpay'] = divspaid_rating(x)
+                shares = uploaddf['shares'] = shares_rating(x)
+                cf = uploaddf['cf'] = cf_rating(x)
+                bv = uploaddf['bv'] = bvnav_rating(x)
+                equity = uploaddf['equity'] = equity_rating(x)
+                debt = uploaddf['debt'] = debt_rating(x)
+                fcfm = uploaddf['fcfm'] = fcfm_rating(x)
+                fcf = uploaddf['fcf'] = fcf_rating(x)
+                ffo = uploaddf['ffo'] = ffo_rating(x)
+                ni = uploaddf['ni'] = ni_rating(x)
+                rev = uploaddf['rev'] = growth_rating(x)
+                divyield = uploaddf['divyield'] = yield_rating(x)
+                #v = value to be VALUED at lol
+                rocev = 5
+                roicv = 5
+                rocv = 3
+                ffopov = 0
+                pov = 5
+                divgrv = 5
+                divpayv = 5
+                sharesv = 1
+                cfv = 2
+                bvv = 5
+                equityv = 5
+                debtv = 3
+                fcfmv = 3
+                fcfv = 3
+                ffov = 0
+                niv = 3
+                revv = 0
+                yieldv = 4
 
-        print_DB(bdcRanks, 'print')
-        # csv.simple_saveDF_to_csv('',print_DB(bdcRanks, 'return'), 'z-BDClist', False)
+                justscore = ((ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
+                                (divgr) + (roc) + (po) + (bv) + (roic) + (roce) + (divyield))
+
+                maxscore = 75
+                uploaddf['maxscore'] = maxscore
+                uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
+                uploadToDB(uploaddf,'BDC_Ranking')
+
+                srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
+                                (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+
+                uploaddf['maxscore'] = srmaxscore
+                uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
+                uploadToDB(uploaddf,'Sector_Rankings')
+                n += 1
+            except Exception as err:
+                print('rank bdc error in loop for: ' + str(x))
+                print(err)
+                continue
+
     except Exception as err:
-        print('select bdc error:')
+        print('rank bdc error:')
         print(err)
 
 def rank_ConsumerCyclical():
@@ -1362,7 +1405,7 @@ def rank_ConsumerCyclical():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('XLY ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'Y'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1391,23 +1434,24 @@ def rank_ConsumerCyclical():
                 pov = 5
                 divgrv = 5
                 divpayv = 5
-                sharesv = 1
-                cfv = 5
+                sharesv = 3
+                cfv = 4
                 bvv = 0
                 equityv = 5
-                debtv = 1
-                fcfmv = 3
+                debtv = 2
+                fcfmv = 5
                 fcfv = 3
                 ffov = 0
-                niv = 3
-                revv = 4
-                yieldv = 1
+                niv = 4
+                revv = 5
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'ConsumerCyclical_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1418,6 +1462,7 @@ def rank_ConsumerCyclical():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1438,7 +1483,7 @@ def rank_ConsumerDefensive():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('XLP ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'P'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1467,17 +1512,17 @@ def rank_ConsumerDefensive():
                 pov = 5
                 divgrv = 5
                 divpayv = 5
-                sharesv = 1
-                cfv = 5
+                sharesv = 3
+                cfv = 4
                 bvv = 0
                 equityv = 5
-                debtv = 1
-                fcfmv = 2
-                fcfv = 2
+                debtv = 2
+                fcfmv = 5
+                fcfv = 3
                 ffov = 0
-                niv = 2
+                niv = 3
                 revv = 3
-                yieldv = 1
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1485,6 +1530,7 @@ def rank_ConsumerDefensive():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'ConsumerDefensive_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1495,6 +1541,7 @@ def rank_ConsumerDefensive():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1504,9 +1551,6 @@ def rank_ConsumerDefensive():
     except Exception as err:
         print('rank Consumer Def error: ')
         print(err)
-
-
-
 
 def rank_Healthcare():
     try:
@@ -1518,7 +1562,7 @@ def rank_Healthcare():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('XLV ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'V'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1547,17 +1591,17 @@ def rank_Healthcare():
                 pov = 5
                 divgrv = 5
                 divpayv = 5
-                sharesv = 1
-                cfv = 5
+                sharesv = 3
+                cfv = 4
                 bvv = 0
                 equityv = 5
-                debtv = 1
-                fcfmv = 3
+                debtv = 3
+                fcfmv = 5
                 fcfv = 3
                 ffov = 0
                 niv = 3
                 revv = 3
-                yieldv = 1
+                yieldv = 5
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1565,6 +1609,7 @@ def rank_Healthcare():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Healthcare_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1575,6 +1620,7 @@ def rank_Healthcare():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1595,7 +1641,7 @@ def rank_Industrials():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Inds ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'I'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1624,17 +1670,17 @@ def rank_Industrials():
                 pov = 5
                 divgrv = 5
                 divpayv = 5
-                sharesv = 1
-                cfv = 5
+                sharesv = 2
+                cfv = 4
                 bvv = 0
                 equityv = 5
-                debtv = 3
-                fcfmv = 3
+                debtv = 2
+                fcfmv = 5
                 fcfv = 3
                 ffov = 0
-                niv = 3
+                niv = 4
                 revv = 4
-                yieldv = 1
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1642,6 +1688,7 @@ def rank_Industrials():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Industrials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1652,6 +1699,7 @@ def rank_Industrials():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1672,7 +1720,7 @@ def rank_RealEstate():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('RE ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'RE'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1695,42 +1743,45 @@ def rank_RealEstate():
                 rev = uploaddf['rev'] = growth_rating(x)
                 divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
-                rocev = 3 #luke here debate this
-                roicv = 3
+                rocev = 0
+                roicv = 0
                 reitrocev = 5
                 rocv = 1
                 ffopov = 5
                 pov = 0
                 divgrv = 5
                 divpayv = 5
-                sharesv = 2
-                cfv = 3
+                sharesv = 3
+                cfv = 0
                 bvv = 5
                 equityv = 5
-                debtv = 2
-                fcfmv = 1
-                fcfv = 1
+                debtv = 3
+                fcfmv = 0
+                fcfv = 0
                 ffov = 5
-                niv = 1
+                niv = 0
                 revv = 3
-                yieldv = 1
+                yieldv = 5
 
-                justscore = ((rev) + (ni) + (ffo) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
-                                (divgr) + (ffopo) + (roic) + (roce) + (reitroce) + (divyield))
+                justscore = ((rev) + (ffo) + (roc) + (bv) + (debt) + (equity) + (shares) + (divpay) + 
+                                (divgr) + (ffopo) + (roc) + (reitroce) + (divyield))
 
-                maxscore = 85
+                maxscore = 65
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'RealEstate_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitroce) + (yieldv))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev) + (yieldv * divyield))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1751,7 +1802,7 @@ def rank_Technology():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('tech ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'K'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1790,7 +1841,7 @@ def rank_Technology():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 1
+                yieldv = 3
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1798,6 +1849,7 @@ def rank_Technology():
                 maxscore = 70
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Tech_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1808,6 +1860,7 @@ def rank_Technology():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1829,7 +1882,7 @@ def rank_Utilities():
         for x in tickers['ticker']:
             try:
                 uploaddf = pd.DataFrame()
-                print(str(round(n/length1,4)*100) + '% complete!')
+                print('Utils ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
                 uploaddf['Sector'] = 'U'
                 roce = uploaddf['roce'] = roce_rating(x)
@@ -1862,13 +1915,13 @@ def rank_Utilities():
                 cfv = 1
                 bvv = 5
                 equityv = 5
-                debtv = 1
+                debtv = 3
                 fcfmv = 1
                 fcfv = 1
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 1
+                yieldv = 5
 
                 justscore = ((rev) + (ni) + (fcf) + (fcfm) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1876,6 +1929,7 @@ def rank_Utilities():
                 maxscore = 75
                 uploaddf['maxscore'] = maxscore
                 uploaddf['score'] = justscore
+                uploaddf['scorerank'] = justscore / maxscore
                 uploadToDB(uploaddf,'Utilities_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
@@ -1886,6 +1940,7 @@ def rank_Utilities():
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
+                uploaddf['scorerank'] = finalscore / srmaxscore
                 uploadToDB(uploaddf,'Sector_Rankings')
                 n += 1
             except Exception as err:
@@ -1933,6 +1988,14 @@ def clear_rankings():
     query = conn.cursor()
     fin = 'DELETE FROM Financials_Ranking'
     query.execute(fin)
+    conn.commit()
+    query.close()
+    conn.close()
+
+    conn = sql.connect(db_path)
+    query = conn.cursor()
+    fin2 = 'DELETE FROM BDC_Ranking'
+    query.execute(fin2)
     conn.commit()
     query.close()
     conn.close()
@@ -1998,6 +2061,7 @@ def clear_rankings():
     print_DB('SELECT * FROM Communications_Ranking','print')
     print_DB('SELECT * FROM Energy_Ranking','print')
     print_DB('SELECT * FROM Financials_Ranking','print')
+    print_DB('SELECT * FROM BDC_Ranking','print')
     print_DB('SELECT * FROM Industrials_Ranking','print')
     print_DB('SELECT * FROM Tech_Ranking','print')
     print_DB('SELECT * FROM ConsumerDefensive_Ranking','print')
@@ -2006,20 +2070,60 @@ def clear_rankings():
     print_DB('SELECT * FROM Healthcare_Ranking','print')
     print_DB('SELECT * FROM ConsumerCyclical_Ranking','print')
 
+def fillSectorRankings():
+    try:
 
+        rank_Materials()
+        rank_Communications()
+        rank_Energy()
+        rank_Financials()
+        rank_BDC()
+        rank_Industrials()
+        rank_Technology()
+        rank_ConsumerDefensive()
+        rank_RealEstate()
+        rank_Utilities()
+        rank_Healthcare()
+        rank_ConsumerCyclical() 
+    except Exception as err:
+        print('fill fulls sector rankings error: ')
+        print(err)
 
-# rank_Materials()
-# rank_Communications()
-# rank_Energy()
-# rank_Financials()
-# rank_Industrials()
-# rank_Technology()
-# rank_ConsumerDefensive()
-# rank_RealEstate()
-# rank_Utilities()
-# rank_Healthcare()
-# rank_ConsumerCyclical() 
+# clear_rankings()
+# fillSectorRankings()
 
+def checkSectorRankings():
+    try:
+        sr = 'Select * From Sector_Rankings \
+                WHERE scorerank > 0.5 \
+                AND Sector LIKE \'U\' \
+                ORDER BY scorerank DESC;'
+        retdf = print_DB(sr,'return')
+    except Exception as err:
+        print('check sr err:')
+        print(err)
+    finally:
+        return retdf
+
+# print(checkSectorRankings().to_string())#.head(30))
+
+def checkUtilitiesRankings():
+    try:
+        sr = 'Select * From Utilities_Ranking \
+                Where scorerank > 0.5 \
+                ORDER BY scorerank DESC;'
+        retdf = print_DB(sr,'return')
+    except Exception as err:
+        print('check util ranks err:')
+        print(err)
+    finally:
+        return retdf
+
+# print(checkUtilitiesRankings())
+
+#luke above, compare the values and returned rankings. decide how to proceed. Do you even need the sector rankings? Or is sector rankings enough?
+
+#used to help define function, deprecate later
 def checkreitroce():
     try:
         getit = 'SELECT DISTINCT(Ticker) as ticker FROM Mega WHERE Sector LIKE \'%Real Est%\''

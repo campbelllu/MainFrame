@@ -950,10 +950,8 @@ def cleanDividends(total, perShare, shares, dilutedShares, rocps, roctotal):
         df_col_added = pd.merge(dilutedShares, df_col_added, on=['year','Ticker','CIK'], how='outer')
 
         if rocpsFlag == False:
-            print('false flag')
             df_col_added = pd.merge(rocps, df_col_added, on=['year','Ticker','CIK'], how='outer')
         elif rocps.empty:
-            print('rocps empty')
             df_col_added = pd.merge(rocps, df_col_added, on=['year','Ticker','CIK'], how='outer')
         else:
             if 'Units' in df_col_added:
@@ -1484,12 +1482,16 @@ def update_Mega(latestyear):
         tickersinmega = print_DB(gettickers, 'return')['Ticker'].tolist()
         stillNotUpdated = []
         updated = []
+        length1 = len(tickersinmega)
+        n = 1
         for x in tickersinmega:
             getyears = 'SELECT Ticker, year FROM Mega\
                         WHERE Ticker IN (\'' + x + '\');'
             yearsdf = print_DB(getyears, 'return')
             newdf = yearsdf.max()
             latestyearinDB = newdf['year']
+            print(str(round(n/length1,4)*100) + '% complete!')
+
             if latestyearinDB != latestyear:
                 try:
                     company_data = EDGAR_query(x, cik_dict[x], header, ultimateTagsList)
@@ -1497,6 +1499,7 @@ def update_Mega(latestyear):
                     time.sleep(0.1)
                     #here we have to only upload the rows where year is greater than the latest year
                     consol_table = consol_table[consol_table['year'] > latestyearinDB]
+                    n += 1
                     if consol_table.empty:
                         print('SEC records not updated yet for: ' + x)
                         stillNotUpdated.append(x)
@@ -1508,11 +1511,14 @@ def update_Mega(latestyear):
                 except Exception as err1:
                     print('update  DB in for loop error for: ' + x)
                     print(err1)
+                    n += 1
                     continue
-
+            else:
+                n += 1
     except Exception as err:
         print("update mega DB error: ")
         print(err)
+        n += 1
     finally:
         #luke this will eventually be saved in logs
         print('stocks still needing updates:')
@@ -1521,6 +1527,14 @@ def update_Mega(latestyear):
         print(updated)
 
 # update_Mega('2023')
+
+#ran 7/29/24
+#still needing update
+needup = ['RNW', 'AZREF', 'ADN', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'CTA-PA', 'SIM', 'DRD', 'MULG', 'RMRI', 'EVA', 'GRFX', 'ZKIN', 'RETO', 'GURE', 'TLRS', 'GRMC', 'COWI', 'SRGZ', 'MNGG', 'ETCK', 'GPLDF', 'VYST', 'GYST', 'MKDTY', 'SGMD', 'NSRCF', 'AVLNF', 'ALMMF', 'ERLFF', 'SILEF', 'GIGGF', 'EXNRF', 'CGSI', 'SHVLF', 'SINC', 'SMTSF', 'JSHG', 'MXSG', 'STCC', 'HGLD', 'MPVDF', 'IIJIY', 'LDSN', 'DRCT', 'SKLZ', 'BBUZ', 'EGLXF', 'SALM', 'SPTY', 'SNPW', 'NUGL', 'COMS', 'SLDC', 'GFMH', 'SRAX', 'MDEX', 'SNWR', 'WINR', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'NTTYY', 'QBCRF', 'ILLMF', 'IDWM', 'EMWPF', 'BYOC', 'GZIC', 'PTNRF', 'PSNY', 'NWTN', 'YTRA', 'TUP', 'INTG', 'SLNA', 'SOND', 'UXIN', 'PDRO', 'PRSI', 'LTRY', 'CMOT', 'ELYS', 'EVVL', 'LQLY', 'SHMY', 'BQ', 'DREM', 'SCRH', 'FLES', 'BBIG', 'REII', 'THBD', 'BTDG', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'FTCHF', 'FXLV', 'AMTY', 'ELRA', 'SSUNF', 'ATEYY', 'CAJPY', 'DDD', 'SPWR', 'TGAN', 'LUNA', 'WRAP', 'LTCH', 'FEIM', 'SOL', 'MOBX', 'EBIXQ', 'RAASY', 'DZSI', 'EGIO', 'DGHI', 'RCAT', 'DSWL', 'SGMA', 'SPI', 'GOLQ', 'MVLA', 'HUBC', 'VSMR', 'AIAD', 'LKCO', 'WRNT', 'NXTP', 'IMTE', 'MICS', 'WDLF', 'SRCO', 'RKFL', 'DUSYF', 'ZRFY', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'TTCM', 'IGEN', 'MAPT', 'AGILQ', 'IINX', 'RDAR', 'KBNT', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'LCHD', 'AATC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'SMIT', 'XDSL', 'TRIRF', 'SANP', 'MAXD', 'SDVI', 'DIGAF', 'NTPIF', 'HWTR', 'MHPC', 'CRDV', 'PDNLA', 'DPWW', 'CNI', 'RYAAY', 'FLCX', 'HRBR', 'PYRGF', 'RSKIA', 'NSGP', 'TPCS', 'CACO', 'PGTK', 'GTMAY', 'AUSI', 'ALPP', 'OCLN', 'CAMG', 'GPOX', 'TBLT', 'MACE', 'TLSS', 'PTNYF', 'AETHF', 'WARM', 'NVGT', 'DRFS', 'BLIS', 'DLYT', 'BRDSQ', 'FIFG', 'COUV', 'ZEVY', 'DTII', 'GDSI', 'BBRW', 'JPEX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'GNGYF', 'YELLQ', 'ACMB', 'UCIX', 'PRPI', 'AMMX', 'TMRR', 'ECOX', 'RENO', 'EVO', 'TARO', 'SUPN', 'MDRX', 'CORBF', 'BLUE', 'CELU', 'TIHE', 'EGRX', 'VICP', 'PNPL', 'OKYO', 'ESLA', 'DXR', 'BIMI', 'MDNAF', 'HSTI', 'PMCB', 'CLRD', 'COSM', 'BTTX', 'EDXC', 'RADCQ', 'ACBM', 'HENC', 'ALZN', 'XTLB', 'VFRM', 'RNVA', 'REPCF', 'ARDS', 'CWBR', 'ELOX', 'NMRD', 'INQD', 'GBLX', 'AGTX', 'VRAX', 'WORX', 'DVLP', 'CMRA', 'ATHXQ', 'MJNE', 'NTRR', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'SDCCQ', 'GMVDF', 'QTXB', 'SGBI', 'CSTF', 'BLMS', 'BBBT', 'VNTH', 'GLSHQ', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'RBSH', 'INFIQ', 'BIOCQ', 'ABMC', 'HTGMQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'NMTRQ', 'SWGHF', 'BFFTF', 'SKYI', 'FZMD', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'IGEX', 'NAVB', 'CANQF', 'MCOA', 'GPFT', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'SNNC', 'TOMDF', 'KGKG', 'WCUI', 'ENDV', 'VIVE', 'PHBI', 'CBGL', 'SCPS', 'PHCG', 'EWLL', 'NPHC', 'NBRVF', 'CLSK', 'FIHL', 'ABIT', 'FRST', 'EVE', 'CFNB', 'ATEK', 'APXI', 'NPFC', 'PSBQ', 'IMAQ', 'VHAQ', 'SWSS', 'MSSA', 'MATH', 'OWVI', 'WTMA', 'MCAG', 'GNRV', 'ARGC', 'TNBI', 'TGGI', 'SLTN', 'SIVBQ', 'FDCT', 'OOGI', 'SITS', 'ADAD', 'FRBK', 'GLAE', 'EEGI', 'VCOR', 'BFYW', 'RAHGF', 'CONC', 'BZRD', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'CILJF', 'CIXXF', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'BABL', 'CSAN', 'UNTC', 'BROG', 'WTRV', 'SMGI', 'OILY', 'GRVE', 'GSPE', 'AMNI', 'QREE', 'DBRM', 'PCCYF', 'SNPMF', 'ATGFF', 'SPTJF', 'VTDRF', 'BRLL', 'MRGE', 'NOMD', 'AQPW', 'DOLE', 'ZHYBF', 'NXMH', 'RGF', 'MALG', 'MSS', 'CTGL', 'BRSH', 'GV', 'HPCO', 'WAFU', 'MNKA', 'FAMI', 'LEAI', 'RMHB', 'WTER', 'VGFCQ', 'SMFL', 'RTON', 'MFLTY', 'NUVI', 'OGAA', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'HVCW', 'DTEAF', 'CELJF']
+# just updated
+wasup = ['VZLA', 'ACRG', 'USAU', 'NRHI', 'ELRE', 'BOTY', 'CRMT', 'BGI', 'MOGU', 'KITL', 'EVTK', 'LSEB', 'HKD', 'DPLS', 'VEII', 'SING', 'PTOS', 'AXR', 'BUKS', 'PPSI', 'OPTT', 'HIHO', 'ATXG', 'YJGJ', 'KRFG', 'CSBR', 'CXXIF', 'HSCS', 'ABTI', 'ECIA', 'ADMT', 'EMCG', 'HUDA', 'CARV', 'TIRX', 'UROY', 'GWTI', 'OILCF', 'MMEX', 'SHMP', 'GNLN', 'ASII']
+# yes = 'select year from Mega Where Ticker Like \'ADN\' ORDER BY year'
+# print_DB(yes, 'print')
 
 def testEDGARdata(ticker,cik):
     try:
@@ -1536,11 +1550,7 @@ def testEDGARdata(ticker,cik):
 
 # testEDGARdata('MSFT','0000789019')
 
-#testing functionality while refactoring
-# company_data = EDGAR_query('MSFT', '0000789019', header, ultimateTagsList)
-# print(company_data)
 #########################################################
-#Not used
 ##DB EXAMPLES THAT WORK
 def delete_ticker_DB(ticker):
     conn = sql.connect(db_path)
@@ -1557,19 +1567,41 @@ def delete_ticker_DB(ticker):
     conn.close()
 
 def find_badUnitsDB():
-    conn = sql.connect(db_path)
-    query = conn.cursor()
-    # del_query = 'SELECT DISTINCT Ticker FROM Mega;'
-    # query.execute(del_query)
-    # conn.commit()
+    # conn = sql.connect(db_path)
+    # query = conn.cursor()
+    # #del_query = 'SELECT DISTINCT Ticker FROM Mega;'
+    # # query.execute(del_query)
+    # # conn.commit()
     qentry = 'SELECT DISTINCT Ticker \
                 FROM Mega \
                 WHERE Units NOT LIKE \'USD\''
-    df12 = pd.read_sql(qentry,conn)
-    print(df12)
+    badunits = print_DB(qentry, 'return')
+    return badunits
+    # df12 = pd.read_sql(qentry,conn)
+    # print(df12)
+    # query.close()
+    # conn.close()
 
-    query.close()
-    conn.close()
+#luke here; test exactly how sets work. work out logic for stocklist vs megalist. 
+# tickerlist = gSdf['Ticker'].tolist() #stocklist
+# gettickers = 'SELECT DISTINCT(Ticker) as ticker FROM Mega;' #mega
+# megatickers = print_DB(gettickers,'return')['ticker'].tolist()
+
+# print('needed from stocklist')
+# print(set(tickerlist).difference(megatickers)) #what needs to be added to mega
+# print('still need years updated')
+
+# print(set(tickerlist).intersection(needup))
+# print('just was years updated')
+
+# print(set(tickerlist).intersection(wasup))
+# print(set(megatickers).difference(tickerlist)) #what is in mega that isn't in stocklist, anymore at least
+
+#i think you second do the above: get all these new stocks into mega
+#first, you update mega to most recent year, to save processing time.
+
+# yes = 'select * from Mega Where Ticker Like \'MDVL\''
+# print_DB(yes, 'print')
 
 # def delete_DB(table):
     #only use this while testing, or suffer the consequences
@@ -1609,11 +1641,8 @@ def find_badUnitsDB():
 #possible amoritization add: CapitalizedComputerSoftwareAmortization1 
 #it looks like depre and amor isn't getting the full picture for the above stocks
 ####
-#need to check differences between what is in stockList, from SEC filings, and what is in Mega,
-#so when you updateMega, great, records are updated, but any newbies are then also added fresh
-
-## clean units error usd/share not a supported currency for bbdc at least.
-#need to run a full scan of the bdc's. catch those errors and fix them. delete and refresh db with them. they're generating an extra column for some reason
+#make function to update records to include new stocklist entries
+#see notes above
 
 #---------------------------------------------------------------------
 #What each value is
@@ -1685,6 +1714,18 @@ def find_badUnitsDB():
 # print(len(techmissingincomecapex2))
 
 # checkYearsIntegritySector(util,0,10)
+
+#bad units tests 
+# badunitstest = ['ENIC', 'PAM', 'CEPU', 'LOMA', 'CPAC', 'YNDX', 'TEO', 'CELJF', 'VFS', 'EXTO', 'QIWI', 'MYSZ', 'IRS', 'CRESY', 'MESO', 'HDB', 'BBD', 'BAP', 'BCH', 'BSAC', 'CIB', 'BMA', 'AVAL', 'IFS', 'GGAL', 'BBAR', 'SUPV', 'EC', 'YPF', 'TGS', 'CCU', 'AKO-A']
+# print(len(list2)-len(badunitstest))
+# listofbadunits = find_badUnitsDB()['Ticker'].tolist()
+# print(listofbadunits)
+#for each, delete from db, then write list to db
+# for x in badunitstest:
+#     delete_ticker_DB(x)
+# write_list_to_Mega(badunitstest)
+# yes = 'select year, Units, adjroic, calculatedRoce, reportedRoce from Mega Where Ticker LIKE \'ENIC\''
+# print_DB(yes, 'print')
 
 #################
 ###Good stuff, but deprecated and rolled into other functions

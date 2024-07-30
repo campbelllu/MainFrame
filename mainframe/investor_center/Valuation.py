@@ -62,11 +62,12 @@ def uploadToDB(upload,table):
         query.close()
         conn.close()
 
+#luke to do
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # Clean code: below
 #pd analysis of a list of stocks, or etf's, returns something to put on webpage eventually, but first saves it in csv or prints it
-#
+#pd, ddm for individual stocks, etf.. for etf's. you can use stocks in the etf ones, but the numbers are then wrong.
 
 def PD(listofstocktickers):
     try:
@@ -515,8 +516,6 @@ def growthValuation(listofstocktickers):
     finally:
         return toreturn
 
-
-
 stockmats = ['UFPI']
 stockenergy = ['CVX','XOM']
 stockfinance = ['ARCC','MAIN','HTGC','TSLX','CSWC','JPM']
@@ -535,9 +534,13 @@ checkfireholdings = ['MSFO','AMZY','CONY','APLY','GOOY','FBY','NVDY','TSLY','XDT
 # print(ETFDDM(etflist))
 # print(ETFPD(etflist2))
 # print(ETFDDM(etflist2))
-print(ETFPD(checkfireholdings))
+# print(ETFPD(checkfireholdings))
 # print(ETFDDM(etflist3))
 # print(growthValuation(stocktech))
+# print(ETFPD(['MSFT']))
+# print(PD(['MSFT','MSFT']))
+# print(ETFDDM(['MSFT']))
+# print(DDM(['MSFT','MSFT']))
 
 ## ETF NOTES FROM YAHOO
 # {'phone': '1-800-435-4000', 
