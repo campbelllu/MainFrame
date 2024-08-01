@@ -25,8 +25,8 @@ curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 import csv_modules as csv
 import Mega as mega
 import Metadata as metadata
-import SectorRankings as sr
-import AltTables as at
+# import SectorRankings as sr
+# import AltTables as at
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
@@ -63,11 +63,8 @@ def uploadToDB(upload,table):
         conn.close()
 
 #luke to do
-# don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
-# such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # Clean code: below
-#pd analysis of a list of stocks, or etf's, returns something to put on webpage eventually, but first saves it in csv or prints it
-#pd, ddm for individual stocks, etf.. for etf's. you can use stocks in the etf ones, but the numbers are then wrong.
+#you can use stocks in the etf ones, but the numbers are then wrong.
 
 def PD(listofstocktickers):
     try:
@@ -516,31 +513,16 @@ def growthValuation(listofstocktickers):
     finally:
         return toreturn
 
-stockmats = ['UFPI']
-stockenergy = ['CVX','XOM']
-stockfinance = ['ARCC','MAIN','HTGC','TSLX','CSWC','JPM']
-stockinds = ['FAST','PH','ETN','RSG','WM','CAT','WSO','FIX','CTAS','LMT']
-stocktech = ['TXN','ADI','MCHP','MSFT','AAPL','IBM','NVDA','PLTR','SMCI']
-stockstaples = ['COST','WMT','PG','KR']
-stockre = ['O','NNN','ADC','PLD','STAG','REXR','TRNO','FR','AMT','SBAC','CCI','DLR','EQIX']
-stockutil = ['NEE','SO','AWK','CPK','ATO']
-stockhealth = ['UNH','MCK','JNJ','ABBV']
-stockdisc = ['HD','TSCO','MCD','F','YUM']
-etflist = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','SCHH','XLU','XLV','XLY']
-# etflist2 = []
-# etflist3 = 
-checkfireholdings = ['MSFO','AMZY','CONY','APLY','GOOY','FBY','NVDY','TSLY','XDTE','QDTE','FEPI','YMAX','YMAG', 'SCHD','SVOL','QQQI','DGRO','SCHH','DIVO']
-# print(ETFPD(etflist))
-# print(ETFDDM(etflist))
-# print(ETFPD(etflist2))
-# print(ETFDDM(etflist2))
-# print(ETFPD(checkfireholdings))
-# print(ETFDDM(etflist3))
-# print(growthValuation(stocktech))
-# print(ETFPD(['MSFT']))
-# print(PD(['MSFT','MSFT']))
-# print(ETFDDM(['MSFT']))
-# print(DDM(['MSFT','MSFT']))
+stocks = ['UFPI', 'CVX','XOM','ARCC','MAIN','HTGC','TSLX','CSWC','JPM','FAST','PH','ETN',
+            'RSG','WM','CAT','WSO','FIX','CTAS','LMT','TXN','ADI','MCHP','MSFT','AAPL',
+            'IBM','NVDA','PLTR','SMCI','COST','WMT','PG','KR','O','NNN','ADC','PLD','STAG',
+            'REXR','TRNO','FR','AMT','SBAC','CCI','DLR','EQIX','NEE','SO','AWK','CPK','ATO',
+            'UNH','MCK','JNJ','ABBV','HD','TSCO','MCD','F','YUM']
+etfs = [ 'MSFO', 'AMZY','CONY','APLY','GOOY','FBY','NVDY','TSLY','XDTE','QDTE','FEPI','YMAX','YMAG',
+            'SCHD','SVOL','QQQI','DGRO','DIVO','IWMI','CRSH','FIAT']
+sectoretfs = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','SCHH','XLU','XLV','XLY']
+print(ETFPD(etfs))
+# print(PD(stocks))
 
 ## ETF NOTES FROM YAHOO
 # {'phone': '1-800-435-4000', 
@@ -566,7 +548,8 @@ checkfireholdings = ['MSFO','AMZY','CONY','APLY','GOOY','FBY','NVDY','TSLY','XDT
 # 'timeZoneShortName': 'EDT', 'uuid': '51763995-7570-386d-806d-a25eca52c2b1', 'messageBoardId': 'finmb_141947998', 'gmtOffSetMilliseconds': -14400000, 
 # 'trailingPegRatio': None}
 
-#probably will never be used, db deprecated
+#probably will never be used, db deprecated, might be re-added if it streamlines front end loading later
+#needs massive refactoring first, though
 def evaluateAndUploadPD():
     try:
         toupload = pd.DataFrame()

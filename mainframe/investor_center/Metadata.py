@@ -23,19 +23,12 @@ curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 
 #From fellow files
 import csv_modules as csv
-import Mega as mega
+# import Mega as mega
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
 db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
-
-#luke to do
-# updateOrFillMetadata fills metadata now. we need a function to backup metadata, then just rewrite it from scratch
-# after this first backup is done
-# we also need a function that checks differences between what is in metadata and what is just generated from mega
-# if different, original is snapshotted to backup DB
-# if same, new one is dropped and loop continues. I think that's how to do it.
 
 def print_DB(thequery, superflag):
     conn = sql.connect(db_path)
@@ -1117,18 +1110,21 @@ def fullFillMetadata():
 
 # fullFillMetadata()
 
-##method to copy metadata to backup, don't forget to check it first, only add if rows don't match.
-
-#migrate metadata to backup
-#delete metadata and sector rankings
-#refill metadata
-#refill sector rankings
-#look at rankings, expand watchlist to plan rest of year investing
-##then need to decide: do we work on reports? do we get django rocking, htmx built, get things displayed, deployed, launch this thing pre report?
-
+#luke to do
+# updateOrFillMetadata fills metadata now. we need a function to backup metadata, then just rewrite it from scratch
+# after this first backup is done
+#Luke Need to update this to compare each row, probably based on ticker, and only insert if the row contains differences along any column
+#instead of a delete function, luke, try to combine the above copy description with a copy and replace function. could cut run time down?
+#either you copy what you can, delete, refill totally.
+#or, get all tickers, then iterate thru each ticker row, compare to backup, if same, next, if diff, add row to backup, 
+#then clear from metadata, then fill metadata with it 
+#i'm learning towards first one. beacuse metadata fills from mega. mega gets updated. now you check backup, copy, delete, refill metadata with new mega data
+#streamlines it
+# we also need a function that checks differences between what is in metadata and what is just generated from mega
+# if different, original is snapshotted to backup DB
+# if same, new one is dropped and loop continues. I think that's how to do it.
 def copyMD():
     try:
-        #Luke Need to update this to compare each row, probably based on ticker, and only insert if the row contains differences along any column
         copyit = 'INSERT INTO Metadata_Backup SELECT * FROM Metadata;'
         conn = sql.connect(db_path)
         query = conn.cursor()
@@ -1136,20 +1132,8 @@ def copyMD():
         conn.commit()
         query.close()
         conn.close()
-        #then test if it filled
-        yes = 'select * from Metadata_Backup'
-        print_DB(yes,'print')
     except Exception as err:
         print('copy MD erro')
         print(err)
 
 # copyMD()
-
-#instead of a delete function, luke, try to combine the above copy description with a copy and replace function. could cut run time down?
-#either you copy what you can, delete, refill totally.
-#or, get all tickers, then iterate thru each ticker row, compare to backup, if same, next, if diff, add row to backup, 
-#then clear from metadata, then fill metadata with it 
-#i'm learning towards first one. beacuse metadata fills from mega. mega gets updated. now you check backup, copy, delete, refill metadata with new mega data
-#streamlines it
-
-#which also means sector rankings will need backups. snapshots. to see thru the years. interesting.

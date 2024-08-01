@@ -1473,6 +1473,18 @@ def write_list_to_Mega(thelist):
     finally:
         print(errorTickers)
 
+#gets new tickers from stocklist, adds them to mega, embedded in updateMega()
+def addNewToMega():
+    try:
+        tickerlist = gSdf['Ticker'].tolist() #stocklist
+        gettickers = 'SELECT DISTINCT(Ticker) as ticker FROM Mega;' #mega
+        megatickers = print_DB(gettickers,'return')['ticker'].tolist()
+        tickerstoadd = list(set(tickerlist).difference(megatickers))
+        write_list_to_Mega(tickerstoadd)
+    except Exception as err:
+        print('add new to mega err')
+        print(err)
+
 #this gets all stocks and tickers available, then all tickers in Mega, checks latest year in Mega, 
 # gathers new data where necessary and uploads only that to Mega
 def update_Mega(latestyear):
@@ -1520,7 +1532,8 @@ def update_Mega(latestyear):
         print(err)
         n += 1
     finally:
-        #luke this will eventually be saved in logs
+        addNewToMega()
+        #luke below will eventually be saved in logs
         print('stocks still needing updates:')
         print(stillNotUpdated)
         print('those that just got updated:')
@@ -1530,11 +1543,9 @@ def update_Mega(latestyear):
 
 #ran 7/29/24
 #still needing update
-needup = ['RNW', 'AZREF', 'ADN', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'CTA-PA', 'SIM', 'DRD', 'MULG', 'RMRI', 'EVA', 'GRFX', 'ZKIN', 'RETO', 'GURE', 'TLRS', 'GRMC', 'COWI', 'SRGZ', 'MNGG', 'ETCK', 'GPLDF', 'VYST', 'GYST', 'MKDTY', 'SGMD', 'NSRCF', 'AVLNF', 'ALMMF', 'ERLFF', 'SILEF', 'GIGGF', 'EXNRF', 'CGSI', 'SHVLF', 'SINC', 'SMTSF', 'JSHG', 'MXSG', 'STCC', 'HGLD', 'MPVDF', 'IIJIY', 'LDSN', 'DRCT', 'SKLZ', 'BBUZ', 'EGLXF', 'SALM', 'SPTY', 'SNPW', 'NUGL', 'COMS', 'SLDC', 'GFMH', 'SRAX', 'MDEX', 'SNWR', 'WINR', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'NTTYY', 'QBCRF', 'ILLMF', 'IDWM', 'EMWPF', 'BYOC', 'GZIC', 'PTNRF', 'PSNY', 'NWTN', 'YTRA', 'TUP', 'INTG', 'SLNA', 'SOND', 'UXIN', 'PDRO', 'PRSI', 'LTRY', 'CMOT', 'ELYS', 'EVVL', 'LQLY', 'SHMY', 'BQ', 'DREM', 'SCRH', 'FLES', 'BBIG', 'REII', 'THBD', 'BTDG', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'FTCHF', 'FXLV', 'AMTY', 'ELRA', 'SSUNF', 'ATEYY', 'CAJPY', 'DDD', 'SPWR', 'TGAN', 'LUNA', 'WRAP', 'LTCH', 'FEIM', 'SOL', 'MOBX', 'EBIXQ', 'RAASY', 'DZSI', 'EGIO', 'DGHI', 'RCAT', 'DSWL', 'SGMA', 'SPI', 'GOLQ', 'MVLA', 'HUBC', 'VSMR', 'AIAD', 'LKCO', 'WRNT', 'NXTP', 'IMTE', 'MICS', 'WDLF', 'SRCO', 'RKFL', 'DUSYF', 'ZRFY', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'TTCM', 'IGEN', 'MAPT', 'AGILQ', 'IINX', 'RDAR', 'KBNT', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'LCHD', 'AATC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'SMIT', 'XDSL', 'TRIRF', 'SANP', 'MAXD', 'SDVI', 'DIGAF', 'NTPIF', 'HWTR', 'MHPC', 'CRDV', 'PDNLA', 'DPWW', 'CNI', 'RYAAY', 'FLCX', 'HRBR', 'PYRGF', 'RSKIA', 'NSGP', 'TPCS', 'CACO', 'PGTK', 'GTMAY', 'AUSI', 'ALPP', 'OCLN', 'CAMG', 'GPOX', 'TBLT', 'MACE', 'TLSS', 'PTNYF', 'AETHF', 'WARM', 'NVGT', 'DRFS', 'BLIS', 'DLYT', 'BRDSQ', 'FIFG', 'COUV', 'ZEVY', 'DTII', 'GDSI', 'BBRW', 'JPEX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'GNGYF', 'YELLQ', 'ACMB', 'UCIX', 'PRPI', 'AMMX', 'TMRR', 'ECOX', 'RENO', 'EVO', 'TARO', 'SUPN', 'MDRX', 'CORBF', 'BLUE', 'CELU', 'TIHE', 'EGRX', 'VICP', 'PNPL', 'OKYO', 'ESLA', 'DXR', 'BIMI', 'MDNAF', 'HSTI', 'PMCB', 'CLRD', 'COSM', 'BTTX', 'EDXC', 'RADCQ', 'ACBM', 'HENC', 'ALZN', 'XTLB', 'VFRM', 'RNVA', 'REPCF', 'ARDS', 'CWBR', 'ELOX', 'NMRD', 'INQD', 'GBLX', 'AGTX', 'VRAX', 'WORX', 'DVLP', 'CMRA', 'ATHXQ', 'MJNE', 'NTRR', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'SDCCQ', 'GMVDF', 'QTXB', 'SGBI', 'CSTF', 'BLMS', 'BBBT', 'VNTH', 'GLSHQ', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'RBSH', 'INFIQ', 'BIOCQ', 'ABMC', 'HTGMQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'NMTRQ', 'SWGHF', 'BFFTF', 'SKYI', 'FZMD', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'IGEX', 'NAVB', 'CANQF', 'MCOA', 'GPFT', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'SNNC', 'TOMDF', 'KGKG', 'WCUI', 'ENDV', 'VIVE', 'PHBI', 'CBGL', 'SCPS', 'PHCG', 'EWLL', 'NPHC', 'NBRVF', 'CLSK', 'FIHL', 'ABIT', 'FRST', 'EVE', 'CFNB', 'ATEK', 'APXI', 'NPFC', 'PSBQ', 'IMAQ', 'VHAQ', 'SWSS', 'MSSA', 'MATH', 'OWVI', 'WTMA', 'MCAG', 'GNRV', 'ARGC', 'TNBI', 'TGGI', 'SLTN', 'SIVBQ', 'FDCT', 'OOGI', 'SITS', 'ADAD', 'FRBK', 'GLAE', 'EEGI', 'VCOR', 'BFYW', 'RAHGF', 'CONC', 'BZRD', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'CILJF', 'CIXXF', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'BABL', 'CSAN', 'UNTC', 'BROG', 'WTRV', 'SMGI', 'OILY', 'GRVE', 'GSPE', 'AMNI', 'QREE', 'DBRM', 'PCCYF', 'SNPMF', 'ATGFF', 'SPTJF', 'VTDRF', 'BRLL', 'MRGE', 'NOMD', 'AQPW', 'DOLE', 'ZHYBF', 'NXMH', 'RGF', 'MALG', 'MSS', 'CTGL', 'BRSH', 'GV', 'HPCO', 'WAFU', 'MNKA', 'FAMI', 'LEAI', 'RMHB', 'WTER', 'VGFCQ', 'SMFL', 'RTON', 'MFLTY', 'NUVI', 'OGAA', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'HVCW', 'DTEAF', 'CELJF']
+# needup = ['RNW', 'AZREF', 'ADN', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'CTA-PA', 'SIM', 'DRD', 'MULG', 'RMRI', 'EVA', 'GRFX', 'ZKIN', 'RETO', 'GURE', 'TLRS', 'GRMC', 'COWI', 'SRGZ', 'MNGG', 'ETCK', 'GPLDF', 'VYST', 'GYST', 'MKDTY', 'SGMD', 'NSRCF', 'AVLNF', 'ALMMF', 'ERLFF', 'SILEF', 'GIGGF', 'EXNRF', 'CGSI', 'SHVLF', 'SINC', 'SMTSF', 'JSHG', 'MXSG', 'STCC', 'HGLD', 'MPVDF', 'IIJIY', 'LDSN', 'DRCT', 'SKLZ', 'BBUZ', 'EGLXF', 'SALM', 'SPTY', 'SNPW', 'NUGL', 'COMS', 'SLDC', 'GFMH', 'SRAX', 'MDEX', 'SNWR', 'WINR', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'NTTYY', 'QBCRF', 'ILLMF', 'IDWM', 'EMWPF', 'BYOC', 'GZIC', 'PTNRF', 'PSNY', 'NWTN', 'YTRA', 'TUP', 'INTG', 'SLNA', 'SOND', 'UXIN', 'PDRO', 'PRSI', 'LTRY', 'CMOT', 'ELYS', 'EVVL', 'LQLY', 'SHMY', 'BQ', 'DREM', 'SCRH', 'FLES', 'BBIG', 'REII', 'THBD', 'BTDG', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'FTCHF', 'FXLV', 'AMTY', 'ELRA', 'SSUNF', 'ATEYY', 'CAJPY', 'DDD', 'SPWR', 'TGAN', 'LUNA', 'WRAP', 'LTCH', 'FEIM', 'SOL', 'MOBX', 'EBIXQ', 'RAASY', 'DZSI', 'EGIO', 'DGHI', 'RCAT', 'DSWL', 'SGMA', 'SPI', 'GOLQ', 'MVLA', 'HUBC', 'VSMR', 'AIAD', 'LKCO', 'WRNT', 'NXTP', 'IMTE', 'MICS', 'WDLF', 'SRCO', 'RKFL', 'DUSYF', 'ZRFY', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'TTCM', 'IGEN', 'MAPT', 'AGILQ', 'IINX', 'RDAR', 'KBNT', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'LCHD', 'AATC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'SMIT', 'XDSL', 'TRIRF', 'SANP', 'MAXD', 'SDVI', 'DIGAF', 'NTPIF', 'HWTR', 'MHPC', 'CRDV', 'PDNLA', 'DPWW', 'CNI', 'RYAAY', 'FLCX', 'HRBR', 'PYRGF', 'RSKIA', 'NSGP', 'TPCS', 'CACO', 'PGTK', 'GTMAY', 'AUSI', 'ALPP', 'OCLN', 'CAMG', 'GPOX', 'TBLT', 'MACE', 'TLSS', 'PTNYF', 'AETHF', 'WARM', 'NVGT', 'DRFS', 'BLIS', 'DLYT', 'BRDSQ', 'FIFG', 'COUV', 'ZEVY', 'DTII', 'GDSI', 'BBRW', 'JPEX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'GNGYF', 'YELLQ', 'ACMB', 'UCIX', 'PRPI', 'AMMX', 'TMRR', 'ECOX', 'RENO', 'EVO', 'TARO', 'SUPN', 'MDRX', 'CORBF', 'BLUE', 'CELU', 'TIHE', 'EGRX', 'VICP', 'PNPL', 'OKYO', 'ESLA', 'DXR', 'BIMI', 'MDNAF', 'HSTI', 'PMCB', 'CLRD', 'COSM', 'BTTX', 'EDXC', 'RADCQ', 'ACBM', 'HENC', 'ALZN', 'XTLB', 'VFRM', 'RNVA', 'REPCF', 'ARDS', 'CWBR', 'ELOX', 'NMRD', 'INQD', 'GBLX', 'AGTX', 'VRAX', 'WORX', 'DVLP', 'CMRA', 'ATHXQ', 'MJNE', 'NTRR', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'SDCCQ', 'GMVDF', 'QTXB', 'SGBI', 'CSTF', 'BLMS', 'BBBT', 'VNTH', 'GLSHQ', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'RBSH', 'INFIQ', 'BIOCQ', 'ABMC', 'HTGMQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'NMTRQ', 'SWGHF', 'BFFTF', 'SKYI', 'FZMD', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'IGEX', 'NAVB', 'CANQF', 'MCOA', 'GPFT', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'SNNC', 'TOMDF', 'KGKG', 'WCUI', 'ENDV', 'VIVE', 'PHBI', 'CBGL', 'SCPS', 'PHCG', 'EWLL', 'NPHC', 'NBRVF', 'CLSK', 'FIHL', 'ABIT', 'FRST', 'EVE', 'CFNB', 'ATEK', 'APXI', 'NPFC', 'PSBQ', 'IMAQ', 'VHAQ', 'SWSS', 'MSSA', 'MATH', 'OWVI', 'WTMA', 'MCAG', 'GNRV', 'ARGC', 'TNBI', 'TGGI', 'SLTN', 'SIVBQ', 'FDCT', 'OOGI', 'SITS', 'ADAD', 'FRBK', 'GLAE', 'EEGI', 'VCOR', 'BFYW', 'RAHGF', 'CONC', 'BZRD', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'CILJF', 'CIXXF', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'BABL', 'CSAN', 'UNTC', 'BROG', 'WTRV', 'SMGI', 'OILY', 'GRVE', 'GSPE', 'AMNI', 'QREE', 'DBRM', 'PCCYF', 'SNPMF', 'ATGFF', 'SPTJF', 'VTDRF', 'BRLL', 'MRGE', 'NOMD', 'AQPW', 'DOLE', 'ZHYBF', 'NXMH', 'RGF', 'MALG', 'MSS', 'CTGL', 'BRSH', 'GV', 'HPCO', 'WAFU', 'MNKA', 'FAMI', 'LEAI', 'RMHB', 'WTER', 'VGFCQ', 'SMFL', 'RTON', 'MFLTY', 'NUVI', 'OGAA', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'HVCW', 'DTEAF', 'CELJF']
 # just updated
-wasup = ['VZLA', 'ACRG', 'USAU', 'NRHI', 'ELRE', 'BOTY', 'CRMT', 'BGI', 'MOGU', 'KITL', 'EVTK', 'LSEB', 'HKD', 'DPLS', 'VEII', 'SING', 'PTOS', 'AXR', 'BUKS', 'PPSI', 'OPTT', 'HIHO', 'ATXG', 'YJGJ', 'KRFG', 'CSBR', 'CXXIF', 'HSCS', 'ABTI', 'ECIA', 'ADMT', 'EMCG', 'HUDA', 'CARV', 'TIRX', 'UROY', 'GWTI', 'OILCF', 'MMEX', 'SHMP', 'GNLN', 'ASII']
-# yes = 'select year from Mega Where Ticker Like \'ADN\' ORDER BY year'
-# print_DB(yes, 'print')
+# wasup = ['VZLA', 'ACRG', 'USAU', 'NRHI', 'ELRE', 'BOTY', 'CRMT', 'BGI', 'MOGU', 'KITL', 'EVTK', 'LSEB', 'HKD', 'DPLS', 'VEII', 'SING', 'PTOS', 'AXR', 'BUKS', 'PPSI', 'OPTT', 'HIHO', 'ATXG', 'YJGJ', 'KRFG', 'CSBR', 'CXXIF', 'HSCS', 'ABTI', 'ECIA', 'ADMT', 'EMCG', 'HUDA', 'CARV', 'TIRX', 'UROY', 'GWTI', 'OILCF', 'MMEX', 'SHMP', 'GNLN', 'ASII']
 
 def testEDGARdata(ticker,cik):
     try:
@@ -1582,27 +1593,6 @@ def find_badUnitsDB():
     # query.close()
     # conn.close()
 
-#luke here; test exactly how sets work. work out logic for stocklist vs megalist. 
-# tickerlist = gSdf['Ticker'].tolist() #stocklist
-# gettickers = 'SELECT DISTINCT(Ticker) as ticker FROM Mega;' #mega
-# megatickers = print_DB(gettickers,'return')['ticker'].tolist()
-
-# print('needed from stocklist')
-# print(set(tickerlist).difference(megatickers)) #what needs to be added to mega
-# print('still need years updated')
-
-# print(set(tickerlist).intersection(needup))
-# print('just was years updated')
-
-# print(set(tickerlist).intersection(wasup))
-# print(set(megatickers).difference(tickerlist)) #what is in mega that isn't in stocklist, anymore at least
-
-#i think you second do the above: get all these new stocks into mega
-#first, you update mega to most recent year, to save processing time.
-
-# yes = 'select * from Mega Where Ticker Like \'MDVL\''
-# print_DB(yes, 'print')
-
 # def delete_DB(table):
     #only use this while testing, or suffer the consequences
     # conn = sql.connect(db_path)
@@ -1629,9 +1619,6 @@ def find_badUnitsDB():
     # query.close()
     # conn.close()
 #----------------------------------------------------------------------------------------------
-# dblist = print_DB()['ticker']
-# print(datlist)
-# sourcelist = materials['Ticker']
 #############
 
 ### LUKE - To DO
@@ -1641,8 +1628,6 @@ def find_badUnitsDB():
 #possible amoritization add: CapitalizedComputerSoftwareAmortization1 
 #it looks like depre and amor isn't getting the full picture for the above stocks
 ####
-#make function to update records to include new stocklist entries
-#see notes above
 
 #---------------------------------------------------------------------
 #What each value is
@@ -1655,11 +1640,10 @@ def find_badUnitsDB():
 #fcf margin = fcf / revenue
 #payout ratio = divs paid / net income
 # modded payout ratio = divs paid / fcf
-# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, albeit slightly lower due to minor costs not included/found on sec reportings.
+# ffo = netincomeloss + depr&amor - gainloss sale of property and it matches their reporting, 
+# albeit slightly lower due to minor costs not included/found on sec reportings.
 # You almost end up with a bas****ized affo value because of the discrepancy tho!
-#ffo/(dividend bulk payment + interest expense) gives idea of how much money remains after paying interest and dividends for reits. aim for ratio > 1
 #---------------------------------------------------------------------
-
 #---------------------------------------------------------------------
 #The testing zone
 #---------------------------------------------------------------------
@@ -1706,26 +1690,6 @@ def find_badUnitsDB():
 # r235,version235,False) #['ReportedTotalEquity']
 # print(ticker235 + ' divs and roic table: ')
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
-
-# print(set(techmissingincomeyears).difference(techmissingroicyears))
-
-# print(set(wrong).difference(REincwrongendyear))
-# print(len(techmissingincomecapEx))
-# print(len(techmissingincomecapex2))
-
-# checkYearsIntegritySector(util,0,10)
-
-#bad units tests 
-# badunitstest = ['ENIC', 'PAM', 'CEPU', 'LOMA', 'CPAC', 'YNDX', 'TEO', 'CELJF', 'VFS', 'EXTO', 'QIWI', 'MYSZ', 'IRS', 'CRESY', 'MESO', 'HDB', 'BBD', 'BAP', 'BCH', 'BSAC', 'CIB', 'BMA', 'AVAL', 'IFS', 'GGAL', 'BBAR', 'SUPV', 'EC', 'YPF', 'TGS', 'CCU', 'AKO-A']
-# print(len(list2)-len(badunitstest))
-# listofbadunits = find_badUnitsDB()['Ticker'].tolist()
-# print(listofbadunits)
-#for each, delete from db, then write list to db
-# for x in badunitstest:
-#     delete_ticker_DB(x)
-# write_list_to_Mega(badunitstest)
-# yes = 'select year, Units, adjroic, calculatedRoce, reportedRoce from Mega Where Ticker LIKE \'ENIC\''
-# print_DB(yes, 'print')
 
 #################
 ###Good stuff, but deprecated and rolled into other functions
