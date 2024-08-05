@@ -66,6 +66,9 @@ def uploadToDB(upload,table):
 # Clean code: below
 # test pd, test growth valuation, add features you want
 # see about flow of all this. maybe adding some of these things all the way back in mega?
+# v, kvue, cswc, don't have divgr. why?
+# cost, wmt, nue zero returns? why? cost, special divs make it bad. wmt/nue, so low, they're overpriced
+
 #you can use stocks in the etf ones, but the numbers are then wrong.
 
 def PD(listofstocktickers):
@@ -96,7 +99,7 @@ def PD(listofstocktickers):
                 toupload['Sector'] = sector
                 toupload['currentPrice'] = price
                 toupload['currentDiv'] = divrate
-                toupload['currentYield'] = divrate / price
+                toupload['currentYield'] = divrate / price * 100
                 toupload['currentValuation'] = price / divrate
                 toupload['idealPriceCeiling'] = 25 * divrate
                 toupload['priceGR'] = pricegr
@@ -286,7 +289,7 @@ def DDM(listofstocktickers):
         print('DDM evaulate err')
         print(err)
     finally:
-        return toreturn.sort_values("ExpectedMinReturnAtThisPrice")
+        return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending=False)
 
 def ETFPD(listofstocktickers):
     try:
@@ -326,7 +329,7 @@ def ETFPD(listofstocktickers):
                 twentyYearDiv = divrate * ((1 + (divgr)) ** 20)
                 toupload['currentPrice'] = price
                 toupload['currentDiv'] = divrate
-                toupload['currentYield'] = divrate / price
+                toupload['currentYield'] = divrate / price * 100
                 toupload['currentValuation'] = price / divrate
                 toupload['idealPriceCeiling'] = 25 * divrate
                 toupload['divGR'] = divgr * 100
@@ -519,10 +522,7 @@ def ETFDDM(listofstocktickers):
         print('DDM etf evaulate err')
         print(err)
     finally:
-        return toreturn.sort_values("ExpectedMinReturnAtThisPrice")
-
-# print(ETFDDM(['SCHD','DGRO','SOXQ','VIG','AMZY']))
-# print(ETFPD(['SCHD','DGRO','SOXQ','VIG','AMZY']))
+        return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending=False )
 
 def weeklyETFPD(listofstocktickers):
     try:
@@ -759,9 +759,7 @@ def weeklyETFDDM(listofstocktickers):
         print('DDM etf evaulate err')
         print(err)
     finally:
-        return toreturn.sort_values("ExpectedMinReturnAtThisPrice")
-
-# print(weeklyETFDDM(['XDTE','QDTE']))
+        return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending = False)
 
 def growthValuation(listofstocktickers):
     try:
@@ -823,82 +821,42 @@ def growthValuation(listofstocktickers):
 
 
 divetfs = ['SPYD', 'SMDV', 'SDY', 'HDV', 'GCOW', 'DVY', 'DTD', 'DON', 'DLN', 'DIVB', 
-            'DHS', 'DGRW', 'DGRS', 'DEW', 'DES', 'DGRO', 'DIVO', 'SCHD', 'VIG' ]
+            'DHS', 'DGRW', 'DGRS', 'DEW', 'DES', 'DGRO', 'DIVO', 'SCHD', 'VIG', 'VTV' ]
+# print(ETFPD(divetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM(divetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
 hyetfs = [ 'MSFO', 'AMZY', 'CONY', 'APLY', 'GOOY', 'FBY', 'NVDY', 'TSLY', 'FEPI', 'YMAX', 
-            'YMAG', 'MSTY', 'YBIT', 'SVOL', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 
+            'YMAG', 'MSTY', 'NFLY', 'YBIT', 'SVOL', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 
             'GPIX',  'CRSH', 'FIAT', 'DIPS']
+# print(ETFPD(hyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM(hyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
 weeklyetfs = ['XDTE', 'QDTE',]
-stocks = ['UFPI', 'RS', 'STLD', 'NUE', 'VZ', 'T', 'CVX', 'XOM', 'ARCC', 'MAIN', 
-            'HTGC', 'TSLX', 'CSWC', 'JPM', 'GS', 'MS', 'V', 'MA', 'DFS', 'FAST', 
-            'PH', 'ETN', 'RSG', 'WM', 'CAT', 'GD', 'WSO', 'FIX', 'CTAS', 'LMT', 
-            'TXN', 'ADI', 'MCHP', 'MSFT', 'AAPL', 'CSCO', 'IBM', 'NVDA', 'PLTR', 
-            'SMCI', 'COST', 'WMT', 'PG', 'KR', 'KVUE', 'O', 'NNN', 'ADC', 'PLD', 
-            'STAG', 'REXR', 'TRNO', 'FR', 'AMT', 'SBAC', 'CCI', 'DLR', 'EQIX', 
-            'WY', 'NSA', 'NEE', 'CEG', 'SO', 'AWK', 'CPK', 'ATO', 'UNH', 'MCK', 
-            'JNJ', 'ABBV', 'HD', 'TSCO', 'MCD', 'F', 'YUM']
+# print(weeklyETFPD(weeklyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(weeklyETFDDM(weeklyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
 sectoretfs = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLRE', 'SCHH', 'XLU', 
-                'XLV', 'XLY', 'PBDC', 'SOXQ']
+                'XLV', 'XLY', 'PBDC', 'SOXX', 'QQQ', 'SPY']
+# print(ETFPD(sectoretfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM(sectoretfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
+stocks = ['UFPI', 'RS', 'STLD', 'NUE', 
+            'VZ', 'T', 
+            'CVX', 'XOM', 
+            'ARCC', 'MAIN', 'HTGC', 'TSLX', 'CSWC', 'JPM', 'GS', 'MS', 'V', 'MA', 'DFS', 
+            'FAST', 'PH', 'ETN', 'RSG', 'WM', 'CAT', 'GD', 'WSO', 'FIX', 'CTAS', 'LMT', 
+            'TXN', 'ADI', 'MCHP', 'MSFT', 'AAPL', 'CSCO', 'IBM', 'NVDA', 'PLTR', 'SMCI', 
+            'COST', 'WMT', 'PG', 'KR', 'KVUE', 
+            'O', 'NNN', 'ADC', 'PLD', 'STAG', 'REXR', 'TRNO', 'FR', 'AMT', 'SBAC', 'CCI', 'DLR', 'EQIX', 'WY', 'NSA', 
+            'NEE', 'CEG', 'SO', 'AWK', 'CPK', 'ATO', 
+            'UNH', 'MCK', 'JNJ', 'ABBV', 
+            'HD', 'TSCO', 'MCD', 'F', 'YUM']
+print(PD(stocks)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+print(DDM(stocks)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
+
+#growth here
 # print(growthValuation(stocks).to_string())
-
-# print(ETFPD(divetfs))
-#     Ticker  currentPrice  currentDiv  currentYield  currentValuation  idealPriceCeiling      divGR  tenYearDiv  tenYearFlatValuation  twentyYearDiv  twentyYearFlatValuation
-# 4    GCOW       35.1500    2.224250      0.063279         15.803083          55.606238   8.493262    5.025869              6.993816      11.356351                 3.095184
-# 16   DIVO       39.5200    1.813421      0.045886         21.793062          45.335530   0.905686    1.984518             19.914153       2.171758                18.197237
-# 0    SPYD       43.1300    1.966642      0.045598         21.930781          49.166057   1.764241    2.342488             18.412049       2.790161                15.457887
-# 13    DEW       52.7186    2.305435      0.043731         22.867099          57.635864  -5.996531    1.242200             42.439695       0.669315                78.765031
-# 10    DHS       91.1900    3.692505      0.040492         24.695973          92.312622  -2.341135    2.913653             31.297482       2.299082                39.663649
-# 5     DVY      130.1000    4.930176      0.037895         26.388512         123.254391   3.712068    7.098316             18.328291      10.219938                12.730018
-# 17   SCHD       82.5800    3.007732      0.036422         27.455904          75.193300  10.346286    8.050379             10.257902      21.547332                 3.832493
-# 3     HDV      114.8300    4.029442      0.035090         28.497743         100.736047   4.991795    6.558409             17.508820      10.674611                10.757300
-# 1    SMDV       70.9300    2.173640      0.030645         32.631901          54.340995  14.239105    8.228781              8.619746      31.151817                 2.276914
-# 14    DES       34.9200    1.007090      0.028840         34.674164          25.177247  -6.566167    0.510634             68.385553       0.258912               134.872289
-# 9    DIVB       46.7000    1.330566      0.028492         35.097838          33.264157   8.715010    3.068539             15.218971       7.076633                 6.599183
-# 2     SDY      134.8300    3.547705      0.026312         38.004850          88.692628   6.778793    6.835930             19.723725      13.171877                10.236202
-# 7     DON       50.1100    1.228123      0.024509         40.802108          30.703071  -1.765181    1.027771             48.756005       0.860104                58.260421
-# 15   DGRO       60.3000    1.422637      0.023593         42.386077          35.565924   1.410456    1.636521             36.846468       1.882560                32.030852
-# 12   DGRS       52.3800    1.198415      0.022879         43.707741          29.960368  -1.732838    1.006216             52.056413       0.844842                61.999775
-# 6     DTD       73.7445    1.658617      0.022491         44.461453          41.465413  -1.496916    1.426410             51.699385       1.226712                60.115589
-# 8     DLN       75.2200    1.647091      0.021897         45.668390          41.177278  -1.724653    1.384087             54.346283       1.163079                64.673146
-# 18    VIG      189.7900    3.493056      0.018405         54.333512          87.326400   8.004499    7.544388             25.156449      16.294553                11.647451
-# 11   DGRW       79.7500    1.283860      0.016099         62.117347          32.096509   2.359795    1.621108             49.194757       2.046944                38.960519
-
-# print(ETFPD(hyetfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-# print(weeklyETFPD(weeklyetfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-
-#     Ticker  currentPrice  currentDiv  currentYield  currentValuation  idealPriceCeiling      divGR  tenYearDiv  tenYearFlatValuation  twentyYearDiv  twentyYearFlatValuation
-# 2    CONY       18.4500   18.876000      1.023089          0.977432         471.900000   1.392943   21.676406              0.851156      24.892274                 0.741194
-# 13   MSTY       29.4800   27.984000      0.949254          1.053459         699.600000 -37.237642    0.265401            111.077265       0.002517             11712.043358
-# 14   YBIT       16.2800   14.592000      0.896314          1.115680         364.800000 -16.319340    2.456777              6.626567       0.413635                39.358416
-# 7    TSLY       15.8500   12.992831      0.819737          1.219903         324.820780  -8.719049    5.218015              3.037553       2.095593                 7.563492
-# 23   CRSH       14.8300    9.780000      0.659474          1.516360         244.500000 -20.793888    0.950442             15.603259       0.092366               160.556675
-# 6    NVDY       26.6500   14.100172      0.529087          1.890048         352.504307  23.020175  111.940652              0.238073     888.691947                 0.029988
-# 5     FBY       17.7200    8.436000      0.476072          2.100522         210.900000  23.918433   72.027063              0.246019     614.971283                 0.028814
-# 1    AMZY       20.9800    9.180000      0.437560          2.285403         229.500000   7.502074   18.923920              1.108650      39.010322                 0.537806
-# 0    QDTE       43.2414      18.408      0.425703          2.349055              460.2  4.570562   28.780678              1.502445      44.998232                 0.960958
-# 11   YMAX       18.8200    7.824000      0.415728          2.405419         195.600000  11.266189   22.754168              0.827101      66.174869                 0.284398
-# 12   YMAG       19.6900    7.644000      0.388217          2.575877         191.100000  17.168963   37.277479              0.528201     181.791005                 0.108311
-# 4    GOOY       16.6600    5.616000      0.337095          2.966524         140.400000   5.960318   10.019813              1.662706      17.876898                 0.931929
-# 3    APLY       18.0400    4.811831      0.266731          3.749092         120.295780   2.881494    6.392681              2.821977       8.492892                 2.124129
-# 10   FEPI       51.8700   13.068000      0.251938          3.969238         326.700000  -0.953580   11.873997              4.368369      10.789088                 4.807635
-# 1    XDTE       51.8289      12.532      0.241796          4.135725              313.3  0.878369   13.677317              3.789406      14.927305                 3.472087
-# 0    MSFO       20.3500    4.620000      0.227027          4.404762         115.500000   5.761147    8.089161              2.515712      14.163319                 1.436810
-# 15   SVOL       22.3200    3.576485      0.160237          6.240763          89.412137   1.363475    4.095165              5.450330       4.689066                 4.760010
-# 16   QQQI       50.4700    7.428000      0.147177          6.794561         185.700000   1.866777    8.937119              5.647234      10.752840                 4.693644
-# 17   IWMI       52.1398    7.224000      0.138551          7.217580         180.600000  16.234997   32.519722              1.603329     146.391519                 0.356167
-# 18   SPYI       50.2200    5.897619      0.117436          8.515301         147.440469   1.204566    6.647797              7.554382       7.493398                 6.701899
-# 21   GPIQ       46.8800    5.040000      0.107509          9.301587         126.000000   4.280728    7.664275              6.116691      11.654983                 4.022314
-# 20   JEPQ       53.2932    4.709569      0.088371         11.315940         117.739223   1.716930    5.583591              9.544610       6.619818                 8.050553
-# 22   GPIX       47.7200    4.032000      0.084493         11.835317         100.800000   3.915873    5.920242              8.060482       8.692773                 5.489617
-# 19   JEPI       57.1905    4.217351      0.073742         13.560763         105.433779   0.594500    4.474887             12.780322       4.748150                12.044796
-
-# print(PD(stocks)[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']].to_string())
-
-# print(ETFDDM(sectoretfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-# print(ETFDDM(divetfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-# print(ETFDDM(hyetfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-# print(weeklyETFDDM(weeklyetfs))[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
-# print(DDM(stocks).to_string())[['Ticker','currentPrice','currentValuation', 'idealPriceCeiling','tenYearFlatValuation']]
 
 ## ETF NOTES FROM YAHOO
 # {'phone': '1-800-435-4000', 
@@ -1085,4 +1043,3 @@ def evaluateDCF(listofstocktickers, ror): #tricky, i'm not getting the hang of i
     #     return toreturn
 
 # evaluateDCF(['MSFT','AAPL'],0.2)
-

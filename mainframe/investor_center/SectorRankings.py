@@ -598,7 +598,7 @@ def divspaid_rating(ticker):
 
 # print(divspaid_rating('AMZN'))
 
-def divrev_rating(ticker):
+def divgrowth_rating(ticker):
     try:
         sqlq = 'SELECT calcDivsPerShareGrowthAVG as cavg, repDivsPerShareGrowthAVG as ravg \
                     FROM Metadata \
@@ -692,7 +692,7 @@ def divrev_rating(ticker):
     finally:
         return finalrating
 
-# print(divrev_rating('PLD'))
+# print(divgrowth_rating('PLD'))
 
 def payout_rating(ticker): 
     try:
@@ -1013,7 +1013,7 @@ def rank_Materials():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1091,7 +1091,7 @@ def rank_Communications():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1170,7 +1170,7 @@ def rank_Energy():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1254,7 +1254,7 @@ def rank_Financials():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1338,7 +1338,7 @@ def rank_BDC():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1418,7 +1418,7 @@ def rank_ConsumerCyclical():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1496,7 +1496,7 @@ def rank_ConsumerDefensive():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1575,7 +1575,7 @@ def rank_Healthcare():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1654,7 +1654,7 @@ def rank_Industrials():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1734,7 +1734,7 @@ def rank_RealEstate():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1815,7 +1815,7 @@ def rank_Technology():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
@@ -1895,7 +1895,7 @@ def rank_Utilities():
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
-                divgr = uploaddf['divgr'] = divrev_rating(x)
+                divgr = uploaddf['divgr'] = divgrowth_rating(x)
                 divpay = uploaddf['divpay'] = divspaid_rating(x)
                 shares = uploaddf['shares'] = shares_rating(x)
                 cf = uploaddf['cf'] = cf_rating(x)
