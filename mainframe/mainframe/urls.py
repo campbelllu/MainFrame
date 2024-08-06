@@ -15,13 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
-from helloThere import views
+# from helloThere import views as htviews #see note below
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', include("investor_center.urls")),
+
+    # path('helloThere/', htviews.home, name='home'), #bad practice, hard to scale or share app to other projects. left for example.
     #path('mf.io/jenkins', 'mf.io:8080', name='jenkins-reroute'),
     #url(RedirectView.as_view(url='mf.io/jenkins')),
 ]

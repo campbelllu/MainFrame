@@ -27,9 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mf.io','mf.io/jenkins']
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
