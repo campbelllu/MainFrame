@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>
+            Metadata
+        </h1>
+        <h4>Tickers and Their Lowest Net CF</h4>
+        {% for i in wt %}
+            <table border="1">
+                <thead>
+                    <th>Ticker</th>
+                    <th>roce</th>
+                    <th>sector</th>
+                    <th>scorerank</th>
+                </thead>
+                <tr>
+                    <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td>
+                    <td>{{i.roce}}</td>
+                    <td>{{i.Sector}}</td>
+                    <td>{{i.scorerank}}</td>
+                </tr>
+            </table>
+        {% endfor %}
+        <!-- {% if wt %} -->
+            <!-- <ul> -->
+                <!-- {{wholeTable}} -->
+                <!-- {% for row in wt %} -->
+                    <!-- {{row.Ticker}} -  -->
+                    <!-- {{row.revGrowthAVG}}  -->
+                    <!-- {{row.netCashFlowLow}} -->
+                    <!-- </br> -->
+                    <!-- <li><a href="/investor_center/{{Ticker}}/">{{ Ticker }}</a></li> -->
+                <!-- {% endfor %} -->
+            <!-- </ul> -->
+        <!-- {% else %} -->
+            <!-- <p>No ticker for you.</p> -->
+        <!-- {% endif %} -->
+        
+    </body>
+</html>
