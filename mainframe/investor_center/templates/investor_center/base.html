@@ -7,11 +7,14 @@
     </head>
 
     <body>
-        <h1>
-            ahoy matey it's a website
-        </h1>
-        <p>
-            oh dang it's pirates
-        </p>
+
+        {% block content %}
+        {% endblock %}
+
+        {% block footer %}
+        <p>None of the content here, nor anywhere on this site, should be considered financial advice.</p>
+        <p>It exists solely for educational purposes. </p> 
+        <p>Contact a financial expert before making any investment decisions. Past performance is no guarantee of future results.</p>
+        {% endblock %}
     </body>
 </html>

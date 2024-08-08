@@ -310,7 +310,7 @@ class Metadata(models.Model):
 
 class Sector_Rankings(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
-    Sector = models.CharField(max_length=5, blank=True, null=True)
+    Sector = models.CharField(max_length=30, blank=True, null=True)
     reitroce = models.IntegerField(blank=True, null=True)
     roce = models.IntegerField(blank=True, null=True)
     roic = models.IntegerField(blank=True, null=True)

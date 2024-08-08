@@ -1007,7 +1007,7 @@ def rank_Materials():
                 uploaddf = pd.DataFrame()
                 print('Materials ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'B'
+                uploaddf['Sector'] = 'Materials'#'B'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1085,7 +1085,7 @@ def rank_Communications():
                 uploaddf = pd.DataFrame()
                 print('Comms ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'C'
+                uploaddf['Sector'] = 'Communications'#'C'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1164,7 +1164,7 @@ def rank_Energy():
                 uploaddf = pd.DataFrame()
                 print('Energy ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'E'
+                uploaddf['Sector'] = 'Energy'#'E'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1248,7 +1248,7 @@ def rank_Financials():
                 uploaddf = pd.DataFrame()
                 print('Fins ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'F'
+                uploaddf['Sector'] = 'Financials'#'F'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1412,7 +1412,7 @@ def rank_ConsumerCyclical():
                 uploaddf = pd.DataFrame()
                 print('XLY ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'Y'
+                uploaddf['Sector'] = 'Consumer Cyclical'#'Y'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1490,7 +1490,7 @@ def rank_ConsumerDefensive():
                 uploaddf = pd.DataFrame()
                 print('XLP ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'P'
+                uploaddf['Sector'] = 'Consumer Staples'#'P'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1569,7 +1569,7 @@ def rank_Healthcare():
                 uploaddf = pd.DataFrame()
                 print('XLV ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'V'
+                uploaddf['Sector'] = 'Healtchare'#'V'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1648,7 +1648,7 @@ def rank_Industrials():
                 uploaddf = pd.DataFrame()
                 print('Inds ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'I'
+                uploaddf['Sector'] = 'Industrials'#'I'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1727,7 +1727,7 @@ def rank_RealEstate():
                 uploaddf = pd.DataFrame()
                 print('RE ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'RE'
+                uploaddf['Sector'] = 'Real Estate'#'RE'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 reitroce = uploaddf['reitroce'] = reitroce_rating(x)
@@ -1809,7 +1809,7 @@ def rank_Technology():
                 uploaddf = pd.DataFrame()
                 print('tech ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'K'
+                uploaddf['Sector'] = 'Technology'#'K'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
@@ -1889,7 +1889,7 @@ def rank_Utilities():
                 uploaddf = pd.DataFrame()
                 print('Utils ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'U'
+                uploaddf['Sector'] = 'Utilities'#'U'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)

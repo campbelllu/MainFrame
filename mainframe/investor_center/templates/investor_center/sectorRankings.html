@@ -1,0 +1,81 @@
+{% extends 'investor_center/base.html' %}
+<!-- <!DOCTYPE html> -->
+<!-- <html> -->
+    <!-- <body> -->
+        {% block content %}
+            <h1>
+                Sector Rankings
+            </h1>
+            <h4>How does each security measure against each other in their respective sectors?</h4>
+            <p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
+            <select>
+                {% for j in wt %}
+                    <option value="{{ j.id }}">{{ j.Sector }}</option>
+                {% endfor %}
+            </select>
+            {% for i in wt %}
+                <table border="1">
+                    <thead>
+                        <th>Ticker</th>
+                        <th>roce</th>
+                        <th>sector</th>
+                        <th>scorerank</th>
+                    </thead>
+                    <tr>
+                        <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td>
+                        <td>{{i.roce}}</td>
+                        <td>{{i.Sector}}</td>
+                        <td>{{i.scorerank}}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% endblock %}
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- {% if wt %} -->
+            <!-- <ul> -->
+                <!-- {{wholeTable}} -->
+                <!-- {% for row in wt %} -->
+                    <!-- {{row.Ticker}} -  -->
+                    <!-- {{row.revGrowthAVG}}  -->
+                    <!-- {{row.netCashFlowLow}} -->
+                    <!-- </br> -->
+                    <!-- <li><a href="/investor_center/{{Ticker}}/">{{ Ticker }}</a></li> -->
+                <!-- {% endfor %} -->
+            <!-- </ul> -->
+        <!-- {% else %} -->
+            <!-- <p>No ticker for you.</p> -->
+        <!-- {% endif %} -->
+        
+    <!-- </body> -->
+<!-- </html> -->
