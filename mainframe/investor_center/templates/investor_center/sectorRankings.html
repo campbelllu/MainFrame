@@ -1,37 +1,170 @@
 {% extends 'investor_center/base.html' %}
-<!-- <!DOCTYPE html> -->
-<!-- <html> -->
-    <!-- <body> -->
-        {% block content %}
-            <h1>
-                Sector Rankings
-            </h1>
-            <h4>How does each security measure against each other in their respective sectors?</h4>
-            <p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
-            <select>
-                {% for j in wt %}
-                    <option value="{{ j.id }}">{{ j.Sector }}</option>
-                {% endfor %}
-            </select>
-            {% for i in wt %}
-                <table border="1">
-                    <thead>
-                        <th>Ticker</th>
-                        <th>roce</th>
-                        <th>sector</th>
-                        <th>scorerank</th>
-                    </thead>
-                    <tr>
-                        <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td>
-                        <td>{{i.roce}}</td>
-                        <td>{{i.Sector}}</td>
-                        <td>{{i.scorerank}}</td>
-                    </tr>
-                </table>
+
+
+{% block content %}
+	<h1>
+		Sector Rankings
+	</h1>
+	<h4>How does each security measure against each other in their respective sectors?</h4>
+	<p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
+	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
+	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
+	
+    
+	<form method="POST">
+		{% csrf_token %}
+        <center>
+		<select name="sectorDropDown">
+			<option selected disabled=true>--Select Sector--</option>
+			{% for j in sectors %}
+				<option value="{{ j.Sector }}">{{ j.Sector }}</option>
+			{% endfor %}
+			<!-- <option>Male</option> -->
+			<!-- <option>Female</option> -->
+			<!-- <option>Other</option> -->
+		</select>
+        </center>
+		<!-- First we get the dropdown menu to appear, later to be functional. THEN we add dropdowns for each column's values. -->
+		
+		<!-- The problem with the below dropdown menu is DRY. -->
+		<!-- You need to include it into each column of the table. Can it be combined in the <th>'s below somehow? Or above the th's? maybe try for two tr-th-sections, with the dropdown to filter in the top one? -->
+		<!-- You could also have two tables. The above one has filter labels as TH, value dropdown choices as TD. -->
+		<!-- Experiment with two tr-columns in the bottom table -->
+        <center><input type="submit" value="Update Table"> </center>
+       
+        <table border="1" name="sectorRankingsTable">
+            <tr>
+                <th>Ticker</th> 
+                <th>Score Ranking</th>
+                <th>AVG ROCE<br/><select name="vfroce"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG ROIC<br/><select name="vfroic"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Revenue GR<br/><select name="vfrev"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Net Income GR<br/><select name="vfni"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>FCF GR<br/><select name="vffcf"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>FCF Margin GR<br/><select name="vffcfm"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Op/Net Cashflow GR<br/><select name="vfcf"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Dividend Payer?<br/><select name="vfdp"><option selected disabled=true> >= </option><option>1</option><option>-1</option></select></th>
+                <th>Dividend GR<br/><select name="vfdivgr"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG Payout Ratio<br/><select name="vfpo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Shares GR<br/><select name="vfshares"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Debt GR<br/><select name="vfdebt"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Book Value/NAV GR<br/><select name="vfbv"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Equity GR<br/><select name="vfeq"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Return of Capital<br/><select name="vfroc"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Funds from Operations(FFO) GR<br/><select name="vfffo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG REIT ROCE<br/><select name="vfreitroce"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG FFO Payout Ratio<br/><select name="vfffopo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Score</th>
+                <th>Max Score</th>
+                <th>Sector</th>
+            </tr>
+            {% for i in lt %}
+            <tr>
+                <td>{{i.Ticker}}</td>
+                <td>{{i.scorerank|floatformat:3}}</td>
+                <td>{{i.roce}}</td>
+                <td>{{i.roic}}</td>
+                <td>{{i.rev}}</td>
+                <td>{{i.ni}}</td>
+                <td>{{i.fcf}}</td>
+                <td>{{i.fcfm}}</td>
+                <td>{{i.cf}}</td>
+                <td>{{i.divpay}}</td>
+                <td>{{i.divgr}}</td>
+                <td>{{i.po}}</td>
+                <td>{{i.shares}}</td>
+                <td>{{i.debt}}</td>
+                <td>{{i.bv}}</td>
+                <td>{{i.equity}}</td>
+                <td>{{i.roc}}</td>
+                <td>{{i.ffo}}</td>
+                <td>{{i.reitroce}}</td>
+                <td>{{i.ffopo}}</td>
+                <td>{{i.score}}</td>
+                <td>{{i.maxscore}}</td>
+                <td>{{i.Sector}}</td>
+            </tr>
             {% endfor %}
-        {% endblock %}
-
+        </table>
         
+        <!-- This section invalidated because the page already loads with the top 10 -->
+        <!-- <br></br> -->
+        <!-- <p>Just for laughs, here are the top ten, unfiltered by sector.</p> -->
+        <!-- {% for k in topTen %}	 -->
+            <!-- <table border="1" name="topTenTable"> -->
+                <!-- <tr> -->
+                    <!-- <th>Ticker</th> -->
+                    <!-- <th>Sector</th> -->
+                    <!-- <th>Score Ranking</th> -->
+                    <!-- <th>AVG ROCE</th> -->
+                    <!-- <th>AVG ROIC</th> -->
+                    <!-- <th>Revenue GR</th> -->
+                    <!-- <th>Net Income GR</th> -->
+                    <!-- <th>FCF GR</th> -->
+                    <!-- <th>FCF Margin GR</th> -->
+                    <!-- <th>Op/Net Cashflow GR</th> -->
+                    <!-- <th>Dividend Payer?</th> -->
+                    <!-- <th>Dividend GR</th> -->
+                    <!-- <th>AVG Payout Ratio</th> -->
+                    <!-- <th>Shares GR</th> -->
+                    <!-- <th>Debt GR</th> -->
+                    <!-- <th>Book Value/NAV GR</th> -->
+                    <!-- <th>Equity GR</th> -->
+                    <!-- <th>Return of Capital</th> -->
+                    <!-- <th>Funds from Operations(FFO) GR</th> -->
+                    <!-- <th>AVG REIT ROCE</th> -->
+                    <!-- <th>AVG FFO Payout Ratio</th> -->
+                    <!-- <th>Score</th> -->
+                    <!-- <th>Max Score</th> -->
+                <!-- </tr> -->
+                <!-- <tr> -->
+                    <!-- <td>{{k.Ticker}}</td> -->
+                    <!-- <td>{{k.Sector}}</td> -->
+                    <!-- <td>{{k.scorerank|floatformat:3}}</td> -->
+                    <!-- <td>{{k.roce}}</td> -->
+                    <!-- <td>{{k.roic}}</td> -->
+                    <!-- <td>{{k.rev}}</td> -->
+                    <!-- <td>{{k.ni}}</td> -->
+                    <!-- <td>{{k.fcf}}</td> -->
+                    <!-- <td>{{k.fcfm}}</td> -->
+                    <!-- <td>{{k.cf}}</td> -->
+                    <!-- <td>{{k.divpay}}</td> -->
+                    <!-- <td>{{k.divgr}}</td> -->
+                    <!-- <td>{{k.po}}</td> -->
+                    <!-- <td>{{k.shares}}</td> -->
+                    <!-- <td>{{k.debt}}</td> -->
+                    <!-- <td>{{k.bv}}</td> -->
+                    <!-- <td>{{k.equity}}</td> -->
+                    <!-- <td>{{k.roc}}</td> -->
+                    <!-- <td>{{k.ffo}}</td> -->
+                    <!-- <td>{{k.reitroce}}</td> -->
+                    <!-- <td>{{k.ffopo}}</td> -->
+                    <!-- <td>{{k.score}}</td> -->
+                    <!-- <td>{{k.maxscore}}</td> -->
+                <!-- </tr> -->
+            <!-- </table> -->
+        <!-- {% endfor %} -->
+
+		
+
+	
+
+
+	</form>
+    
+    
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+<!-- <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td> -->
 
 
 
@@ -62,20 +195,15 @@
 
 
 
-        <!-- {% if wt %} -->
-            <!-- <ul> -->
-                <!-- {{wholeTable}} -->
-                <!-- {% for row in wt %} -->
-                    <!-- {{row.Ticker}} -  -->
-                    <!-- {{row.revGrowthAVG}}  -->
-                    <!-- {{row.netCashFlowLow}} -->
-                    <!-- </br> -->
-                    <!-- <li><a href="/investor_center/{{Ticker}}/">{{ Ticker }}</a></li> -->
-                <!-- {% endfor %} -->
-            <!-- </ul> -->
-        <!-- {% else %} -->
-            <!-- <p>No ticker for you.</p> -->
-        <!-- {% endif %} -->
-        
-    <!-- </body> -->
-<!-- </html> -->
+
+
+
+
+
+
+
+
+
+
+
+
