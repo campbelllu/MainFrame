@@ -5,20 +5,22 @@
 	<h1>
 		Sector Rankings
 	</h1>
-	<h4>How does each security measure against each other in their respective sectors?</h4>
+	<h4>How does each security measure against the others in their respective sectors?</h4>
 	<p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
 	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
 	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
+    <p>The dropdown menues in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 or larger in that category.</p>
 	
     
 	<form method="POST">
 		{% csrf_token %}
         <center>
 		<select name="sectorDropDown">
-			<option selected disabled=true>--Select Sector--</option>
+			<option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>  <!-- <option selected disabled=true >{{dv.sector|safe}}</option> -->
 			{% for j in sectors %}
 				<option value="{{ j.Sector }}">{{ j.Sector }}</option>
 			{% endfor %}
+            <option> All </option>
 			<!-- <option>Male</option> -->
 			<!-- <option>Female</option> -->
 			<!-- <option>Other</option> -->
@@ -34,26 +36,29 @@
        
         <table border="1" name="sectorRankingsTable">
             <tr>
+                <th>{{ lt|length }} Ticker Returned</th>
+            </tr>
+            <tr>
                 <th>Ticker</th> 
                 <th>Score Ranking</th>
-                <th>AVG ROCE<br/><select name="vfroce"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG ROIC<br/><select name="vfroic"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Revenue GR<br/><select name="vfrev"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Net Income GR<br/><select name="vfni"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>FCF GR<br/><select name="vffcf"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>FCF Margin GR<br/><select name="vffcfm"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Op/Net Cashflow GR<br/><select name="vfcf"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Dividend Payer?<br/><select name="vfdp"><option selected disabled=true> >= </option><option>1</option><option>-1</option></select></th>
-                <th>Dividend GR<br/><select name="vfdivgr"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG Payout Ratio<br/><select name="vfpo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Shares GR<br/><select name="vfshares"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Debt GR<br/><select name="vfdebt"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Book Value/NAV GR<br/><select name="vfbv"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Equity GR<br/><select name="vfeq"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Return of Capital<br/><select name="vfroc"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Funds from Operations(FFO) GR<br/><select name="vfffo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG REIT ROCE<br/><select name="vfreitroce"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG FFO Payout Ratio<br/><select name="vfffopo"><option selected disabled=true> >= </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG ROCE<br/><select name="vfroce"><option value="{{dv.roce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG ROIC<br/><select name="vfroic"><option value="{{dv.roic|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roic}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Revenue GR<br/><select name="vfrev"><option value="{{dv.rev|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.rev}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Net Income GR<br/><select name="vfni"><option value="{{dv.ni|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ni}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>FCF GR<br/><select name="vffcf"><option value="{{dv.fcf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>FCF Margin GR<br/><select name="vffcfm"><option value="{{dv.fcfm|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcfm}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Op/Net Cashflow GR<br/><select name="vfcf"><option value="{{dv.cf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.cf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Dividend Payer?<br/><select name="vfdp"><option value="{{dv.dp|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.dp}} </option><option>1</option><option>-1</option></select></th>
+                <th>Dividend GR<br/><select name="vfdivgr"><option value="{{dv.divgr|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.divgr}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG Payout Ratio<br/><select name="vfpo"><option value="{{dv.po|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.po}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Shares GR<br/><select name="vfshares"><option value="{{dv.shares|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.shares}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Debt GR<br/><select name="vfdebt"><option value="{{dv.debt|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.debt}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Book Value/NAV GR<br/><select name="vfbv"><option value="{{dv.bv|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.bv}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Equity GR<br/><select name="vfeq"><option value="{{dv.eq|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.eq}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Return of Capital<br/><select name="vfroc"><option value="{{dv.roc|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roc}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>Funds from Operations(FFO) GR<br/><select name="vfffo"><option value="{{dv.ffo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG REIT ROCE<br/><select name="vfreitroce"><option value="{{dv.reitroce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.reitroce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                <th>AVG FFO Payout Ratio<br/><select name="vfffopo"><option value="{{dv.ffopo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffopo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
                 <th>Score</th>
                 <th>Max Score</th>
                 <th>Sector</th>

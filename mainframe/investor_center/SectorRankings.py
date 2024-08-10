@@ -939,6 +939,9 @@ def reitroce_rating(ticker):
             reitroce = rroceavg
         else:
             reitroce = max(rroceavg,croceavg) * 100
+        
+        if reitroce is None:
+            reitroce = 0
 
         roiccompare = [20,10,7,3,0,-1,-2,-3,-4]
         finalrating = rating_assignment(reitroce,roiccompare)
@@ -948,7 +951,7 @@ def reitroce_rating(ticker):
     finally:
         return finalrating
 
-# print(reitroce_rating('NNN'))
+# print(reitroce_rating('ARCC'))
 
 def yield_rating(ticker):
     try:
@@ -1010,6 +1013,7 @@ def rank_Materials():
                 uploaddf['Sector'] = 'Materials'#'B'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1025,10 +1029,11 @@ def rank_Materials():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1044,7 +1049,7 @@ def rank_Materials():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1055,10 +1060,11 @@ def rank_Materials():
                 # uploadToDB(uploaddf,'Materials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1088,6 +1094,7 @@ def rank_Communications():
                 uploaddf['Sector'] = 'Communications'#'C'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1103,10 +1110,11 @@ def rank_Communications():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1122,7 +1130,7 @@ def rank_Communications():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1134,10 +1142,11 @@ def rank_Communications():
                 # uploadToDB(uploaddf,'Communications_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1167,6 +1176,7 @@ def rank_Energy():
                 uploaddf['Sector'] = 'Energy'#'E'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1182,26 +1192,27 @@ def rank_Energy():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
                 divgrv = 5
                 divpayv = 5
-                sharesv = 1
-                cfv = 5
-                bvv = 0
+                sharesv = 3
+                cfv = 1
+                bvv = 1
                 equityv = 5
-                debtv = 0
-                fcfmv = 5
+                debtv = 1
+                fcfmv = 1
                 fcfv = 0
                 ffov = 0
-                niv = 5
-                revv = 5
-                yieldv = 0
+                niv = 1
+                revv = 1
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1213,10 +1224,11 @@ def rank_Energy():
                 # uploadToDB(uploaddf,'Energy_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1251,6 +1263,7 @@ def rank_Financials():
                 uploaddf['Sector'] = 'Financials'#'F'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1266,10 +1279,11 @@ def rank_Financials():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 1
                 ffopov = 0
                 pov = 5
@@ -1285,7 +1299,7 @@ def rank_Financials():
                 ffov = 0
                 niv = 5
                 revv = 0
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (roc) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1297,10 +1311,11 @@ def rank_Financials():
                 # uploadToDB(uploaddf,'Financials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1335,6 +1350,7 @@ def rank_BDC():
                 uploaddf['Sector'] = 'BDC'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1350,10 +1366,11 @@ def rank_BDC():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 5
                 ffopov = 0
                 pov = 5
@@ -1369,7 +1386,7 @@ def rank_BDC():
                 ffov = 0
                 niv = 5
                 revv = 0
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (roc) + (po) + (bv) + (roic) + (roce) + (divyield))
@@ -1381,10 +1398,11 @@ def rank_BDC():
                 # uploadToDB(uploaddf,'BDC_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1415,6 +1433,7 @@ def rank_ConsumerCyclical():
                 uploaddf['Sector'] = 'Consumer Cyclical'#'Y'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1430,10 +1449,11 @@ def rank_ConsumerCyclical():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1449,7 +1469,7 @@ def rank_ConsumerCyclical():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1460,10 +1480,11 @@ def rank_ConsumerCyclical():
                 # uploadToDB(uploaddf,'ConsumerCyclical_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1493,6 +1514,7 @@ def rank_ConsumerDefensive():
                 uploaddf['Sector'] = 'Consumer Staples'#'P'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1508,10 +1530,11 @@ def rank_ConsumerDefensive():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1527,7 +1550,7 @@ def rank_ConsumerDefensive():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1539,10 +1562,11 @@ def rank_ConsumerDefensive():
                 # uploadToDB(uploaddf,'ConsumerDefensive_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1572,6 +1596,7 @@ def rank_Healthcare():
                 uploaddf['Sector'] = 'Healtchare'#'V'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1587,10 +1612,11 @@ def rank_Healthcare():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1606,7 +1632,7 @@ def rank_Healthcare():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1618,10 +1644,11 @@ def rank_Healthcare():
                 # uploadToDB(uploaddf,'Healthcare_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1651,6 +1678,7 @@ def rank_Industrials():
                 uploaddf['Sector'] = 'Industrials'#'I'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1666,10 +1694,11 @@ def rank_Industrials():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1685,7 +1714,7 @@ def rank_Industrials():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1697,10 +1726,11 @@ def rank_Industrials():
                 # uploadToDB(uploaddf,'Industrials_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1746,7 +1776,7 @@ def rank_RealEstate():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 0
                 roicv = 0
@@ -1766,7 +1796,7 @@ def rank_RealEstate():
                 ffov = 5
                 niv = 0
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ffo) + (roc) + (bv) + (debt) + (equity) + (shares) + (divpay) + 
                 #                 (divgr) + (ffopo) + (roc) + (reitroce) + (divyield))
@@ -1778,11 +1808,11 @@ def rank_RealEstate():
                 # uploadToDB(uploaddf,'RealEstate_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitroce) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
                                 (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
-                                (reitroce * reitrocev) + (yieldv * divyield))
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1812,6 +1842,7 @@ def rank_Technology():
                 uploaddf['Sector'] = 'Technology'#'K'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1827,10 +1858,11 @@ def rank_Technology():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1846,7 +1878,7 @@ def rank_Technology():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1858,10 +1890,11 @@ def rank_Technology():
                 # uploadToDB(uploaddf,'Tech_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1892,6 +1925,7 @@ def rank_Utilities():
                 uploaddf['Sector'] = 'Utilities'#'U'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
+                reitroce = uploaddf['reitroce'] = reitroce_rating(x)
                 roc = uploaddf['roc'] = roc_rating(x)
                 ffopo = uploaddf['ffopo'] = ffopayout_rating(x)
                 po = uploaddf['po'] = payout_rating(x)
@@ -1907,10 +1941,11 @@ def rank_Utilities():
                 ffo = uploaddf['ffo'] = ffo_rating(x)
                 ni = uploaddf['ni'] = ni_rating(x)
                 rev = uploaddf['rev'] = rev_rating(x)
-                divyield = uploaddf['divyield'] = yield_rating(x)
+                # divyield = uploaddf['divyield'] = yield_rating(x)
                 #v = value to be VALUED at lol
                 rocev = 5
                 roicv = 0
+                reitrocev = 0
                 rocv = 0
                 ffopov = 0
                 pov = 5
@@ -1926,7 +1961,7 @@ def rank_Utilities():
                 ffov = 0
                 niv = 5
                 revv = 5
-                yieldv = 0
+                # yieldv = 0
 
                 # justscore = ((rev) + (ni) + (fcf) + (fcfm) + (bv) + (debt) + (equity) + (cf) + (shares) + (divpay) + 
                 #                 (divgr) + (po) + (roic) + (roce) + (divyield))
@@ -1938,10 +1973,11 @@ def rank_Utilities():
                 # uploadToDB(uploaddf,'Utilities_Ranking')
 
                 srmaxscore = 5*((revv) + (niv) + (ffov) + (fcfv) + (fcfmv) + (debtv) + (equityv) + (bvv) + (cfv) + (sharesv) + (divpayv) + 
-                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (yieldv))
+                                (divgrv) + (pov) + (ffopov) + (rocv) + (roicv) + (rocev) + (reitrocev))
                 finalscore = ((rev * revv) + (niv * ni) + (ffov * ffo) + (fcfv * fcf) + (fcfmv * fcfm) + (debtv * debt) + 
                                 (equityv * equity) + (bvv * bv) + (cfv * cf) + (sharesv * shares) + (divpayv * divpay) + 
-                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + (yieldv * divyield))
+                                (divgrv * divgr) + (pov * po) + (ffopov * ffopo) + (rocv * roc) + (roicv * roic) + (rocev * roce) + 
+                                (reitroce * reitrocev))
 
                 uploaddf['maxscore'] = srmaxscore
                 uploaddf['score'] = finalscore
@@ -1961,7 +1997,8 @@ def rank_Utilities():
 def clear_rankings():
     conn = sql.connect(db_path)
     query = conn.cursor()
-    sector = 'DELETE FROM Sector_Rankings'
+    sector = 'DELETE FROM Sector_Rankings '
+    # WHERE Sector LIKE \'Energy\'
     query.execute(sector)
     conn.commit()
     query.close()
