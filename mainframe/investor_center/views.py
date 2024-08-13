@@ -21,7 +21,8 @@ def sr(request):
                         'fcfm':'>=', 'cf':'>=', 'dp':'>=', 'divgr':'>=', 'po':'>=', 'shares':'>=', 'debt':'>=', 
                         'bv':'>=', 'eq':'>=', 'roc':'>=', 'ffo':'>=', 'reitroce':'>=', 'ffopo':'>='}
     
-    if request.method=="POST":
+    #Manual table updates
+    if 'updateTable' in request.POST: #request.method=="POST":
         filterSector = request.POST.get('sectorDropDown')
         dropdownValues['sector'] = filterSector
         # if filterSector is None or filterSector == 'Select Sector':
@@ -111,22 +112,15 @@ def sr(request):
         filterREITROCE = request.POST.get('vfreitroce')
         if filterREITROCE is None or filterREITROCE == '>=':
             filterREITROCE = -5
-            print('reitroce in if' + str(filterREITROCE) +' '+ str(type(filterREITROCE)))
         dropdownValues['reitroce'] = filterREITROCE
-        print('reitroce after all ' + str(filterREITROCE) +' '+ str(type(filterREITROCE)))
 
         filterFFOPO = request.POST.get('vfffopo')
         if filterFFOPO is None or filterFFOPO == '>=':
             filterFFOPO = -5
-            print('ffo po in if ' + str(filterFFOPO) +' '+ str(type(filterFFOPO)))
         dropdownValues['ffopo'] = filterFFOPO
-        print('ffo po after all ' + str(filterFFOPO) +' '+ str(type(filterFFOPO)))
             
-        
-
-        
         if filterSector == 'All':
-            searchFilter = Sector_Rankings.objects.filter( roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+            searchFilter = Sector_Rankings.objects.filter(roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
                                 fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
                                 shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
                                 reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)#.order_by('Sector','-scorerank')
@@ -147,6 +141,403 @@ def sr(request):
                 'lt': searchFilter,
             }
             return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericB' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Materials'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericC' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Communications'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericE' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Energy'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericBDC' in request.POST:
+        filterSector = dropdownValues['sector'] = 'BDC'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericF' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Financials'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericI' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Industrials'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericK' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Technology'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericP' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Consumer Staples'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2 #luke here
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = -5
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericRE' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Real Estate'
+        filterROCE = dropdownValues['roce'] = -5
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = -5
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = -2
+        filterPO = dropdownValues['po'] = -5
+        filterSHARES = dropdownValues['shares'] = -5
+        filterDEBT = dropdownValues['debt'] = -2
+        filterBV = dropdownValues['bv'] = 1
+        filterEQ = dropdownValues['eq'] = 1
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = 2
+        filterREITROCE = dropdownValues['reitroce'] = 1
+        filterFFOPO = dropdownValues['ffopo'] = 1
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericU' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Utilities'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericV' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Healthcare'
+        filterROCE = dropdownValues['roce'] = 2
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 2
+        filterNI = dropdownValues['ni'] = 2
+        filterFCF = dropdownValues['fcf'] = -5
+        filterFCFM = dropdownValues['fcfm'] = -5
+        filterCF = dropdownValues['cf'] = -5
+        filterDP = dropdownValues['dp'] = 1
+        filterDIVGR = dropdownValues['divgr'] = 2
+        filterPO = dropdownValues['po'] = 1
+        filterSHARES = dropdownValues['shares'] = 2
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = -5
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = 0
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'genericY' in request.POST:
+        filterSector = dropdownValues['sector'] = 'Consumer Cyclical'
+        filterROCE = dropdownValues['roce'] = 3
+        filterROIC = dropdownValues['roic'] = -5
+        filterREV = dropdownValues['rev'] = 1
+        filterNI = dropdownValues['ni'] = 1
+        filterFCF = dropdownValues['fcf'] = -1
+        filterFCFM = dropdownValues['fcfm'] = -1
+        filterCF = dropdownValues['cf'] = 0
+        filterDP = dropdownValues['dp'] = -1
+        filterDIVGR = dropdownValues['divgr'] = -5
+        filterPO = dropdownValues['po'] = -5
+        filterSHARES = dropdownValues['shares'] = 0
+        filterDEBT = dropdownValues['debt'] = -5
+        filterBV = dropdownValues['bv'] = 0
+        filterEQ = dropdownValues['eq'] = 0
+        filterROC = dropdownValues['roc'] = -5
+        filterFFO = dropdownValues['ffo'] = -5
+        filterREITROCE = dropdownValues['reitroce'] = -5
+        filterFFOPO = dropdownValues['ffopo'] = -5
+
+        searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+        context = {
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': searchFilter,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
     else:
         context = {
         'sectors': sectors,

@@ -1593,7 +1593,7 @@ def rank_Healthcare():
                 uploaddf = pd.DataFrame()
                 print('XLV ' + str(round(n/length1,4)*100) + '% complete!')
                 uploaddf['Ticker'] = [x]
-                uploaddf['Sector'] = 'Healtchare'#'V'
+                uploaddf['Sector'] = 'Healthcare'#'V'
                 roce = uploaddf['roce'] = roce_rating(x)
                 roic = uploaddf['roic'] = roic_rating(x)
                 reitroce = uploaddf['reitroce'] = reitroce_rating(x)
@@ -1997,14 +1997,13 @@ def rank_Utilities():
 def clear_rankings():
     conn = sql.connect(db_path)
     query = conn.cursor()
-    sector = 'DELETE FROM Sector_Rankings '
-    # WHERE Sector LIKE \'Energy\'
+    sector = 'DELETE FROM Sector_Rankings WHERE Sector LIKE \'Healt%\''
     query.execute(sector)
     conn.commit()
     query.close()
     conn.close()
 
-    print_DB('SELECT * FROM Sector_Rankings','print')
+    print_DB('SELECT * FROM Sector_Rankings WHERE Sector LIKE \'Healt%\'','print')
 
 def fillSectorRankings():
     try:
@@ -2025,6 +2024,7 @@ def fillSectorRankings():
         print(err)
 
 # clear_rankings()
+# print_DB('SELECT Distinct Sector FROM Sector_Rankings WHERE Sector LIKE \'Healt%\'','print')
 # fillSectorRankings()
 
 #####################################################################################

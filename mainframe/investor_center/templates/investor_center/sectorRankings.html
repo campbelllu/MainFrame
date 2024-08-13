@@ -1,6 +1,5 @@
 {% extends 'investor_center/base.html' %}
 
-
 {% block content %}
 	<h1>
 		Sector Rankings
@@ -10,36 +9,44 @@
 	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
 	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
     <p>The dropdown menues in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 or larger in that category.</p>
-	
-    
+	<p>Choose from a cookie-cutter screener of each section:</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div> 
+            <input type="submit" name="genericB" value="Materials"> 
+            <input type="submit" name="genericC" value="Communications">
+            <input type="submit" name="genericE" value="Energy"> 
+            <input type="submit" name="genericBDC" value="BDC"> 
+            <input type="submit" name="genericF" value="Financials"> 
+            <input type="submit" name="genericI" value="Industrials"> 
+            <input type="submit" name="genericK" value="Technology"> 
+            <input type="submit" name="genericP" value="Consumer Staples"> 
+            <input type="submit" name="genericRE" value="Real Estate"> 
+            <input type="submit" name="genericU" value="Utilities"> 
+            <input type="submit" name="genericV" value="Healthcare"> 
+            <input type="submit" name="genericY" value="Consumer Cyclical"> 
+        </div>
+    </form>
+
+    <p>Or you can make manual selections below. Have fun!:</p>
+
 	<form method="POST">
 		{% csrf_token %}
         <center>
 		<select name="sectorDropDown">
-			<option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>  <!-- <option selected disabled=true >{{dv.sector|safe}}</option> -->
+			<option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
 			{% for j in sectors %}
 				<option value="{{ j.Sector }}">{{ j.Sector }}</option>
 			{% endfor %}
             <option> All </option>
-			<!-- <option>Male</option> -->
-			<!-- <option>Female</option> -->
-			<!-- <option>Other</option> -->
 		</select>
         </center>
-		<!-- First we get the dropdown menu to appear, later to be functional. THEN we add dropdowns for each column's values. -->
 		
-		<!-- The problem with the below dropdown menu is DRY. -->
-		<!-- You need to include it into each column of the table. Can it be combined in the <th>'s below somehow? Or above the th's? maybe try for two tr-th-sections, with the dropdown to filter in the top one? -->
-		<!-- You could also have two tables. The above one has filter labels as TH, value dropdown choices as TD. -->
-		<!-- Experiment with two tr-columns in the bottom table -->
-        <center><input type="submit" value="Update Table"> </center>
-       
+        <center> <input type="submit" name="updateTable" value="Update Table"> </center>
+        
         <table border="1" name="sectorRankingsTable">
             <tr>
-                <th>{{ lt|length }} Ticker Returned</th>
-            </tr>
-            <tr>
-                <th>Ticker</th> 
+                <th>Tickers ({{ lt|length }})</th> 
                 <th>Score Ranking</th>
                 <th>AVG ROCE<br/><select name="vfroce"><option value="{{dv.roce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
                 <th>AVG ROIC<br/><select name="vfroic"><option value="{{dv.roic|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roic}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
@@ -91,84 +98,10 @@
             </tr>
             {% endfor %}
         </table>
-        
-        <!-- This section invalidated because the page already loads with the top 10 -->
-        <!-- <br></br> -->
-        <!-- <p>Just for laughs, here are the top ten, unfiltered by sector.</p> -->
-        <!-- {% for k in topTen %}	 -->
-            <!-- <table border="1" name="topTenTable"> -->
-                <!-- <tr> -->
-                    <!-- <th>Ticker</th> -->
-                    <!-- <th>Sector</th> -->
-                    <!-- <th>Score Ranking</th> -->
-                    <!-- <th>AVG ROCE</th> -->
-                    <!-- <th>AVG ROIC</th> -->
-                    <!-- <th>Revenue GR</th> -->
-                    <!-- <th>Net Income GR</th> -->
-                    <!-- <th>FCF GR</th> -->
-                    <!-- <th>FCF Margin GR</th> -->
-                    <!-- <th>Op/Net Cashflow GR</th> -->
-                    <!-- <th>Dividend Payer?</th> -->
-                    <!-- <th>Dividend GR</th> -->
-                    <!-- <th>AVG Payout Ratio</th> -->
-                    <!-- <th>Shares GR</th> -->
-                    <!-- <th>Debt GR</th> -->
-                    <!-- <th>Book Value/NAV GR</th> -->
-                    <!-- <th>Equity GR</th> -->
-                    <!-- <th>Return of Capital</th> -->
-                    <!-- <th>Funds from Operations(FFO) GR</th> -->
-                    <!-- <th>AVG REIT ROCE</th> -->
-                    <!-- <th>AVG FFO Payout Ratio</th> -->
-                    <!-- <th>Score</th> -->
-                    <!-- <th>Max Score</th> -->
-                <!-- </tr> -->
-                <!-- <tr> -->
-                    <!-- <td>{{k.Ticker}}</td> -->
-                    <!-- <td>{{k.Sector}}</td> -->
-                    <!-- <td>{{k.scorerank|floatformat:3}}</td> -->
-                    <!-- <td>{{k.roce}}</td> -->
-                    <!-- <td>{{k.roic}}</td> -->
-                    <!-- <td>{{k.rev}}</td> -->
-                    <!-- <td>{{k.ni}}</td> -->
-                    <!-- <td>{{k.fcf}}</td> -->
-                    <!-- <td>{{k.fcfm}}</td> -->
-                    <!-- <td>{{k.cf}}</td> -->
-                    <!-- <td>{{k.divpay}}</td> -->
-                    <!-- <td>{{k.divgr}}</td> -->
-                    <!-- <td>{{k.po}}</td> -->
-                    <!-- <td>{{k.shares}}</td> -->
-                    <!-- <td>{{k.debt}}</td> -->
-                    <!-- <td>{{k.bv}}</td> -->
-                    <!-- <td>{{k.equity}}</td> -->
-                    <!-- <td>{{k.roc}}</td> -->
-                    <!-- <td>{{k.ffo}}</td> -->
-                    <!-- <td>{{k.reitroce}}</td> -->
-                    <!-- <td>{{k.ffopo}}</td> -->
-                    <!-- <td>{{k.score}}</td> -->
-                    <!-- <td>{{k.maxscore}}</td> -->
-                <!-- </tr> -->
-            <!-- </table> -->
-        <!-- {% endfor %} -->
-
-		
-
-	
-
-
 	</form>
-    
-    
-
-
-
-
-
-
 {% endblock %}
 
-
-
-
+<!-- remember this for links on the tickers -->
 <!-- <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td> -->
 
 
