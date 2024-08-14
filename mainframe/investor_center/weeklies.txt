@@ -1,6 +1,6 @@
-  Ticker  currentPrice  idealPriceCeiling  currentValuation      divGR  currentDiv  currentYield
-1   QDTE       41.5000              739.7          1.402596  13.696470      29.588     71.296386
-0   XDTE       50.4802              456.3          2.765735   6.848136      18.252     36.156751
+  Ticker  currentPrice  idealPriceCeiling  currentValuation     divGR  currentDiv  currentYield
+1   QDTE         41.45              668.2          1.550808  7.042726      26.728     64.482509
+0   XDTE         50.54              535.6          2.359037  8.894261      21.424     42.390186
   Ticker  CurrentPrice  ExpectedMinReturnAtThisPrice  5%TargetPrice  10%TargetPrice  15%TargetPrice  20%TargetPrice  30%TargetPrice  40%TargetPrice  50%TargetPrice
-1   QDTE       41.5000                            50    -439.811500    -1034.718982     2934.191460      606.772273       234.59995      145.410420      105.356349
-0   XDTE       50.4802                            40   -1127.484366      661.114724      255.615632      158.437154        90.00329       62.854503       48.288620
+0   XDTE         50.54                            50    -652.357240     2297.512703      416.075658      228.751042      120.367705       81.671404       61.802790
+1   QDTE         41.45                            50   -1499.238095     1035.593373      384.872152      236.356284      133.401427       92.924345       71.292538

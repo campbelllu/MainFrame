@@ -23,5 +23,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('SectorRankings/', views.sr, name='sr'),
+    path('Report/', views.report, name='report'),
+    path('Valuation/', views.valuation, name='val')
    
 ]

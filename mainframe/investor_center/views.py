@@ -10,6 +10,24 @@ def index(request):
     return render(request, 'investor_center/index.html', {})
     #HttpResponse('<h1>Welcome to The Investor Center.</h1>')
 
+def valuation(request):
+    # luke, i'm not sure how to display this
+    # do we want tables, displaying current rankings altogether?
+    # etfs could be added at request of the user, that introduces ease of use, minor headaches, but it wouldn't be unmanageable
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    context = {
+        'sectors': sectors,
+        # 'dv': dropdownValues,
+        # 'lt': pageLandingTable,
+        }
+    return render(request, 'investor_center/valuation.html', context)
+
+def report(request):
+    # they need to be able to search for a stock ticker
+    # also, in the sector rankings they can click the ticker to take them directly to a report
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+
+
 def sr(request):
     # topTen = Sector_Rankings.objects.order_by('-scorerank')[:10]
     sectors = Sector_Rankings.objects.values('Sector').distinct()
@@ -179,17 +197,17 @@ def sr(request):
         filterSector = dropdownValues['sector'] = 'Communications'
         filterROCE = dropdownValues['roce'] = 2
         filterROIC = dropdownValues['roic'] = -5
-        filterREV = dropdownValues['rev'] = 2
-        filterNI = dropdownValues['ni'] = 2
-        filterFCF = dropdownValues['fcf'] = -5
-        filterFCFM = dropdownValues['fcfm'] = -5
-        filterCF = dropdownValues['cf'] = -5
-        filterDP = dropdownValues['dp'] = 1
-        filterDIVGR = dropdownValues['divgr'] = 2
+        filterREV = dropdownValues['rev'] = 0
+        filterNI = dropdownValues['ni'] = 0
+        filterFCF = dropdownValues['fcf'] = 0
+        filterFCFM = dropdownValues['fcfm'] = 0
+        filterCF = dropdownValues['cf'] = 0
+        filterDP = dropdownValues['dp'] = -1
+        filterDIVGR = dropdownValues['divgr'] = 0
         filterPO = dropdownValues['po'] = 1
         filterSHARES = dropdownValues['shares'] = 2
-        filterDEBT = dropdownValues['debt'] = -5
-        filterBV = dropdownValues['bv'] = -5
+        filterDEBT = dropdownValues['debt'] = -3
+        filterBV = dropdownValues['bv'] = 0
         filterEQ = dropdownValues['eq'] = 0
         filterROC = dropdownValues['roc'] = 0
         filterFFO = dropdownValues['ffo'] = -5
@@ -210,20 +228,20 @@ def sr(request):
 
     elif 'genericE' in request.POST:
         filterSector = dropdownValues['sector'] = 'Energy'
-        filterROCE = dropdownValues['roce'] = 2
+        filterROCE = dropdownValues['roce'] = 3
         filterROIC = dropdownValues['roic'] = -5
-        filterREV = dropdownValues['rev'] = 2
-        filterNI = dropdownValues['ni'] = 2
+        filterREV = dropdownValues['rev'] = -5
+        filterNI = dropdownValues['ni'] = -5
         filterFCF = dropdownValues['fcf'] = -5
         filterFCFM = dropdownValues['fcfm'] = -5
-        filterCF = dropdownValues['cf'] = -5
+        filterCF = dropdownValues['cf'] = 0
         filterDP = dropdownValues['dp'] = 1
         filterDIVGR = dropdownValues['divgr'] = 2
         filterPO = dropdownValues['po'] = 1
-        filterSHARES = dropdownValues['shares'] = 2
+        filterSHARES = dropdownValues['shares'] = 3
         filterDEBT = dropdownValues['debt'] = -5
-        filterBV = dropdownValues['bv'] = -5
-        filterEQ = dropdownValues['eq'] = 0
+        filterBV = dropdownValues['bv'] = 3
+        filterEQ = dropdownValues['eq'] = 3
         filterROC = dropdownValues['roc'] = 0
         filterFFO = dropdownValues['ffo'] = -5
         filterREITROCE = dropdownValues['reitroce'] = -5
@@ -243,21 +261,21 @@ def sr(request):
 
     elif 'genericBDC' in request.POST:
         filterSector = dropdownValues['sector'] = 'BDC'
-        filterROCE = dropdownValues['roce'] = 2
+        filterROCE = dropdownValues['roce'] = 3
         filterROIC = dropdownValues['roic'] = -5
-        filterREV = dropdownValues['rev'] = 2
-        filterNI = dropdownValues['ni'] = 2
+        filterREV = dropdownValues['rev'] = -5
+        filterNI = dropdownValues['ni'] = -5
         filterFCF = dropdownValues['fcf'] = -5
         filterFCFM = dropdownValues['fcfm'] = -5
         filterCF = dropdownValues['cf'] = -5
         filterDP = dropdownValues['dp'] = 1
-        filterDIVGR = dropdownValues['divgr'] = 2
-        filterPO = dropdownValues['po'] = 1
-        filterSHARES = dropdownValues['shares'] = 2
+        filterDIVGR = dropdownValues['divgr'] = -5
+        filterPO = dropdownValues['po'] = -5
+        filterSHARES = dropdownValues['shares'] = 1
         filterDEBT = dropdownValues['debt'] = -5
-        filterBV = dropdownValues['bv'] = -5
+        filterBV = dropdownValues['bv'] = 0
         filterEQ = dropdownValues['eq'] = 0
-        filterROC = dropdownValues['roc'] = 0
+        filterROC = dropdownValues['roc'] = 1
         filterFFO = dropdownValues['ffo'] = -5
         filterREITROCE = dropdownValues['reitroce'] = -5
         filterFFOPO = dropdownValues['ffopo'] = -5
@@ -276,19 +294,19 @@ def sr(request):
 
     elif 'genericF' in request.POST:
         filterSector = dropdownValues['sector'] = 'Financials'
-        filterROCE = dropdownValues['roce'] = 2
+        filterROCE = dropdownValues['roce'] = 3
         filterROIC = dropdownValues['roic'] = -5
-        filterREV = dropdownValues['rev'] = 2
-        filterNI = dropdownValues['ni'] = 2
+        filterREV = dropdownValues['rev'] = -5
+        filterNI = dropdownValues['ni'] = 0
         filterFCF = dropdownValues['fcf'] = -5
         filterFCFM = dropdownValues['fcfm'] = -5
         filterCF = dropdownValues['cf'] = -5
         filterDP = dropdownValues['dp'] = 1
-        filterDIVGR = dropdownValues['divgr'] = 2
+        filterDIVGR = dropdownValues['divgr'] = 3
         filterPO = dropdownValues['po'] = 1
         filterSHARES = dropdownValues['shares'] = 2
         filterDEBT = dropdownValues['debt'] = -5
-        filterBV = dropdownValues['bv'] = -5
+        filterBV = dropdownValues['bv'] = 3
         filterEQ = dropdownValues['eq'] = 0
         filterROC = dropdownValues['roc'] = 0
         filterFFO = dropdownValues['ffo'] = -5
@@ -309,7 +327,7 @@ def sr(request):
 
     elif 'genericI' in request.POST:
         filterSector = dropdownValues['sector'] = 'Industrials'
-        filterROCE = dropdownValues['roce'] = 2
+        filterROCE = dropdownValues['roce'] = 3
         filterROIC = dropdownValues['roic'] = -5
         filterREV = dropdownValues['rev'] = 2
         filterNI = dropdownValues['ni'] = 2
@@ -317,7 +335,7 @@ def sr(request):
         filterFCFM = dropdownValues['fcfm'] = -5
         filterCF = dropdownValues['cf'] = -5
         filterDP = dropdownValues['dp'] = 1
-        filterDIVGR = dropdownValues['divgr'] = 2
+        filterDIVGR = dropdownValues['divgr'] = 3
         filterPO = dropdownValues['po'] = 1
         filterSHARES = dropdownValues['shares'] = 2
         filterDEBT = dropdownValues['debt'] = -5
@@ -383,9 +401,9 @@ def sr(request):
         filterFCFM = dropdownValues['fcfm'] = -5
         filterCF = dropdownValues['cf'] = -5
         filterDP = dropdownValues['dp'] = 1
-        filterDIVGR = dropdownValues['divgr'] = 2
+        filterDIVGR = dropdownValues['divgr'] = 0
         filterPO = dropdownValues['po'] = 1
-        filterSHARES = dropdownValues['shares'] = 2 #luke here
+        filterSHARES = dropdownValues['shares'] = 1
         filterDEBT = dropdownValues['debt'] = -5
         filterBV = dropdownValues['bv'] = -5
         filterEQ = dropdownValues['eq'] = -5
