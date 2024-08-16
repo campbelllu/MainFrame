@@ -3,7 +3,7 @@ from django.http import HttpResponse
 import numpy as np
 # from django.template import loader
 
-from .models import Metadata, Sector_Rankings
+from .models import Mega, Metadata, Sector_Rankings
 
 # Create your views here.
 def index(request):
@@ -26,6 +26,71 @@ def report(request):
     # they need to be able to search for a stock ticker
     # also, in the sector rankings they can click the ticker to take them directly to a report
     sectors = Sector_Rankings.objects.values('Sector').distinct()
+
+    if 'income' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+
+        context = {
+            'sectors': sectors,
+            'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+            }
+        return render(request, 'investor_center/incomeDetails.html', context)
+
+    elif 'balance' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+
+        context = {
+            'sectors': sectors,
+            'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+            }
+        return render(request, 'investor_center/balanceDetails.html', context)
+
+    else:
+        # print('else report view')
+        context = {
+        'sectors': sectors,
+        # 'dv': dropdownValues,
+        # 'lt': pageLandingTable,
+        }
+        return render(request, 'investor_center/report.html', context)
+
+# def reportDetails(request):
+#     # they need to be able to search for a stock ticker
+#     # also, in the sector rankings they can click the ticker to take them directly to a report
+
+#     sectors = Sector_Rankings.objects.values('Sector').distinct()
+
+#     if 'tsButton' in request.POST:
+#         ticker = request.POST.get('ts').upper()
+#         allData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+#         # row = Sector_Rankings.objects.filter(Ticker=ticker).first()
+
+#         context = {
+#             'sectors': sectors,
+#             'ticker': ticker,
+#             # 'dv': dropdownValues,
+#             'lt': allData,
+#             }
+#         return render(request, 'investor_center/report.html', context)
+#     else:
+#         context = {
+#         'sectors': sectors,
+#         # 'dv': dropdownValues,
+#         # 'lt': pageLandingTable,
+#         }
+#         return render(request, 'investor_center/report.html', context)
 
 
 def sr(request):
@@ -145,7 +210,7 @@ def sr(request):
             context = {
                 'sectors': sectors,
                 'dv': dropdownValues,
-                'lt': searchFilter,
+                'lt': searchFilter.order_by('-scorerank'),
             }
             return render(request, 'investor_center/sectorRankings.html', context)
         else:
@@ -156,7 +221,58 @@ def sr(request):
             context = {
                 'sectors': sectors,
                 'dv': dropdownValues,
-                'lt': searchFilter,
+                'lt': searchFilter.order_by('-scorerank'),
+            }
+            return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'resetTable' in request.POST:
+        context = {
+        'sectors': sectors,
+        'dv': dropdownValues,
+        'lt': pageLandingTable,
+        }
+        return render(request, 'investor_center/sectorRankings.html', context)
+
+    elif 'tsButton' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        row = Sector_Rankings.objects.filter(Ticker=ticker).first()
+        if row:
+            filterSector = dropdownValues['sector'] = row.Sector
+            filterROCE = dropdownValues['roce'] = row.roce - 1
+            filterROIC = dropdownValues['roic'] = row.roic - 1
+            filterREV = dropdownValues['rev'] = row.rev - 1
+            filterNI = dropdownValues['ni'] = row.ni - 1
+            filterFCF = dropdownValues['fcf'] = row.fcf - 1
+            filterFCFM = dropdownValues['fcfm'] = row.fcfm - 1
+            filterCF = dropdownValues['cf'] = row.cf - 1
+            filterDP = dropdownValues['dp'] = row.divpay
+            filterDIVGR = dropdownValues['divgr'] = row.divgr - 1
+            filterPO = dropdownValues['po'] = row.po - 1
+            filterSHARES = dropdownValues['shares'] = row.shares - 1
+            filterDEBT = dropdownValues['debt'] = row.debt - 1
+            filterBV = dropdownValues['bv'] = row.bv - 1
+            filterEQ = dropdownValues['eq'] = row.equity - 1
+            filterROC = dropdownValues['roc'] = row.roc - 1
+            filterFFO = dropdownValues['ffo'] = row.ffo - 1
+            filterREITROCE = dropdownValues['reitroce'] = row.reitroce - 1
+            filterFFOPO = dropdownValues['ffopo'] = row.ffopo - 1
+
+            searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+
+            context = {
+                    'sectors': sectors,
+                    'dv': dropdownValues,
+                    'lt': searchFilter.order_by('-scorerank'),
+            }
+            return render(request, 'investor_center/sectorRankings.html', context)
+        else:
+            context = {
+                    'sectors': sectors,
+                    # 'dv': dropdownValues,
+                    'lt': pageLandingTable,
             }
             return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -189,7 +305,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -222,7 +338,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -255,7 +371,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -288,7 +404,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -321,7 +437,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -354,7 +470,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -387,7 +503,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -420,7 +536,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -453,7 +569,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -486,7 +602,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -519,7 +635,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -552,7 +668,7 @@ def sr(request):
         context = {
             'sectors': sectors,
             'dv': dropdownValues,
-            'lt': searchFilter,
+            'lt': searchFilter.order_by('-scorerank'),
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -563,43 +679,3 @@ def sr(request):
         'lt': pageLandingTable,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
-    # return render(request, 'investor_center/sectorRankings.html', context)
-
-    # if request.method=="POST":
-    #    
-    #  empsearch=Employee.objects.filter(gender=searchgender,designation=searchdesignation)
-
-    #     return render(request,'home.html',{"data":empsearch})
-
-
-    #template = loader.get_template("investor_center/metadata.html")
-    #HttpResponse(template.render(context,request))
-        #'<h1>One Piston. Very unique ICEngine.</h1>')
-
-        # options = ['Materials', 'Communications', 'Energy', 'Financials ex-BDC\'s', 'BDC\'s', 
-                    # 'Industrials', 'Technology', 'Consumer Staples', 'Real Estate', 'Utilities', 
-                    # 'Healthcare', 'Consumer Cyclical'],
-
-#this was so cool, but i have to name each individually so... dang.
-# 'dd': dropdown,
-        # 'dd2': dropdown2,
-        # {{ dd|safe }} #this goes into the html
-# dropdown = "<select name=\"valueFilter\"> \
-#                 <option selected disabled=true> >= </option> \
-#                 <option>5</option> \
-#                 <option>4</option> \
-#                 <option>3</option> \
-#                 <option>2</option> \
-#                 <option>1</option> \
-#                 <option>0</option> \
-#                 <option>-1</option> \
-#                 <option>-2</option> \
-#                 <option>-3</option> \
-#                 <option>-4</option> \
-#                 <option>-5</option> \
-#                 </select>"
-#     dropdown2 = "<select name=\"valueFilter2\"> \
-#                 <option selected disabled=true>  </option> \
-#                 <option>1</option> \
-#                 <option>-1</option> \
-#                 </select>"

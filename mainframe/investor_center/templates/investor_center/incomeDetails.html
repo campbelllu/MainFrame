@@ -1,0 +1,71 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Jump to another report:</p>
+    <input type="submit" name="balance" value="Balance Sheet Report">
+    <input type="submit" name="cf" value="Cash Flow Statement Report">
+
+    <h1>
+        Income Statement Breakdown for {{dt}}
+        <input type="hidden" name="ts" value="{{dt}}">
+    </h1>
+    
+    
+    <!-- <h2>
+        Income Statement Breakdown
+    </h2> -->
+    <table border="1" name="sectorRankingsTable">
+        <tr>
+            <!-- <th>Ticker</th>  -->
+            <th>Year</th>
+            <th>Revenue</th>
+            <th>Revenue GR%</th>
+            <th>Net Income</th>
+            <th>Net Income GR%</th>
+            <th>Shares</th>
+            <th>Share GR%</th>
+            <th>Reported EPS</th>
+            <th>Reported EPS GR%</th>
+            <th>Calculated EPS</th>
+            <th>Calculated EPS GR%</th>
+        </tr>
+        {% for i in lt %}
+        <tr>
+            <!-- <td>{{i.Ticker}}</td> -->
+            <td>{{i.year}}</td>
+            <td>{{i.revenue}}</td>
+            <td>{{i.revenueGrowthRate}}</td>
+            <td>{{i.netIncome}}</td>
+            <td>{{i.netIncomeGrowthRate}}</td>
+            <td>{{i.shares}}</td>
+            <td>{{i.sharesGrowthRate}}</td>
+            <td>{{i.reportedEPS}}</td>
+            <td>{{i.reportedEPSGrowthRate}}</td>
+            <td>{{i.calculatedEPS}}</td>
+            <td>{{i.calculatedEPSGrowthRate}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3>Averages of all the Above</h3>
+    <table border="1" name="sectorRankingsTable">
+        <tr>
+            <th>Average Revenue GR%</th>
+            <th>Average Net Income GR%</th>
+            <th>Average Shares GR%</th>
+            <th>Average Reported EPS GR%</th>
+            <th>Average Calculated EPS GR%</th>
+        </tr>
+        <tr>
+            {% for i in mt %}
+            <td>{{i.revGrowthAVG}}</td>
+            <td>{{i.netIncomeGrowthAVG}}</td>
+            <td>{{i.sharesGrowthAVG}}</td>
+            <td>{{i.repsGrowthAVG}}</td>
+            <td>{{i.cepsAVG}}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</form>
+{% endblock %}

@@ -9,8 +9,7 @@
 	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
 	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
     <p>The dropdown menues in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 or larger in that category.</p>
-	<p>Choose from a cookie-cutter screener of each section to save time:</p>
-    <form method="POST">
+    <!-- <form method="POST">
         {% csrf_token %}
         <div> 
             <input type="submit" name="genericB" value="Materials"> 
@@ -26,13 +25,93 @@
             <input type="submit" name="genericV" value="Healthcare"> 
             <input type="submit" name="genericY" value="Consumer Cyclical"> 
         </div>
+        
+    </form>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <p>Or you can search for a ticker, revealing its ranking and all its peers.</p>
+            <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
+            <input type="submit" name="tsButton" value="Find My Stock!">
+        </div>
     </form>
 
-    <p>Or you can make manual selections below. Have fun!:</p>
+    <p>Or you can make manual selections below. Have fun!:</p> -->
 
 	<form method="POST">
 		{% csrf_token %}
+        
         <center>
+            <table border="1" name="searchMethodTable">
+                <tr>
+                    <th>Search for a Single Ticker</th>
+                    <!-- <th>Select a Sector and manually pick values</th> -->
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
+                        <input type="submit" name="tsButton" value="Find My Stock!">
+                    </td>
+                    <!-- <td>
+                        <center>
+                            <select name="sectorDropDown">
+                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
+                                {% for j in sectors %}
+                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
+                                {% endfor %}
+                                <option> All </option>
+                            </select>
+                        </center>
+                        <center> <input type="submit" name="updateTable" value="Update Table"> </center> 
+                    </td> -->
+                </tr>
+            </table>
+            <table border="1" name="searchMethodTable">
+                <tr>
+                    <th>Choose a preselected filter per sector</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" name="genericB" value="Materials"> 
+                        <input type="submit" name="genericC" value="Communications">
+                        <input type="submit" name="genericE" value="Energy"> 
+                        <input type="submit" name="genericBDC" value="BDC"> 
+                        <input type="submit" name="genericF" value="Financials"> 
+                        <input type="submit" name="genericI" value="Industrials"> 
+                        <input type="submit" name="genericK" value="Technology"> 
+                        <input type="submit" name="genericP" value="Consumer Staples"> 
+                        <input type="submit" name="genericRE" value="Real Estate"> 
+                        <input type="submit" name="genericU" value="Utilities"> 
+                        <input type="submit" name="genericV" value="Healthcare"> 
+                        <input type="submit" name="genericY" value="Consumer Cyclical"> 
+                    </td>
+                </tr>
+            </table>
+            <table border="1" name="searchMethodTable">
+                <tr>
+                    <th>Select a Sector and manually pick values</th>
+                </tr>
+                <tr>
+                    <td>
+                        <center>
+                            <select name="sectorDropDown">
+                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
+                                {% for j in sectors %}
+                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
+                                {% endfor %}
+                                <option> All </option>
+                            </select>
+                        </center>
+                        <center> <input type="submit" name="updateTable" value="Update Table"> </center> 
+                    </td>
+                </tr>
+            </table>
+        
+        </center>
+        <center> <input type="submit" name="resetTable" value="Reset Table"> </center>
+        <!-- <center> <input type="submit" name="resetTable" value="Reset Table"> </center> -->
+
+        <!-- <center>
 		<select name="sectorDropDown">
 			<option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
 			{% for j in sectors %}
@@ -40,9 +119,9 @@
 			{% endfor %}
             <option> All </option>
 		</select>
-        </center>
+        </center> -->
 		
-        <center> <input type="submit" name="updateTable" value="Update Table"> </center>
+        <!-- <center> <input type="submit" name="updateTable" value="Update Table"> </center>  -->
         
         <table border="1" name="sectorRankingsTable">
             <tr>
@@ -102,7 +181,7 @@
 {% endblock %}
 
 <!-- remember this for links on the tickers -->
-<!-- <td><a href = 'http://127.0.0.1:8000/'>{{i.Ticker}}</a></td> -->
+<!-- <td><a href = '{% url 'reportDetails' %}/{{i.Ticker}}'>{{i.Ticker}}</a></td> -->
 
 
 

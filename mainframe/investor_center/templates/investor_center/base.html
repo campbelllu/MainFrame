@@ -9,9 +9,10 @@
     <body>
         <p>eventually all this will be in a top-tab-bar, or dropdown menu or something</p>
         <p>
-            <a href="http://127.0.0.1:8000/">Home</a>
-            <a href="http://127.0.0.1:8000/SectorRankings">Sector Rankings</a>
-            <a href="http://127.0.0.1:8000/Valuation">Valuation</a>
+            <a href="{% url 'index' %}">Home</a> <!-- http://127.0.0.1:8000/ -->
+            <a href="{% url 'sr' %}">Sector Rankings</a> <!-- http://127.0.0.1:8000/SectorRankings -->
+            <a href="{% url 'val' %}">Valuation</a> <!-- http://127.0.0.1:8000/Valuation -->
+            <a href="{% url 'report' %}">Individual Reports</a> <!-- http://127.0.0.1:8000/Report -->
         </p>
         {% block content %}
         {% endblock %}

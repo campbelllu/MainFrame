@@ -1,0 +1,20 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+    <h1>
+        Individual Stock Reports
+    </h1>
+    <p>For all your SEC-filing needs, here's what we've put together for each firm that's ever filed with them.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
+        <input type="submit" name="income" value="Income Statement Report">
+        <input type="submit" name="balance" value="Balance Sheet Report">
+        <input type="submit" name="cf" value="Cash Flow Statement Report">
+
+
+    </form>
+
+    <!-- luke: we're going to break these all down into different buttons: income statement, balance sheet, cf statement, reit pertinent,  -->
+
+{% endblock %}

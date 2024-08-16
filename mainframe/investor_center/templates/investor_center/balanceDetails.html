@@ -1,0 +1,66 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <h1>
+        Balance Sheet Breakdown for {{dt}}
+        <input type="hidden" name="hiddenticker" value="{{dt}}">
+    </h1>
+    
+    <!-- <h2>
+        Income Statement Breakdown
+    </h2> -->
+    <table border="1" name="sectorRankingsTable">
+        <tr>
+            <!-- <th>Ticker</th>  -->
+            <th>Year</th>
+            <th>Reported Shareholder Equity</th>
+            <th>Reported Shareholder Equity GR%</th>
+            <th>Calculated Shareholder Equity</th>
+            <th>Calculated Shareholder Equity GR%</th>
+            <th>Reported Book Value</th>
+            <th>Reported Book Value GR%</th>
+            <th>Calculated Book Value</th>
+            <th>Calculated Book Value GR%</th>
+            <th>Net Asset Value</th>
+            <th>NAV GR%</th>
+        </tr>
+        {% for i in lt %}
+        <tr>
+            <!-- <td>{{i.Ticker}}</td> -->
+            <td><center>{{i.year}}</td>
+            <td><center>{{i.ReportedTotalEquity|floatformat:"0"}}</center></td>
+            <td><center>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}</center></td>
+            <td><center>{{i.TotalEquity|floatformat:"0"}}</center></td>
+            <td><center>{{i.TotalEquityGrowthRate|floatformat:3}}</center></td>
+            <td><center>{{i.reportedBookValue|floatformat:3}}</center></td>
+            <td><center>{{i.reportedBookValueGrowthRate|floatformat:3}}</center></td>
+            <td><center>{{i.calcBookValue|floatformat:3}}</center></td>
+            <td><center>{{i.calcBookValueGrowthRate|floatformat:3}}</center></td>
+            <td><center>{{i.nav|floatformat:3}}</center></td>
+            <td><center>{{i.navGrowthRate|floatformat:3}}</center></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3>Averages of all the Above</h3>
+    <table border="1" name="sectorRankingsTable">
+        <tr>
+            <th>Average Rep. Equity GR%</th>
+            <th>Average Calc. Equity GR%</th>
+            <th>Average Rep. BV GR%</th>
+            <th>Average Calc. BV GR%</th>
+            <th>Average NAV GR%</th>
+        </tr>
+        <tr>
+            {% for i in mt %}
+            <td><center>{{i.reportedEquityGrowthAVG|floatformat:3}}</center></td>
+            <td><center>{{i.calculatedEquityGrowthAVG|floatformat:3}}</center></td>
+            <td><center>{{i.repBookValueGrowthAVG|floatformat:3}}</center></td>
+            <td><center>{{i.calcBookValueGrowthAVG|floatformat:3}}</center></td>
+            <td><center>{{i.navGrowthAVG|floatformat:3}}</center></td>
+            {% endfor %}
+        </tr>
+    </table>
+</form>
+{% endblock %}
