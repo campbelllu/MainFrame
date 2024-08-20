@@ -106,6 +106,21 @@ class Mega(models.Model):
     Sector = models.CharField(max_length=30)
     Industry = models.CharField(max_length=50)
 
+    @property
+    def creit_roce(self):
+        return self.ffo / self.TotalEquity * 100
+
+    # @property
+    # def creit_roce_avg(self):
+    #     #luke here trying to average these thigns
+    #     set = (self.ffo / self.TotalEquity * 100)
+    #     avg = sum(set) / len(set)
+    #     return avg
+
+    @property
+    def rreit_roce(self):
+        return self.ffo / self.ReportedTotalEquity * 100
+
     class Meta:
         db_table = 'Mega'
 

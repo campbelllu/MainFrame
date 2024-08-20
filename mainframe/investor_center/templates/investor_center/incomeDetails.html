@@ -6,66 +6,53 @@
     <p>Jump to another report:</p>
     <input type="submit" name="balance" value="Balance Sheet Report">
     <input type="submit" name="cf" value="Cash Flow Statement Report">
+    <input type="submit" name="eff" value="Efficiency Report">
+    <input type="submit" name="divs" value="Dividend Report">
 
     <h1>
         Income Statement Breakdown for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
     
-    
-    <!-- <h2>
-        Income Statement Breakdown
-    </h2> -->
     <table border="1" name="sectorRankingsTable">
+        {% for l in mt %}
         <tr>
-            <!-- <th>Ticker</th>  -->
             <th>Year</th>
             <th>Revenue</th>
-            <th>Revenue GR%</th>
+            <th>Revenue GR </br>AVG: {{l.revGrowthAVG|floatformat:3}}%</th>
             <th>Net Income</th>
-            <th>Net Income GR%</th>
+            <th>Net Income GR </br>AVG: {{l.netIncomeGrowthAVG|floatformat:3}}%</th>
+            <th>Funds from Operations (FFO)</th>
+            <th>FFO GR </br>AVG: {{l.ffoGrowthAVG|floatformat:3}}%</th>
             <th>Shares</th>
-            <th>Share GR%</th>
+            <th>Shares GR </br>AVG: {{l.sharesGrowthAVG|floatformat:3}}%</th>
             <th>Reported EPS</th>
-            <th>Reported EPS GR%</th>
+            <th>Reported EPS GR </br>AVG: {{l.repsGrowthAVG|floatformat:3}}%</th>
             <th>Calculated EPS</th>
-            <th>Calculated EPS GR%</th>
-        </tr>
-        {% for i in lt %}
-        <tr>
-            <!-- <td>{{i.Ticker}}</td> -->
-            <td>{{i.year}}</td>
-            <td>{{i.revenue}}</td>
-            <td>{{i.revenueGrowthRate}}</td>
-            <td>{{i.netIncome}}</td>
-            <td>{{i.netIncomeGrowthRate}}</td>
-            <td>{{i.shares}}</td>
-            <td>{{i.sharesGrowthRate}}</td>
-            <td>{{i.reportedEPS}}</td>
-            <td>{{i.reportedEPSGrowthRate}}</td>
-            <td>{{i.calculatedEPS}}</td>
-            <td>{{i.calculatedEPSGrowthRate}}</td>
+            <th>Calculated EPS GR </br>AVG: {{l.cepsAVG|floatformat:3}}%</th>
+            <th>REIT EPS</th>
+            <th>REIT EPS GR </br>AVG: {{l.reitepsGrowthAVG|floatformat:3}}%</th>
         </tr>
         {% endfor %}
-    </table>
-    <h3>Averages of all the Above</h3>
-    <table border="1" name="sectorRankingsTable">
+        {% for i in lt %}
         <tr>
-            <th>Average Revenue GR%</th>
-            <th>Average Net Income GR%</th>
-            <th>Average Shares GR%</th>
-            <th>Average Reported EPS GR%</th>
-            <th>Average Calculated EPS GR%</th>
+            <td>{{i.year}}</td>
+            <td>${{i.revenue|floatformat:"0"}}</td>
+            <td>{{i.revenueGrowthRate|floatformat:3}}%</td>
+            <td>${{i.netIncome|floatformat:"0"}}</td>
+            <td>{{i.netIncomeGrowthRate|floatformat:3}}%</td>
+            <td>{{i.ffo}}</td>
+            <td>{{i.ffoGrowthRate}}</td>
+            <td>{{i.shares|floatformat:"0"}}</td>
+            <td>{{i.sharesGrowthRate|floatformat:3}}%</td>
+            <td>${{i.reportedEPS|floatformat:2}}/share</td>
+            <td>{{i.reportedEPSGrowthRate|floatformat:3}}%</td>
+            <td>${{i.calculatedEPS|floatformat:2}}/share</td>
+            <td>{{i.calculatedEPSGrowthRate|floatformat:3}}%</td>
+            <td>{{i.reitEPS|floatformat:2}}</td>
+            <td>{{i.reitEPSGrowthRate|floatformat:3}}%</td>
         </tr>
-        <tr>
-            {% for i in mt %}
-            <td>{{i.revGrowthAVG}}</td>
-            <td>{{i.netIncomeGrowthAVG}}</td>
-            <td>{{i.sharesGrowthAVG}}</td>
-            <td>{{i.repsGrowthAVG}}</td>
-            <td>{{i.cepsAVG}}</td>
-            {% endfor %}
-        </tr>
+        {% endfor %}
     </table>
 </form>
 {% endblock %}

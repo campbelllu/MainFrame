@@ -1,0 +1,59 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Jump to another report:</p>
+    <input type="submit" name="income" value="Income Statement Report">
+    <input type="submit" name="balance" value="Balance Sheet Report">
+    <input type="submit" name="eff" value="Efficiency Report">
+    <input type="submit" name="divs" value="Dividend Report">
+
+    <h1>
+        Cash Flow Statement Breakdown for {{dt}}
+        <input type="hidden" name="ts" value="{{dt}}">
+    </h1>
+    
+    <table border="1" name="sectorRankingsTable">
+        {% for l in mt %}
+        <tr>
+            <th>Year</th>
+            <th>Operating Cash Flow</th> 
+            <th>Oper. CF GR </br>AVG: {{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
+            <th>Investing Cash Flow</th>
+            <th>Inv. CF GR </br>AVG: {{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
+            <th>Financing Cash Flow</th>
+            <th>Fin. CF GR </br>AVG: {{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
+            <th>Net Cash Flow</th>
+            <th>Net CF GR </br>AVG: {{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
+            <th>Capex</th>
+            <th>Capex GR </br>AVG: {{l.capexGrowthAVG|floatformat:3}}%</th>
+            <th>Free Cash Flow</th>
+            <th>FCF GR </br>AVG: {{l.fcfGrowthAVG|floatformat:3}}%</th>
+            <th>Free Cash Flow Margin </br>AVG: {{l.fcfMarginAVG|floatformat:3}}%</th>
+            <th>FCFM GR </br>AVG: {{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+        </tr>
+        {% endfor %}
+        {% for i in lt %}
+        <tr>
+            <td>{{i.year}}</td>
+            <td>{{i.operatingCashFlow|floatformat:"0"}}</td>
+            <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
+            <td>{{i.investingCashFlow|floatformat:"0"}}</td>
+            <td>{{i.investingCashFlowGrowthRate|floatformat:3}}%</td>
+            <td>{{i.financingCashFlow|floatformat:"0"}}</td>
+            <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
+            <td>{{i.netCashFlow|floatformat:"0"}}</td>
+            <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
+            <td>{{i.capEx|floatformat:"0"}}</td>
+            <td>{{i.capExGrowthRate|floatformat:3}}%</td>
+            <td>{{i.fcf|floatformat:"0"}}</td>
+            <td>{{i.fcfGrowthRate|floatformat:3}}%</td>
+            <td>{{i.fcfMargin|floatformat:3}}%</td>
+            <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </table>
+</form>
+{% endblock %}

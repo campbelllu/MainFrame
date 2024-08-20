@@ -9,18 +9,18 @@
     <body>
         <p>eventually all this will be in a top-tab-bar, or dropdown menu or something</p>
         <p>
-            <a href="{% url 'index' %}">Home</a> <!-- http://127.0.0.1:8000/ -->
-            <a href="{% url 'sr' %}">Sector Rankings</a> <!-- http://127.0.0.1:8000/SectorRankings -->
-            <a href="{% url 'val' %}">Valuation</a> <!-- http://127.0.0.1:8000/Valuation -->
-            <a href="{% url 'report' %}">Individual Reports</a> <!-- http://127.0.0.1:8000/Report -->
+            <a href="{% url 'index' %}">Home</a> 
+            <a href="{% url 'sr' %}">Sector Rankings</a> 
+            <a href="{% url 'val' %}">Valuation</a>
+            <a href="{% url 'report' %}">Individual Reports</a> 
         </p>
         {% block content %}
         {% endblock %}
 
         {% block footer %}
-        <p>None of the content here, nor anywhere on this site, should be considered financial advice.</p>
-        <p>It exists solely for educational purposes. </p> 
-        <p>Contact a financial expert before making any investment decisions. Past performance is no guarantee of future results.</p>
+        <p>None of the content here, nor anywhere on this site, should be considered financial advice. 
+            It exists solely for educational purposes. Contact a financial expert before making any investment decisions. 
+            Past performance is no guarantee of future results.</p>
         {% endblock %}
     </body>
 </html>

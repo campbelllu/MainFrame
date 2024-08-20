@@ -5,15 +5,16 @@
     {% csrf_token %}
     <p>Jump to another report:</p>
     <input type="submit" name="income" value="Income Statement Report">
+    <input type="submit" name="balance" value="Balance Sheet Report">
     <input type="submit" name="cf" value="Cash Flow Statement Report">
     <input type="submit" name="eff" value="Efficiency Report">
-    <input type="submit" name="divs" value="Dividend Report">
 
     <h1>
-        Balance Sheet Breakdown for {{dt}}
+        Dividend Breakdown for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
     
+    <!-- payouts, growth rates, check both mega and meta for more -->
     <table border="1" name="sectorRankingsTable">
         {% for l in mt %}
         <tr>

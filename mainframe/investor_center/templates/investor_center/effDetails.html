@@ -1,0 +1,52 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Jump to another report:</p>
+    <input type="submit" name="income" value="Income Statement Report">
+    <input type="submit" name="balance" value="Balance Sheet Report">
+    <input type="submit" name="cf" value="Cash Flow Statement Report">
+    <input type="submit" name="divs" value="Dividend Report">
+
+    <h1>
+        Efficiency Breakdown for {{dt}}
+        <input type="hidden" name="ts" value="{{dt}}">
+    </h1>
+  
+    <table border="1" name="sectorRankingsTable">
+        {% for l in mt %}
+        
+        <tr>
+            <th>Year</th>
+            <th>Reported ROIC </br>AVG: {{l.raroicAVG|floatformat:3}}% </th>
+            <th>Calculated ROIC </br>AVG: {{l.aroicAVG|floatformat:3}}% </th>
+            <th>Reported ROCE </br>AVG: {{l.rroceAVG|floatformat:3}}% </th>
+            <th>Calculated ROCE </br>AVG: {{l.croceAVG|floatformat:3}}% </th>
+            <th>Reported REIT ROCE </br>AVG:*</th>
+          
+            <th>Calculated REIT ROCE </br>AVG:*</th>
+            
+        </tr>
+        
+        {% endfor %}
+        {% for i in lt %}
+        <tr>
+            <td>{{i.year}}</td>
+            <td>{{i.reportedAdjRoic|floatformat:3}}%</td>
+            <td>{{i.adjRoic|floatformat:3}}%</td>
+            <td>{{i.reportedRoce|floatformat:3}}%</td>
+            <td>{{i.calculatedRoce|floatformat:3}}%</td>
+            <td>{{i.rreit_roce|floatformat:3}}%</td>
+            <td>{{i.creit_roce|floatformat:3}}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </table>
+</form>
+<p>*: Due to this not being a standard REIT assessment metric, it has been added only as a unique metric for any REIT investors who are curious about how 
+    (FFO / Shareholder Equity) stands up against the standard (Net Income / Shareholder Equity).
+    This gives a frame of reference for how the actually valuable REIT metric of FFO would fare using this form of evaluation. 
+    Apologies that no average value is available at this time (August, 2024).
+</p>
+{% endblock %}

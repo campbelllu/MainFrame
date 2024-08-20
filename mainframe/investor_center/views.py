@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.db.models import Avg
 import numpy as np
 # from django.template import loader
 
@@ -56,6 +57,59 @@ def report(request):
             'mt': metaData,
             }
         return render(request, 'investor_center/balanceDetails.html', context)
+    
+    elif 'cf' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+
+        context = {
+            'sectors': sectors,
+            'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+            }
+        return render(request, 'investor_center/cfDetails.html', context)
+    
+    elif 'eff' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
+        # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
+
+        context = {
+            'sectors': sectors,
+            'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+            # 'roce': roce,
+            # 'roce': roceavg,
+            }
+        return render(request, 'investor_center/effDetails.html', context)
+
+    elif 'divs' in request.POST:
+        ticker = request.POST.get('ts').upper()
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
+        # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
+
+        context = {
+            'sectors': sectors,
+            'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+            # 'roce': roce,
+            # 'roce': roceavg,
+            }
+        return render(request, 'investor_center/divsDetails.html', context)
 
     else:
         # print('else report view')
