@@ -2,9 +2,10 @@
 
 {% block content %}
     <h1>
-        Individual Stock Reports
+        Individual Stock Highlights
     </h1>
-    <p>For all your SEC-filing needs, here's what we've put together for each firm that's ever filed with them.</p>
+    <p>For all your SEC-filing needs, here's what we've put together for each firm that's ever filed with them.</br>
+        Click on the Individual Reports link again when looking to enter a new stock ticker. </p>
     <form method="POST">
         {% csrf_token %}
         <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
@@ -13,10 +14,71 @@
         <input type="submit" name="cf" value="Cash Flow Statement Report">
         <input type="submit" name="eff" value="Efficiency Report">
         <input type="submit" name="divs" value="Dividend Report">
-
-
     </form>
-
-    <!-- luke: we're going to break these all down into different buttons: income statement, balance sheet, cf statement, reit pertinent,  -->
+    <h2>
+        What even are 'Stock Highlights'?
+    </h2>
+    <p>Looking through company 10-Q's and 10'K's gives you a great summary of how a company is doing. The downside? They take forever to go through every detail.
+        Solution? Look at a summary of their Income Statement, Balance Sheet, and Cash Flow Statement! Sure! </br>
+        Except that also contains a lot of detailed accounting facts that, while very useful, take a lot of time to properly understand and decipher.</br>
+        Second solution? Look at Stock Highlights! Each of our reports breaks down the pieces of a company's 10-K report, 
+        an annual report each company files with the SEC, giving you what we think are the most important pieces, explained below in detail.
+    </p>
+    <h3>What's in the Income Statement Report, and Why?</h3>
+    <p>When going over an Income Statement, there's lots of details, and a few key pieces that sum things up nicely. 
+        What you'll see with our highlights are those important parts. </br>First, you'll find the top-line item, Revenue. 
+        This is sales. This is the pile of money the company made in that specific fiscal year. </br>Next, we include 
+        bottom-line items, Net Income and Funds from Operations (FFO). After all the bills are paid, what's the company 
+        left with? Also known as earnings, profits, or 'The Good Stuff'. Pro-tip: When looking into a REIT, look at the FFO, not Net Income. 
+        </br>With our data collection methods, explained below, getting a more accurate REIT-related Net Income of AFFO 
+        (Adjusted Funds from Operations) was out of the question, but FFO is a decent proxy and still provides the data 
+        necessary to make accurate company analyses. 
+        </br>Third, we've included the company's relationship to their outstanding share count. It lets you see if they're 
+        diluting your ownership position, or buying back shares. 
+        </br>Finally, we include Earnings per Share (EPS) in two forms: Reported and Calculated. Reported EPS values were present 
+        in the SEC filings, made by the company directly, but sometimes companies just didn't report values at all. No worries, 
+        we did the math for them. Using the company's market capitalization and current share price, we were able to determine 
+        a fairly accurate number of shares outstanding, when those too were missing. Whether they included shares outstanding or not, 
+        we were then able to divide their earnings by that share count for our Calculated EPS values. You may see some discrepencies 
+        when both reported and calculated values are present, but you'll be comforted in noting that the diffrences are slight or 
+        non-existent in most cases.
+        </br>Where most EPS values are Net Income divided by shares outstanding, we also included a REIT EPS value for any 
+        REIT investors looking for this. This is calculated using FFO divided by shares outstanding.
+        </br>And obviously, we've also included all of the respective growth rates to give you something meaningful to go along with all those 
+        raw dollar amounts.
+    </p>
+    <h3>What's in the Balance Sheet Report, and Why?</h3>
+    <p></p>
+    <h3>What's in the Cash Flow Statement Report, and Why?</h3>
+    <p></p>
+    <h3>What's in the Efficiency Report, and Why?</h3>
+    <p></p>
+    <h3>What's in the Dividend Report, and Why?</h3>
+    <p></p>
+    <h3>How do we get these values? Are they accurate? What do blank data cells mean?</h3>
+    <p>All information here has been downloaded using the SEC's EDGAR API, providing direct access to all company 
+        filings. Hence, all the information is accurate. However, decoding exactly which values are labeled as... what 
+        exactly? That was quite a puzzle while parsing the XBRL/JSON response. We're still deciphering all the different 
+        labels as the schema seems to differ between different companies, filing in different standards and nations, 
+        but the values you'll find here are accurate to the best of our ability. Which is pretty dang good, if you don't mind 
+        us bragging for a moment. If you do find
+        massive discrepencies between what you see here and what you find elsewhere, please don't hesitate to reach out through 
+        our 'Contact' page and let us know. We are striving to provide good information here, and any errors you catch will help 
+        not just us, but every person who visits this site.
+    </p>
+    <h3>Are there any known bugs and will they be resolved?</h3>
+    <p>Currently, some company data seems to have a looping error in which the earliest year had no reported values
+         and our data cleaning process filled in that data with the latest year's values. This has been found in a 
+         handful of places and we're working to either correct the data to display empty/missing values instead or 
+         just deleting the earliest year's data altogether if we find that it's a tabling error on our end logging 
+         reporting of some stats and not others. While the values, say this bug is appearing in 'Revenue', in this
+         instance may not be accurate, we assure you that the growth rates are unaffected by this bug and can be 
+         trusted because they were calculated before the earlier data was appended.</p>
+    <h3>What future plans are in store for these reports?</h3>
+    <p>While we have no plans for generating full financial statements at this time, it's possible that future iterations 
+        will include such in a service that we send directly to users.
+    </p>
+    <!-- explain what people are looking at. how values gathered, how bugs exist, how future devs will work, why we highlight these specific values in each section
+     just do a good job of talking about what the user is about to see. add that they need to click back to ind reports to choose a new ticker -->
 
 {% endblock %}

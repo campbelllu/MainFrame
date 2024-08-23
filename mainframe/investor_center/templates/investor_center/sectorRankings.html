@@ -9,34 +9,6 @@
 	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
 	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
     <p>The dropdown menues in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 or larger in that category.</p>
-    <!-- <form method="POST">
-        {% csrf_token %}
-        <div> 
-            <input type="submit" name="genericB" value="Materials"> 
-            <input type="submit" name="genericC" value="Communications">
-            <input type="submit" name="genericE" value="Energy"> 
-            <input type="submit" name="genericBDC" value="BDC"> 
-            <input type="submit" name="genericF" value="Financials"> 
-            <input type="submit" name="genericI" value="Industrials"> 
-            <input type="submit" name="genericK" value="Technology"> 
-            <input type="submit" name="genericP" value="Consumer Staples"> 
-            <input type="submit" name="genericRE" value="Real Estate"> 
-            <input type="submit" name="genericU" value="Utilities"> 
-            <input type="submit" name="genericV" value="Healthcare"> 
-            <input type="submit" name="genericY" value="Consumer Cyclical"> 
-        </div>
-        
-    </form>
-    <form method="POST">
-        {% csrf_token %}
-        <div>
-            <p>Or you can search for a ticker, revealing its ranking and all its peers.</p>
-            <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
-            <input type="submit" name="tsButton" value="Find My Stock!">
-        </div>
-    </form>
-
-    <p>Or you can make manual selections below. Have fun!:</p> -->
 
 	<form method="POST">
 		{% csrf_token %}
@@ -49,7 +21,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
+                        <input type="text" name="tsButtonFilled" placeholder="Type Ticker, Hit Enter or Button">
                         <input type="submit" name="tsButton" value="Find My Stock!">
                     </td>
                     <!-- <td>
@@ -151,7 +123,15 @@
             </tr>
             {% for i in lt %}
             <tr>
-                <td>{{i.Ticker}}</td>
+                <form action="{% url 'report' %}" method="POST">
+                {% csrf_token %}    
+                <td><a href="{% url 'report' %}" name="income"><input type="submit" name="income" value="{{i.Ticker}}"></a><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
+                </form>
+
+                
+                
+                
+                
                 <td>{{i.scorerank|floatformat:3}}</td>
                 <td>{{i.roce}}</td>
                 <td>{{i.roic}}</td>

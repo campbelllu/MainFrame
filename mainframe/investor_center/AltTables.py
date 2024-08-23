@@ -31,6 +31,14 @@ import SectorRankings as sr
 #notes or to do
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
+# views
+# <!-- original -->
+#                 <!-- <td><a href="{% url 'income' %}" name="income">{{i.Ticker}}</a> <input type="hidden" name="ts" value="{{i.Ticker}}"></td>  -->
+#                  <!-- trying out input redirects -->
+#                 <!-- <input type="submit" name="income" onclick="location.href='{% url 'income' %}'" value="{{i.Ticker}}"> -->
+                
+#                 <!-- luke here you need another link or input to trigger the view to have name="income"
+#                 ts above holds ticker name already -->
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}

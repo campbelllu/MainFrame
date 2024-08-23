@@ -836,17 +836,17 @@ weeklyetfs = ['XDTE', 'QDTE', 'RDTE']
 # print(weeklyETFDDM(weeklyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
 sectoretfs = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLRE', 'SCHH', 'XLU', 
-                'XLV', 'XLY', 'PBDC', 'SOXX', 'QQQ', 'SPY']
+                'XLV', 'XLY', 'PBDC', 'SOXX', 'QQQ', 'SPY', 'IETC', 'SCHG', 'IEDI', 'RTH', 'IOO', 'XLG', 'MGV', 'MGK', 'MGC', 'RSP']
 # print(ETFPD(sectoretfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
 # print(ETFDDM(sectoretfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
 stocks = ['UFPI', 'RS', 'STLD', 'NUE', 
             'VZ', 'T', 
-            'CVX', 'XOM', 
+            'CVX', 'XOM', 'PSX', 'EOG', 
             'ARCC', 'MAIN', 'HTGC', 'TSLX', 'CSWC', 'JPM', 'GS', 'MS', 'V', 'MA', 'DFS', 
-            'FAST', 'PH', 'ETN', 'RSG', 'WM', 'CAT', 'GD', 'WSO', 'FIX', 'CTAS', 'LMT', 
-            'TXN', 'ADI', 'MCHP', 'MSFT', 'AAPL', 'CSCO', 'IBM', 'NVDA', 'PLTR', 'SMCI', 
-            'COST', 'WMT', 'PG', 'KR', 'KVUE', 
+            'FAST', 'PH', 'ETN', 'RSG', 'WM', 'CAT', 'GD', 'WSO', 'FIX', 'CTAS', 'LMT', 'PCAR', 
+            'TXN', 'ADI', 'MCHP', 'MSFT', 'AAPL', 'CSCO', 'IBM', 'NVDA', 'PLTR', 'SMCI', 'TSM', 'ASML', 'AVGO', 'QCOM', 'KLAC', 'AMAT', 'LRCX', 'NXPI',
+            'COST', 'WMT', 'PG', 'KR', 'KVUE', 'HRL', 'TSN', 'MO', 'BTI', 'PEP', 'SYY',
             'O', 'NNN', 'ADC', 'PLD', 'STAG', 'REXR', 'TRNO', 'FR', 'AMT', 'SBAC', 'CCI', 'DLR', 'EQIX', 'WY', 'NSA', 
             'NEE', 'CEG', 'SO', 'AWK', 'CPK', 'ATO', 
             'UNH', 'MCK', 'JNJ', 'ABBV', 

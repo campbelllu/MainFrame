@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.db.models import Avg
 import numpy as np
@@ -29,13 +29,14 @@ def report(request):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
 
     if 'income' in request.POST:
+        print('report income clicked')
         ticker = request.POST.get('ts').upper()
         megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         metaData = Metadata.objects.filter(Ticker=ticker)
 
         context = {
             'sectors': sectors,
-            'ticker': ticker,
+            # 'ticker': ticker,
             # 'dv': dropdownValues,
             'dt': ticker,
             'lt': megaData,
@@ -50,7 +51,7 @@ def report(request):
 
         context = {
             'sectors': sectors,
-            'ticker': ticker,
+            # 'ticker': ticker,
             # 'dv': dropdownValues,
             'dt': ticker,
             'lt': megaData,
@@ -65,7 +66,7 @@ def report(request):
 
         context = {
             'sectors': sectors,
-            'ticker': ticker,
+            # 'ticker': ticker,
             # 'dv': dropdownValues,
             'dt': ticker,
             'lt': megaData,
@@ -82,7 +83,7 @@ def report(request):
 
         context = {
             'sectors': sectors,
-            'ticker': ticker,
+            # 'ticker': ticker,
             # 'dv': dropdownValues,
             'dt': ticker,
             'lt': megaData,
@@ -96,12 +97,13 @@ def report(request):
         ticker = request.POST.get('ts').upper()
         megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         metaData = Metadata.objects.filter(Ticker=ticker)
+
         # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
         # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
 
         context = {
             'sectors': sectors,
-            'ticker': ticker,
+            # 'ticker': ticker,
             # 'dv': dropdownValues,
             'dt': ticker,
             'lt': megaData,
@@ -111,40 +113,27 @@ def report(request):
             }
         return render(request, 'investor_center/divsDetails.html', context)
 
+    # elif ''
     else:
-        # print('else report view')
+        print('else report view')
+        # try:
+        #     print('gonna try to get the ticker now')
+        #     # ticker = request.POST.get('income').upper()
+        #     print(ticker)
+        #     print(type(ticker))
+        #     render(request, 'investor_center/incomeDetails.html', context)
+        #     #luke figure out how to get values into this thing. or pass this view context or something.
+        # except Exception as err:
+        #     print('report else except')
+
+        # ticker = request.POST.get('ts').upper()
+        
         context = {
         'sectors': sectors,
         # 'dv': dropdownValues,
         # 'lt': pageLandingTable,
         }
         return render(request, 'investor_center/report.html', context)
-
-# def reportDetails(request):
-#     # they need to be able to search for a stock ticker
-#     # also, in the sector rankings they can click the ticker to take them directly to a report
-
-#     sectors = Sector_Rankings.objects.values('Sector').distinct()
-
-#     if 'tsButton' in request.POST:
-#         ticker = request.POST.get('ts').upper()
-#         allData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-#         # row = Sector_Rankings.objects.filter(Ticker=ticker).first()
-
-#         context = {
-#             'sectors': sectors,
-#             'ticker': ticker,
-#             # 'dv': dropdownValues,
-#             'lt': allData,
-#             }
-#         return render(request, 'investor_center/report.html', context)
-#     else:
-#         context = {
-#         'sectors': sectors,
-#         # 'dv': dropdownValues,
-#         # 'lt': pageLandingTable,
-#         }
-#         return render(request, 'investor_center/report.html', context)
 
 
 def sr(request):
@@ -288,28 +277,28 @@ def sr(request):
         return render(request, 'investor_center/sectorRankings.html', context)
 
     elif 'tsButton' in request.POST:
-        ticker = request.POST.get('ts').upper()
+        ticker = request.POST.get('tsButtonFilled').upper()
         row = Sector_Rankings.objects.filter(Ticker=ticker).first()
         if row:
             filterSector = dropdownValues['sector'] = row.Sector
-            filterROCE = dropdownValues['roce'] = row.roce - 1
-            filterROIC = dropdownValues['roic'] = row.roic - 1
-            filterREV = dropdownValues['rev'] = row.rev - 1
-            filterNI = dropdownValues['ni'] = row.ni - 1
-            filterFCF = dropdownValues['fcf'] = row.fcf - 1
-            filterFCFM = dropdownValues['fcfm'] = row.fcfm - 1
-            filterCF = dropdownValues['cf'] = row.cf - 1
+            filterROCE = dropdownValues['roce'] = row.roce - 2
+            filterROIC = dropdownValues['roic'] = row.roic - 2
+            filterREV = dropdownValues['rev'] = row.rev - 2
+            filterNI = dropdownValues['ni'] = row.ni - 2
+            filterFCF = dropdownValues['fcf'] = row.fcf - 2
+            filterFCFM = dropdownValues['fcfm'] = row.fcfm - 2
+            filterCF = dropdownValues['cf'] = row.cf - 2
             filterDP = dropdownValues['dp'] = row.divpay
-            filterDIVGR = dropdownValues['divgr'] = row.divgr - 1
-            filterPO = dropdownValues['po'] = row.po - 1
-            filterSHARES = dropdownValues['shares'] = row.shares - 1
-            filterDEBT = dropdownValues['debt'] = row.debt - 1
-            filterBV = dropdownValues['bv'] = row.bv - 1
-            filterEQ = dropdownValues['eq'] = row.equity - 1
-            filterROC = dropdownValues['roc'] = row.roc - 1
-            filterFFO = dropdownValues['ffo'] = row.ffo - 1
-            filterREITROCE = dropdownValues['reitroce'] = row.reitroce - 1
-            filterFFOPO = dropdownValues['ffopo'] = row.ffopo - 1
+            filterDIVGR = dropdownValues['divgr'] = row.divgr - 2
+            filterPO = dropdownValues['po'] = row.po - 2
+            filterSHARES = dropdownValues['shares'] = row.shares - 2
+            filterDEBT = dropdownValues['debt'] = row.debt - 2
+            filterBV = dropdownValues['bv'] = row.bv - 2
+            filterEQ = dropdownValues['eq'] = row.equity - 2
+            filterROC = dropdownValues['roc'] = row.roc - 2
+            filterFFO = dropdownValues['ffo'] = row.ffo - 2
+            filterREITROCE = dropdownValues['reitroce'] = row.reitroce - 2
+            filterFFOPO = dropdownValues['ffopo'] = row.ffopo - 2
 
             searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
                                 fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
@@ -323,6 +312,7 @@ def sr(request):
             }
             return render(request, 'investor_center/sectorRankings.html', context)
         else:
+            print('else sr')
             context = {
                     'sectors': sectors,
                     # 'dv': dropdownValues,
@@ -726,7 +716,28 @@ def sr(request):
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
+    # elif 'income' in request.POST:
+    #     # return redirect(report)
+    #     print('sr income clicked')
+    #     # ticker = request.POST.get('ts').upper()
+    #     ticker = request.POST.get('income').upper()
+    #     print('ticker: ' + str(ticker))
+    #     sectors = Sector_Rankings.objects.values('Sector').distinct()
+    #     megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+    #     metaData = Metadata.objects.filter(Ticker=ticker)
+
+    #     context = {
+    #         # 'sectors': sectors,
+    #         'ticker': ticker,
+    #         # 'dv': dropdownValues,
+    #         'dt': ticker,
+    #         'lt': megaData,
+    #         'mt': metaData,
+    #         }
+    #     return render(request, 'investor_center/incomeDetails.html', context) #redirect(report, context) #
+    
     else:
+        print('sr else')
         context = {
         'sectors': sectors,
         'dv': dropdownValues,

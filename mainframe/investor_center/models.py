@@ -108,7 +108,10 @@ class Mega(models.Model):
 
     @property
     def creit_roce(self):
-        return self.ffo / self.TotalEquity * 100
+        if self.TotalEquity is None:
+            return None
+        else:
+            return self.ffo / self.TotalEquity * 100
 
     # @property
     # def creit_roce_avg(self):
@@ -118,8 +121,21 @@ class Mega(models.Model):
     #     return avg
 
     @property
-    def rreit_roce(self):
-        return self.ffo / self.ReportedTotalEquity * 100
+    def rreit_roce(self): #luke this
+        if self.ReportedTotalEquity is None:
+            return None
+        else:
+            return self.ffo / self.ReportedTotalEquity * 100
+
+    @property
+    def por100(self):
+        return self.payoutRatio * 100
+    @property
+    def fcfpor100(self):
+        return self.fcfPayoutRatio * 100
+    @property
+    def ffopor100(self):
+        return self.ffoPayoutRatio * 100
 
     class Meta:
         db_table = 'Mega'
@@ -319,6 +335,19 @@ class Metadata(models.Model):
     calcDivYieldAVG = models.FloatField(blank=True, null=True)
     repDivYieldLatest = models.FloatField(blank=True, null=True)
     repDivYieldAVG = models.FloatField(blank=True, null=True)
+
+    @property
+    def poravg100(self):
+        if self.payoutRatioAVG is None:
+            return None
+        else:
+            return self.payoutRatioAVG * 100
+    @property
+    def fcfporavg100(self):
+        return self.fcfPayoutRatioAVG * 100
+    @property
+    def ffoporavg100(self):
+        return self.ffoPayoutRatioAVG * 100
 
     class Meta:
         db_table = 'Metadata'

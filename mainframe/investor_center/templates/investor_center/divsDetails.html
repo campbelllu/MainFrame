@@ -10,44 +10,37 @@
     <input type="submit" name="eff" value="Efficiency Report">
 
     <h1>
-        Dividend Breakdown for {{dt}}
+        Dividend Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-    
-    <!-- payouts, growth rates, check both mega and meta for more -->
+    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
     <table border="1" name="sectorRankingsTable">
         {% for l in mt %}
         <tr>
             <th>Year</th>
-            <th>Reported Shareholder Equity</th> 
-            <th>Reported Shareholder Equity GR </br>AVG: {{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
-            <th>Calculated Shareholder Equity</th>
-            <th>Calculated Shareholder Equity GR </br>AVG: {{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
-            <th>Reported Book Value</th>
-            <th>Reported Book Value GR </br>AVG: {{l.repBookValueGrowthAVG|floatformat:3}}%</th>
-            <th>Calculated Book Value</th>
-            <th>Calculated Book Value GR </br>AVG: {{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
-            <th>Net Asset Value</th>
-            <th>NAV GR </br>AVG: {{l.navGrowthAVG|floatformat:3}}%</th>
-            <th>Debt</th>
-            <th>Debt GR </br>AVG: {{l.debtGrowthAVG|floatformat:3}}</th>
+            <th>Total Dividends Paid</th> 
+            <th>Total Dividends Paid GR </br>{{l.totalDivsPaidGrowthAVG|floatformat:3}}%</th>
+            <th>Calculated Dividends per Share</th>
+            <th>Calculated Dividends per Share GR </br>{{l.calcDivsPerShareGrowthAVG|floatformat:3}}%</th>
+            <th>Reported Dividends per Share</th>
+            <th>Reported Dividends per Share GR </br>{{l.repDivsPerShareGrowthAVG|floatformat:3}}%</th>
+            <th>Payout Ratio </br>{{l.poravg100|floatformat:3}}%</th>
+            <th>FCF Payout Ratio </br>{{l.fcfporavg100|floatformat:3}}%</th>
+            <th>REIT(FFO) Payout Ratio </br>{{l.ffoporavg100|floatformat:3}}%</th>
         </tr>
         {% endfor %}
         {% for i in lt %}
         <tr>
             <td>{{i.year}}</td>
-            <td>{{i.ReportedTotalEquity|floatformat:"0"}}</td>
-            <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
-            <td>{{i.TotalEquity|floatformat:"0"}}</td>
-            <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
-            <td>{{i.reportedBookValue|floatformat:3}}</td>
-            <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
-            <td>{{i.calcBookValue|floatformat:3}}</td>
-            <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
-            <td>{{i.nav|floatformat:3}}</td>
-            <td>{{i.navGrowthRate|floatformat:3}}%</td>
-            <td>{{i.TotalDebt|floatformat:"0"}}</td>
-            <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
+            <td>${{i.totalDivsPaid|floatformat:"0"}}</td>
+            <td>{{i.divGrowthRateBOT|floatformat:3}}%</td>
+            <td>${{i.calcDivsPerShare|floatformat:3}}</td>
+            <td>{{i.divGrowthRateBOCPS|floatformat:3}}%</td>
+            <td>${{i.divsPaidPerShare|floatformat:3}}</td>
+            <td>{{i.divGrowthRateBORPS|floatformat:3}}%</td>
+            <td>{{i.por100|floatformat:3}}%</td>
+            <td>{{i.fcfpor100|floatformat:3}}%</td>
+            <td>{{i.ffopor100|floatformat:3}}%</td>
         </tr>
         {% endfor %}
     </table>

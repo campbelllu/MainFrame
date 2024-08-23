@@ -10,26 +10,26 @@
     <input type="submit" name="divs" value="Dividend Report">
 
     <h1>
-        Balance Sheet Breakdown for {{dt}}
+        Balance Sheet Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-    
+    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
     <table border="1" name="sectorRankingsTable">
         {% for l in mt %}
         <tr>
             <th>Year</th>
             <th>Reported Shareholder Equity</th> 
-            <th>Reported Shareholder Equity GR </br>AVG: {{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
+            <th>Reported Shareholder Equity GR </br>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
             <th>Calculated Shareholder Equity</th>
-            <th>Calculated Shareholder Equity GR </br>AVG: {{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
+            <th>Calculated Shareholder Equity GR </br>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
             <th>Reported Book Value</th>
-            <th>Reported Book Value GR </br>AVG: {{l.repBookValueGrowthAVG|floatformat:3}}%</th>
+            <th>Reported Book Value GR </br>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
             <th>Calculated Book Value</th>
-            <th>Calculated Book Value GR </br>AVG: {{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+            <th>Calculated Book Value GR </br>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
             <th>Net Asset Value</th>
-            <th>NAV GR </br>AVG: {{l.navGrowthAVG|floatformat:3}}%</th>
+            <th>NAV GR </br>{{l.navGrowthAVG|floatformat:3}}%</th>
             <th>Debt</th>
-            <th>Debt GR </br>AVG: {{l.debtGrowthAVG|floatformat:3}}</th>
+            <th>Debt GR </br>{{l.debtGrowthAVG|floatformat:3}}%</th>
         </tr>
         {% endfor %}
         {% for i in lt %}

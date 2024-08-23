@@ -10,25 +10,22 @@
     <input type="submit" name="divs" value="Dividend Report">
 
     <h1>
-        Efficiency Breakdown for {{dt}}
+        Efficiency Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-  
+    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
     <table border="1" name="sectorRankingsTable">
         {% for l in mt %}
         
         <tr>
             <th>Year</th>
-            <th>Reported ROIC </br>AVG: {{l.raroicAVG|floatformat:3}}% </th>
-            <th>Calculated ROIC </br>AVG: {{l.aroicAVG|floatformat:3}}% </th>
-            <th>Reported ROCE </br>AVG: {{l.rroceAVG|floatformat:3}}% </th>
-            <th>Calculated ROCE </br>AVG: {{l.croceAVG|floatformat:3}}% </th>
-            <th>Reported REIT ROCE </br>AVG:*</th>
-          
-            <th>Calculated REIT ROCE </br>AVG:*</th>
-            
+            <th>Reported ROIC </br>{{l.raroicAVG|floatformat:3}}% </th>
+            <th>Calculated ROIC </br>{{l.aroicAVG|floatformat:3}}% </th>
+            <th>Reported ROCE </br>{{l.rroceAVG|floatformat:3}}% </th>
+            <th>Calculated ROCE </br>{{l.croceAVG|floatformat:3}}% </th>
+            <th>Reported REIT ROCE </br>**</th>
+            <th>Calculated REIT ROCE </br>**</th>
         </tr>
-        
         {% endfor %}
         {% for i in lt %}
         <tr>
@@ -44,7 +41,7 @@
     </table>
     </table>
 </form>
-<p>*: Due to this not being a standard REIT assessment metric, it has been added only as a unique metric for any REIT investors who are curious about how 
+<p>**: Due to this not being a standard REIT assessment metric, it has been added only as a unique metric for any REIT investors who are curious about how 
     (FFO / Shareholder Equity) stands up against the standard (Net Income / Shareholder Equity).
     This gives a frame of reference for how the actually valuable REIT metric of FFO would fare using this form of evaluation. 
     Apologies that no average value is available at this time (August, 2024).
