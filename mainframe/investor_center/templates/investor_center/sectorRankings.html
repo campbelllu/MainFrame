@@ -9,6 +9,7 @@
 	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'AVG', and scores are applied to AVGs of all the values across their reportable lifetime.</p>
 	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
     <p>The dropdown menues in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 or larger in that category.</p>
+    <p>Check below the table for currently known bug report.</p>
 
 	<form method="POST">
 		{% csrf_token %}
@@ -125,7 +126,7 @@
             <tr>
                 <form action="{% url 'report' %}" method="POST">
                 {% csrf_token %}    
-                <td><a href="{% url 'report' %}" name="income"><input type="submit" name="income" value="{{i.Ticker}}"></a><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
+                <td><input type="submit" name="income" value="{{i.Ticker}}"><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
                 </form>
 
                 
@@ -158,6 +159,11 @@
             {% endfor %}
         </table>
 	</form>
+    <h2>Known Bugs: </h2>
+    <p>Clicking the tickers in the leftmost column should take you to the Individual Stock Highlights for that ticker. However, the very first 
+        Ticker never makes the jump, simply reloads the page. All other tickers work, except for the firstmost. We're working on remedying this. 
+        Apologies for the inconvenience of remembering the ticker, navigating to Individual Stock Highlights manually, and having to type it in there.
+    </p>
 {% endblock %}
 
 <!-- remember this for links on the tickers -->

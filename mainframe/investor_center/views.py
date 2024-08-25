@@ -737,10 +737,31 @@ def sr(request):
     #     return render(request, 'investor_center/incomeDetails.html', context) #redirect(report, context) #
     
     else:
-        print('sr else')
+        # print('sr else')
+        # try:
+            
+        #     ticker = request.POST.get('ts').upper()
+        #     print('sr else try block')
+        #     context = {
+        #     'dt': ticker,    
+        #     'sectors': sectors,
+        #     'dv': dropdownValues,
+        #     'lt': pageLandingTable,
+        #     }
+        #     return redirect(reverse('investor_center/incomeDetails.html', kwargs={context}))#render(request, 'investor_center/sectorRankings.html', context)
+        # except:
+        #     print('sr else except block')
+        #     context = {
+        #     # 'dt': ticker,    
+        #     'sectors': sectors,
+        #     'dv': dropdownValues,
+        #     'lt': pageLandingTable,
+        #     }
+        #     return render(request, 'investor_center/sectorRankings.html', context)
         context = {
-        'sectors': sectors,
-        'dv': dropdownValues,
-        'lt': pageLandingTable,
-        }
+            # 'dt': ticker,    
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': pageLandingTable,
+            }
         return render(request, 'investor_center/sectorRankings.html', context)

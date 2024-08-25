@@ -132,10 +132,16 @@ class Mega(models.Model):
         return self.payoutRatio * 100
     @property
     def fcfpor100(self):
-        return self.fcfPayoutRatio * 100
+        if self.fcfPayoutRatio is None:
+            return None
+        else:
+            return self.fcfPayoutRatio * 100
     @property
     def ffopor100(self):
-        return self.ffoPayoutRatio * 100
+        if self.ffoPayoutRatio is None:
+            return None
+        else:
+            return self.ffoPayoutRatio * 100
 
     class Meta:
         db_table = 'Mega'
@@ -344,10 +350,17 @@ class Metadata(models.Model):
             return self.payoutRatioAVG * 100
     @property
     def fcfporavg100(self):
-        return self.fcfPayoutRatioAVG * 100
+        if self.fcfPayoutRatioAVG is None:
+            return None
+        else:
+            return self.fcfPayoutRatioAVG * 100
+        
     @property
     def ffoporavg100(self):
-        return self.ffoPayoutRatioAVG * 100
+        if self.ffoPayoutRatioAVG is None:
+            return None
+        else:
+            return self.ffoPayoutRatioAVG * 100
 
     class Meta:
         db_table = 'Metadata'

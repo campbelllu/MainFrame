@@ -40,6 +40,8 @@ import SectorRankings as sr
 #                 <!-- luke here you need another link or input to trigger the view to have name="income"
 #                 ts above holds ticker name already -->
 
+                # <td><a href="{% url 'report' %}" name="income"><input type="submit" name="income" value="{{i.Ticker}}"></a><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
+
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
