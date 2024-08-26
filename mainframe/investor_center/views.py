@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.http import HttpResponse
 from django.db.models import Avg
 import numpy as np
@@ -127,13 +127,31 @@ def report(request):
         #     print('report else except')
 
         # ticker = request.POST.get('ts').upper()
-        
-        context = {
-        'sectors': sectors,
-        # 'dv': dropdownValues,
-        # 'lt': pageLandingTable,
-        }
-        return render(request, 'investor_center/report.html', context)
+        try:
+
+            ref = request.session.pop('sel')
+            print('report else if not none')
+            ticker = ref['income']
+            megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+            metaData = Metadata.objects.filter(Ticker=ticker)
+
+            context = {
+                'sectors': sectors,
+                # 'ticker': ticker,
+                # 'dv': dropdownValues,
+                'dt': ticker,
+                'lt': megaData,
+                'mt': metaData,
+                }
+            return render(request, 'investor_center/incomeDetails.html', context)
+        except Exception as err:
+            print('report else else')
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/report.html', context)
 
 
 def sr(request):
@@ -716,28 +734,35 @@ def sr(request):
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
-    # elif 'income' in request.POST:
-    #     # return redirect(report)
-    #     print('sr income clicked')
-    #     # ticker = request.POST.get('ts').upper()
-    #     ticker = request.POST.get('income').upper()
-    #     print('ticker: ' + str(ticker))
-    #     sectors = Sector_Rankings.objects.values('Sector').distinct()
-    #     megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-    #     metaData = Metadata.objects.filter(Ticker=ticker)
+    elif 'income' in request.POST:
+        # return redirect(report)
+        # print('sr income clicked')
+        # ticker = request.POST.get('ts').upper()
+        # ticker = request.POST.get('income').upper()
+        # form = 
+        # print(form)
+        # print(form['income'])
+        
+        request.session['sel'] = request.POST
+        return redirect('report')
+        # print('ticker: ' + str(ticker))
+        # sectors = Sector_Rankings.objects.values('Sector').distinct()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
 
-    #     context = {
-    #         # 'sectors': sectors,
-    #         'ticker': ticker,
-    #         # 'dv': dropdownValues,
-    #         'dt': ticker,
-    #         'lt': megaData,
-    #         'mt': metaData,
-    #         }
-    #     return render(request, 'investor_center/incomeDetails.html', context) #redirect(report, context) #
+        # context = {
+        #     # 'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'ts':ticker,
+        #     'dt': ticker,
+        #     # 'lt': megaData,
+        #     # 'mt': metaData,
+        #     }
+        # return redirect(reverse('report', kwargs={'ts':ticker, 'dt':ticker})) #render(request, 'investor_center/incomeDetails.html', context) #redirect(report, context) #
     
     else:
-        # print('sr else')
+        print('sr else')
         # try:
             
         #     ticker = request.POST.get('ts').upper()

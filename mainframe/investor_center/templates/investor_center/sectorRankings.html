@@ -122,12 +122,16 @@
                 <th>Max Score</th>
                 <th>Sector</th>
             </tr>
+            
             {% for i in lt %}
+            
             <tr>
-                <form action="{% url 'report' %}" method="POST">
-                {% csrf_token %}    
-                <td><input type="submit" name="income" value="{{i.Ticker}}"><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
-                </form>
+                
+                
+                <!-- <form action="{% url 'report' %}" method="POST">
+                {% csrf_token %}     -->
+                <td><input type="submit" name="income" value="{{i.Ticker}}"> <input type="hidden" name="ts" value="{{i.Ticker}}"> </td>
+                <!-- </form> -->
 
                 
                 
@@ -155,8 +159,11 @@
                 <td>{{i.score}}</td>
                 <td>{{i.maxscore}}</td>
                 <td>{{i.Sector}}</td>
+            
             </tr>
+            
             {% endfor %}
+            
         </table>
 	</form>
     <h2>Known Bugs: </h2>

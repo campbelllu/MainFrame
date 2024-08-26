@@ -42,6 +42,13 @@ import SectorRankings as sr
 
                 # <td><a href="{% url 'report' %}" name="income"><input type="submit" name="income" value="{{i.Ticker}}"></a><input type="hidden" name="ts" value="{{i.Ticker}}"></td>
 
+# <form action="{% url 'report' %}" method="POST">
+#                 {% csrf_token %}    
+#                 <td><input type="submit" name="income" value="{{i.Ticker}}"> <input type="hidden" name="ts" value="{{i.Ticker}}"> </td>
+#                 </form>
+
+# <td><a href="{% url 'slug1' ticker=i.Ticker %}">{{i.Ticker}}</a></td>
+
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
