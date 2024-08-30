@@ -4,29 +4,33 @@
     <h1>
         Individual Stock Highlights
     </h1>
-    <p>For all your SEC-filing needs, here's what we've put together for each firm that's ever filed with them.</br>
-        Click on the Individual Reports link again when looking to enter a new stock ticker. </p>
+    <p>Here's what we focus on for each firm that's ever filed with the SEC.</br>
+        Click on the Individual Stock Highlights link again when looking to enter a new stock ticker. </p>
     <form method="POST">
         {% csrf_token %}
         <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
-        <input type="submit" name="income" value="Income Statement Report">
-        <input type="submit" name="balance" value="Balance Sheet Report">
-        <input type="submit" name="cf" value="Cash Flow Statement Report">
-        <input type="submit" name="eff" value="Efficiency Report">
-        <input type="submit" name="divs" value="Dividend Report">
+        <input type="submit" name="income" value="Income Statement Highlights">
+        <input type="submit" name="balance" value="Balance Sheet Highlights">
+        <input type="submit" name="cf" value="Cash Flow Statement Highlights">
+        <input type="submit" name="eff" value="Efficiency Highlights">
+        <input type="submit" name="divs" value="Dividend Highlights">
     </form>
-    <h2>
-        What even are 'Stock Highlights'?
-    </h2>
-    <p>Looking through company 10-Q's and 10'K's gives you a great summary of how a company is doing. The downside? They take forever to go through every detail.
-        Solution? Look at a summary of their Income Statement, Balance Sheet, and Cash Flow Statement! Sure! </br>
-        Except that also contains a lot of detailed accounting facts that, while very useful, take a lot of time to properly understand and decipher.</br>
-        Second solution? Look at Stock Highlights! Each of our reports breaks down the pieces of a company's 10-K report, 
-        an annual report each company files with the SEC, giving you what we think are the most important pieces, explained below in detail.
-    </p>
-    <h3>What's in the Income Statement Report, and Why?</h3>
+    <details>
+        <summary>
+                What even are 'Stock Highlights'?
+        </summary>
+        <p>Looking through company 10-Q's and 10'K's gives you a great summary of how a company is doing. The downside? They take forever to go through every detail.
+            Solution? Look at a summary of their Income Statement, Balance Sheet, and Cash Flow Statement! Sure! </br>
+            Except that also contains a lot of detailed accounting facts that, while very useful, take a lot of time to properly understand and decipher.</br>
+            Second solution? Look at Stock Highlights! Each of our reports breaks down the pieces of a company's 10-K report, 
+            an annual report each company files with the SEC, giving you what we think are the most important pieces, explained below in detail.
+        </p>
+    </details>
+    
+    <details>
+        <summary>What's in the Income Statement Highlights, and Why?</summary>
     <p>When going over an Income Statement, there's lots of details, and a few key pieces that sum things up nicely. 
-        What you'll see with our highlights are those important parts. </br>First, you'll find the top-line item, Revenue. 
+        What you'll see with our highlights are those key pieces that we find the most important. </br>First, you'll find the top-line item, Revenue. 
         This is sales. This is the pile of money the company made in that specific fiscal year. </br>Next, we include 
         bottom-line items, Net Income and Funds from Operations (FFO). After all the bills are paid, what's the company 
         left with? Also known as earnings, profits, or 'The Good Stuff'. Pro-tip: When looking into a REIT, look at the FFO, not Net Income. 
@@ -47,38 +51,121 @@
         </br>And obviously, we've also included all of the respective growth rates to give you something meaningful to go along with all those 
         raw dollar amounts.
     </p>
-    <h3>What's in the Balance Sheet Report, and Why?</h3>
-    <p></p>
-    <h3>What's in the Cash Flow Statement Report, and Why?</h3>
-    <p></p>
-    <h3>What's in the Efficiency Report, and Why?</h3>
-    <p></p>
-    <h3>What's in the Dividend Report, and Why?</h3>
-    <p></p>
-    <h3>How do we get these values? Are they accurate? What do blank data cells mean?</h3>
-    <p>All information here has been downloaded using the SEC's EDGAR API, providing direct access to all company 
-        filings. Hence, all the information is accurate. However, decoding exactly which values are labeled as... what 
-        exactly? That was quite a puzzle while parsing the XBRL/JSON response. We're still deciphering all the different 
-        labels as the schema seems to differ between different companies, filing in different standards and nations, 
-        but the values you'll find here are accurate to the best of our ability. Which is pretty dang good, if you don't mind 
-        us bragging for a moment. If you do find
-        massive discrepencies between what you see here and what you find elsewhere, please don't hesitate to reach out through 
-        our 'Contact' page and let us know. We are striving to provide good information here, and any errors you catch will help 
-        not just us, but every person who visits this site.
-    </p>
-    <h3>Are there any known bugs and will they be resolved?</h3>
-    <p>Currently, some company data seems to have a looping error in which the earliest year had no reported values
-         and our data cleaning process filled in that data with the latest year's values. This has been found in a 
-         handful of places and we're working to either correct the data to display empty/missing values instead or 
-         just deleting the earliest year's data altogether if we find that it's a tabling error on our end logging 
-         reporting of some stats and not others. While the values, say this bug is appearing in 'Revenue', in this
-         instance may not be accurate, we assure you that the growth rates are unaffected by this bug and can be 
-         trusted because they were calculated before the earlier data was appended.</p>
-    <h3>What future plans are in store for these reports?</h3>
-    <p>While we have no plans for generating full financial statements at this time, it's possible that future iterations 
-        will include such in a service that we send directly to users.
-    </p>
-    <!-- explain what people are looking at. how values gathered, how bugs exist, how future devs will work, why we highlight these specific values in each section
-     just do a good job of talking about what the user is about to see. add that they need to click back to ind reports to choose a new ticker -->
+    </details>
+
+    <details>
+        <summary>
+            What's in the Balance Sheet Highlights, and Why?
+        </summary>
+        <p>When going over a Balance Sheet, there's lots of details and a few key pieces that sum things up nicely. 
+            What you'll see with our highlights are those key pieces that we find the most important. 
+            </br>First, you'll find Shareholder's Equity, 
+            which represents everything the company owns minus everything that it owes. Calculated SE is a value we've constructed from the company's 
+            reported Total Assets less their Total Liabilities. Reported SE is the SE that the company has reported to the SEC directly. We've included 
+            both for you to compare how different companies have reported their assets and liabilities. 
+            </br>Next, we include Book Value, both Reported and Calculated, because it takes that SE and divides it by Shares Outstanding, giving you 
+            a frame of reference for how much of that Equity each share is worth. 
+            </br>Net Asset Value is synonymous with Book Value, and most firms don't report it to the SEC, leaving most of these columns blank. Some banks 
+            and BDC's will report this metric, giving you another frame of reference for BV of the firm.
+            </br>The final columns showing Debt metrics give you an idea for how the company is managing debt. Note that debt is included in SE 
+            intrinsically, being a single part of their liabilities.
+            </br>And obviously, we've also included all of the respective growth rates to give you something meaningful to go along with all those 
+            raw dollar amounts.
+        </p>
+    </details>
+    
+    <details>
+        <summary>
+            What's in the Cash Flow Statement Highlights, and Why?
+        </summary>
+        <p>
+            Cash Flow Statements consist of a few parts, culminating in one summation that tells how money is flowing through the company.
+            </br>Operating Cash Flow deals with company operations, how cash is flowing depending on sales and the costs of keeping the business running.
+            </br>Investing Cash Flow deals with the company putting money into future growth, as well as other costs and gains.
+            </br>Financing Cash Flow deals with the company dealing with debt and dividends, as well as other costs and gains.
+            </br>Net Cash Flow is the summation of those previous three values, telling you if all of the company actions have accrued a net cost or gain 
+            to the company cash ledger. It's a pure value representing the movement of cash within the company on an annual basis.
+            </br>Next you'll see Capex, the amount of money spent by the company to expand operations, or buy new hardware to expand business.
+            </br>Free Cash Flow is Operating Cash Flow minus Capex, showing what cash is available after all business actiivities, costs, and investing back 
+            into the company. Many consider this a more pure version of profitability than Net Income.
+            </br>Free Cash Flow Margin is FCF / Revenue for any given annual period.
+            </br>And obviously, we've also included all of the respective growth rates to give you something meaningful to go along with all those 
+            raw dollar amounts.
+        </p>
+    </details>
+
+    <details>
+        <summary>
+            What's in the Efficiency Highlights, and Why?
+        </summary>
+        <p>
+            When a company invests in itself, it's making a calculated bet that the funds it invests will help itself to grow.
+            </br>ROIC is defined in the legend below. It's a great measure of efficiency of the company and its leadership, used for analyzing companies 
+            in the same sector, in the same tax jurisdictions. It uses a series of calculations to determine how the company's investments in itself are paying off, 
+            utilizing a calculation of Operating Profit minus tax payments over Assets plus debt minus cash on hand. 
+            </br>ROCE is defined in the legend below. It's a great measure of efficiency of the company and its leadership, used for analyzing companies 
+            in the same sector, across different tax jurisdictions. It uses a series of calculations to determine how the company's investments in itself are paying off, 
+            utilizing a calculation of Net Income over Shareholder Equity.
+            </br>We prefer using ROCE for our effiency rankings as it is a more succinct measure of corporate efficiency, and works across all tax domains, so a Consumer Staples 
+            company in any country can be compared to a Consumer Staples company in any other country without any messy currency conversions or tax considerations.
+            </br>The calculated version we've put together from the constituent values reported to the SEC, while the Reported values are calculated using Reported 
+            Shareholder Value where applicable.
+            </br>We've included a version of ROCE for REIT's in this highlight section to help REIT investors get an idea of how FFO over Shareholder Equity looks. 
+        </p>
+    </details>
+    
+    <details>
+        <summary>
+            What's in the Dividend Highlights, and Why?
+        </summary>
+        <p>
+            We all want to know what kind of cash flow owning a share of a company will provide us. 
+            </br>Total Dividends paid shows how much cash total the company is paying yearly to shareholders. It gives another metric to judge how their dividend 
+            payments grow, but is not the industry standard for measuring dividend growth.
+            </br>Calculated and Reported Dividends per share are self-explanatory, but in one we used the Total Dividends paid divided by Shares Outstanding, and 
+            in the other we're just sharing what the company has reported as having paid to the SEC.
+            </br>Payout ratios are displayed using dividends paid over Net Income in first case, Free Cash Flow over NI in the second, and the third is for REIT's, 
+            using FFO over NI. 
+        </p>
+    </details>
+
+    <details>
+        <summary>
+            How do we get these values? Are they accurate? What do blank data cells mean?
+        </summary>
+    
+        <p>All information here has been downloaded using the SEC's EDGAR API, providing direct access to all company 
+            filings. Hence, all the information is accurate. However, decoding exactly which values are labeled as... what 
+            exactly? That was quite a puzzle while parsing the XBRL/JSON response. We're still deciphering all the different 
+            labels as the schema seems to differ between different companies, filing in different standards and nations, 
+            but the values you'll find here are accurate to the best of our ability. Which is pretty dang good, if you don't mind 
+            us bragging for a moment. If you do find massive discrepencies between what you see here and what you find elsewhere, 
+            please don't hesitate to reach out through our 'Contact' page and let us know. We are striving to provide good information 
+            here, and any errors you catch will help not just us, but every person who visits this site.
+        </p>
+    </details>
+
+    <details>
+        <summary>
+            Are there any known bugs and will they be resolved?
+        </summary>
+        <p>Currently, some company data seems to have a looping error in which the earliest year had no reported values
+            and our data cleaning process filled in that data with the latest year's values. This has been found in a 
+            handful of places and we're working to either correct the data to display empty/missing values instead or 
+            just deleting the earliest year's data altogether if we find that it's a tabling error on our end logging 
+            reporting of some stats and not others. While the values, say this bug is appearing in 'Revenue', in this
+            instance may not be accurate, we assure you that the growth rates are unaffected by this bug and can be 
+            trusted because they were calculated before the earlier data was appended.</p>
+    </details>
+    
+    <details>
+        <summary>
+            What future plans are in store for these reports?
+        </summary>
+        
+        <p>While we have no plans for generating full financial statements at this time, it's possible that future iterations 
+            will include such in a service that we send directly to users via email or other methods.
+        </p>
+    </details>
 
 {% endblock %}

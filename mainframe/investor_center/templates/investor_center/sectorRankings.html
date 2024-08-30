@@ -18,25 +18,12 @@
             <table border="1" name="searchMethodTable">
                 <tr>
                     <th>Search for a Single Ticker</th>
-                    <!-- <th>Select a Sector and manually pick values</th> -->
                 </tr>
                 <tr>
                     <td>
                         <input type="text" name="tsButtonFilled" placeholder="Type Ticker, Hit Enter or Button">
                         <input type="submit" name="tsButton" value="Find My Stock!">
                     </td>
-                    <!-- <td>
-                        <center>
-                            <select name="sectorDropDown">
-                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
-                                {% for j in sectors %}
-                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
-                                {% endfor %}
-                                <option> All </option>
-                            </select>
-                        </center>
-                        <center> <input type="submit" name="updateTable" value="Update Table"> </center> 
-                    </td> -->
                 </tr>
             </table>
             <table border="1" name="searchMethodTable">
@@ -82,19 +69,6 @@
         
         </center>
         <center> <input type="submit" name="resetTable" value="Reset Table"> </center>
-        <!-- <center> <input type="submit" name="resetTable" value="Reset Table"> </center> -->
-
-        <!-- <center>
-		<select name="sectorDropDown">
-			<option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
-			{% for j in sectors %}
-				<option value="{{ j.Sector }}">{{ j.Sector }}</option>
-			{% endfor %}
-            <option> All </option>
-		</select>
-        </center> -->
-		
-        <!-- <center> <input type="submit" name="updateTable" value="Update Table"> </center>  -->
         
         <table border="1" name="sectorRankingsTable">
             <tr>
@@ -122,21 +96,9 @@
                 <th>Max Score</th>
                 <th>Sector</th>
             </tr>
-            
             {% for i in lt %}
-            
             <tr>
-                
-                
-                <!-- <form action="{% url 'report' %}" method="POST">
-                {% csrf_token %}     -->
                 <td><input type="submit" name="income" value="{{i.Ticker}}"> <input type="hidden" name="ts" value="{{i.Ticker}}"> </td>
-                <!-- </form> -->
-
-                
-                
-                
-                
                 <td>{{i.scorerank|floatformat:3}}</td>
                 <td>{{i.roce}}</td>
                 <td>{{i.roic}}</td>
@@ -158,62 +120,12 @@
                 <td>{{i.ffopo}}</td>
                 <td>{{i.score}}</td>
                 <td>{{i.maxscore}}</td>
-                <td>{{i.Sector}}</td>
-            
+                <td>{{i.Sector}}</td>           
             </tr>
-            
             {% endfor %}
-            
         </table>
 	</form>
     <h2>Known Bugs: </h2>
-    <p>Clicking the tickers in the leftmost column should take you to the Individual Stock Highlights for that ticker. However, the very first 
-        Ticker never makes the jump, simply reloads the page. All other tickers work, except for the firstmost. We're working on remedying this. 
-        Apologies for the inconvenience of remembering the ticker, navigating to Individual Stock Highlights manually, and having to type it in there.
+    <p>None at this time.
     </p>
 {% endblock %}
-
-<!-- remember this for links on the tickers -->
-<!-- <td><a href = '{% url 'reportDetails' %}/{{i.Ticker}}'>{{i.Ticker}}</a></td> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

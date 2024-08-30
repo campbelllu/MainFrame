@@ -1,12 +1,12 @@
 PD evaulate for inner err
 RDTE does not pay a dividend, most likely.
 -1
-  Ticker  currentPrice  idealPriceCeiling  currentValuation     divGR  currentDiv  currentYield
-1   QDTE        42.920              618.8          1.734001  5.494246      24.752     57.670084
-0   XDTE        52.135              503.1          2.590688  7.540251      20.124     38.599789
+  Ticker  currentPrice  idealPriceCeiling  currentValuation      divGR  currentDiv  currentYield
+1   QDTE         42.43              618.8          1.714205   3.799348      24.752     58.336083
+0   XDTE         52.34              504.4          2.594171  11.371693      20.176     38.547956
 DDM etf evaulate for inner err
 RDTE does not pay a dividend, most likely.
 -1
   Ticker  CurrentPrice  ExpectedMinReturnAtThisPrice  5%TargetPrice  10%TargetPrice  15%TargetPrice  20%TargetPrice  30%TargetPrice  40%TargetPrice  50%TargetPrice
-0   XDTE        52.135                            50    -916.177900      946.162126      311.983889      186.787193      103.621886       71.698693       54.812420
-1   QDTE        42.920                            50   -5573.458475      611.364692      289.788579      189.901121      112.408660       79.831873       61.894445
+0   XDTE         52.34                            50    -392.762362    -1824.432304      689.732517      290.040824      134.341851       87.415621       64.785683
+1   QDTE         42.43                            50    2221.172131      430.092779      238.098259      164.614102      101.785857       73.668724       57.723338

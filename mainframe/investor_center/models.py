@@ -110,6 +110,8 @@ class Mega(models.Model):
     def creit_roce(self):
         if self.TotalEquity is None:
             return None
+        elif self.ffo is None:
+            return None
         else:
             return self.ffo / self.TotalEquity * 100
 
@@ -124,18 +126,25 @@ class Mega(models.Model):
     def rreit_roce(self): #luke this
         if self.ReportedTotalEquity is None:
             return None
+        elif self.ffo is None:
+            return None
         else:
             return self.ffo / self.ReportedTotalEquity * 100
 
     @property
     def por100(self):
-        return self.payoutRatio * 100
+        if self.payoutRatio is None:
+            return None
+        else:
+            return self.payoutRatio * 100
+
     @property
     def fcfpor100(self):
         if self.fcfPayoutRatio is None:
             return None
         else:
             return self.fcfPayoutRatio * 100
+
     @property
     def ffopor100(self):
         if self.ffoPayoutRatio is None:
@@ -348,6 +357,7 @@ class Metadata(models.Model):
             return None
         else:
             return self.payoutRatioAVG * 100
+
     @property
     def fcfporavg100(self):
         if self.fcfPayoutRatioAVG is None:
