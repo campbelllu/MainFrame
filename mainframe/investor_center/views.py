@@ -23,95 +23,213 @@ def valuation(request):
         }
     return render(request, 'investor_center/valuation.html', context)
 
-def report(request):
-    # they need to be able to search for a stock ticker
-    # also, in the sector rankings they can click the ticker to take them directly to a report
+def incomeHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    print('self.kwargs')
+    # print(kwargs)
+    if ticker is not None:
+        print('ticker not blank incomehighlights')
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+        }
+        return render(request, 'investor_center/incomeDetails.html', context)
+    else:
+        print('ticker blank incomehighlights')
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def balanceHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    if ticker is not None:
+        print('ticker not blank balancehighlights')
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+        }
+        return render(request, 'investor_center/balanceDetails.html', context)
+    else:
+        print('ticker blank balancehighlights')
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def cashflowHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    if ticker is not None:
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+        }
+        return render(request, 'investor_center/cfDetails.html', context)
+    else:
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def efficiencyHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    if ticker is not None:
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+        }
+        return render(request, 'investor_center/effDetails.html', context)
+    else:
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def dividendHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    if ticker is not None:
+        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        metaData = Metadata.objects.filter(Ticker=ticker)
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker,
+            'lt': megaData,
+            'mt': metaData,
+        }
+        return render(request, 'investor_center/divsDetails.html', context)
+    else:
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def highlights(request):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
 
     if 'income' in request.POST:
-        print('report income clicked')
-        ticker = request.POST.get('ts').upper()
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
-
-        context = {
-            'sectors': sectors,
-            # 'ticker': ticker,
-            # 'dv': dropdownValues,
-            'dt': ticker,
-            'lt': megaData,
-            'mt': metaData,
-            }
-        return render(request, 'investor_center/incomeDetails.html', context)
+        return redirect(reverse('ih', kwargs={'ticker':request.POST.get('ts').upper()}))
+        # print('report income clicked')
+        # ticker = request.POST.get('ts').upper()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
+        # context = {
+        #     'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'dt': ticker,
+        #     'lt': megaData,
+        #     'mt': metaData,
+        #     }
+        # return render(request, 'investor_center/incomeDetails.html', context)
 
     elif 'balance' in request.POST:
-        ticker = request.POST.get('ts').upper()
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        return redirect(reverse('bh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        # ticker = request.POST.get('ts').upper()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
 
-        context = {
-            'sectors': sectors,
-            # 'ticker': ticker,
-            # 'dv': dropdownValues,
-            'dt': ticker,
-            'lt': megaData,
-            'mt': metaData,
-            }
-        return render(request, 'investor_center/balanceDetails.html', context)
+        # context = {
+        #     'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'dt': ticker,
+        #     'lt': megaData,
+        #     'mt': metaData,
+        #     }
+        # return render(request, 'investor_center/balanceDetails.html', context)
     
     elif 'cf' in request.POST:
-        ticker = request.POST.get('ts').upper()
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        return redirect(reverse('cfh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        # ticker = request.POST.get('ts').upper()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
 
-        context = {
-            'sectors': sectors,
-            # 'ticker': ticker,
-            # 'dv': dropdownValues,
-            'dt': ticker,
-            'lt': megaData,
-            'mt': metaData,
-            }
-        return render(request, 'investor_center/cfDetails.html', context)
+        # context = {
+        #     'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'dt': ticker,
+        #     'lt': megaData,
+        #     'mt': metaData,
+        #     }
+        # return render(request, 'investor_center/cfDetails.html', context)
     
     elif 'eff' in request.POST:
-        ticker = request.POST.get('ts').upper()
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
-        # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
-        # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
+        return redirect(reverse('effh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        # ticker = request.POST.get('ts').upper()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
+        # # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
+        # # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
 
-        context = {
-            'sectors': sectors,
-            # 'ticker': ticker,
-            # 'dv': dropdownValues,
-            'dt': ticker,
-            'lt': megaData,
-            'mt': metaData,
-            # 'roce': roce,
-            # 'roce': roceavg,
-            }
-        return render(request, 'investor_center/effDetails.html', context)
+        # context = {
+        #     'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'dt': ticker,
+        #     'lt': megaData,
+        #     'mt': metaData,
+        #     # 'roce': roce,
+        #     # 'roce': roceavg,
+        #     }
+        # return render(request, 'investor_center/effDetails.html', context)
 
     elif 'divs' in request.POST:
-        ticker = request.POST.get('ts').upper()
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        return redirect(reverse('divsh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        # ticker = request.POST.get('ts').upper()
+        # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        # metaData = Metadata.objects.filter(Ticker=ticker)
 
-        # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
-        # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
+        # # roce = Mega.objects.get('creit_roce_avg')#get_object_or_404(Mega, 'creit_roce_avg')#Mega.objects.get('creit_roce_avg')
+        # # roceavg = Mega.objects.aggregate(Avg('ffo' / 'TotalEquity' * 100))
 
-        context = {
-            'sectors': sectors,
-            # 'ticker': ticker,
-            # 'dv': dropdownValues,
-            'dt': ticker,
-            'lt': megaData,
-            'mt': metaData,
-            # 'roce': roce,
-            # 'roce': roceavg,
-            }
-        return render(request, 'investor_center/divsDetails.html', context)
+        # context = {
+        #     'sectors': sectors,
+        #     # 'ticker': ticker,
+        #     # 'dv': dropdownValues,
+        #     'dt': ticker,
+        #     'lt': megaData,
+        #     'mt': metaData,
+        #     # 'roce': roce,
+        #     # 'roce': roceavg,
+        #     }
+        # return render(request, 'investor_center/divsDetails.html', context)
 
     # elif ''
     else:
@@ -151,7 +269,7 @@ def report(request):
             # 'dv': dropdownValues,
             # 'lt': pageLandingTable,
             }
-            return render(request, 'investor_center/report.html', context)
+            return render(request, 'investor_center/highlights.html', context)
 
 
 def sr(request):
@@ -744,7 +862,7 @@ def sr(request):
         # print(form['income'])
         
         request.session['sel'] = request.POST
-        return redirect('report')
+        return redirect('highlights')
         # print('ticker: ' + str(ticker))
         # sectors = Sector_Rankings.objects.values('Sector').distinct()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')

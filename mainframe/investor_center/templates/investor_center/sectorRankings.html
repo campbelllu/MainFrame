@@ -98,7 +98,7 @@
             </tr>
             {% for i in lt %}
             <tr>
-                <td><input type="submit" name="income" value="{{i.Ticker}}"> <input type="hidden" name="ts" value="{{i.Ticker}}"> </td>
+                <td><a href="{% url 'ih' ticker=i.Ticker %}">{{i.Ticker}}</a></td>
                 <td>{{i.scorerank|floatformat:3}}</td>
                 <td>{{i.roce}}</td>
                 <td>{{i.roic}}</td>

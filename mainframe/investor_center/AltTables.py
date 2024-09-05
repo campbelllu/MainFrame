@@ -29,6 +29,8 @@ import SectorRankings as sr
 
 #luke
 #notes or to do
+
+                    # <input type="submit" name="income" value="{{i.Ticker}}"> <input type="hidden" name="ts" value="{{i.Ticker}}"> 
 # don't lose heart! you can do this! you got this! don't stop! don't quit! get this built and live forever in glory!
 # such is the rule of honor: https://youtu.be/q1jrO5PBXvs?si=I-hTTcLSRiNDnBAm
 # views

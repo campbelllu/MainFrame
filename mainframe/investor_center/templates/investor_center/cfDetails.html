@@ -4,10 +4,15 @@
 <form method="POST">
     {% csrf_token %}
     <p>Jump to another report:</p>
-    <input type="submit" name="income" value="Income Statement Report">
-    <input type="submit" name="balance" value="Balance Sheet Report">
-    <input type="submit" name="eff" value="Efficiency Report">
-    <input type="submit" name="divs" value="Dividend Report">
+    <button type="button"><a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a></button>
+    <button type="button"><a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a></button>
+    <!-- <button type="button"><a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a></button> -->
+    <button type="button"><a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a></button>
+    <button type="button"><a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a></button>
+    <!-- <input type="submit" name="income" value="Income Statement Report"> -->
+    <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
+    <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
+    <!-- <input type="submit" name="divs" value="Dividend Report"> -->
 
     <h1>
         Cash Flow Statement Highlights for {{dt}}
