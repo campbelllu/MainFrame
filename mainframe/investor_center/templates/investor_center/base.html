@@ -4,23 +4,32 @@
         <title>
             Investor Center
         </title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <!-- <link rel="canonical" href="https://lukehasideas.com/"></link> -->
+		<meta name=”viewport” content=”width=device-width, initial-scale=1.0”>
+        <!-- <link rel="stylesheet" type="text/css" href="styles.css"></link> -->
     </head>
 
     <body>
-        <p>eventually all this will be in a top-tab-bar, or dropdown menu or something</p>
-        <p>
-            <a href="{% url 'index' %}">Home</a> 
-            <a href="{% url 'sr' %}">Sector Rankings</a> 
-            <a href="{% url 'highlights' %}">Individual Stock Highlights</a>
-
-            <a href="{% url 'val' %}">Valuation</a>
-            <!--
-             work on valuation. 
-             consider comparison tool. 
-             also consider a report eval summary
-             flesh out the homepage.
-             clean every html file -->
-        </p>
+        <header>
+            <p>This site is a work in progress, made solely with HTML at this time, built on top of a Django backend. </p>
+            <p>Eventually these selections will be bundled into a dropdown menu, or into links across the top of the page. For now 
+                they are simple selections.
+            </p>
+            <p>
+                <a href="{% url 'index' %}">Home</a> </br>
+                <a href="{% url 'sr' %}">Sector Rankings</a> </br>
+                <a href="{% url 'highlights' %}">Individual Stock Highlights</a> </br>
+                <a href="{% url 'val' %}">Valuation</a>
+                <!--
+                work on valuation. 
+                consider comparison tool. 
+                also consider a report eval summary
+                flesh out the homepage.
+                clean every html file -->
+            </p>
+        </header>
+        
         {% block content %}
         {% endblock %}
         <p>$$$</p>
@@ -30,9 +39,11 @@
             BV==Book Value
         </p>
         {% block footer %}
-        <p>None of the content here, nor anywhere on this site, should be considered financial advice. 
-            It exists solely for educational purposes. Contact a financial expert before making any investment decisions. 
-            Past performance is no guarantee of future results.</p>
+        <footer>
+            <p>None of the content here, nor anywhere on this site, should be considered financial advice. 
+                It exists solely for educational purposes. Contact a financial expert before making any investment decisions. 
+                Past performance is no guarantee of future results.</p>
+        </footer>
         {% endblock %}
     </body>
 </html>

@@ -393,6 +393,8 @@ def sr(request):
             }
             return render(request, 'investor_center/sectorRankings.html', context)
         else:
+            #luke here: you could have another if filter, if filterSector=='Real Estate', a different table will load, set net income to -5. otherwise, ffo stats
+            #would be dropped, 'normal' table displayed
             searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
                                 fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
                                 shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
@@ -852,7 +854,7 @@ def sr(request):
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
-    elif 'income' in request.POST:
+    # elif 'income' in request.POST:
         # return redirect(report)
         # print('sr income clicked')
         # ticker = request.POST.get('ts').upper()
@@ -861,8 +863,9 @@ def sr(request):
         # print(form)
         # print(form['income'])
         
-        request.session['sel'] = request.POST
-        return redirect('highlights')
+        # request.session['sel'] = request.POST
+        # return redirect('highlights')
+
         # print('ticker: ' + str(ticker))
         # sectors = Sector_Rankings.objects.values('Sector').distinct()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
