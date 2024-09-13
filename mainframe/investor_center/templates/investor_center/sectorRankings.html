@@ -6,19 +6,8 @@
 	</h1>
 	<h4>How does each security measure against the others in their respective sectors?</h4>
 	<p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
-	<p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'Average', 
-        and scores are applied to the averages of all the values across their reportable lifetime.</p>
-	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
-    <p>The dropdown menus in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 
-        or larger in that category.</p>
-    <p>Initial loading of the page, and pressing the 'Reset Table' button, displays all stocks of all sectors ranked according to their scores earned by our ranking 
-        algorithms. </p>
-    <p>The first selector section allows you to type in a stock ticker, finding its ranking along with its peers in the same sector, with similar score rankings.</p>
-    <p>The second selector section provides preset values for any given sector, saving you time, but you'll want to tweak the numbers to your preference.</p>
-    <p>The third selector section keeps whatever values are already selected in each column, and selects your sector of choice, applying those values to the filter process.</p>
-    <p>Manually changing the filter values for each column, then selecting 'Update Table' in the third selector section will update the table with your desired filter.</p>
-    <p>Clicking a stock ticker in the Tickers Column will take you to that company's Stock Highlights pages, beginning with our Income Highlights.</p>
-    <p>Check below the table for the currently known bug report.</p>
+    <p>Scroll below the table to see descriptions for what you're looking at and how to use this page, as well as a report of any currently known bugs.</p>
+	
 
 	<form method="POST">
 		{% csrf_token %}
@@ -37,7 +26,7 @@
             </table>
             <table border="1" name="searchMethodTable">
                 <tr>
-                    <th>Choose a preselected filter per sector</th>
+                    <th>Choose a Preselected Filter for Each Sector</th>
                 </tr>
                 <tr>
                     <td>
@@ -134,7 +123,29 @@
             {% endfor %}
         </table>
 	</form>
-    <h2>Known Bugs: </h2>
+
+    <p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'Average', 
+        and scores are applied to the averages of all the values across their reportable lifetime.</p>
+	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, all explained on THIS PAGE.</p>
+    <p>The dropdown menus in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 
+        or larger in that category.</p>
+    <p>Initial loading of the page, and pressing the 'Reset Table' button, displays all stocks of all sectors ranked according to their scores earned by our ranking 
+        algorithms. </p>
+    <p>The first selector section allows you to type in a stock ticker, finding its ranking along with its peers in the same sector, with similar score rankings.</p>
+    <p>The second selector section provides preset values for any given sector, saving you time, but you'll want to tweak the numbers to your preference.</p>
+    <p>The third selector section keeps whatever values are already selected in each column, and selects your sector of choice, applying those values to the filter process.</p>
+    <p>Manually changing the filter values for each column, then selecting 'Update Table' in the third selector section will update the table with your desired filter.</p>
+    <p>Clicking a stock ticker in the Tickers Column will take you to that company's Stock Highlights pages, beginning with our Income Highlights.</p>
+    
+    
+    <h2>Why Not Just Invest in These 'Top' 25 Stocks, Then?</h2>
+    <p>Just because these particular securities scored highest with our proprietary ranking system, that doesn't mean the top 25 with high scores constitute a diversified 
+        or reliable portfolio in and of themselves. Maybe this year our rankings produce a top 25 consisting entirely of one sector? Would you be comfortable owning a portfolio 
+        like that? Also, see our disclaimer at the bottom of every page.
+    </p>
+
+
+    <h3>Known Bugs: </h3>
     <p>None at this time.
     </p>
 {% endblock %}

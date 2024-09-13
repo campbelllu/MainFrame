@@ -29,13 +29,13 @@ def incomeHighlights(request, ticker):
     # print(kwargs)
     if ticker is not None:
         print('ticker not blank incomehighlights')
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
             # 'dv': dropdownValues,
-            'dt': ticker,
+            'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
         }
@@ -53,13 +53,13 @@ def balanceHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
         print('ticker not blank balancehighlights')
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
             # 'dv': dropdownValues,
-            'dt': ticker,
+            'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
         }
@@ -76,13 +76,13 @@ def balanceHighlights(request, ticker):
 def cashflowHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
             # 'dv': dropdownValues,
-            'dt': ticker,
+            'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
         }
@@ -98,13 +98,13 @@ def cashflowHighlights(request, ticker):
 def efficiencyHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
             # 'dv': dropdownValues,
-            'dt': ticker,
+            'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
         }
@@ -120,13 +120,13 @@ def efficiencyHighlights(request, ticker):
 def dividendHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-        metaData = Metadata.objects.filter(Ticker=ticker)
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
             # 'dv': dropdownValues,
-            'dt': ticker,
+            'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
         }
@@ -245,31 +245,31 @@ def highlights(request):
         #     print('report else except')
 
         # ticker = request.POST.get('ts').upper()
-        try:
+        # try:
 
-            ref = request.session.pop('sel')
-            print('report else if not none')
-            ticker = ref['income']
-            megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
-            metaData = Metadata.objects.filter(Ticker=ticker)
+        #     ref = request.session.pop('sel')
+        #     print('report else if not none')
+        #     ticker = ref['income']
+        #     megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
+        #     metaData = Metadata.objects.filter(Ticker=ticker)
 
-            context = {
-                'sectors': sectors,
-                # 'ticker': ticker,
-                # 'dv': dropdownValues,
-                'dt': ticker,
-                'lt': megaData,
-                'mt': metaData,
-                }
-            return render(request, 'investor_center/incomeDetails.html', context)
-        except Exception as err:
-            print('report else else')
-            context = {
-            'sectors': sectors,
-            # 'dv': dropdownValues,
-            # 'lt': pageLandingTable,
-            }
-            return render(request, 'investor_center/highlights.html', context)
+        #     context = {
+        #         'sectors': sectors,
+        #         # 'ticker': ticker,
+        #         # 'dv': dropdownValues,
+        #         'dt': ticker,
+        #         'lt': megaData,
+        #         'mt': metaData,
+        #         }
+        #     return render(request, 'investor_center/incomeDetails.html', context)
+        # except Exception as err:
+        print('report else else')
+        context = {
+        'sectors': sectors,
+        # 'dv': dropdownValues,
+        # 'lt': pageLandingTable,
+        }
+        return render(request, 'investor_center/highlights.html', context)
 
 
 def sr(request):
@@ -278,7 +278,7 @@ def sr(request):
     # randomSector = Sector_Rankings.objects.values('Sector').order_By('?').first()
     # divpayers = Sector_Rankings.objects.values('divpay').distinct()
     wholeTable = Sector_Rankings.objects.order_by('-scorerank')
-    pageLandingTable = Sector_Rankings.objects.order_by('-scorerank')[:50]
+    pageLandingTable = Sector_Rankings.objects.order_by('-scorerank')[:25]
     dropdownValues = {'sector':'Select Sector', 'roce':'>=', 'roic':'>=', 'rev':'>=', 'ni':'>=', 'fcf':'>=', 
                         'fcfm':'>=', 'cf':'>=', 'dp':'>=', 'divgr':'>=', 'po':'>=', 'shares':'>=', 'debt':'>=', 
                         'bv':'>=', 'eq':'>=', 'roc':'>=', 'ffo':'>=', 'reitroce':'>=', 'ffopo':'>='}

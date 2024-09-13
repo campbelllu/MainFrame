@@ -23,7 +23,10 @@
             Solution? Look at a summary of their Income Statement, Balance Sheet, and Cash Flow Statement! Sure! </br>
             Except that also contains a lot of detailed accounting facts that, while very useful, take a lot of time to properly understand and decipher.</br>
             Second solution? Look at Stock Highlights! Each of our reports breaks down the pieces of a company's 10-K report, 
-            an annual report each company files with the SEC, giving you what we think are the most important pieces, explained below in detail.
+            an annual report each company files with the SEC, giving you what we think are the most important pieces, explained below in detail.</br>
+            All highlights are limited to the most recent five years of data, saving full filing records for future subscription service offerings.</br>
+            However, all growth rates are based off of the entirety of the filed data, giving you exclusive access to a company's full performance records, even as 
+            a free user of the site.
         </p>
     </details>
     
@@ -149,13 +152,7 @@
         <summary>
             Are there any known bugs and will they be resolved?
         </summary>
-        <p>Currently, some company data seems to have a looping error in which the earliest year had no reported values
-            and our data cleaning process filled in that data with the latest year's values. This has been found in a 
-            handful of places and we're working to either correct the data to display empty/missing values instead or 
-            just deleting the earliest year's data altogether if we find that it's a tabling error on our end logging 
-            reporting of some stats and not others. While the values, say this bug is appearing in 'Revenue', in this
-            instance may not be accurate, we assure you that the growth rates are unaffected by this bug and can be 
-            trusted because they were calculated before the earlier data was appended.</p>
+        <p>None known at this time.</p>
     </details>
     
     <details>
@@ -163,9 +160,18 @@
             What future plans are in store for these reports?
         </summary>
         
-        <p>While we have no plans for generating full financial statements at this time, it's possible that future iterations 
-            will include such in a service that we send directly to users via email or other methods.
+        <p>While we have no plans for generating full financial statements on the website at this time, we are working on offering this data 
+            as part of a subscription plan in the near future. Full filing data on any number of companies of your choosing, sent to you directly, 
+            via email most likely. Give it time, we'll get it for you.
         </p>
     </details>
 
 {% endblock %}
+
+<!-- Currently, some company data seems to have a looping error in which the earliest year had no reported values
+            and our data cleaning process filled in that data with the latest year's values. This has been found in a 
+            handful of places and we're working to either correct the data to display empty/missing values instead or 
+            just deleting the earliest year's data altogether if we find that it's a tabling error on our end logging 
+            reporting of some stats and not others. While the values, say this bug is appearing in 'Revenue', in this
+            instance may not be accurate, we assure you that the growth rates are unaffected by this bug and can be 
+            trusted because they were calculated before the earlier data was appended. -->
