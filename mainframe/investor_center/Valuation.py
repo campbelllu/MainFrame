@@ -6,6 +6,8 @@ import seaborn as sns
 # import datetime as dt #leaving only because I'm not sure which I used.
 from datetime import date 
 import time
+import os
+from pathlib import Path
 import json
 import requests
 import math
@@ -16,9 +18,9 @@ import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
-from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
-converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
-curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
+# from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
+# converter_address = '/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
+# curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 
 #From fellow files
@@ -31,7 +33,7 @@ import Metadata as metadata
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
-db_path = '/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
+db_path = os.path.join(Path(__file__).resolve().parent.parent, 'stock_data.sqlite3') #'/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
 def print_DB(thequery, superflag):
     conn = sql.connect(db_path)
