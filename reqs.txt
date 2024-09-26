@@ -12,6 +12,7 @@ dill==0.3.8
 Django==4.2.1
 fonttools==4.48.1
 frozendict==2.4.0
+gunicorn==21.2.0
 html5lib==1.1
 idna==3.6
 isort==5.13.2
@@ -22,14 +23,12 @@ matplotlib-inline==0.1.6
 mccabe==0.7.0
 mplfinance==0.12.10b0
 multitasking==0.0.11
-numpy==1.26.4
 packaging==23.2
 pandas==2.2.0
 pandas-datareader==0.10.0
 peewee==3.17.1
 pillow==10.2.0
 platformdirs==4.2.0
-pyarrow==15.0.0
 pycodestyle==2.11.1
 pylint==3.0.3
 pyparsing==3.1.1

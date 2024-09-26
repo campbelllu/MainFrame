@@ -20,7 +20,7 @@ from django.urls import path, include
 # from helloThere import views as htviews #see note below
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('supercalifragilisticespialidocious/', admin.site.urls), #admin
     path('', include("investor_center.urls")),
 
     # path('helloThere/', htviews.home, name='home'), #bad practice, hard to scale or share app to other projects. left for example.

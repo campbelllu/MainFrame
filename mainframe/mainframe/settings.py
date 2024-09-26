@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-0owy4u$f=_w+zl8h%$p320c(v$4$skq2_%xpdre&m-gmddjxdl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','mf.io','mf.io/jenkins']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','mf.io','mf.io/jenkins', '172.30.162.208']
 
 # Application definition
 INSTALLED_APPS = [
