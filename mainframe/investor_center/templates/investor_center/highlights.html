@@ -8,12 +8,18 @@
         Click on the Individual Stock Highlights link again when looking to enter a new stock ticker. </p>
     <form method="POST">
         {% csrf_token %}
-        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button">
-        <input type="submit" name="income" value="Income Statement Highlights">
-        <input type="submit" name="balance" value="Balance Sheet Highlights">
-        <input type="submit" name="cf" value="Cash Flow Statement Highlights">
-        <input type="submit" name="eff" value="Efficiency Highlights">
-        <input type="submit" name="divs" value="Dividend Highlights">
+        <div class="container">
+            <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button" id="tickerid">
+            
+        </div>
+        <div class="container">
+            <input type="submit" name="income" value="Income Statement Highlights">
+            <input type="submit" name="balance" value="Balance Sheet Highlights">
+            <input type="submit" name="cf" value="Cash Flow Statement Highlights">
+            <input type="submit" name="eff" value="Efficiency Highlights">
+            <input type="submit" name="divs" value="Dividend Highlights">
+        </div>
+        
     </form>
     <details>
         <summary>

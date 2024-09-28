@@ -13,32 +13,43 @@
 
     <body>
         <header>
-            <p>This site is a work in progress, made solely with HTML at this time, built on top of a Django backend. </p>
+            <p>This site is a work in progress, made solely with HTML+CSS sitting on top of a Django backend.</p>
             <p>Eventually these selections will be bundled into a dropdown menu, or into links across the top of the page. For now 
                 they are simple selections.
             </p>
-            <p>
-                <a href="{% url 'index' %}">Home</a> </br>
-                <a href="{% url 'sr' %}">Sector Rankings</a> </br>
-                <a href="{% url 'highlights' %}">Individual Stock Highlights</a> </br>
-                <a href="{% url 'val' %}">Valuation</a>
+            <ul id="navlinks">
+                <li><a href="{% url 'index' %}">Home</a></li>
+                 <!-- </br> -->
+                 <li><a href="{% url 'sr' %}">Sector Rankings</a></li> 
+                <!-- </br> -->
+                <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
+                 <!-- </br> -->
+                <li><a href="{% url 'val' %}">Valuation</a></li>
                 <!--
                 work on valuation. 
                 consider comparison tool. 
                 also consider a report eval summary
                 flesh out the homepage.
                 clean every html file -->
-            </p>
+            </ul>
         </header>
         
         {% block content %}
         {% endblock %}
         <p>$$$</p>
-        <p>Legend: FFO==Funds from Operations, EPS==Earnings per Share, FCF==Free Cash Flow, FCFM==Free Cash Flow Margin, GR==Growth Rate, 
-            AVG==Average, REIT==Real Estate Investment Trust, NAV==Net Asset Value, CF==Cash Flow, PO==Payout, POR==Payout Ratio, Op.==Operating, Inv.==Investing, 
-            Fin.==Financing or Financial, Capex==Capital Expenditures, ROIC==Return on Invested Capital, ROCE==Return on Capital Employed, SE==Shareholder's Equity, 
-            BV==Book Value
-        </p>
+
+        <details>
+            <summary>
+                Legend
+            </summary>
+            <p>
+                FFO==Funds from Operations, EPS==Earnings per Share, FCF==Free Cash Flow, FCFM==Free Cash Flow Margin, GR==Growth Rate, 
+                AVG==Average, REIT==Real Estate Investment Trust, NAV==Net Asset Value, CF==Cash Flow, PO==Payout, POR==Payout Ratio, Op.==Operating, Inv.==Investing, 
+                Fin.==Financing or Financial, Capex==Capital Expenditures, ROIC==Return on Invested Capital, ROCE==Return on Capital Employed, SE==Shareholder's Equity, 
+                BV==Book Value
+            </p>
+        </details>
+
         {% block footer %}
         <footer>
             <h3>Important Disclaimer</h3>
