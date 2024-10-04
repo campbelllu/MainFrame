@@ -4,61 +4,81 @@
 <form method="POST">
     {% csrf_token %}
     <p>Jump to another report:</p>
-    <button type="button"><a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a></button>
-    <button type="button"><a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a></button>
-    <!-- <button type="button"><a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a></button> -->
-    <button type="button"><a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a></button>
-    <button type="button"><a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a></button>
-    <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-    <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
-    <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
-    <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+    <div class="container">
+        <a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a>
+        <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a>
+        <!-- <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a> -->
+        <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a>
+        <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a>
+        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
+        <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
+        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
+        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+    </div>
 
     <h1>
         Cash Flow Statement Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
+
     <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
-    <table border="1" name="sectorRankingsTable">
-        {% for l in mt %}
-        <tr>
-            <th>Year</th>
-            <th>Operating Cash Flow</th> 
-            <th>Op. CF GR </br>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th>Investing Cash Flow</th>
-            <th>Inv. CF GR </br>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th>Financing Cash Flow</th>
-            <th>Fin. CF GR </br>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th>Net Cash Flow</br>${{l.netCashFlowAVG|floatformat:"0"}}</th>
-            <th>Net CF GR </br>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th>Capex</th>
-            <th>Capex GR </br>{{l.capexGrowthAVG|floatformat:3}}%</th>
-            <th>Free Cash Flow</th>
-            <th>FCF GR </br>{{l.fcfGrowthAVG|floatformat:3}}%</th>
-            <th>Free Cash Flow Margin </br>{{l.fcfMarginAVG|floatformat:3}}%</th>
-            <th>FCFM GR </br>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td>{{i.year}}</td>
-            <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.investingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.investingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.financingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.netCashFlow|floatformat:"0"}}</td>
-            <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.capEx|floatformat:"0"}}</td>
-            <td>{{i.capExGrowthRate|floatformat:3}}%</td>
-            <td>${{i.fcf|floatformat:"0"}}</td>
-            <td>{{i.fcfGrowthRate|floatformat:3}}%</td>
-            <td>{{i.fcfMargin|floatformat:3}}%</td>
-            <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </table>
+
+    <h2>
+        Cash Flow Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            This one is a bit harder to split up. You want Operating CF and Capex together to give FCF some context, but you don't want to split up Operating, Investing, Financing CF from Net.
+            </br>
+            </br>Liabilities include accounts payable and debts that are due in the short- and long-term.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table border="1" name="sectorRankingsTable">
+            {% for l in mt %}
+            <tr>
+                <th>Year</th>
+                <th>Operating Cash Flow</th> 
+                <th>Op. CF GR </br>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Investing Cash Flow</th>
+                <th>Inv. CF GR </br>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Financing Cash Flow</th>
+                <th>Fin. CF GR </br>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Net Cash Flow</br>${{l.netCashFlowAVG|floatformat:"0"}}</th>
+                <th>Net CF GR </br>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Capex</th>
+                <th>Capex GR </br>{{l.capexGrowthAVG|floatformat:3}}%</th>
+                <th>Free Cash Flow</th>
+                <th>FCF GR </br>{{l.fcfGrowthAVG|floatformat:3}}%</th>
+                <th>Free Cash Flow Margin </br>{{l.fcfMarginAVG|floatformat:3}}%</th>
+                <th>FCFM GR </br>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td>{{i.year}}</td>
+                <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
+                <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
+                <td>${{i.investingCashFlow|floatformat:"0"}}</td>
+                <td>{{i.investingCashFlowGrowthRate|floatformat:3}}%</td>
+                <td>${{i.financingCashFlow|floatformat:"0"}}</td>
+                <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
+                <td>${{i.netCashFlow|floatformat:"0"}}</td>
+                <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
+                <td>${{i.capEx|floatformat:"0"}}</td>
+                <td>{{i.capExGrowthRate|floatformat:3}}%</td>
+                <td>${{i.fcf|floatformat:"0"}}</td>
+                <td>{{i.fcfGrowthRate|floatformat:3}}%</td>
+                <td>{{i.fcfMargin|floatformat:3}}%</td>
+                <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </form>
 {% endblock %}

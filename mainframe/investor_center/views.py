@@ -76,7 +76,7 @@ def balanceHighlights(request, ticker):
 def cashflowHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')#[:5]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
@@ -141,9 +141,27 @@ def dividendHighlights(request, ticker):
 
 def highlights(request):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
+    # ticker = request.POST.get('ts').upper()
 
-    if 'income' in request.POST:
-        return redirect(reverse('ih', kwargs={'ticker':request.POST.get('ts').upper()}))
+    # if ticker is None:
+    #     context = {
+    #         'sectors': sectors,
+    #         # 'dv': dropdownValues,
+    #         # 'lt': pageLandingTable,
+    #         }
+    #     return render(request, 'investor_center/highlights.html', context)
+
+    if 'ih' in request.POST:
+        try:
+
+            return redirect(reverse('ih', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
         # print('report income clicked')
         # ticker = request.POST.get('ts').upper()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
@@ -158,8 +176,16 @@ def highlights(request):
         #     }
         # return render(request, 'investor_center/incomeDetails.html', context)
 
-    elif 'balance' in request.POST:
-        return redirect(reverse('bh', kwargs={'ticker':request.POST.get('ts').upper()}))
+    elif 'bh' in request.POST:
+        try:
+            return redirect(reverse('bh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
         # ticker = request.POST.get('ts').upper()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         # metaData = Metadata.objects.filter(Ticker=ticker)
@@ -174,8 +200,17 @@ def highlights(request):
         #     }
         # return render(request, 'investor_center/balanceDetails.html', context)
     
-    elif 'cf' in request.POST:
-        return redirect(reverse('cfh', kwargs={'ticker':request.POST.get('ts').upper()}))
+    elif 'cfh' in request.POST:
+        try:
+
+            return redirect(reverse('cfh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
         # ticker = request.POST.get('ts').upper()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         # metaData = Metadata.objects.filter(Ticker=ticker)
@@ -190,8 +225,16 @@ def highlights(request):
         #     }
         # return render(request, 'investor_center/cfDetails.html', context)
     
-    elif 'eff' in request.POST:
-        return redirect(reverse('effh', kwargs={'ticker':request.POST.get('ts').upper()}))
+    elif 'effh' in request.POST:
+        try:
+            return redirect(reverse('effh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
         # ticker = request.POST.get('ts').upper()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         # metaData = Metadata.objects.filter(Ticker=ticker)
@@ -210,8 +253,16 @@ def highlights(request):
         #     }
         # return render(request, 'investor_center/effDetails.html', context)
 
-    elif 'divs' in request.POST:
-        return redirect(reverse('divsh', kwargs={'ticker':request.POST.get('ts').upper()}))
+    elif 'divsh' in request.POST:
+        try:
+            return redirect(reverse('divsh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
         # ticker = request.POST.get('ts').upper()
         # megaData = Mega.objects.filter(Ticker=ticker).order_by('-year')
         # metaData = Metadata.objects.filter(Ticker=ticker)

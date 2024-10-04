@@ -4,57 +4,146 @@
 <form method="POST">
     {% csrf_token %}
     <p>Jump to another report:</p>
-    <button type="button"><a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a></button>
-    <!-- <button type="button"><a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a></button> -->
-    <button type="button"><a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a></button>
-    <button type="button"><a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a></button>
-    <button type="button"><a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a></button>
-    <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-    <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
-    <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
-    <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+    <div class="container">
+        <a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a>
+        <!-- <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a> -->
+        <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a>
+        <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a>
+        <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a>
+        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
+        <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
+        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
+        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+    </div>
 
     <h1>
         Balance Sheet Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
+
     <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
-    <table border="1" name="sectorRankingsTable">
-        {% for l in mt %}
-        <tr>
-            <th>Year</th>
-            <th>Reported Shareholder Equity</th> 
-            <th>Reported Shareholder Equity GR </br>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
-            <th>Calculated Shareholder Equity</th>
-            <th>Calculated Shareholder Equity GR </br>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
-            <th>Reported Book Value</th>
-            <th>Reported Book Value GR </br>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
-            <th>Calculated Book Value</th>
-            <th>Calculated Book Value GR </br>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
-            <th>Net Asset Value</th>
-            <th>NAV GR </br>{{l.navGrowthAVG|floatformat:3}}%</th>
-            <th>Debt</th>
-            <th>Debt GR </br>{{l.debtGrowthAVG|floatformat:3}}%</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td>{{i.year}}</td>
-            <td>{{i.ReportedTotalEquity|floatformat:"0"}}</td>
-            <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
-            <td>{{i.TotalEquity|floatformat:"0"}}</td>
-            <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
-            <td>{{i.reportedBookValue|floatformat:3}}</td>
-            <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
-            <td>{{i.calcBookValue|floatformat:3}}</td>
-            <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
-            <td>{{i.nav|floatformat:3}}</td>
-            <td>{{i.navGrowthRate|floatformat:3}}%</td>
-            <td>{{i.TotalDebt|floatformat:"0"}}</td>
-            <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </table>
+
+    <h2>
+        Shareholder Equity-Related Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            SE is just everything the company owns minus everything the company owes: Total Assets minus Total Liabilities. 
+            </br>Assets include physical materials and property, as well as ownership of intangibles such as patents and intellectual property.
+            </br>Liabilities include accounts payable and debts that are due in the short- and long-term.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table border="1" name="SETable">
+            {% for l in mt %}
+            <tr>
+                <th>Year</th>
+                <th>Reported Shareholder Equity</th> 
+                <th>Reported Shareholder Equity GR </br>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
+                <th>Calculated Shareholder Equity</th>
+                <th>Calculated Shareholder Equity GR </br>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
+                
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td>{{i.year}}</td>
+                <td>{{i.ReportedTotalEquity|floatformat:"0"}}</td>
+                <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
+                <td>{{i.TotalEquity|floatformat:"0"}}</td>
+                <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
+               
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>
+        Book Value and NAV Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            Book Value on our site is calculated on a per share basis. It represents Shareholder Equity divided by Shares Outstanding. 
+            </br>NAV is sometimes reported to the SEC, and is essentially Book Value as we measure it. Usually 'only' relevant to BDC's.
+            </br>We like BV as a catch-all health check that involves the Balance Sheet, plus the behavior of Shares Outstanding: </br>
+                  How is tangible ownership of the company, via owning one share, being affected over time?
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table border="1" name="bvnavTable">
+            {% for l in mt %}
+            <tr>
+                <th>Year</th>
+               
+                <th>Reported Book Value</th>
+                <th>Reported Book Value GR </br>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>Calculated Book Value</th>
+                <th>Calculated Book Value GR </br>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>Net Asset Value</th>
+                <th>NAV GR </br>{{l.navGrowthAVG|floatformat:3}}%</th>
+               
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td>{{i.year}}</td>
+                
+                <td>{{i.reportedBookValue|floatformat:3}}</td>
+                <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
+                <td>{{i.calcBookValue|floatformat:3}}</td>
+                <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
+                <td>{{i.nav|floatformat:3}}</td>
+                <td>{{i.navGrowthRate|floatformat:3}}%</td>
+                
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>
+        Debt-Related Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            This table represents Total Debt that the company holds in any given year. 
+            </br>Due in the short-term or long-term, it's all included. See below how they're managing it.
+            </br>Keep in mind that debt levels are already 'bundled into' Shareholder Equity.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table border="1" name="debtTable">
+            {% for l in mt %}
+            <tr>
+                <th>Year</th>
+               
+                <th>Debt</th>
+                <th>Debt GR </br>{{l.debtGrowthAVG|floatformat:3}}%</th>
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td>{{i.year}}</td>
+            
+                <td>{{i.TotalDebt|floatformat:"0"}}</td>
+                <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </form>
 {% endblock %}

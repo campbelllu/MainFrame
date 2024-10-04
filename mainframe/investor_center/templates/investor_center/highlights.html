@@ -1,23 +1,29 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-    <h1>
-        Individual Stock Highlights
-    </h1>
-    <p>Here's what we focus on for each firm that's ever filed with the SEC.</br>
-        Click on the Individual Stock Highlights link again when looking to enter a new stock ticker. </p>
+    <!-- <div class="container"> -->
+        <h1>
+            Individual Stock Highlights
+        </h1>
+    <!-- </div> -->
+    
+        <p>Here you'll find the stats we focus on for each company that's ever filed with the SEC.</br>
+            Click on the Individual Stock Highlights link again when looking to enter a new stock ticker.</br> 
+            Our Highlights only present five years of data, Full Stock Reports will present all years' data that have been filed with the SEC. 
+        </p>
+    <!-- </div> -->
     <form method="POST">
         {% csrf_token %}
         <div class="container">
-            <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Button" id="tickerid">
+            <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Click Button" id="tickerid">
             
         </div>
         <div class="container">
-            <input type="submit" name="income" value="Income Statement Highlights">
-            <input type="submit" name="balance" value="Balance Sheet Highlights">
-            <input type="submit" name="cf" value="Cash Flow Statement Highlights">
-            <input type="submit" name="eff" value="Efficiency Highlights">
-            <input type="submit" name="divs" value="Dividend Highlights">
+            <input type="submit" name="ih" value="Income Statement Highlights">
+            <input type="submit" name="bh" value="Balance Sheet Highlights">
+            <input type="submit" name="cfh" value="Cash Flow Statement Highlights">
+            <input type="submit" name="effh" value="Efficiency Highlights">
+            <input type="submit" name="divsh" value="Dividend Highlights">
         </div>
         
     </form>
