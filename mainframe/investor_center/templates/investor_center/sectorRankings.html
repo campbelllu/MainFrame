@@ -4,7 +4,7 @@
 	<h1>
 		Sector Rankings
 	</h1>
-	<h4>How does each security measure against the others in their respective sectors?</h4>
+	<h4>How does each company measure against others in their respective sectors?</h4>
 	<p>Here we use a proprietary weighting system to judge each firm's financial standings against each other.</p>
     <p>Scroll below the table to see descriptions for what you're looking at and how to use this page, as well as a report of any currently known bugs.</p>
 	
@@ -19,7 +19,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <input type="text" name="tsButtonFilled" placeholder="Type Ticker, Hit Enter or Button">
+                        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Click Button" id="tickerid">
                         <input type="submit" name="tsButton" value="Find My Stock!">
                     </td>
                 </tr>
@@ -96,7 +96,7 @@
             </tr>
             {% for i in lt %}
             <tr>
-                <td><a href="{% url 'ih' ticker=i.Ticker %}">{{i.Ticker}}</a></td>
+                <td><a href="{% url 'ih' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
                 <td>{{i.scorerank|floatformat:3}}</td>
                 <td>{{i.roce}}</td>
                 <td>{{i.roic}}</td>

@@ -1,27 +1,20 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
     <p>Jump to another report:</p>
+
     <div class="container">
-        <a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a>
+        <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
         <!-- <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a> -->
-        <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a>
-        <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a>
-        <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a>
-        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-        <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
-        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
-        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+        <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
+        <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
+        <a href="{% url 'divsh' ticker=dt %}" id="high">Dividend Highlights</a>
     </div>
 
     <h1>
         Balance Sheet Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-
-    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
 
     <h2>
         Shareholder Equity-Related Stats
@@ -39,9 +32,10 @@
     </details> </br>
 
     <div class="container">
-        <table border="1" name="SETable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
                 <th>Reported Shareholder Equity</th> 
                 <th>Reported Shareholder Equity GR </br>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
@@ -49,9 +43,19 @@
                 <th>Calculated Shareholder Equity GR </br>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
                 
             </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
+                
+            </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
                 <td>{{i.ReportedTotalEquity|floatformat:"0"}}</td>
                 <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
@@ -80,24 +84,35 @@
     </details> </br>
 
     <div class="container">
-        <table border="1" name="bvnavTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
-               
                 <th>Reported Book Value</th>
-                <th>Reported Book Value GR </br>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>Reported Book Value GR</th>
                 <th>Calculated Book Value</th>
-                <th>Calculated Book Value GR </br>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>Calculated Book Value GR</th>
                 <th>Net Asset Value</th>
-                <th>NAV GR </br>{{l.navGrowthAVG|floatformat:3}}%</th>
+                <th>NAV GR</th>
+               
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.navGrowthAVG|floatformat:3}}%</th>
                
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
-                
                 <td>{{i.reportedBookValue|floatformat:3}}</td>
                 <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
                 <td>{{i.calcBookValue|floatformat:3}}</td>
@@ -126,24 +141,29 @@
     </details> </br>
 
     <div class="container">
-        <table border="1" name="debtTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
-               
                 <th>Debt</th>
-                <th>Debt GR </br>{{l.debtGrowthAVG|floatformat:3}}%</th>
+                <th>Debt GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.debtGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
-            
                 <td>{{i.TotalDebt|floatformat:"0"}}</td>
                 <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
             </tr>
             {% endfor %}
         </table>
     </div>
-</form>
 {% endblock %}

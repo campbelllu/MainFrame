@@ -106,6 +106,17 @@ class Mega(models.Model):
     Sector = models.CharField(max_length=30)
     Industry = models.CharField(max_length=50)
 
+
+    @property
+    def profit_margin(self):
+        if self.revenue is None:
+            return None
+        elif self.netIncome is None:
+            return None
+        else:
+            return self.netIncome / self.revenue * 100
+
+
     @property
     def creit_roce(self):
         if self.TotalEquity is None:

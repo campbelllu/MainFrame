@@ -466,7 +466,7 @@ def sr(request):
         return render(request, 'investor_center/sectorRankings.html', context)
 
     elif 'tsButton' in request.POST:
-        ticker = request.POST.get('tsButtonFilled').upper()
+        ticker = request.POST.get('ts').upper()
         row = Sector_Rankings.objects.filter(Ticker=ticker).first()
         if row:
             filterSector = dropdownValues['sector'] = row.Sector

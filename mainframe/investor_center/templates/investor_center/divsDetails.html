@@ -5,10 +5,10 @@
     {% csrf_token %}
     <p>Jump to another report:</p>
     <div class="container">
-        <a href="{% url 'ih' ticker=dt %}">Income Statement Highlights</a>
-        <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a>
-        <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a>
-        <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a>
+        <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
+        <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
+        <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
+        <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
         <!-- <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a> -->
         <!-- <input type="submit" name="income" value="Income Statement Report"> -->
         <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->

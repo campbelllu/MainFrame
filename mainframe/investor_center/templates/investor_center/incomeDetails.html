@@ -1,56 +1,73 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-<!-- <form method="POST"> -->
-    <!-- {% csrf_token %} -->
     <p>Jump to another report:</p>
+
     <div class="container">
-        <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a>
-        <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a>
-        <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a>
-        <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a>
-        <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
-        <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
-        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
-        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
+        <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
+        <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
+        <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
+        <a href="{% url 'divsh' ticker=dt %}" id="high">Dividend Highlights</a>
     </div>
-    <!-- <div class="container">
-        
-    </div> -->
+
     <h1>
         Income Statement Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
 
-    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
-
     <h2>
         Sales and Profits
     </h2>
-    <p>
-        Revenue is a company's gross amount of money made, sometimes refered to as the 'top line'-item, or Sales. 
-        </br>Net Income, also refered to as Profits, Earnings, or the 'bottom line', is the money that's left after all bills are paid. 
-        </br>Both 'line'-phrases refer to the stats' relative position on an Income Statement.
-    </p>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            Revenue is a company's gross amount of money made, sometimes refered to as the 'top line'-item, or Sales. 
+            </br>Net Income, also refered to as Profits, Earnings, or the 'bottom line', is the money that's left after all bills are paid. 
+            </br>Both 'line'-phrases refer to the stats' relative position on an Income Statement.
+            </br>Profit Margin is just Net Income divided by Revenue for the given year. 
+        </p>
+    </details> </br>
+    
     <div class="container">
-        <table border="1" name="sectorRankingsTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
                 <th>Revenue</th>
-                <th>Revenue GR </br>{{l.revGrowthAVG|floatformat:3}}%</th>
+                <th>Revenue GR</th>
                 <th>Net Income</th>
-                <th>Net Income GR </br>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
-            
+                <th>Net Income GR</th>
+                <th>Profit Margin</th>
+                <th>Free Cash Flow Margin</th>
+                <th>FCFM GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.revGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
                 <td>${{i.revenue|floatformat:"0"}}</td>
                 <td>{{i.revenueGrowthRate|floatformat:3}}%</td>
                 <td>${{i.netIncome|floatformat:"0"}}</td>
                 <td>{{i.netIncomeGrowthRate|floatformat:3}}%</td>
+                <td>{{i.profit_margin|floatformat:3}}%</td>
+                <td>{{i.fcfMargin|floatformat:3}}%</td>
+                <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
                 
             </tr>
             {% endfor %}
@@ -74,24 +91,33 @@
     
 
     <div class="container">
-        <table border="1" name="epsTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
-                
                 <th>Shares</th>
-                <th>Shares GR </br>{{l.sharesGrowthAVG|floatformat:3}}%</th>
+                <th>Shares GR</th>
                 <th>Reported EPS</th>
-                <th>Reported EPS GR </br>{{l.repsGrowthAVG|floatformat:3}}%</th>
+                <th>Reported EPS GR</th>
                 <th>Calculated EPS</th>
-                <th>Calculated EPS GR </br>{{l.cepsGrowthAVG|floatformat:3}}%</th> <!---cepsAVG--->
-                
+                <th>Calculated EPS GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.sharesGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.repsAVG|floatformat:2}}/share</th>
+                <th>{{l.repsGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.cepsAVG|floatformat:2}}/share</th>
+                <th>{{l.cepsGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
-                
                 <td>{{i.shares|floatformat:"0"}}</td>
                 <td>{{i.sharesGrowthRate|floatformat:3}}%</td>
                 <td>${{i.reportedEPS|floatformat:2}}/share</td>
@@ -107,43 +133,56 @@
     <h2>
         REIT-related Stats
     </h2>
-    <p>
-        FFO is the REIT-equivalent of Net Income, and we use that to calculate REIT EPS: FFO divided by Shares Outstanding. 
-        </br>We don't have the necessary data available at this time to calculate AFFO, Adjusted Funds from Operations, which is a more accurate Net Income proxy for REITS.
-        </br>However, the FFO numbers here can be used as a reliable substitute in lieu of that current deficiency in our models.
-        </br>If the company you're looking at isn't a REIT, this table can be ignored altogether.
-    </p>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            FFO is the REIT-equivalent of Net Income, and we use that to calculate REIT EPS: FFO divided by Shares Outstanding. 
+            </br>We don't have the necessary data available at this time to calculate AFFO, Adjusted Funds from Operations, which is a more accurate Net Income proxy for REITS.
+            </br>However, the FFO numbers here can be used as a reliable substitute in lieu of that current deficiency in our models.
+            </br>If the company you're looking at isn't a REIT, this table can be ignored altogether.
+        </p>
+    </details> </br>
+    
 
     <div class="container">
-        <table border="1" name="reitTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
-                
-                
                 <th>FFO</th>
-                <th>FFO GR </br>{{l.ffoGrowthAVG|floatformat:3}}%</th>
+                <th>FFO GR</th>
                 <th>Shares</th>
-                <th>Shares GR </br>{{l.sharesGrowthAVG|floatformat:3}}%</th>
+                <th>Shares GR </br></th>
                 <th>REIT EPS</th>
-                <th>REIT EPS GR </br>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
+                <th>REIT EPS GR </br></th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.ffoGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.sharesGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.reitepsAVG|floatformat:2}}/share</th>
+                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
-            
                 <td>${{i.ffo}}</td>
                 <td>{{i.ffoGrowthRate|floatformat:3}}%</td>
                 <td>{{i.shares|floatformat:"0"}}</td>
-                <td>{{i.sharesGrowthRate|floatformat:3}}%</td>
-            
-            
+                <td>{{i.sharesGrowthRate|floatformat:3}}%</td>            
                 <td>${{i.reitEPS|floatformat:2}}/share</td>
                 <td>{{i.reitEPSGrowthRate|floatformat:3}}%</td>
             </tr>
             {% endfor %}
         </table>
     </div>
-<!-- </form> -->
 {% endblock %}
