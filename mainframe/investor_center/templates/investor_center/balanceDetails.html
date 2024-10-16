@@ -4,6 +4,7 @@
     <p>Jump to another report:</p>
 
     <div class="container">
+        <a href="{% url 'overh' ticker=dt %}" id="high">Summary Highlights</a>
         <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
         <!-- <a href="{% url 'bh' ticker=dt %}">Balance Sheet Highlights</a> -->
         <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
@@ -38,9 +39,9 @@
                 <th>Category</th>
                 <th>Year</th>
                 <th>Reported Shareholder Equity</th> 
-                <th>Reported Shareholder Equity GR </br>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
+                <th>Reported Shareholder Equity GR</th>
                 <th>Calculated Shareholder Equity</th>
-                <th>Calculated Shareholder Equity GR </br>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
+                <th>Calculated Shareholder Equity GR</th>
                 
             </tr>
             <tr>
@@ -57,9 +58,9 @@
             <tr>
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>{{i.ReportedTotalEquity|floatformat:"0"}}</td>
+                <td>${{i.ReportedTotalEquity|floatformat:"0"}}</td>
                 <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
-                <td>{{i.TotalEquity|floatformat:"0"}}</td>
+                <td>${{i.TotalEquity|floatformat:"0"}}</td>
                 <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
                
             </tr>
@@ -100,11 +101,11 @@
             <tr>
                 <th>Average</th>
                 <th></th>
-                <th></th>
+                <th>${{l.repBookValueAVG|floatformat:"0"}}/share</th>
                 <th>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
-                <th></th>
+                <th>${{l.calcBookValueAVG|floatformat:"0"}}/share</th>
                 <th>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
-                <th></th>
+                <th>${{l.navAVG|floatformat:"0"}}/share</th>
                 <th>{{l.navGrowthAVG|floatformat:3}}%</th>
                
             </tr>
@@ -113,11 +114,11 @@
             <tr>
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>{{i.reportedBookValue|floatformat:3}}</td>
+                <td>${{i.reportedBookValue|floatformat:3}}</td>
                 <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
                 <td>{{i.calcBookValue|floatformat:3}}</td>
                 <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
-                <td>{{i.nav|floatformat:3}}</td>
+                <td>${{i.nav|floatformat:3}}/share</td>
                 <td>{{i.navGrowthRate|floatformat:3}}%</td>
                 
             </tr>
@@ -136,7 +137,9 @@
         <p>
             This table represents Total Debt that the company holds in any given year. 
             </br>Due in the short-term or long-term, it's all included. See below how they're managing it.
-            </br>Keep in mind that debt levels are already 'bundled into' Shareholder Equity.
+            </br>Keep in mind that debt levels are already 'bundled into' Shareholder Equity. 
+            </br>Zeroes (0) or blanks in the debt table indicate that we may have yet to be able to find debt levels reported to the SEC in the company's filings. It may not indicate that the company actually carries 
+            zero debt.
         </p>
     </details> </br>
 
@@ -160,7 +163,7 @@
             <tr>
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>{{i.TotalDebt|floatformat:"0"}}</td>
+                <td>${{i.TotalDebt|floatformat:"0"}}</td>
                 <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
             </tr>
             {% endfor %}

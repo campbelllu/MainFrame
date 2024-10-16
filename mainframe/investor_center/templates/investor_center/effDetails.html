@@ -1,56 +1,79 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
     <p>Jump to another report:</p>
+
     <div class="container">
+        <a href="{% url 'overh' ticker=dt %}" id="high">Summary Highlights</a>
         <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
         <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
         <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
         <!-- <a href="{% url 'effh' ticker=dt %}">Efficiency Highlights</a> -->
         <a href="{% url 'divsh' ticker=dt %}" id="high">Dividend Highlights</a>
-        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-        <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
-        <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
-        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
     </div>
 
     <h1>
         Efficiency Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
-    <table border="1" name="sectorRankingsTable">
-        {% for l in mt %}
-        
-        <tr>
-            <th>Year</th>
-            <th>Reported ROIC </br>{{l.raroicAVG|floatformat:3}}% </th>
-            <th>Calculated ROIC </br>{{l.aroicAVG|floatformat:3}}% </th>
-            <th>Reported ROCE </br>{{l.rroceAVG|floatformat:3}}% </th>
-            <th>Calculated ROCE </br>{{l.croceAVG|floatformat:3}}% </th>
-            <th>Reported REIT ROCE </br>**</th>
-            <th>Calculated REIT ROCE </br>**</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td>{{i.year}}</td>
-            <td>{{i.reportedAdjRoic|floatformat:3}}%</td>
-            <td>{{i.adjRoic|floatformat:3}}%</td>
-            <td>{{i.reportedRoce|floatformat:3}}%</td>
-            <td>{{i.calculatedRoce|floatformat:3}}%</td>
-            <td>{{i.rreit_roce|floatformat:3}}%</td>
-            <td>{{i.creit_roce|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </table>
-</form>
-<p>**: Due to this not being a standard REIT assessment metric, it has been added only as a unique metric for any REIT investors who are curious about how 
-    FFO / Shareholder Equity stands up against the standard, Net Income / Shareholder Equity.
-    This gives a frame of reference for how the actually valuable REIT metric of FFO would fare using this form of evaluation. 
-    Apologies that no average value is available at this time (August, 2024).
-</p>
+
+    <h2>
+        Return On-Insert-Criteria-Here Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            ROIC and ROE are common metrics used to measure efficiency of a company.
+            </br>Return on Equity, ROE, is calculated by taking Net Income and dividing it by Shareholder Equity. It's a quick calculation to check on how a company's assets and liabilities lead to profitability.
+            </br>Return on Invested Capital is a fancy ROE. Net Profit After Taxes, Operating Income * (1 - Tax Rate), divided by Capital Invested, Shareholder Equity plus Total Debt, plus Non-Operating Cash. 
+            So it has a larger denominator and thus will be a lower value than ROE. 
+            </br>There's some more nuance to the differences between ROE and ROIC, but you can't go wrong including one or both in your investment decisions. 
+            </br>... That you make after consulting a financial advisor and not based on anything you learned here on this website.
+            </br>REIT's don't typically get assessed using ROE/ROIC, but we added it here as a fun metric for any curious REIT investors. We just substituted FFO for Net Income over Shareholder Equity 
+            for your convenience.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
+            <tr>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Reported ROIC</th>
+                <th>Calculated ROIC</th>
+                <th>Reported ROE</th>
+                <th>Calculated ROE</th>
+                <th>Reported REIT ROE</th>
+                <th>Calculated REIT ROE</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th>{{l.raroicAVG|floatformat:3}}% </th>
+                <th>{{l.aroicAVG|floatformat:3}}% </th>
+                <th>{{l.rroceAVG|floatformat:3}}% </th>
+                <th>{{l.croceAVG|floatformat:3}}% </th>
+                <th>{{rreitroe|floatformat:3}}%</th>
+                <th>{{creitroe|floatformat:3}}%</th>
+                
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td></td>
+                <td>{{i.year}}</td>
+                <td>{{i.reportedAdjRoic|floatformat:3}}%</td>
+                <td>{{i.adjRoic|floatformat:3}}%</td>
+                <td>{{i.reportedRoce|floatformat:3}}%</td>
+                <td>{{i.calculatedRoce|floatformat:3}}%</td>
+                <td>{{i.rreit_roce|floatformat:3}}%</td>
+                <td>{{i.creit_roce|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}

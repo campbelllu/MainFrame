@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.http import HttpResponse
 from django.db.models import Avg
 import numpy as np
+import statistics as stats
 # from django.template import loader
 
 from .models import Mega, Metadata, Sector_Rankings
@@ -23,14 +24,20 @@ def valuation(request):
         }
     return render(request, 'investor_center/valuation.html', context)
 
-def incomeHighlights(request, ticker):
+def summaryHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
-    print('self.kwargs')
     # print(kwargs)
     if ticker is not None:
-        print('ticker not blank incomehighlights')
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
+        #luke, the following can all be done away with once DB includes profit margin and avg's for it
+        profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
+        profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
+        pm = []
+        for i in range(0,len(profitMarginNI)-1):
+            pm.append(profitMarginNI[i] / profitMarginRev[i])
+        pmAVG = stats.fmean(pm) * 100
+        #above this line and any below context
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
@@ -38,6 +45,42 @@ def incomeHighlights(request, ticker):
             'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
+            'pmavg': pmAVG,
+        }
+        return render(request, 'investor_center/overview.html', context)
+    else:
+        print('ticker blank incomehighlights')
+        context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+        return render(request, 'investor_center/highlights.html', context)
+
+def incomeHighlights(request, ticker):
+    sectors = Sector_Rankings.objects.values('Sector').distinct()
+    print('self.kwargs')
+    # print(kwargs)
+    if ticker is not None:
+        print('ticker not blank incomehighlights')
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
+        metaData = Metadata.objects.filter(Ticker=ticker.upper())
+        #luke, the following can all be done away with once DB includes profit margin and avg's for it
+        profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
+        profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
+        pm = []
+        for i in range(0,len(profitMarginNI)-1):
+            pm.append(profitMarginNI[i] / profitMarginRev[i])
+        pmAVG = stats.fmean(pm) * 100
+        #above this line and any below context
+        context = {
+            'sectors': sectors,
+            # 'ticker': ticker,
+            # 'dv': dropdownValues,
+            'dt': ticker.upper(),
+            'lt': megaData,
+            'mt': metaData,
+            'pmavg': pmAVG,
         }
         return render(request, 'investor_center/incomeDetails.html', context)
     else:
@@ -53,7 +96,7 @@ def balanceHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
         print('ticker not blank balancehighlights')
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
@@ -76,7 +119,7 @@ def balanceHighlights(request, ticker):
 def cashflowHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')#[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
@@ -98,8 +141,23 @@ def cashflowHighlights(request, ticker):
 def efficiencyHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
+        #luke, the following can all be done away with once DB includes profit margin and avg's for it
+        rreitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        rreitroedenom = list(Mega.objects.values_list('ReportedTotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        pm = []
+        for i in range(0,len(rreitroenumer)-1):
+            pm.append(rreitroenumer[i] / rreitroedenom[i])
+        pmAVG = stats.fmean(pm) * 100
+
+        creitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        creitroedenom = list(Mega.objects.values_list('TotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        pm2 = []
+        for i in range(0,len(creitroenumer)-1):
+            pm2.append(creitroenumer[i] / creitroedenom[i])
+        pmAVG2 = stats.fmean(pm2) * 100
+        #above this line and any below context
         context = {
             'sectors': sectors,
             # 'ticker': ticker,
@@ -107,6 +165,8 @@ def efficiencyHighlights(request, ticker):
             'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
+            'rreitroe': pmAVG,
+            'creitroe': pmAVG2,
         }
         return render(request, 'investor_center/effDetails.html', context)
     else:
@@ -120,7 +180,7 @@ def efficiencyHighlights(request, ticker):
 def dividendHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
     if ticker is not None:
-        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:5]
+        megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
         metaData = Metadata.objects.filter(Ticker=ticker.upper())
         context = {
             'sectors': sectors,
@@ -175,6 +235,17 @@ def highlights(request):
         #     'mt': metaData,
         #     }
         # return render(request, 'investor_center/incomeDetails.html', context)
+
+    elif 'overh' in request.POST:
+        try:
+            return redirect(reverse('overh', kwargs={'ticker':request.POST.get('ts').upper()}))
+        except:
+            context = {
+            'sectors': sectors,
+            # 'dv': dropdownValues,
+            # 'lt': pageLandingTable,
+            }
+            return render(request, 'investor_center/highlights.html', context)
 
     elif 'bh' in request.POST:
         try:

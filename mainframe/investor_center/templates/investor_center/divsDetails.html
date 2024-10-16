@@ -1,56 +1,123 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
+    
     <p>Jump to another report:</p>
+
     <div class="container">
+        <a href="{% url 'overh' ticker=dt %}" id="high">Summary Highlights</a>
         <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
         <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
         <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
         <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
-        <!-- <a href="{% url 'divsh' ticker=dt %}">Dividend Highlights</a> -->
-        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-        <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
-        <!-- <input type="submit" name="cf" value="Cash Flow Statement Report"> -->
-        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
     </div>
 
     <h1>
         Dividend Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
-    <table border="1" name="sectorRankingsTable">
-        {% for l in mt %}
-        <tr>
-            <th>Year</th>
-            <th>Total Dividends Paid</th> 
-            <th>Total Dividends Paid GR </br>{{l.totalDivsPaidGrowthAVG|floatformat:3}}%</th>
-            <th>Calculated Dividends per Share</th>
-            <th>Calculated Dividends per Share GR </br>{{l.calcDivsPerShareGrowthAVG|floatformat:3}}%</th>
-            <th>Reported Dividends per Share</th>
-            <th>Reported Dividends per Share GR </br>{{l.repDivsPerShareGrowthAVG|floatformat:3}}%</th>
-            <th>Payout Ratio </br>{{l.poravg100|floatformat:3}}%</th>
-            <th>FCF Payout Ratio </br>{{l.fcfporavg100|floatformat:3}}%</th>
-            <th>REIT(FFO) Payout Ratio </br>{{l.ffoporavg100|floatformat:3}}%</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td>{{i.year}}</td>
-            <td>${{i.totalDivsPaid|floatformat:"0"}}</td>
-            <td>{{i.divGrowthRateBOT|floatformat:3}}%</td>
-            <td>${{i.calcDivsPerShare|floatformat:3}}</td>
-            <td>{{i.divGrowthRateBOCPS|floatformat:3}}%</td>
-            <td>${{i.divsPaidPerShare|floatformat:3}}</td>
-            <td>{{i.divGrowthRateBORPS|floatformat:3}}%</td>
-            <td>{{i.por100|floatformat:3}}%</td>
-            <td>{{i.fcfpor100|floatformat:3}}%</td>
-            <td>{{i.ffopor100|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </table>
-</form>
+
+    <h2>
+        Dividend Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            How much is the company paying out in dividends in Total, on a per share basis as reported to the SEC, and on a calculated basis from their Total Dividends paid divided by their number of 
+            shares outstanding?
+            </br>Reported versus Calculated growth rate percentages that have large variance could point to either a flaw in our data collection techniques, or in fradulent reporting to the SEC.
+            </br>Such discrepencies could also point to a company having split payments between preferred and common shares, and our data collection techniques not yet being advanced enough to display 
+            the difference.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
+            <tr>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Total Dividends Paid</th> 
+                <th>Total Dividends Paid GR</th>
+                <th>Calculated Dividends per Share</th>
+                <th>Calculated Dividends per Share GR</th>
+                <th>Reported Dividends per Share</th>
+                <th>Reported Dividends per Share GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.totalDivsPaidGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.calcDivsPerShareAVG|floatformat:2}}/share</th>
+                <th>{{l.calcDivsPerShareGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.repDivsPerShareAVG|floatformat:2}}/share</th>
+                <th>{{l.repDivsPerShareGrowthAVG|floatformat:3}}%</th>            
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td></td>
+                <td>{{i.year}}</td>
+                <td>${{i.totalDivsPaid|floatformat:"0"}}</td>
+                <td>{{i.divGrowthRateBOT|floatformat:3}}%</td>
+                <td>${{i.calcDivsPerShare|floatformat:3}}/share</td>
+                <td>{{i.divGrowthRateBOCPS|floatformat:3}}%</td>
+                <td>${{i.divsPaidPerShare|floatformat:3}}/share</td>
+                <td>{{i.divGrowthRateBORPS|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>
+        Payout Ratio Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            Payout Ratios tell us how much money is paid in dividends, from a specific pool of 'left over'-money the company has. 
+            </br>Classic POR is the percentage of money paid in dividends from Net Income.
+            </br>FCF POR is the percentage of money paid in dividends from Free Cash Flow.
+            </br>REIT POR is the percentage of money paid in dividends from Funds from Operations.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
+            <tr>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Payout Ratio</th>
+                <th>FCF Payout Ratio</th>
+                <th>REIT(FFO) Payout Ratio</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th>{{l.poravg100|floatformat:3}}%</th>
+                <th>{{l.fcfporavg100|floatformat:3}}%</th>
+                <th>{{l.ffoporavg100|floatformat:3}}%</th>
+            
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td></td>
+                <td>{{i.year}}</td>
+                <td>{{i.por100|floatformat:3}}%</td>
+                <td>{{i.fcfpor100|floatformat:3}}%</td>
+                <td>{{i.ffopor100|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
 {% endblock %}

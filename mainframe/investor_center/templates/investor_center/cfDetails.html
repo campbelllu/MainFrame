@@ -1,27 +1,20 @@
 {% extends 'investor_center/base.html' %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
     <p>Jump to another report:</p>
     <div class="container">
+        <a href="{% url 'overh' ticker=dt %}" id="high">Summary Highlights</a>
         <a href="{% url 'ih' ticker=dt %}" id="high">Income Statement Highlights</a>
         <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
         <!-- <a href="{% url 'cfh' ticker=dt %}">Cash Flow Highlights</a> -->
         <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
         <a href="{% url 'divsh' ticker=dt %}" id="high">Dividend Highlights</a>
-        <!-- <input type="submit" name="income" value="Income Statement Report"> -->
-        <!-- <input type="submit" name="balance" value="Balance Sheet Report"> -->
-        <!-- <input type="submit" name="eff" value="Efficiency Report"> -->
-        <!-- <input type="submit" name="divs" value="Dividend Report"> -->
     </div>
 
     <h1>
         Cash Flow Statement Highlights for {{dt}}
         <input type="hidden" name="ts" value="{{dt}}">
     </h1>
-
-    <p>Applicable column headers will also contain the average value of those columns for an easy summary.</p>
 
     <h2>
         Cash Flow Stats
@@ -32,35 +25,46 @@
             Educational Information
         </summary>
         <p>
-            This one is a bit harder to split up. You want Operating CF and Capex together to give FCF some context, but you don't want to split up Operating, Investing, Financing CF from Net.
-            </br>
-            </br>Liabilities include accounts payable and debts that are due in the short- and long-term.
+            Net Cash Flow is the summation of Operating, Investing and Financing Cash Flows. 
+            </br>A business with negative Net Cash Flows over long periods of time will eventually go bankrupt, as more cash is leaving the company regularly, rather than entering its coffers for later use.
+            </br>Operating Cash Flow takes the Income Statement, includes some accounting calculations for depreciation and compensation as shares, 
+            as well as a few other things, to give you an idea of where cash is moving within company operations.
+            </br>Investing Cash Flow takes into account money that the company invests back into itself, including Capital Expenditures and some other values.
+            </br>Financing Cash Flow deals with debt and share issuance or buybacks, as well as dividends paid. 
         </p>
     </details> </br>
 
     <div class="container">
-        <table border="1" name="sectorRankingsTable">
+        <table>
             {% for l in mt %}
             <tr>
+                <th>Category</th>
                 <th>Year</th>
                 <th>Operating Cash Flow</th> 
-                <th>Op. CF GR </br>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Op. CF GR</th>
                 <th>Investing Cash Flow</th>
-                <th>Inv. CF GR </br>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>Inv. CF GR</th>
                 <th>Financing Cash Flow</th>
-                <th>Fin. CF GR </br>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
-                <th>Net Cash Flow</br>${{l.netCashFlowAVG|floatformat:"0"}}</th>
-                <th>Net CF GR </br>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
-                <th>Capex</th>
-                <th>Capex GR </br>{{l.capexGrowthAVG|floatformat:3}}%</th>
-                <th>Free Cash Flow</th>
-                <th>FCF GR </br>{{l.fcfGrowthAVG|floatformat:3}}%</th>
-                <th>Free Cash Flow Margin </br>{{l.fcfMarginAVG|floatformat:3}}%</th>
-                <th>FCFM GR </br>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+                <th>Fin. CF GR</th>
+                <th>Net Cash Flow</th>
+                <th>Net CF GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th>${{l.operatingCashFlowAVG|floatformat:"0"}}</th>
+                <th>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.investingCashFlowAVG|floatformat:"0"}}</th>
+                <th>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.financingCashFlowAVG|floatformat:"0"}}</th>
+                <th>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.netCashFlowAVG|floatformat:"0"}}</th>
+                <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
             <tr>
+                <td></td>
                 <td>{{i.year}}</td>
                 <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
                 <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
@@ -70,6 +74,54 @@
                 <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
                 <td>${{i.netCashFlow|floatformat:"0"}}</td>
                 <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>
+        Free Cash Flow Stats
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            Capex represents money the company invests expanding itself. Subtracting Capex from Operating Cash Flows gives Free Cash Flow values.
+            </br>FCF is considered by some to be a more meaningful metric of company profitability and health.
+            </br>Free Cash Flow Margin is FCF divided by sales (Revenue) in a given period of time.
+        </p>
+    </details> </br>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
+            <tr>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Capex</th>
+                <th>Capex GR</th>
+                <th>Free Cash Flow</th>
+                <th>FCF GR</th>
+                <th>Free Cash Flow Margin</th>
+                <th>FCFM GR</th>
+            </tr>
+            <tr>
+                <th>Average</th>
+                <th></th>
+                <th></th>
+                <th>{{l.capexGrowthAVG|floatformat:3}}%</th>
+                <th></th>
+                <th>{{l.fcfGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+            </tr>
+            {% endfor %}
+            {% for i in lt %}
+            <tr>
+                <td></td>
+                <td>{{i.year}}</td>
                 <td>${{i.capEx|floatformat:"0"}}</td>
                 <td>{{i.capExGrowthRate|floatformat:3}}%</td>
                 <td>${{i.fcf|floatformat:"0"}}</td>
@@ -80,5 +132,4 @@
             {% endfor %}
         </table>
     </div>
-</form>
 {% endblock %}

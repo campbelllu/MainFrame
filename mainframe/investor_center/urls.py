@@ -24,6 +24,9 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('SectorRankings/', views.sr, name='sr'),
     path('Highlights/', views.highlights, name='highlights'),
+
+    path('Highlights/Summary/<str:ticker>/', views.summaryHighlights, name='overh'),
+
     path('Highlights/Income/<str:ticker>/', views.incomeHighlights, name='ih'),
     path('Highlights/Balance/<str:ticker>/', views.balanceHighlights, name='bh'),
     path('Highlights/CashFlow/<str:ticker>/', views.cashflowHighlights, name='cfh'),

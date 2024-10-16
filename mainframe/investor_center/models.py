@@ -116,6 +116,15 @@ class Mega(models.Model):
         else:
             return self.netIncome / self.revenue * 100
 
+    @property
+    def profit_margin_avg(self):
+        if self.revenue is None:
+            return None
+        elif self.netIncome is None:
+            return None
+        else:
+            return self.netIncome / self.revenue * 100
+
 
     @property
     def creit_roce(self):
@@ -125,13 +134,6 @@ class Mega(models.Model):
             return None
         else:
             return self.ffo / self.TotalEquity * 100
-
-    # @property
-    # def creit_roce_avg(self):
-    #     #luke here trying to average these thigns
-    #     set = (self.ffo / self.TotalEquity * 100)
-    #     avg = sum(set) / len(set)
-    #     return avg
 
     @property
     def rreit_roce(self): #luke this

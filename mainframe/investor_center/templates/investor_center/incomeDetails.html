@@ -4,6 +4,7 @@
     <p>Jump to another report:</p>
 
     <div class="container">
+        <a href="{% url 'overh' ticker=dt %}" id="high">Summary Highlights</a>
         <a href="{% url 'bh' ticker=dt %}" id="high">Balance Sheet Highlights</a>
         <a href="{% url 'cfh' ticker=dt %}" id="high">Cash Flow Highlights</a>
         <a href="{% url 'effh' ticker=dt %}" id="high">Efficiency Highlights</a>
@@ -42,8 +43,6 @@
                 <th>Net Income</th>
                 <th>Net Income GR</th>
                 <th>Profit Margin</th>
-                <th>Free Cash Flow Margin</th>
-                <th>FCFM GR</th>
             </tr>
             <tr>
                 <th>Average</th>
@@ -52,9 +51,7 @@
                 <th>{{l.revGrowthAVG|floatformat:3}}%</th>
                 <th></th>
                 <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
-                <th></th>
-                <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
-                <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+                <th>{{pmavg|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
@@ -66,8 +63,6 @@
                 <td>${{i.netIncome|floatformat:"0"}}</td>
                 <td>{{i.netIncomeGrowthRate|floatformat:3}}%</td>
                 <td>{{i.profit_margin|floatformat:3}}%</td>
-                <td>{{i.fcfMargin|floatformat:3}}%</td>
-                <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
                 
             </tr>
             {% endfor %}
@@ -156,9 +151,9 @@
                 <th>FFO</th>
                 <th>FFO GR</th>
                 <th>Shares</th>
-                <th>Shares GR </br></th>
+                <th>Shares GR</th>
                 <th>REIT EPS</th>
-                <th>REIT EPS GR </br></th>
+                <th>REIT EPS GR</th>
             </tr>
             <tr>
                 <th>Average</th>
