@@ -25,59 +25,91 @@
             Educational Information
         </summary>
         <p>
-            Revenue is a company's gross amount of money made, sometimes refered to as the 'top line'-item, or Sales. 
-            </br>Net Income, also refered to as Profits, Earnings, or the 'bottom line', is the money that's left after all bills are paid. 
-            </br>Both 'line'-phrases refer to the stats' relative position on an Income Statement.
-            </br>Profit Margin is just Net Income divided by Revenue for the given year. 
+            Growth rates give you something meaningful to interpret. Here we see averages for all the labeled categories over the number of years of SEC filings available to us.
+            </br>Revenue and Net Income, later Profit Margin tells you how they relate. 
+            </br>EPS in multiple forms.
+            </br>FCF Margin for those who prefer it to Net Income.
+            </br>Net Cash Flow as a raw dollar amount, the average section telling you if they finish most years in the black or red.
+            </br>Finally, the Net CF Growth Rate average, what does their Net CF usually grow by each year?
+            </br>The second table provides a similar layout for stats relevant to REIT's.
         </p>
     </details> </br>
-    
+
     <div class="container">
         <table>
             {% for l in mt %}
             <tr>
+                <th>Years Analyzed</th>
                 <th>Category</th>
-                <th>Year</th>
                 <th>Revenue GR</th>
                 <th>Net Income GR</th>
                 <th>Reported EPS GR</th>
                 <th>Calculated EPS GR</th>
-                <th>REIT EPS GR</th>
                 <th>Profit Margin</th>
-                <th>Free Cash Flow Margin</th>
+                <th>FCF Margin</th>
                 <th>FCFM GR</th>
                 <th>Net Cash Flow</th>
                 <th>Net CF GR</th>
             </tr>
             <tr>
+                <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th></th>
                 <th>{{l.revGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.repsGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.cepsGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
-                <th>{{pmavg|floatformat:3}}%</th>
+                <th>{% if pmavg == 0 %} Data Unavailable
+                    {% else %} {{pmavg|floatformat:3}}%
+                    {% endif %}
+                </th>
                 <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
                 <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.netCashFlowAVG|floatformat:"0"}}</th>
+                <th>{% if l.netCashFlowAVG > 0 %} > Zero
+                    {% else %} < Zero
+                    {% endif %}
+                </th>
                 <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
-            {% for i in lt %}
+        </table>
+    </div>
+
+    <h3>
+        Similarly, for REIT's.
+    </h3>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
             <tr>
-                <td></td>
-                <td>{{i.year}}</td>
-                <td>{{i.revenueGrowthRate|floatformat:3}}%</td>
-                <td>{{i.netIncomeGrowthRate|floatformat:3}}%</td>
-                <td>{{i.reportedEPSGrowthRate|floatformat:3}}%</td>
-                <td>{{i.calculatedEPSGrowthRate|floatformat:3}}%</td>
-                <td>{{i.reitEPSGrowthRate|floatformat:3}}%</td>
-                <td>{{i.profit_margin}}%</td>
-                <td>{{i.fcfMargin|floatformat:3}}%</td>
-                <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
-                <td>${{i.netCashFlow|floatformat:"0"}}</td>
-                <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
+                <th>Years Analyzed</th>
+                <th>Category</th>
+                <th>Revenue GR</th>
+                <th>FFO GR</th>
+                
+                <th>REIT EPS GR</th>
+
+                
+
+                <th>Net Cash Flow</th>
+                <th>Net CF GR</th>
+            </tr>
+            <tr>
+                <th>{{ years|length }}</th>
+                <th>Average</th>
+                <th>{{l.revGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.ffoGrowthAVG|floatformat:3}}%</th>
+
+                
+                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
+
+                
+
+                <th>{% if l.netCashFlowAVG > 0 %} > Zero
+                    {% else %} < Zero
+                    {% endif %}
+                </th>
+                <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
@@ -92,9 +124,10 @@
             Educational Information
         </summary>
         <p>
-            Earnings per Share is just the Net Income divided by the number of Shares Outstanding. 
-            </br>Some companies report EPS to the SEC and some don't, so we've included a calculated version to provide context when reported values are lacking.
-            </br>Our Full Stock Reports outline how any differences in Reported and Calculated values come about.
+            Reported values to the SEC about Shareholder Equity, and how it relates to the number of shares outstanding. 
+            </br>Book Value growth rates give us insight into how the growth, or shrinkage, of Shareholder Equity relates to the growth, or shrinkage, or shares outstanding. It's an all-in-one package to understanding 
+            just how much of the company's assets you own with each share.
+            
         </p>
     </details> </br>
     
@@ -102,37 +135,27 @@
         <table>
             {% for l in mt %}
             <tr>
+                <th>Years Analyzed</th>
                 <th>Category</th>
-                <th>Year</th>
                 <th>Reported Shareholder Equity GR</th>
                 <th>Reported Book Value GR</th>
                 <th>Calculated Shareholder Equity GR</th>
                 <th>Calculated Book Value GR</th>
             </tr>
             <tr>
+                <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th></th>
                 <th>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
                 <th>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
-            {% for i in lt %}
-            <tr>
-                <td></td>
-                <td>{{i.year}}</td>
-                <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
-                <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
-                <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
-                <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
-            </tr>
-            {% endfor %}
         </table>
     </div>
 
     <h2>
-        REIT-related Stats
+        Efficiency
     </h2>
 
     <details>
@@ -140,155 +163,97 @@
             Educational Information
         </summary>
         <p>
-            FFO is the REIT-equivalent of Net Income, and we use that to calculate REIT EPS: FFO divided by Shares Outstanding. 
-            </br>We don't have the necessary data available at this time to calculate AFFO, Adjusted Funds from Operations, which is a more accurate Net Income proxy for REITS.
-            </br>However, the FFO numbers here can be used as a reliable substitute in lieu of that current deficiency in our models.
-            </br>If the company you're looking at isn't a REIT, this table can be ignored altogether.
+            For more in-depth explanations of efficiency metrics, check out the Efficiency Highlights.
+            </br>Here we're just going to look at Return on Equity and call it good. Or good enough. It's a summary. Enjoy it for what it is.
+            </br>The final two columns provide a similar stat, explained more in Efficiency Highlights, for REIT's.
         </p>
     </details> </br>
-    
 
     <div class="container">
         <table>
             {% for l in mt %}
             <tr>
+                <th>Years Analyzed</th>
                 <th>Category</th>
-                <th>Year</th>
-                <th>FFO</th>
-                <th>FFO GR</th>
-                <th>Shares</th>
-                <th>Shares GR </br></th>
-                <th>REIT EPS</th>
-                <th>REIT EPS GR </br></th>
+                <th>Reported ROE</th>
+                <th>Calculated ROE</th>
+                <th>Reported REIT ROE</th>
+                <th>Calculated REIT ROE</th>
             </tr>
             <tr>
+                <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th></th>
-                <th></th>
-                <th>{{l.ffoGrowthAVG|floatformat:3}}%</th>
-                <th></th>
-                <th>{{l.sharesGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.reitepsAVG|floatformat:2}}/share</th>
-                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.rroceAVG|floatformat:3}}% </th>
+                <th>{{l.croceAVG|floatformat:3}}% </th>
+                <th>{% if rreitroe == 0 %} Data Unavailable
+                    {% else %} {{rreitroe|floatformat:3}}%
+                    {% endif %}
+                </th>
+                <th>{% if creitroe == 0 %} Data Unavailable
+                    {% else %} {{creitroe|floatformat:3}}%
+                    {% endif %}
+                </th>
             </tr>
             {% endfor %}
-            {% for i in lt %}
+        </table>
+    </div>
+
+    <h2>
+        Dividends
+    </h2>
+
+    <details>
+        <summary>
+            Educational Information
+        </summary>
+        <p>
+            Dividend Highlights will have much more educational and specific information for you to digest.
+            </br>Here we just want to see how dividends per share are growing or shrinking each year, on average.
+            </br>The Payout Ratio Table is explained more fully in Dividend Highlights.
+        </p>
+    </details> </br>
+    
+    <div class="container">
+        <table>
+            {% for l in mt %}
             <tr>
-                <td></td>
-                <td>{{i.year}}</td>
-                <td>${{i.ffo}}</td>
-                <td>{{i.ffoGrowthRate|floatformat:3}}%</td>
-                <td>{{i.shares|floatformat:"0"}}</td>
-                <td>{{i.sharesGrowthRate|floatformat:3}}%</td>            
-                <td>${{i.reitEPS|floatformat:2}}/share</td>
-                <td>{{i.reitEPSGrowthRate|floatformat:3}}%</td>
+                <th>Years Analyzed</th>
+                <th>Category</th>
+                <th>Calculated Dividends per Share GR</th>
+                <th>Reported Dividends per Share GR</th>
+            </tr>
+            <tr>
+                <th>{{ years|length }}</th>
+                <th>Average</th>
+                <th>{{l.calcDivsPerShareGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.repDivsPerShareGrowthAVG|floatformat:3}}%</th>            
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h3>
+        And now for Payout Ratios.
+    </h3>
+
+    <div class="container">
+        <table>
+            {% for l in mt %}
+            <tr>
+                <th>Years Analyzed</th>
+                <th>Category</th>
+                <th>Payout Ratio</th>
+                <th>FCF Payout Ratio</th>
+                <th>REIT(FFO) Payout Ratio</th>
+            </tr>
+            <tr>
+                <th>{{ years|length }}</th>
+                <th>Average</th>
+                <th>{{l.poravg100|floatformat:3}}%</th>
+                <th>{{l.fcfporavg100|floatformat:3}}%</th>
+                <th>{{l.ffoporavg100|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
     </div>
 {% endblock %}
-
-
-
-
-
-<div class="container">
-    <table>
-        {% for l in mt %}
-        <tr>
-            <th>Category</th>
-            <th>Year</th>
-            <th>Operating Cash Flow</th> 
-            <th>Op. CF GR</th>
-            <th>Investing Cash Flow</th>
-            <th>Inv. CF GR</th>
-            <th>Financing Cash Flow</th>
-            <th>Fin. CF GR</th>
-            <th>Net Cash Flow</th>
-            <th>Net CF GR</th>
-        </tr>
-        <tr>
-            <th>Average</th>
-            <th></th>
-            <th></th>
-            <th>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th></th>
-            <th>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th></th>
-            <th>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
-            <th>${{l.netCashFlowAVG|floatformat:"0"}}</th>
-            <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td></td>
-            <td>{{i.year}}</td>
-            <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.investingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.investingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.financingCashFlow|floatformat:"0"}}</td>
-            <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
-            <td>${{i.netCashFlow|floatformat:"0"}}</td>
-            <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
-
-<h2>
-    Free Cash Flow Stats
-</h2>
-
-<details>
-    <summary>
-        Educational Information
-    </summary>
-    <p>
-        Capex represents money the company invests expanding itself. Subtracting Capex from Operating Cash Flows gives Free Cash Flow values.
-        </br>FCF is considered by some to be a more meaningful metric of company profitability and health.
-        </br>Free Cash Flow Margin is FCF divided by sales (Revenue) in a given period of time.
-    </p>
-</details> </br>
-
-<div class="container">
-    <table>
-        {% for l in mt %}
-        <tr>
-            <th>Category</th>
-            <th>Year</th>
-            <th>Capex</th>
-            <th>Capex GR</th>
-            <th>Free Cash Flow</th>
-            <th>FCF GR</th>
-            <th>Free Cash Flow Margin</th>
-            <th>FCFM GR</th>
-        </tr>
-        <tr>
-            <th>Average</th>
-            <th></th>
-            <th></th>
-            <th>{{l.capexGrowthAVG|floatformat:3}}%</th>
-            <th></th>
-            <th>{{l.fcfGrowthAVG|floatformat:3}}%</th>
-            <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
-            <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
-        </tr>
-        {% endfor %}
-        {% for i in lt %}
-        <tr>
-            <td></td>
-            <td>{{i.year}}</td>
-            <td>${{i.capEx|floatformat:"0"}}</td>
-            <td>{{i.capExGrowthRate|floatformat:3}}%</td>
-            <td>${{i.fcf|floatformat:"0"}}</td>
-            <td>{{i.fcfGrowthRate|floatformat:3}}%</td>
-            <td>{{i.fcfMargin|floatformat:3}}%</td>
-            <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
-
-

@@ -51,7 +51,10 @@
                 <th>{{l.revGrowthAVG|floatformat:3}}%</th>
                 <th></th>
                 <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
-                <th>{{pmavg|floatformat:3}}%</th>
+                <th>{% if pmavg == 0 %} Data Unavailable
+                    {% else %} {{pmavg|floatformat:3}}%
+                    {% endif %}
+                </th>
             </tr>
             {% endfor %}
             {% for i in lt %}
