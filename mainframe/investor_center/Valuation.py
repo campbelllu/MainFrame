@@ -827,7 +827,7 @@ divetfs = ['SPYD', 'SMDV', 'SDY', 'HDV', 'GCOW', 'DVY', 'DTD', 'DON', 'DLN', 'DI
 # print(ETFPD(divetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
 # print(ETFDDM(divetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
-hyetfs = [ 'MSFO', 'AMZY', 'CONY', 'APLY', 'GOOY', 'FBY', 'NVDY', 'TSLY', 'FEPI', 'AIPI', 'YMAX', 
+hyetfs = [ 'MSFO', 'AMZY', 'CONY', 'APLY', 'GOOY', 'FBY', 'NVDY', 'TSLY', 'FEPI', 'AIPI', 'YMAX', 'SQY', 
             'YMAG', 'MSTY', 'NFLY', 'YBIT', 'SVOL', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 
             'GPIX',  'CRSH', 'FIAT', 'DIPS', 'GDXY', 'BITO', 'USFR', 'ULTY', 'SPYT', 'ISPY', 'GIAX']
 # print(ETFPD(hyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())

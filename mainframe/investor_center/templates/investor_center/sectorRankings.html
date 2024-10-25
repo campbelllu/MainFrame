@@ -12,21 +12,43 @@
 	<form method="POST">
 		{% csrf_token %}
         
-        <center>
-            <table border="1" name="searchMethodTable">
+        <div class="container">
+            <table  name="searchMethodTable">
                 <tr>
                     <th>Search for a Single Ticker</th>
                 </tr>
                 <tr>
                     <td>
-                        <input type="text" name="ts" placeholder="Type Ticker, Hit Enter or Click Button" id="tickerid">
+                        <input type="text" name="ts" placeholder="{{ tickerToBeFound }}" id="tickerid">
                         <input type="submit" name="tsButton" value="Find My Stock!">
                     </td>
                 </tr>
             </table>
-            <table border="1" name="searchMethodTable">
+        
+            <table  name="searchMethodTable">
                 <tr>
-                    <th>Choose a Preselected Filter for Each Sector</th>
+                    <th>Select a Sector and manually pick values</th>
+                </tr>
+                <tr>
+                    <td>
+                        
+                            <select name="sectorDropDown">
+                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
+                                {% for j in sectors %}
+                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
+                                {% endfor %}
+                                <option> All </option>
+                            </select>
+                        
+                         <input type="submit" name="updateTable" value="Update Table">  
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="container">
+            <table  name="searchMethodTable">
+                <tr>
+                    <th>Or Choose a Preselected Filter for Each Sector</th>
                 </tr>
                 <tr>
                     <td>
@@ -45,83 +67,94 @@
                     </td>
                 </tr>
             </table>
-            <table border="1" name="searchMethodTable">
+        </div>
+        
+        <div class="container">
+            <input type="submit" name="resetTable" value="Reset Table"> 
+            <input type="submit" name="updateTable" value="Update Table">
+        </div>
+        <div class="container">
+            <table  name="sectorRankingsTable">
                 <tr>
-                    <th>Select a Sector and manually pick values</th>
+                    <th>Tickers ({{ lt|length }})</th> 
+                    <th>Score Ranking</th>
+                    <th>AVG ROE</th>
+                    <th>AVG ROIC</th>
+                    <th>Revenue GR</th>
+                    <th>Net Income GR</th>
+                    <th>FCF GR</th>
+                    <th>FCF Margin GR</th>
+                    <th>Net Cashflow GR</th>
+                    <th>Dividend Payer?</th>
+                    <th>Dividend GR</th>
+                    <th>AVG Payout Ratio</th>
+                    <th>Shares GR</th>
+                    <th>Debt GR</th>
+                    <th>Book Value/NAV GR</th>
+                    <th>Equity GR</th>
+                    <th>Return of Capital</th>
+                    <th>FFO GR</th>
+                    <th>AVG REIT ROCE</th>
+                    <th>AVG FFO Payout Ratio</th>
+                    <th>Score</th>
+                    <th>Max Score</th>
+                    <th>Sector</th>
                 </tr>
                 <tr>
-                    <td>
-                        <center>
-                            <select name="sectorDropDown">
-                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
-                                {% for j in sectors %}
-                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
-                                {% endfor %}
-                                <option> All </option>
-                            </select>
-                        </center>
-                        <center> <input type="submit" name="updateTable" value="Update Table"> </center> 
-                    </td>
+                    <th></th> 
+                    <th>Select Minimum</th>
+                    <th><select name="vfroce"><option value="{{dv.roce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfroic"><option value="{{dv.roic|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roic}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfrev"><option value="{{dv.rev|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.rev}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfni"><option value="{{dv.ni|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ni}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vffcf"><option value="{{dv.fcf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vffcfm"><option value="{{dv.fcfm|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcfm}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfcf"><option value="{{dv.cf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.cf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfdp"><option value="{{dv.dp|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.dp}} </option><option>1</option><option>-1</option></select></th>
+                    <th><select name="vfdivgr"><option value="{{dv.divgr|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.divgr}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfpo"><option value="{{dv.po|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.po}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfshares"><option value="{{dv.shares|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.shares}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfdebt"><option value="{{dv.debt|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.debt}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfbv"><option value="{{dv.bv|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.bv}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfeq"><option value="{{dv.eq|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.eq}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfroc"><option value="{{dv.roc|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roc}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfffo"><option value="{{dv.ffo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfreitroce"><option value="{{dv.reitroce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.reitroce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th><select name="vfffopo"><option value="{{dv.ffopo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffopo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
+                {% for i in lt %}
+                <tr>
+                    <td><a href="{% url 'ih' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
+                    <td>{{i.scorerank|floatformat:3}}</td>
+                    <td>{{i.roce}}</td>
+                    <td>{{i.roic}}</td>
+                    <td>{{i.rev}}</td>
+                    <td>{{i.ni}}</td>
+                    <td>{{i.fcf}}</td>
+                    <td>{{i.fcfm}}</td>
+                    <td>{{i.cf}}</td>
+                    <td>{{i.divpay}}</td>
+                    <td>{{i.divgr}}</td>
+                    <td>{{i.po}}</td>
+                    <td>{{i.shares}}</td>
+                    <td>{{i.debt}}</td>
+                    <td>{{i.bv}}</td>
+                    <td>{{i.equity}}</td>
+                    <td>{{i.roc}}</td>
+                    <td>{{i.ffo}}</td>
+                    <td>{{i.reitroce}}</td>
+                    <td>{{i.ffopo}}</td>
+                    <td>{{i.score}}</td>
+                    <td>{{i.maxscore}}</td>
+                    <td>{{i.Sector}}</td>
+                            
+                </tr>
+                {% endfor %}
             </table>
-        
-        </center>
-        <center> <input type="submit" name="resetTable" value="Reset Table"> </center>
-        
-        <table border="1" name="sectorRankingsTable">
-            <tr>
-                <th>Tickers ({{ lt|length }})</th> 
-                <th>Score Ranking</th>
-                <th>AVG ROCE<br/><select name="vfroce"><option value="{{dv.roce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG ROIC<br/><select name="vfroic"><option value="{{dv.roic|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roic}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Revenue GR<br/><select name="vfrev"><option value="{{dv.rev|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.rev}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Net Income GR<br/><select name="vfni"><option value="{{dv.ni|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ni}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>FCF GR<br/><select name="vffcf"><option value="{{dv.fcf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>FCF Margin GR<br/><select name="vffcfm"><option value="{{dv.fcfm|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.fcfm}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Op/Net Cashflow GR<br/><select name="vfcf"><option value="{{dv.cf|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.cf}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Dividend Payer?<br/><select name="vfdp"><option value="{{dv.dp|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.dp}} </option><option>1</option><option>-1</option></select></th>
-                <th>Dividend GR<br/><select name="vfdivgr"><option value="{{dv.divgr|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.divgr}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG Payout Ratio<br/><select name="vfpo"><option value="{{dv.po|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.po}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Shares GR<br/><select name="vfshares"><option value="{{dv.shares|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.shares}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Debt GR<br/><select name="vfdebt"><option value="{{dv.debt|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.debt}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Book Value/NAV GR<br/><select name="vfbv"><option value="{{dv.bv|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.bv}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Equity GR<br/><select name="vfeq"><option value="{{dv.eq|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.eq}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Return of Capital<br/><select name="vfroc"><option value="{{dv.roc|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roc}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Funds from Operations(FFO) GR<br/><select name="vfffo"><option value="{{dv.ffo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG REIT ROCE<br/><select name="vfreitroce"><option value="{{dv.reitroce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.reitroce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>AVG FFO Payout Ratio<br/><select name="vfffopo"><option value="{{dv.ffopo|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.ffopo}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
-                <th>Score</th>
-                <th>Max Score</th>
-                <th>Sector</th>
-            </tr>
-            {% for i in lt %}
-            <tr>
-                <td><a href="{% url 'ih' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
-                <td>{{i.scorerank|floatformat:3}}</td>
-                <td>{{i.roce}}</td>
-                <td>{{i.roic}}</td>
-                <td>{{i.rev}}</td>
-                <td>{{i.ni}}</td>
-                <td>{{i.fcf}}</td>
-                <td>{{i.fcfm}}</td>
-                <td>{{i.cf}}</td>
-                <td>{{i.divpay}}</td>
-                <td>{{i.divgr}}</td>
-                <td>{{i.po}}</td>
-                <td>{{i.shares}}</td>
-                <td>{{i.debt}}</td>
-                <td>{{i.bv}}</td>
-                <td>{{i.equity}}</td>
-                <td>{{i.roc}}</td>
-                <td>{{i.ffo}}</td>
-                <td>{{i.reitroce}}</td>
-                <td>{{i.ffopo}}</td>
-                <td>{{i.score}}</td>
-                <td>{{i.maxscore}}</td>
-                <td>{{i.Sector}}</td>           
-            </tr>
-            {% endfor %}
-        </table>
+        </div>
 	</form>
 
     <p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'Average', 

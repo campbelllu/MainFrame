@@ -440,15 +440,11 @@ def sr(request):
     dropdownValues = {'sector':'Select Sector', 'roce':'>=', 'roic':'>=', 'rev':'>=', 'ni':'>=', 'fcf':'>=', 
                         'fcfm':'>=', 'cf':'>=', 'dp':'>=', 'divgr':'>=', 'po':'>=', 'shares':'>=', 'debt':'>=', 
                         'bv':'>=', 'eq':'>=', 'roc':'>=', 'ffo':'>=', 'reitroce':'>=', 'ffopo':'>='}
+    tickerToBeFound = "Type Ticker, Hit Enter or Click Button"
     
     #Manual table updates
-    if 'updateTable' in request.POST: #request.method=="POST":
+    if 'updateTable' in request.POST:
         filterSector = request.POST.get('sectorDropDown')
-        dropdownValues['sector'] = filterSector
-        # if filterSector is None or filterSector == 'Select Sector':
-        #     filterSector = 'K'
-        #     dropdownValues['sector'] = filterSector
-        
         filterROCE = request.POST.get('vfroce')
         if filterROCE is None or filterROCE == '>=':
             filterROCE = -5
@@ -538,8 +534,19 @@ def sr(request):
         if filterFFOPO is None or filterFFOPO == '>=':
             filterFFOPO = -5
         dropdownValues['ffopo'] = filterFFOPO
+
+        if filterSector == 'Select Sector':
+            context = {
+                    'sectors': sectors,
+                    'dv': dropdownValues,
+                    'lt': pageLandingTable,
+                    'tickerToBeFound': tickerToBeFound,
+            }
+            return render(request, 'investor_center/sectorRankings.html', context)
             
-        if filterSector == 'All':
+            
+        elif filterSector == 'All':
+            print('we hitting all now')
             searchFilter = Sector_Rankings.objects.filter(roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
                                 fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
                                 shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
@@ -548,11 +555,16 @@ def sr(request):
                 'sectors': sectors,
                 'dv': dropdownValues,
                 'lt': searchFilter.order_by('-scorerank'),
+                'tickerToBeFound': tickerToBeFound,
             }
             return render(request, 'investor_center/sectorRankings.html', context)
         else:
             #luke here: you could have another if filter, if filterSector=='Real Estate', a different table will load, set net income to -5. otherwise, ffo stats
             #would be dropped, 'normal' table displayed
+            dropdownValues['sector'] = filterSector
+            
+            
+
             searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
                                 fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
                                 shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
@@ -561,58 +573,89 @@ def sr(request):
                 'sectors': sectors,
                 'dv': dropdownValues,
                 'lt': searchFilter.order_by('-scorerank'),
+                'tickerToBeFound': tickerToBeFound,
             }
             return render(request, 'investor_center/sectorRankings.html', context)
 
     elif 'resetTable' in request.POST:
         context = {
-        'sectors': sectors,
-        'dv': dropdownValues,
-        'lt': pageLandingTable,
+            'sectors': sectors,
+            'dv': dropdownValues,
+            'lt': pageLandingTable,
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
     elif 'tsButton' in request.POST:
         ticker = request.POST.get('ts').upper()
         row = Sector_Rankings.objects.filter(Ticker=ticker).first()
-        if row:
-            filterSector = dropdownValues['sector'] = row.Sector
-            filterROCE = dropdownValues['roce'] = row.roce - 2
-            filterROIC = dropdownValues['roic'] = row.roic - 2
-            filterREV = dropdownValues['rev'] = row.rev - 2
-            filterNI = dropdownValues['ni'] = row.ni - 2
-            filterFCF = dropdownValues['fcf'] = row.fcf - 2
-            filterFCFM = dropdownValues['fcfm'] = row.fcfm - 2
-            filterCF = dropdownValues['cf'] = row.cf - 2
-            filterDP = dropdownValues['dp'] = row.divpay
-            filterDIVGR = dropdownValues['divgr'] = row.divgr - 2
-            filterPO = dropdownValues['po'] = row.po - 2
-            filterSHARES = dropdownValues['shares'] = row.shares - 2
-            filterDEBT = dropdownValues['debt'] = row.debt - 2
-            filterBV = dropdownValues['bv'] = row.bv - 2
-            filterEQ = dropdownValues['eq'] = row.equity - 2
-            filterROC = dropdownValues['roc'] = row.roc - 2
-            filterFFO = dropdownValues['ffo'] = row.ffo - 2
-            filterREITROCE = dropdownValues['reitroce'] = row.reitroce - 2
-            filterFFOPO = dropdownValues['ffopo'] = row.ffopo - 2
+        print('what is ticker and row?')
+        print(type(ticker))
+        print(len(ticker))
+        print((ticker))
+        # print(type(row))
+        # print(len(row))
+        # print((row))
+        if ticker != '':
+            if row is None:
+                print('we none row')
+                context = {
+                    'sectors': sectors,
+                    'dv': dropdownValues,
+                    'lt': pageLandingTable,
+                    'tickerToBeFound': "No Such Ticker, Please Try Again",
+                }
+                return render(request, 'investor_center/sectorRankings.html', context)
+            else:
+                filterSector = dropdownValues['sector'] = row.Sector
+                filterROCE = dropdownValues['roce'] = row.roce - 2
+                filterROIC = dropdownValues['roic'] = row.roic - 2
+                filterREV = dropdownValues['rev'] = row.rev - 2
+                filterNI = dropdownValues['ni'] = row.ni - 2
+                filterFCF = dropdownValues['fcf'] = row.fcf - 2
+                filterFCFM = dropdownValues['fcfm'] = row.fcfm - 2
+                filterCF = dropdownValues['cf'] = row.cf - 2
+                filterDP = dropdownValues['dp'] = row.divpay
+                filterDIVGR = dropdownValues['divgr'] = row.divgr - 2
+                filterPO = dropdownValues['po'] = row.po - 2
+                filterSHARES = dropdownValues['shares'] = row.shares - 2
+                filterDEBT = dropdownValues['debt'] = row.debt - 2
+                filterBV = dropdownValues['bv'] = row.bv - 2
+                filterEQ = dropdownValues['eq'] = row.equity - 2
+                filterROC = dropdownValues['roc'] = row.roc - 2
+                filterFFO = dropdownValues['ffo'] = row.ffo - 2
+                filterREITROCE = dropdownValues['reitroce'] = row.reitroce - 2
+                filterFFOPO = dropdownValues['ffopo'] = row.ffopo - 2
 
-            searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
-                                fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
-                                shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
-                                reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
+                searchFilter = Sector_Rankings.objects.filter(Sector=filterSector, roce__gte=filterROCE, roic__gte=filterROIC, rev__gte=filterREV, ni__gte=filterNI,
+                                    fcf__gte=filterFCF, fcfm__gte=filterFCFM, cf__gte=filterCF, divpay__gte=filterDP, divgr__gte=filterDIVGR, po__gte=filterPO,
+                                    shares__gte=filterSHARES, debt__gte=filterDEBT, bv__gte=filterBV, equity__gte=filterEQ, roc__gte=filterROC, ffo__gte=filterFFO,
+                                    reitroce__gte=filterREITROCE, ffopo__gte=filterFFOPO)
 
-            context = {
+                context = {
                     'sectors': sectors,
                     'dv': dropdownValues,
                     'lt': searchFilter.order_by('-scorerank'),
+                    'tickerToBeFound': tickerToBeFound,
+                }
+                return render(request, 'investor_center/sectorRankings.html', context)
+
+        elif row is None:
+            print('we none ticker')
+            context = {
+                'sectors': sectors,
+                'dv': dropdownValues,
+                'lt': pageLandingTable,
+                'tickerToBeFound': "No Such Ticker, Please Try Again",
             }
             return render(request, 'investor_center/sectorRankings.html', context)
         else:
             print('else sr')
             context = {
-                    'sectors': sectors,
-                    # 'dv': dropdownValues,
-                    'lt': pageLandingTable,
+                'sectors': sectors,
+                'dv': dropdownValues,
+                'lt': pageLandingTable,
+                'tickerToBeFound': tickerToBeFound,
             }
             return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -646,6 +689,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -679,6 +723,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -712,6 +757,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -745,6 +791,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -778,6 +825,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -811,6 +859,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -844,6 +893,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -877,6 +927,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -910,6 +961,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -943,6 +995,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -976,6 +1029,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -1009,6 +1063,7 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': searchFilter.order_by('-scorerank'),
+            'tickerToBeFound': tickerToBeFound,
         }
         return render(request, 'investor_center/sectorRankings.html', context)
 
@@ -1067,5 +1122,6 @@ def sr(request):
             'sectors': sectors,
             'dv': dropdownValues,
             'lt': pageLandingTable,
+            'tickerToBeFound': tickerToBeFound,
             }
         return render(request, 'investor_center/sectorRankings.html', context)

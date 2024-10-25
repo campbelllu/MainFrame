@@ -14,43 +14,43 @@
     <body>
         <header>
             <div id="headbar">
-                
+                <details id="navmenu">
+                    <summary>
+                        Site Navigation
+                    </summary>
+                    <div id="navbar">
+                        <ul>
+                            <li><a href="{% url 'index' %}">Home</a></li>
+                        </ul>
+            
+                        <h2>Free Services</h2>
+                        <ul>
+                            <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
+                            <li><a href="{% url 'sr' %}">Sector Rankings</a></li> 
+                            <li><a href="{% url 'val' %}">Valuation - Coming Soon!</a></li>
+                        </ul>
+                        
+                        <p></p>
+                        <h2>Paid Services</h2>
+                        <ul>
+                            <li><a href="{% url 'val' %}">Full Stock Reports - Coming Soon!</a></li>
+                        </ul>
+                        <h2>Site Related</h2>
+                        <ul>
+                            <!-- <li><a href="{% url 'index' %}">Home</a></li> -->
+                            <li><a href="{% url 'index' %}">About this Site</a></li>
+                            <li><a href="{% url 'val' %}">Contact Us</a></li>
+                            <li><a href="{% url 'val' %}">Help Support Us</a></li>
+                        </ul>
+                    </div>
+                </details>
                 
                 
             </div>    
         </header>
 
         
-        <details id="navmenu">
-            <summary>
-                Navigation
-            </summary>
-            <div id="navbar">
-                <ul>
-                    <li><a href="{% url 'index' %}">Home</a></li>
-                </ul>
-    
-                <h2>Free Services</h2>
-                <ul>
-                    <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
-                    <li><a href="{% url 'sr' %}">Sector Rankings</a></li> 
-                    <li><a href="{% url 'val' %}">Valuation - Coming Soon!</a></li>
-                </ul>
-                
-                <p></p>
-                <h2>Paid Services</h2>
-                <ul>
-                    <li><a href="{% url 'val' %}">Full Stock Reports - Coming Soon!</a></li>
-                </ul>
-                <h2>Site Related</h2>
-                <ul>
-                    <!-- <li><a href="{% url 'index' %}">Home</a></li> -->
-                    <li><a href="{% url 'index' %}">About this Site</a></li>
-                    <li><a href="{% url 'val' %}">Contact Us</a></li>
-                    <li><a href="{% url 'val' %}">Help Support Us</a></li>
-                </ul>
-            </div>
-        </details>
+        
        
         
         
@@ -72,9 +72,11 @@
             
             <h3>Important Disclaimer</h3>
             
-            <p>None of the content here, nor anywhere on this site, should be considered financial advice. </br>
-                It exists solely for educational purposes. Contact a financial expert before making any investment decisions. </br>
-                Past performance is no guarantee of future results.</p>
+            <p>None of the content here, nor anywhere on this site, should be considered financial advice.
+            </br>This site does not offer personalized financial advice and does not act in a fiduciary capacity for the reader in any way.
+            </br>We repeat: This is NOT financial or investment advice. All information here exists solely for educational purposes.
+            </br>Contact a licensed financial adviser before making any investment decisions and remember 
+                    that past performance is no guarantee of future results.</p>
             
             
             <details>

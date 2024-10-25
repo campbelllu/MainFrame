@@ -59,6 +59,7 @@ table {
     border: 2px solid;
     box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.45),
 		2px 2px 2px -2px rgba(0, 0, 0, 0.45);
+    margin-right: 10px;
 }
 
 tr {
@@ -178,20 +179,36 @@ a#high:hover {
     position: relative;
     top: 0px;
     width: 100%;
-    background: inherit;
-    height: 30px;
+    background: #5eaaed;
+    height: 40px;
     /* display: grid ; */
 }
 
 #navmenu {
     position: absolute;
-    padding-left: 3px;
+    padding-left: 10px;
     padding-bottom: 10px;
     
     text-align: left;
     /* justify-content: left; */
     align-content: left;
-    background: #ffffff;
+    background: inherit; /* #ffffff; */
+    opacity: 1;
+    /* border: solid #000000 ; */
+    /* border-width: ; */
+    border-radius: 3px;
+    font-size: 26px;
+}
+
+#navmenu[open] {
+    position: absolute;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    
+    text-align: left;
+    /* justify-content: left; */
+    align-content: left;
+    background:  #ffffff;
     opacity: 1;
     /* border: solid #000000 ; */
     /* border-width: ; */
