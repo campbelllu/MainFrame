@@ -10,16 +10,15 @@ body {
 
 h1, h2, h3, h4 {
     text-align: center;
+    padding-top: 10px;
+    /* padding-bottom: 5px; */
     
 }
-h2 {
-    padding-top: 10px;
-}
-
 
 p {
     font-size: 14px;
     text-align: center;
+    /* padding-top: 1px; */
 }
 
 details {
@@ -124,13 +123,31 @@ input:hover{
     border: thick double #ededed ;
 }
 
+a#contactp {
+    color: #0026ff;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 14px;
+    /* padding: 0.01px; */
+    /* luke figure out spacing bro */
+}
+/* a#contactp:hover {
+    color: #5eaaed;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 20px;
+    padding: 1px;
+} */
+
 a {
     background: #ededed;
     border: thick double #000000 ;
      /* #008000; */
      /* above is stock market green; */
      /* rgb(27, 165, 57); */
-    color: #000000;
+    color: #ffffff; 
 
     margin-top: 5px;
     margin-right: 5px;
@@ -148,7 +165,7 @@ a#high {
      /* #008000; */
      /* above is stock market green; */
      /* rgb(27, 165, 57); */
-    color: #000000;
+    color: #ffffff;
 
     margin-top: 5px;
     margin-right: 5px;

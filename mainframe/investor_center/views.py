@@ -10,7 +10,18 @@ from .models import Mega, Metadata, Sector_Rankings
 # Create your views here.
 def index(request):
     return render(request, 'investor_center/index.html', {})
-    #HttpResponse('<h1>Welcome to The Investor Center.</h1>')
+
+def info(request):
+    return render(request, 'investor_center/info.html', {})
+
+def technical(request):
+    return render(request, 'investor_center/technical.html', {})
+
+def contact(request):
+    return render(request, 'investor_center/contact.html', {})
+
+def tips(request):
+    return render(request, 'investor_center/tips.html', {})
 
 def valuation(request):
     # luke, i'm not sure how to display this
@@ -428,7 +439,6 @@ def highlights(request):
         # 'lt': pageLandingTable,
         }
         return render(request, 'investor_center/highlights.html', context)
-
 
 def sr(request):
     # topTen = Sector_Rankings.objects.order_by('-scorerank')[:10]

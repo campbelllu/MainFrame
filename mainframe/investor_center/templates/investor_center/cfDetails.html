@@ -52,14 +52,14 @@
             <tr>
                 <th>Average</th>
                 <th></th>
-                <th>${{l.operatingCashFlowAVG|floatformat:"0"}}</th>
-                <th>{{l.operatingCashFlowGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.investingCashFlowAVG|floatformat:"0"}}</th>
-                <th>{{l.investingCashFlowGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.financingCashFlowAVG|floatformat:"0"}}</th>
-                <th>{{l.financingCashFlowGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.netCashFlowAVG|floatformat:"0"}}</th>
-                <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.operatingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>{{l.operatingCashFlowGrowthAVGnz|floatformat:3}}%</th>
+                <th>${{l.investingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>{{l.investingCashFlowGrowthAVGnz|floatformat:3}}%</th>
+                <th>${{l.financingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>{{l.financingCashFlowGrowthAVGnz|floatformat:3}}%</th>
+                <th>${{l.netCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>{{l.netCashFlowGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
@@ -111,11 +111,11 @@
                 <th>Average</th>
                 <th></th>
                 <th></th>
-                <th>{{l.capexGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.capexGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
-                <th>{{l.fcfGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.fcfGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
-                <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}

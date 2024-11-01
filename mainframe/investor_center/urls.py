@@ -22,16 +22,19 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('About/', views.info, name='info'),
+    path('TechnicalDetails/', views.technical, name='technical'),
+    path('Contact/', views.contact, name='contact'),
+    path('TipJar/', views.tips, name='tips'),
     path('SectorRankings/', views.sr, name='sr'),
     path('Highlights/', views.highlights, name='highlights'),
-
     path('Highlights/Summary/<str:ticker>/', views.summaryHighlights, name='overh'),
-
     path('Highlights/Income/<str:ticker>/', views.incomeHighlights, name='ih'),
     path('Highlights/Balance/<str:ticker>/', views.balanceHighlights, name='bh'),
     path('Highlights/CashFlow/<str:ticker>/', views.cashflowHighlights, name='cfh'),
     path('Highlights/Efficiency/<str:ticker>/', views.efficiencyHighlights, name='effh'),
     path('Highlights/Dividends/<str:ticker>/', views.dividendHighlights, name='divsh'),
+
     # path('Report/<slug:ticker>/', views.report, name='slugincome'), #r'^(?P<ticker>[\w-]+)/$'
     # path('Report/Income', views.report, name='income'),
     # path('Report/<str:ticker>/', views.reportDetails, name='reportDetails'),

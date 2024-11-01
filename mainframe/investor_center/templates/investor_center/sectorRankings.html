@@ -11,7 +11,6 @@
 
 	<form method="POST">
 		{% csrf_token %}
-        
         <div class="container">
             <table  name="searchMethodTable">
                 <tr>
@@ -76,7 +75,7 @@
         <div class="container">
             <table  name="sectorRankingsTable">
                 <tr>
-                    <th>Tickers ({{ lt|length }})</th> 
+                    <th>Tickers</th> 
                     <th>Score Ranking</th>
                     <th>AVG ROE</th>
                     <th>AVG ROIC</th>
@@ -101,7 +100,7 @@
                     <th>Sector</th>
                 </tr>
                 <tr>
-                    <th></th> 
+                    <th>{{ lt|length }} Found</th> 
                     <th>Select Minimum</th>
                     <th><select name="vfroce"><option value="{{dv.roce|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roce}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>
                     <th><select name="vfroic"><option value="{{dv.roic|safe}}" {% if dv.selected %} selected {% endif %}> {{dv.roic}} </option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option><option>-1</option><option>-2</option><option>-3</option><option>-4</option><option>-5</option></select></th>

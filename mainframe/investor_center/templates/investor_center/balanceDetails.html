@@ -48,9 +48,9 @@
                 <th>Average</th>
                 <th></th>
                 <th></th>
-                <th>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.reportedEquityGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
-                <th>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.calculatedEquityGrowthAVGnz|floatformat:3}}%</th>
                 
             </tr>
             {% endfor %}
@@ -102,9 +102,9 @@
                 <th>Average</th>
                 <th></th>
                 <th>${{l.repBookValueAVG|floatformat:"0"}}/share</th>
-                <th>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.repBookValueGrowthAVGnz|floatformat:3}}%</th>
                 <th>${{l.calcBookValueAVG|floatformat:"0"}}/share</th>
-                <th>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.calcBookValueGrowthAVGnz|floatformat:3}}%</th>
                 <th>${{l.navAVG|floatformat:"0"}}/share</th>
                 <th>{{l.navGrowthAVG|floatformat:3}}%</th>
                
@@ -116,7 +116,7 @@
                 <td>{{i.year}}</td>
                 <td>${{i.reportedBookValue|floatformat:3}}</td>
                 <td>{{i.reportedBookValueGrowthRate|floatformat:3}}%</td>
-                <td>{{i.calcBookValue|floatformat:3}}</td>
+                <td>${{i.calcBookValue|floatformat:3}}</td>
                 <td>{{i.calcBookValueGrowthRate|floatformat:3}}%</td>
                 <td>${{i.nav|floatformat:3}}/share</td>
                 <td>{{i.navGrowthRate|floatformat:3}}%</td>

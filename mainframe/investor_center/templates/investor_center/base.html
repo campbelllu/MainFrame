@@ -27,57 +27,49 @@
                         <ul>
                             <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
                             <li><a href="{% url 'sr' %}">Sector Rankings</a></li> 
-                            <li><a href="{% url 'val' %}">Valuation - Coming Soon!</a></li>
+                            
                         </ul>
                         
                         <p></p>
-                        <h2>Paid Services</h2>
+                        <h2>Services Under Construction</h2>
                         <ul>
-                            <li><a href="{% url 'val' %}">Full Stock Reports - Coming Soon!</a></li>
+                            <li><a href="{% url 'val' %}">Valuation</a></li>
+                            <li><a href="{% url 'val' %}">Some other stuff</a></li>
                         </ul>
                         <h2>Site Related</h2>
                         <ul>
                             <!-- <li><a href="{% url 'index' %}">Home</a></li> -->
-                            <li><a href="{% url 'index' %}">About this Site</a></li>
-                            <li><a href="{% url 'val' %}">Contact Us</a></li>
-                            <li><a href="{% url 'val' %}">Help Support Us</a></li>
+                            <li><a href="{% url 'tips' %}">Help Support Us</a></li>
+                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                            <li><a href="{% url 'info' %}">About this Site</a></li>
+                            <li><a href="{% url 'technical' %}">Technical Details of Site</a></li>
+                            
+                            
                         </ul>
                     </div>
-                </details>
-                
-                
+                </details>                
             </div>    
         </header>
+        
 
-        
-        
-       
-        
-        
-        
         
         {% block content %}
         {% endblock %}
-        
-        
-       
-        
-        
-        
-        
         
 
         {% block footer %}
         <footer>
             
             <h3>Important Disclaimer</h3>
-            
             <p>None of the content here, nor anywhere on this site, should be considered financial advice.
             </br>This site does not offer personalized financial advice and does not act in a fiduciary capacity for the reader in any way.
             </br>We repeat: This is NOT financial or investment advice. All information here exists solely for educational purposes.
             </br>Contact a licensed financial adviser before making any investment decisions and remember 
                     that past performance is no guarantee of future results.</p>
             
+            <div class="container">
+                <a href="#" id="high">Back to Top</a>
+            </div> 
             
             <details>
                 <summary>
@@ -90,13 +82,8 @@
                         BV==Book Value, ROE==Return on Equity
                     </p>
             </details>
-            <p>
-                This site is a work in progress, made solely with HTML+CSS sitting on top of a Django backend.
-                </br>Logins and authentication will eventually be added to gain access to different paid services, 
-                but until that time no user data will ever be logged, shared, or otherwise involved with the use of, 
-                or the visiting of, this site.
-            </p>
         </footer>
+        
         {% endblock %}
     </body>
 </html>

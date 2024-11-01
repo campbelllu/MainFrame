@@ -45,12 +45,12 @@
                 <th>Profit Margin</th>
             </tr>
             <tr>
-                <th>Average</th>
+                <th>Average Ignoring 0's</th>
                 <th></th>
                 <th></th>
-                <th>{{l.revGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
-                <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.netIncomeGrowthAVGnz|floatformat:3}}%</th>
                 <th>{% if pmavg == 0 %} Data Unavailable
                     {% else %} {{pmavg|floatformat:3}}%
                     {% endif %}
@@ -106,10 +106,10 @@
                 <th></th>
                 <th></th>
                 <th>{{l.sharesGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.repsAVG|floatformat:2}}/share</th>
-                <th>{{l.repsGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.cepsAVG|floatformat:2}}/share</th>
-                <th>{{l.cepsGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.repsAVGnz|floatformat:2}}/share</th>
+                <th>{{l.repsGrowthAVGnz|floatformat:3}}%</th>
+                <th>${{l.cepsAVGnz|floatformat:2}}/share</th>
+                <th>{{l.cepsGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}
@@ -162,11 +162,11 @@
                 <th>Average</th>
                 <th></th>
                 <th></th>
-                <th>{{l.ffoGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.ffoGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
                 <th>{{l.sharesGrowthAVG|floatformat:3}}%</th>
-                <th>${{l.reitepsAVG|floatformat:2}}/share</th>
-                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
+                <th>${{l.reitepsAVGnz|floatformat:2}}/share</th>
+                <th>{{l.reitepsGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
             {% for i in lt %}

@@ -19,18 +19,29 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
 from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
-converter_address = './currency-hist.csv' #'/home/family/Documents/repos/MainFrame/mainframe/investor_center/currency-hist.csv' 
+converter_address = 'investor_center/currency-hist.csv'
 curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
+import os
+import django
+import sys
+from django.conf import settings
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mainframe.settings')
+django.setup()
+
+db_path = settings.DATABASES['default']['NAME']
 
 #From fellow files
 import csv_modules as csv
-# import Mega as mega
+import Mega as mega
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
 
-db_path = os.path.join(Path(__file__).resolve().parent.parent, 'stock_data.sqlite3') #'/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
+# db_path = os.path.join(Path(__file__).resolve().parent.parent, 'stock_data.sqlite3') #'/home/family/Documents/repos/MainFrame/mainframe/stock_data.sqlite3'
 
 def print_DB(thequery, superflag):
     conn = sql.connect(db_path)

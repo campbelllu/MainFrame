@@ -54,21 +54,21 @@
             <tr>
                 <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th>{{l.revGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.netIncomeGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.repsGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.cepsGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.netIncomeGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.repsGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.cepsGrowthAVGnz|floatformat:3}}%</th>
                 <th>{% if pmavg == 0 %} Data Unavailable
                     {% else %} {{pmavg|floatformat:3}}%
                     {% endif %}
                 </th>
                 <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
-                <th>{{l.fcfMarginGrowthAVG|floatformat:3}}%</th>
-                <th>{% if l.netCashFlowAVG > 0 %} > Zero
+                <th>{{l.fcfMarginGrowthAVGnz|floatformat:3}}%</th>
+                <th>{% if l.netCashFlowAVGnz > 0 %} > Zero
                     {% else %} < Zero
                     {% endif %}
                 </th>
-                <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.netCashFlowGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
@@ -86,30 +86,21 @@
                 <th>Category</th>
                 <th>Revenue GR</th>
                 <th>FFO GR</th>
-                
                 <th>REIT EPS GR</th>
-
-                
-
                 <th>Net Cash Flow</th>
                 <th>Net CF GR</th>
             </tr>
             <tr>
                 <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th>{{l.revGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.ffoGrowthAVG|floatformat:3}}%</th>
-
-                
-                <th>{{l.reitepsGrowthAVG|floatformat:3}}%</th>
-
-                
-
+                <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.ffoGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.reitepsGrowthAVGnz|floatformat:3}}%</th>
                 <th>{% if l.netCashFlowAVG > 0 %} > Zero
                     {% else %} < Zero
                     {% endif %}
                 </th>
-                <th>{{l.netCashFlowGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.netCashFlowGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
@@ -145,10 +136,10 @@
             <tr>
                 <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th>{{l.reportedEquityGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.repBookValueGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.calculatedEquityGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.calcBookValueGrowthAVG|floatformat:3}}%</th>
+                <th>{{l.reportedEquityGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.repBookValueGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.calculatedEquityGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.calcBookValueGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
@@ -225,8 +216,8 @@
             <tr>
                 <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th>{{l.calcDivsPerShareGrowthAVG|floatformat:3}}%</th>
-                <th>{{l.repDivsPerShareGrowthAVG|floatformat:3}}%</th>            
+                <th>{{l.calcDivsPerShareGrowthAVGnz|floatformat:3}}%</th>
+                <th>{{l.repDivsPerShareGrowthAVGnz|floatformat:3}}%</th>            
             </tr>
             {% endfor %}
         </table>
