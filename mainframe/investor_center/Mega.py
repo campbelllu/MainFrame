@@ -18,9 +18,9 @@ import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
-from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
-converter_address = 'investor_center/currency-hist.csv'
-curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
+# from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
+# converter_address = 'investor_center/currency-hist.csv'
+# curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True) #LUKE YOU NEED THIS
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 import os
 import django

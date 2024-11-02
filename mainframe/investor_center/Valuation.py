@@ -18,9 +18,9 @@ import sqlite3 as sql
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) #infer_objects(copy=False) works nonreliably. SO WE JUST SQUELCH IT ALTOGETHER!
-from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
-converter_address = 'investor_center/currency-hist.csv'
-curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
+# from currency_converter import CurrencyConverter #https://pypi.org/project/CurrencyConverter/
+# converter_address = './currency-hist.csv' 
+# curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 ### Documentation: https://pypi.org/project/CurrencyConverter/ 
 import os
 import django
@@ -38,7 +38,7 @@ db_path = settings.DATABASES['default']['NAME']
 import csv_modules as csv
 import Mega as mega
 import Metadata as metadata
-import SectorRankings as sr #luke clean up imports
+# import SectorRankings as sr #luke clean up imports
 # import AltTables as at
 
 #Header needed with each request
@@ -844,7 +844,8 @@ divetfs = ['SPYD', 'SMDV', 'SDY', 'HDV', 'GCOW', 'DVY', 'DTD', 'DON', 'DLN', 'DI
 
 hyetfs = [ 'MSFO', 'AMZY', 'CONY', 'APLY', 'GOOY', 'FBY', 'NVDY', 'TSLY', 'FEPI', 'AIPI', 'YMAX', 'SQY', 
             'YMAG', 'MSTY', 'NFLY', 'YBIT', 'SVOL', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 
-            'GPIX',  'CRSH', 'FIAT', 'DIPS', 'GDXY', 'BITO', 'USFR', 'ULTY', 'SPYT', 'ISPY', 'GIAX', 'TLTW']
+            'GPIX',  'CRSH', 'FIAT', 'DIPS', 'GDXY', 'BITO', 'USFR', 'ULTY', 'SPYT', 'ISPY', 'GIAX', 'TLTW', 
+            'CEFS', 'EOS', 'EOI', 'GOF', 'PDI', 'PTY', 'MCI', 'CII', 'CSQ', ]
 # print(ETFPD(hyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
 # print(ETFDDM(hyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
