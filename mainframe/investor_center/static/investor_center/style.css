@@ -16,7 +16,7 @@ h1, h2, h3, h4 {
 }
 
 p {
-    font-size: 14px;
+    font-size: 18px;
     text-align: center;
     /* padding-top: 1px; */
 }
@@ -103,16 +103,17 @@ input {
      /* #008000; */
      /* above is stock market green; */
      /* rgb(27, 165, 57); */
-    color: #ffffff;
+    color: #000000;
+    font-size: 20px;
 
     margin-top: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
-    padding: 5px 5px 5px 5px;
+    padding: 5px 7px 5px 7px;
 
     text-decoration: none;
-    font-size: 14px;
+    
     border-radius: 10px;
 }
 
@@ -129,7 +130,16 @@ a#contactp {
     border: none;
     background: inherit;
     font-size: 14px;
-    /* padding: 0.01px; */
+    padding: 0px 0px 0px 0px;
+    /* luke figure out spacing bro */
+}
+a#shoutout {
+    color: #0026ff;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 20px;
+    padding: 0px 0px 0px 0px;
     /* luke figure out spacing bro */
 }
 /* a#contactp:hover {
@@ -165,7 +175,8 @@ a#high {
      /* #008000; */
      /* above is stock market green; */
      /* rgb(27, 165, 57); */
-    color: #ffffff;
+    color: #000000;
+    font-size: 20px;
 
     margin-top: 5px;
     margin-right: 5px;
@@ -174,14 +185,15 @@ a#high {
     padding: 5px 5px 5px 5px;
 
     text-decoration: none;
-    font-size: 14px;
+    
     border-radius: 10px;
 }
 a#srTicker {
     font-size: 16px;
     border: none;
+    color: black;
     background: inherit;
-    text-decoration: underline;
+    text-decoration: underline overline dotted;
 }
 
 a:hover, 
@@ -195,97 +207,44 @@ a#high:hover {
 #headbar {
     position: relative;
     top: 0px;
+    /* padding-top: 0; */
     width: 100%;
     background: #5eaaed;
     height: 40px;
     /* display: grid ; */
 }
 
-#navmenu {
-    position: absolute;
-    padding-left: 10px;
-    padding-bottom: 10px;
+/* just added below irrelevant basically wtf */
+.navigation li{
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin: 0px 3px 0px 3px;
     
-    text-align: left;
-    /* justify-content: left; */
-    align-content: left;
-    background: inherit; /* #ffffff; */
-    opacity: 1;
-    /* border: solid #000000 ; */
-    /* border-width: ; */
-    border-radius: 3px;
-    font-size: 26px;
 }
 
-#navmenu[open] {
-    position: absolute;
-    padding-left: 10px;
-    padding-bottom: 10px;
-    
-    text-align: left;
-    /* justify-content: left; */
-    align-content: left;
-    background:  #ffffff;
-    opacity: 1;
-    /* border: solid #000000 ; */
-    /* border-width: ; */
-    border-radius: 3px;
-    font-size: 26px;
-}
-
-/* navbar */
-#navbar {
-	background: #ffffff;
-    opacity: 1;
-    position: relative;
-    top: 10px;
-    left: 0;
-	width: fit-content;
-    height: fit-content;
-	/* margin: -175px 1% 50px auto; */
-	/* padding: 15px; */
-	font-size: 12px;
-	box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.45),
-		2px 2px 2px -2px rgba(0, 0, 0, 0.45);
-}
-
-#navbar h2 {
-	background-color: inherit;
+.navigation li a {
+    background-color: inherit;
+    background: #5eaaed;
 	color: #000000;
-	/* font: normal 40px Arial, sans-serif; */
     font-size: 20px;
-	border-bottom: 3px solid #5f5f5f;
-	padding: 5px 0 5px 0;
-}
-
-#navbar ul {
-	list-style: none;
-    list-style-type: none;
-	padding: 2px;
-	margin: 0;
-    /* align-items: center; */
-    text-align: center;
-}
-
-#navbar ul li {
-	list-style-position: inside;
-	padding: 0 0 10px 10px;
-	text-indent: 0em;
-}
-
-#navbar ul li a {
-	background-color: inherit;
-	color: #000000;
-    font-size: 16px;
 	text-decoration: none;
-	padding: 5px 2px;
-	display: block;
+	padding: 6px 10px 6px 10px;
+    /* margin: 0px 10px 0px 10px; */
+	
 }
 
-#navbar ul li a:hover {
+.navigation li a:hover {
 	background-color: #5f5f5f;
 	color: #ffffff;
 }
+
+/* all replaced */
+
+
+
+/* was imported above */
+
+
 /***************************************************************************/
 
 /***************************************************************************/

@@ -2,15 +2,66 @@
 
 {% block content %}
 
-<h1>placeholder for contact page. this thing will have an email form to fill out. sent on backend.</h1>
-<h1>how</h1>
-<h1>what</h1>
-<h1>shout out</h1>
+<h1>Funny Enough...</h1>
 <p>
-    This site is a work in progress, made solely with HTML+CSS sitting on top of a Django backend.
-    </br>Logins and authentication will eventually be added to gain access to different paid services, 
-    but until that time no user data will ever be logged, shared, or otherwise involved with the use of, 
-    or the visiting of, this site.
+    This project started as a homelab project to learn DevOps skills. 
 </p>
+<p>
+    With a grasp on Docker, Terraform, AWS, CI/CD, we realized the next few steps involved deploying actual software. We could have grabbed something generic, made a hello world app, something, 
+    </br>but instead decided to start churning out something related to our current favorite hobby: Securities analysis.
+</p>
+<p>
+    Bouncing between multiple websites, trying to piece together the data we wanted, we thought, "Why not just build what we're looking for?" 
+    </br>So many months later, it's back to the DevOps side of things, getting ready to deploy version 0.0.1 of this thing.
+</p>
+
+<h1>Tech Stack</h1>
+<p>
+    <strong>Python 3.10.12</strong>: Data cleaning done with Pandas library, coffee, sweat, tears, ecstatic joy each week as new learning hurdles were overcome
+    </br><strong>Django 4.2.1</strong>, with the expected gunicorn and NGINX setup
+    </br><strong>SQLite</strong> internal DB for now, chosen for simplicity and lack of user I/O, authentication, quick prototyping. Migration to PostgreSQL later if authentication is needed might be considered.
+    </br><a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" id="contactp">SEC's EDGAR API to source all data</a> via requests library
+    </br><strong>Github Actions</strong> to full CI/CD at this time. Simple, familiar choice. May drop the CD part for another tool, learned recently that Ansible can actually be incorporated 
+            in this process which may prove helpful given we're deploying to...
+    </br><strong>AWS Lightsail</strong> for hosting. Cheap hosting option until migration due to scaling reasons becomes necessary. 
+    </br>Unsure at this point how new Lightsail instances and Terraform interact, how much 
+            maintenance is required for routing of new instances, setting them up to our <strong>NGINX</strong> proxy and with Route53, essentially, can we use Lightsail like we would EC2's, as cattle? 
+            Or are they a more static infrastructure piece and the headache wouldn't be worth the time? We'll see.
+    </br>Vanilla HTML and CSS is the only 'secret sauce' running the front end at this point.
+
+</p>
+
+<h1>Flaws, Learning Opportunities, Vulnerabilities, Site-Self-Reflection</h1>
+    <p>
+        The admin page is completely disabled. A version of the Django secret key is in earlier repo versions, making Django Forms a security compromised Python tool. However, there is no sensitive data in the database 
+            and data tampering is nearly impossible. Even if the data were able to be accessed nefariously, we have backups, no sensitive data is present, and for much less of a hacking headache the data therein 
+            is already much more easily accessible via the EDGAR API link above. The juice is most definitely not worth the squeeze unless Django has a bug bounty out, in which case you're legally required to split the 
+            cash prize with us, the victim. :-p
+    </p>
+    <p>
+        If future versions of the website require login authentication, or the storing of any sensitive data like names, addresses, payment info, user passwords, anything at all, a complete overhaul of this app's 
+        security would be necessary. Django secret keys would be stored in a secrets vault, or in a .env file to be deployed and 'installed' as environment variables, properly securing the whole thing.
+    </p>
+    <p>
+        The UI consists solely of Django Templating: HTML + CSS + unholy amounts of time for our data analysts and backend engineers to figure out how frontend stuff works.
+    </p>
+    <p>
+        Future versions of the site, if UI revamp is necessary via increased traffic attention, will include <strong>Django Rest Framework</strong>, and most likely, a proper <strong>React</strong> frontend. 
+    </p>
+
+<h1>Friendly Self-Advertisement</h1>
+<p>
+    Server costs only go up from this point on. As we upgrade the UI, migrate to better architecture as needed, that all increases daily costs on our end.
+</p>
+<p>
+    If you have found value in the site, and find yourself in a place to 'donate to the cause', you can find the ability to do so below.
+</p>
+<p>
+    Thank you for your patronage and support in keeping this project alive!
+</p>
+<div class="container">
+    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+    <script type='text/javascript'>kofiwidget2.init('Support Investment Highlights', '#5eaaed', 'T6T815TU3M');kofiwidget2.draw();</script> 
+</div>
 
 {% endblock %}

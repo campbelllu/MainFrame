@@ -1,23 +1,56 @@
 {% extends 'investor_center/base.html' %}
-<!-- {% load static %} -->
 <!DOCTYPE html>
 {% block content %}
 <h1>
-    Welcome to Stock Reports
+    Welcome to Investment Highlights!
 </h1>
 <h2>
     A personal project made public for all to use.
 </h2>
 <h3>
-    If enough interest is raised, a proper UI will be rolled out for a more professional look and feel.
-    </br>Until then, enjoy all manner of company financial info with the look and feel of an early 1990's website!
-</h3>
-<h3>
-    Check the Navigation panel in the top-left of the screen to see what's available at this time.
+    If enough interest is raised, a 'proper' UI will be rolled out for a more professional look and feel.
+    </br>Until then, enjoy all manner of company financial info with the look and feel of an early 1990's website! :)
 </h3>
 <h3>
     The goal of every tool here is to create views for data that we wish we could find more easily. 
-    What would we be looking for, what do we find relevant, most important? How can we get it all in one place?
-</br>So as our understanding of securities analysis grows, so too do our displays of data on this site.
+    </br>What would we be looking for, what do we find relevant, most important? How can we get it all in one place?
+    </br>So as our understanding of securities analysis grows, so too do our displays of data on this site.
 </h3>
+<h3>
+    Check the Navigation buttons up top to see what's available at this time.
+</h3>
+<h3>
+    Stock Highlights give you detailed financial stats for any specific company.
+</h3>
+<h3>
+    Comparison does similar for multiple companies.
+</h3>
+<h3>
+    Sector Rankings lists stocks in each sector based upon our own weighting schema.
+</h3>
+<h3>
+    Valuation tools are available and explained more on that page.
+</h3>
+<h3>
+    Help Support Us provides links to help keep servers running. Also, a widget at the bottom of the screen does the same.
+</h3>
+<h3>
+    Contact Us provides a form in which you can make suggestions for the site, report bugs, or otherwise ask questions.
+</h3>
+<h3>
+    The About Page and Technical Details Page links at the bottom of the page provide details about the history and purpose of the site, as well as IT details for anyone curious.
+</h3>
+<h3>
+    We also have plans to develop tools that will generate full detailed reports of firms, as well as other plans to begin running the datasets we have through in-house AI models to see if any nifty insights can fall out of that tree.
+</h3>
+<h3>
+    Give us some time and stay tuned in: We'll get this all out to you eventually.
+</h3>
+<p>
+    Details on how to support us can be found <a href="{% url 'tips' %}" id="contactp">Here</a> and by clicking the below button.
+</p>
+<div class="container">
+    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+    <script type='text/javascript'>kofiwidget2.init('Support Investment Highlights', '#5eaaed', 'T6T815TU3M');kofiwidget2.draw();</script> 
+</div>
 {% endblock %}

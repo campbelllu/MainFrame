@@ -2,46 +2,101 @@
 
 {% block content %}
 <h1>Why'd We Make This Site?</h1>
-<p>Learning about personal finance led to learning about saving for retirement, which led to different investing strategies.
-    </br>Obviously, this included individual stocks and their financial statements, and down the rabbit hole we went.
-    </br>Eventually, having some experience in IT, we wanted to make tools that would streamline our company research processes.
-    </br>Some sites do some things better than our tools, but this is our attempt to consolidate what we look for in one place.
-    </br>Given enough time and iterations, it can only get better from here.
+<p>
+    Learning about personal finance led to learning about saving for retirement, which led to different investing strategies.
+</p>
+<p>
+    Obviously, this included individual stocks and their financial statements, and down the rabbit hole we went.
+</p>
+<p>
+    Eventually, having some experience in IT, we wanted to make tools that would streamline our company research processes.
+</p>
+<p>
+    Some sites do some things better than our tools, but this is our attempt to consolidate what we look for in one place.
+</p>
+<p>
+    Given enough time and iterations, it can only get better from here.
 </p>
 
 <h1>How does it all work?</h1>
-<p>The SEC has made all company filings public record, available both online and through an API, EDGAR.
-    </br>Using those previously mentioned IT skills, we 'spoke' with EDGAR and gathered the stats we were looking to analyze 
-        for every company on record.
-    </br>The data cleaning process backfills missing values so that growth rates can be approximated where filing records aren't 
-        available. Some missing values are chosen via statistical averaging methods, some are left blank, some made zero, judged 
-        appropriately for context. This is why we emphasize the disclaimer at the bottom of each page: These records here ARE taken 
-        from legally reported values, scrutinized heavily by the SEC, however, some values simply weren't available for various reasons.
-    </br>Other approximations are also made to determine average values across different time frames and in different contexts. 
-        Hence, the final numbers you see may be 100% accurate, or they may be whazzy-whoozy silly things that need revision. 
-    </br>So while we use these tools to help our stock analysis, we highly encourage everyone who visits here to verify the numbers 
-        you see here on other sites, through the SEC's records directly, on the company's websites themselves, or with a licensed financial 
-        adviser. Everything on this site is for educational purposes only: Please see our disclaimer below.
-</p>
-
-<h1>what</h1>
-<h1>What Are Future Plans for access and pricing for this Site?</h1>
-<p>We get this data for free. Or... 'free enough', considering internet, hosting, and power bills. And the hair loss related to trying to read EDGAR responses and learning new IT skills. 
-    </br>But basically for free, directly from the SEC.
-    </br>So because we get the data for free at this time, we're attracted to the idea of democratizing it, and how we've organized it, making it free to the people.
-    </br>We've flirted with different monetization and business plans for the site, but ultimately think it's best to leave it available for all. 
-    </br>Your suggestions for more tools for us to build, feedback on user experience and interface improvements, and other general (friendly) suggestions are highly encouraged via 
-        <a href="{% url 'contact' %}" id="contactp">Our Contact Page</a>.
-
-    </br>If you feel so inclined and find yourself in a place to do so, your willingness to help support this site goes a long way to keeping the site running and means the world to us.
-    </br>More details on how to support us can be found <a href="{% url 'tips' %}" id="contactp">Here</a>.
-</p>
-<h1>shout out</h1>
 <p>
-    This site is a work in progress, made solely with HTML+CSS sitting on top of a Django backend.
-    </br>Logins and authentication will eventually be added to gain access to different paid services, 
-    but until that time no user data will ever be logged, shared, or otherwise involved with the use of, 
-    or the visiting of, this site.
+    The SEC has made all company filings public record, available both online and through an API, EDGAR.
+</p>
+<p>
+    Using those previously mentioned IT skills, we 'spoke' with EDGAR and gathered the stats we were looking to analyze 
+        for every company on record.
+</p>
+<p>
+    The data cleaning process backfills missing values so that growth rates can be approximated where filing records aren't 
+    available. Some missing values are chosen via statistical averaging methods, some are left blank, some made zero, judged 
+    appropriately for context. This is why we emphasize the disclaimer at the bottom of each page: These records here ARE taken 
+    from legally reported values, scrutinized heavily by the SEC, however, some values simply weren't available for various reasons.
+</p>
+<p>
+    Other approximations are also made to determine average values across different time frames and in different contexts. 
+    Hence, the final numbers you see may be 100% accurate, or they may be whazzy-whoozy silly things that need revision. 
+</p>
+<p>
+    So while we use these tools to help our stock analysis, we highly encourage everyone who visits here to verify the numbers 
+    you see here on other sites, through the SEC's records directly, on the company's websites themselves, or with a licensed financial 
+    adviser. Everything on this site is for educational purposes only: Please see our disclaimer below.
 </p>
 
+<h1>Legal Stuff</h1>
+<p>
+    There's a disclaimer at the bottom of each page already outlining this, so it goes without saying that you shouldn't use this site to make financial or investment decisions.
+</p>
+<p>
+    Everything here is for educational purposes only and in no way constitutes financial or investment advice.
+</p>
+<p>
+    See the bottom of each page for the same message with different wording.
+</p>
+
+<h1>What Are Future Plans for access and pricing for this Site?</h1>
+<p>
+    We get this data for free. Or... 'free enough', considering internet, hosting, and power bills. And the hair loss related to trying to read EDGAR responses and learning new IT skills. 
+</p>
+<p>
+    But basically for free, directly from the SEC.
+</p>
+<p>
+    So because we get the data for free at this time, we're attracted to the idea of democratizing it, and how we've organized it, making it free to the people.
+</p>
+<p>
+    We've flirted with different monetization and business plans for the site, but ultimately think it's best to leave it available for all. 
+</p>
+<p>
+    Your suggestions for more tools for us to build, feedback on user experience and interface improvements, and other general (friendly) suggestions are highly encouraged via 
+        <a href="{% url 'contact' %}" id="contactp">Our Contact Page</a>.
+</p>
+<p>
+    If you feel so inclined and find yourself in a place to do so, your willingness to help support this site goes a long way to keeping the site running and means the world to us.
+</p>
+<p>
+    More details on how to support us can be found <a href="{% url 'tips' %}" id="contactp">Here</a> and by clicking the below button.
+</p>
+<div class="container">
+    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+    <script type='text/javascript'>kofiwidget2.init('Support Investment Highlights', '#5eaaed', 'T6T815TU3M');kofiwidget2.draw();</script> 
+</div>
+
+<h1>Shout Out</h1>
+<p>
+    We've spent years browsing different websites in our quest to understand financial information better.
+    </br>Along the way, we were inspired to build this site for our own use and decided to share it 
+    with others in the hopes that it brings you joy or is helpful in your own learning journey. 
+</p>
+<p>
+    Below are sites that we still regularly use, draw inspiration for financial data-driven web design from, and recommend to others as a learning resource, not in any particular order.
+</p>
+<div class="container">
+    <ul>
+        <li><a href="https://www.financecharts.com/" id="shoutout">FinanceCharts</a></li>
+        </br>
+        <li><a href="https://seekingalpha.com/" id="shoutout">SeekingAlpha</a></li>
+        </br>
+        <li><a href="https://stockanalysis.com/" id="shoutout">StockAnalysis</a></li>
+    </ul>
+</div>
 {% endblock %}

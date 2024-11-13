@@ -126,7 +126,7 @@
                 </tr>
                 {% for i in lt %}
                 <tr>
-                    <td><a href="{% url 'ih' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
+                    <td><a href="{% url 'overh' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
                     <td>{{i.scorerank|floatformat:3}}</td>
                     <td>{{i.roce}}</td>
                     <td>{{i.roic}}</td>
@@ -167,7 +167,7 @@
     <p>The second selector section provides preset values for any given sector, saving you time, but you'll want to tweak the numbers to your preference.</p>
     <p>The third selector section keeps whatever values are already selected in each column, and selects your sector of choice, applying those values to the filter process.</p>
     <p>Manually changing the filter values for each column, then selecting 'Update Table' in the third selector section will update the table with your desired filter.</p>
-    <p>Clicking a stock ticker in the Tickers Column will take you to that company's Stock Highlights pages, beginning with our Income Highlights.</p>
+    <p>Clicking a stock ticker in the Tickers Column will take you to that company's Stock Highlights pages, beginning with our Summary Highlights.</p>
     
     
     <h2>Why Not Just Invest in These 'Top' 25 Stocks, Then?</h2>
