@@ -317,43 +317,6 @@ def fcfm_rating(ticker):
 
 # print(fcfm_rating('F'))
 
-#EPS averages are insane. excluded from weighting because they're mostly a valuation metric, and we can weight net income and shares growth instead for a more accurate picture of security.
-# def reiteps_rating(ticker):
-#     try:
-#         sqlq = 'SELECT reitepsAVG as fcfmavg, reitepsAVGintegrity as repsavgint, reitepsAVGnz as repsavgnz fcfMarginGrowthAVG as fcfmgravg, fcfMarginGrowthAVGintegrity as fcfmint, fcfMarginGrowthAVGnz as fcfmgravgnz \
-#                     FROM Metadata \
-#                     WHERE Ticker LIKE \'' + ticker + '\';'
-#         resultsdf = print_DB(sqlq, 'return')
-#         #sort avg
-#         if resultsdf['fcfmint'][0] in ('good','decent'):
-#             netincomeavg = resultsdf['fcfmgravg'][0]
-#         else:
-#             netincomeavg = resultsdf['fcfmgravgnz'][0]
-        
-#         if pd.isnull(resultsdf['fcfmavg'][0]) == False and np.isinf(resultsdf['fcfmavg'][0]) == False:      
-#             fcfmaverage = resultsdf['fcfmavg'][0]
-#         else:
-#             fcfmaverage = 1
-
-#         fcfmrulecompare = [20,10,5,1]
-#         fcfmfinalrating = rating_assignment(fcfmaverage,fcfmrulecompare)
-
-#         #determine avg
-#         if pd.isnull(netincomeavg) == False and np.isinf(netincomeavg) == False:      
-#             avg = netincomeavg
-#         else:
-#             avg = 1
-        
-#         rulecompare = [10, 7, 3, 0]
-#         fcfmgrfinalrating = rating_assignment(avg, rulecompare)
-
-#         finalrating = math.floor((fcfmfinalrating + fcfmgrfinalrating) / 2)
-#     except Exception as err:
-#         print('reit eps rating error:')
-#         print(err)
-#     finally:
-#         return finalrating
-
 def debt_rating(ticker):
     try:
         sqlq = 'SELECT debtGrowthAVG as debtgravg \

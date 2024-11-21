@@ -109,26 +109,26 @@ class Mega(models.Model):
 
     @property
     def profit_margin(self):
-        if self.revenue is None:
+        if self.revenue is None or self.revenue == 0:
             return None
         elif self.netIncome is None:
             return None
         else:
             return self.netIncome / self.revenue * 100
 
-    @property
-    def profit_margin_avg(self):
-        if self.revenue is None:
-            return None
-        elif self.netIncome is None:
-            return None
-        else:
-            return self.netIncome / self.revenue * 100
+    # @property
+    # def profit_margin_avg(self):
+    #     if self.revenue is None or self.revenue == 0:
+    #         return None
+    #     elif self.netIncome is None:
+    #         return None
+    #     else:
+    #         return self.netIncome / self.revenue * 100
 
 
     @property
     def creit_roce(self):
-        if self.TotalEquity is None:
+        if self.TotalEquity is None or self.ReportedTotalEquity == 0:
             return None
         elif self.ffo is None:
             return None
@@ -137,7 +137,7 @@ class Mega(models.Model):
 
     @property
     def rreit_roce(self): #luke this
-        if self.ReportedTotalEquity is None:
+        if self.ReportedTotalEquity is None or self.ReportedTotalEquity == 0:
             return None
         elif self.ffo is None:
             return None

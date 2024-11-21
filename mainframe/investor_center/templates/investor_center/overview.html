@@ -25,11 +25,12 @@
             Educational Information
         </summary>
         <p>
-            Growth rates give you something meaningful to interpret. Here we see averages for all the labeled categories over the number of years of SEC filings available to us.
+            Growth rates give you something meaningful to interpret. Here we see averages for all the labeled categories <strong>calculated over the total number of years</strong> of SEC filings available to us.
+            </br>Essentially giving you an average value across the entire (accessible) lifetime of the company.
             </br>Revenue and Net Income, later Profit Margin tells you how they relate. 
             </br>EPS in multiple forms.
-            </br>FCF Margin for those who prefer it to Net Income.
-            </br>Net Cash Flow as a raw dollar amount, the average section telling you if they finish most years in the black or red.
+            </br>FCF Margin for those who prefer it to Net Income's Profit Margin.
+            </br>Net Cash Flow as a raw dollar amount, the average section telling you if they finish most years with an excess or deficit.
             </br>Finally, the Net CF Growth Rate average, what does their Net CF usually grow by each year?
             </br>The second table provides a similar layout for stats relevant to REIT's.
         </p>
@@ -87,8 +88,6 @@
                 <th>Revenue GR</th>
                 <th>FFO GR</th>
                 <th>REIT EPS GR</th>
-                <th>Net Cash Flow</th>
-                <th>Net CF GR</th>
             </tr>
             <tr>
                 <th>{{ years|length }}</th>
@@ -96,11 +95,6 @@
                 <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.ffoGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.reitepsGrowthAVGnz|floatformat:3}}%</th>
-                <th>{% if l.netCashFlowAVG > 0 %} > Zero
-                    {% else %} < Zero
-                    {% endif %}
-                </th>
-                <th>{{l.netCashFlowGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>

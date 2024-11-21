@@ -97,6 +97,19 @@ input#tickerid {
     
 }
 
+input#valueMin {
+    font-size: 12px;
+    text-align: center;
+    color: #000000;
+    background-color: white;
+    width: 35px;
+    border: solid thin black;
+}
+::placeholder{
+    /* opacity: 1; */
+    color: #000000;
+}
+
 input {
     background: #439ded;
     border: thick double #000000 ;
@@ -193,7 +206,7 @@ a#srTicker {
     border: none;
     color: black;
     background: inherit;
-    text-decoration: underline overline dotted;
+    text-decoration: underline ;
 }
 
 a:hover, 
@@ -257,6 +270,7 @@ a#high:hover {
     /* border: #000000;
     border-style: double; */
     margin: 10px;
+    padding-bottom: 10px;
 }
 
 footer {

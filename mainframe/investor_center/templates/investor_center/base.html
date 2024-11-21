@@ -20,7 +20,8 @@
             <ul class="navigation">
                 <li><a href="{% url 'index' %}">Home</a></li>
                 <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
-                <li><a href="{% url 'val' %}">Compare Tickers</a></li>
+                <li><a href="{% url 'compare' %}">Compare Stock Highlights</a></li>
+                <li><a href="{% url 'stockScreen' %}">Stock Screener</a></li> 
                 <li><a href="{% url 'sr' %}">Sector Rankings</a></li> 
                 <li><a href="{% url 'val' %}">Dividend Stock Valuation</a></li>
             </ul>
@@ -42,6 +43,15 @@
                     <a href="#" id="high">Back to Top</a>
                 </div> 
                 
+                <div class="container">
+                    <ul class="navigation">                       
+                        <li><a href="{% url 'tips' %}">Help Support Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li><a href="{% url 'info' %}">About this Site</a></li>
+                        <li><a href="{% url 'technical' %}">Technical Details of Site</a></li>
+                    </ul>
+                </div>
+
                 <details>
                     <summary>
                         Legend
@@ -53,15 +63,6 @@
                             BV==Book Value, ROE==Return on Equity
                         </p>
                 </details>
-
-                <div class="container">
-                    <ul class="navigation">                       
-                        <li><a href="{% url 'tips' %}">Help Support Us</a></li>
-                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                        <li><a href="{% url 'info' %}">About this Site</a></li>
-                        <li><a href="{% url 'technical' %}">Technical Details of Site</a></li>
-                    </ul>
-                </div>
             </footer>
             {% endblock %}
     </body>

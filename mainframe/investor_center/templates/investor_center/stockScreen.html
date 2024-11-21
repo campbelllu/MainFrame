@@ -1,0 +1,205 @@
+{% extends 'investor_center/base.html' %}
+
+{% block content %}
+	<h1>
+		Stock Screener
+	</h1>
+	<h3>Find what you're looking for!</h3>
+	<p>Here you can filter tickers based on <strong>lifetime averages</strong> of the categories denoted in the column headers.</p>
+    <p>Screening will be based on whichever is the highest value, between Calculated and Reported numbers.</p>
+    <p></p>
+    <p>Scroll below the table to see descriptions for what you're looking at and how to use this page, as well as a report of any currently known bugs and a legend of acronyms.</p>
+	
+
+	<form method="POST">
+		{% csrf_token %}
+        <div class="container">
+            <table>
+                <tr>
+                    <th>Select a Sector and manually pick values</th>
+                </tr>
+                <tr>
+                    <td>
+                        
+                            <select name="sectorDropDown">
+                                <option value="{{dv.sector|safe}}" {% if dv.selected %} selected {% endif %}>{{dv.sector}} </option>
+                                {% for j in sectors %}
+                                    <option value="{{ j.Sector }}">{{ j.Sector }}</option>
+                                {% endfor %}
+                                <option> All </option>
+                            </select>
+                        
+                         <input type="submit" name="updateTable" value="Update Table">  
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th>Search for a Single Ticker</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="ts" placeholder="{{ tickerToBeFound }}" id="tickerid">
+                        <input type="submit" name="tsButton" value="Find My Stock!">
+                    </td>
+                </tr>
+            </table>
+        
+            
+        </div>
+
+        <div class="container">
+            <table>
+                <tr>
+                    <th>Or Choose a Preselected Filter for Each Sector</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" name="genericB" value="Materials"> 
+                        <input type="submit" name="genericC" value="Communications">
+                        <input type="submit" name="genericE" value="Energy"> 
+                        <!-- <input type="submit" name="genericBDC" value="BDC">  -->
+                        <input type="submit" name="genericF" value="Financials"> 
+                        <input type="submit" name="genericI" value="Industrials"> 
+                        <input type="submit" name="genericK" value="Technology"> 
+                        <input type="submit" name="genericP" value="Consumer Staples"> 
+                        <input type="submit" name="genericRE" value="Real Estate"> 
+                        <input type="submit" name="genericU" value="Utilities"> 
+                        <input type="submit" name="genericV" value="Healthcare"> 
+                        <input type="submit" name="genericY" value="Consumer Cyclical"> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="container">
+            <input type="submit" name="resetTable" value="Reset Table"> 
+            <input type="submit" name="updateTable" value="Update Table">
+        </div>
+        <div class="container">
+            <table>
+                <tr>
+                    <th>Category-></th>
+                    <th>Tickers</th> 
+                    
+                    <th>ROE</th>
+                    <th>ROIC</th>
+
+                    <th>Revenue GR</th>
+                    <th>Net Income GR</th>
+                    <th>FFO GR</th>
+
+                    <th>FCF GR</th>
+                    <th>FCF Margin GR</th>
+                    <th>Net Cashflow GR</th>
+                    <!-- <th>Dividend Payer?</th> -->
+                    <th>Dividend GR</th>
+                    <!-- <th>Payout Ratio</th> -->
+                    <!-- <th>AVG FFO Payout Ratio</th> -->
+                    
+                    <th>Debt GR</th>
+                    <th>Equity GR</th>
+                    <th>Shares GR</th>
+                    <th>Book Value GR</th>
+                    
+                    <!-- <th>Return of Capital</th> -->
+                    
+                    <!-- <th>AVG REIT ROE</th> -->
+                    
+                    
+                    <th>Sector</th>
+                </tr>
+                <tr>
+                    <th>Select Minimum-></th>
+                    <th>{{ lt|length }} Found</th> 
+                    
+                    <th><input type="text" name="vfroce" placeholder="{{dv.roce|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfroic" placeholder="{{dv.roic|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfrev" placeholder="{{dv.rev|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfni" placeholder="{{dv.ni|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfffo" placeholder="{{dv.ffo|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vffcf" placeholder="{{dv.fcf|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vffcfm" placeholder="{{dv.fcfm|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfcf" placeholder="{{dv.cf|safe}}" id="valueMin"></th>
+                    <!-- <th><input type="text" name="vfdp" placeholder="{{dv.dp|safe}}" id="valueMin"></th> -->
+                    <th><input type="text" name="vfdivgr" placeholder="{{dv.divgr|safe}}" id="valueMin"></th>
+                    <!-- <th><input type="text" name="vfpo" placeholder="{{dv.po|safe}}" id="valueMin"></th> -->
+                    <!-- <th><input type="text" name="vfffopo" placeholder="{{dv.ffopo|safe}}" id="valueMin"></th> -->
+                    
+                    <th><input type="text" name="vfdebt" placeholder="{{dv.debt|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfeq" placeholder="{{dv.eq|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfshares" placeholder="{{dv.shares|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfbv" placeholder="{{dv.bv|safe}}" id="valueMin"></th>
+                    
+                    <!-- <th><input type="text" name="vfroc" value="{{dv.roc|safe}}" id="valueMin"></th> -->
+                    
+                    <!-- <th><input type="text" name="vfreitroce" value="{{dv.reitroce|safe}}" id="valueMin"></th> -->
+                    
+                    <th><-Select Minimum</th>
+                </tr>
+                {% for i in lt %}
+                <tr>
+                    <td></td>
+                    <td><a href="{% url 'overh' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
+                    
+                    <td>{{i.roce|floatformat:3}}</td>
+                    <td>{{i.roic|floatformat:3}}</td>
+                    <td>{{i.revGrowthAVGnz|floatformat:3}}</td>
+                    <td>{{i.netIncomeGrowthAVGnz|floatformat:3}}</td>
+                    <td>{{i.ffoGrowthAVGnz|floatformat:3}}</td>
+                    <td>{{i.fcfGrowthAVGnz|floatformat:3}}</td>
+                    <td>{{i.fcfMarginGrowthAVGnz|floatformat:3}}</td>
+                    <td>{{i.netCashFlowGrowthAVGnz|floatformat:3}}</td>
+                    <!-- <td>{{i.divpay}}</td> -->
+                    <td>{{i.divgr|floatformat:3}}</td>
+                    <!-- <td>{{i.payoutRatioAVGnz|floatformat:3}}</td> -->
+                    <!-- <td>{{i.ffoPayoutRatioAVGnz|floatformat:3}}</td> -->
+                    
+                    <td>{{i.debtGrowthAVG|floatformat:3}}</td>
+                    <td>{{i.equity|floatformat:3}}</td>
+                    <td>{{i.sharesGrowthAVG|floatformat:3}}</td>
+                    <td>{{i.bv|floatformat:3}}</td>
+                   
+                    <!-- <td>{{i.roc}}</td> -->
+                    
+                    <!-- <td>{{i.reitroce}}</td> -->
+                    
+                    
+                    <td>{{i.Sector}}</td>
+                            
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+	</form>
+
+    <p>What you see here is every security in our database ranked in overall score, descending. 'GR' stands for 'Growth Rate', 'AVG' stands for 'Average', 
+        and scores are applied to the averages of all the values across their reportable lifetime.</p>
+	<p>Scores range from -5 to 5, with the negatives being bad scores, positive values being good, and how they're assigned per value is 
+        explained on <a href="{% url 'srinfo' %}" id="contactp" target="_blank">This Page</a>.</p>
+    <p>Score Ranking is just the ratio of points earned(Score) out of how many were possible for that sector(Max Score).</p>
+    <p>The dropdown menus in each column are for greater than or equal comparisons, selecting '4' means you want all securities with a score of 4 
+        or larger in that category.</p>
+    <p>Initial loading of the page, and pressing the 'Reset Table' button, displays all stocks of all sectors ranked according to their scores earned by our ranking 
+        algorithms. </p>
+    
+    <p>The first selector section allows you to type in a stock ticker, finding its ranking along with its peers in the same sector, with similar score rankings.</p>
+    <p>The second selector section keeps whatever values are already selected in each column, and selects your sector of choice, applying those values to the filter process.</p>
+    <p>The third selector section provides preset values for any given sector, saving you time, but you'll want to tweak the numbers to your preference.</p>
+
+    <p>Manually changing the filter values for each column, then selecting 'Update Table' will update the table with your desired filter.</p>
+    <p>Clicking a stock ticker in the Tickers Column will take you to that company's Stock Highlights pages, beginning with our Summary Highlights.</p>
+    
+    
+    <h2>Why Not Just Invest in The Landing Page's 'Top' 25 Stocks, Then?</h2>
+    <p>Just because these particular securities scored highest with our proprietary ranking system, that doesn't mean the top 25 with high scores constitute a diversified 
+        or reliable portfolio in and of themselves. Maybe this year our rankings produce a top 25 consisting entirely of one sector? Would you be comfortable owning a portfolio 
+        like that? Also, see our disclaimer at the bottom of every page.
+    </p>
+
+
+    <h3>Known Bugs: </h3>
+    <p>None at this time.
+    </p>
+{% endblock %}
