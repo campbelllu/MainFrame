@@ -3,4 +3,8 @@ mfvenv/
 .vscode
 ./mainframe/investor_center/stockData/
 ./mainframe/sec_related/stocks/old
-**/__pycache__/
+mainframe/investor_center/__pycache__/**
+mainframe/mainframe/__pycache__/**
+mainframe/helloThere/__pycache__/**
+mainframe/helloThere/migrations/__pycache__/**
+*.pyc

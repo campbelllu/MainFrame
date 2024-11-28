@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.http import HttpResponse
 from django.db.models import Avg, Max, F, Case, When, Value, IntegerField, FloatField, Q
 from django.db.models.functions import Coalesce
+from django import forms
+from django.core.mail import send_mail as smail
 import numpy as np
 import statistics as stats
 # from django.template import loader
@@ -18,8 +20,35 @@ def info(request):
 def technical(request):
     return render(request, 'investor_center/technical.html', {})
 
+class ContactForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Your Name", "id": "contactInput"}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={"placeholder": "Your E-Mail Address", "id": "contactInput"}))
+    subject = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Subject", "id": "contactInput"}))
+    message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Your Message"}))
+
 def contact(request):
-    return render(request, 'investor_center/contact.html', {})
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if 'contact' in request.POST:
+            name = form['name']
+            email = form['email']
+            subject = form['subject']
+            message = form['message']
+            # ... send email logic ...
+            smail(
+                str(subject) + ' - ' + str(name), message, email, ['campbelllu3@gmail.com'], fail_silently=False,
+            )
+            # Needs SMTP setup to even work. scrapped for now.
+            return redirect('successfulemail')
+    else:
+        form = ContactForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'investor_center/contact.html', context)
+
+def successfulemail(request):
+    return render(request, 'investor_center/successfulemail.html')
 
 def tips(request):
     return render(request, 'investor_center/tips.html', {})
@@ -480,7 +509,7 @@ def stockScreen(request):
                         'bv':None, 'eq':None, 'roc':None, 'ffo':None, 'reitroce':None, 'ffopo':None}
 
 
-    tickerToBeFound = "Type Ticker, Hit Enter or Click Button"
+    tickerToBeFound = "Type Ticker, Click Button"
     
     #Manual table updates
     if 'updateTable' in request.POST:

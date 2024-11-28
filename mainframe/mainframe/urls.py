@@ -17,13 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-# from helloThere import views as htviews #see note below
-
 urlpatterns = [
     # path('supercalifragilisticespialidocious/', admin.site.urls), #admin currently useless, disabled
     path('', include("investor_center.urls")),
-
-    # path('helloThere/', htviews.home, name='home'), #bad practice, hard to scale or share app to other projects. left for example.
-    #path('mf.io/jenkins', 'mf.io:8080', name='jenkins-reroute'),
-    #url(RedirectView.as_view(url='mf.io/jenkins')),
 ]

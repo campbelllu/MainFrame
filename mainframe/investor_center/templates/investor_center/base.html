@@ -22,7 +22,9 @@
                 <li><a href="{% url 'stockScreen' %}">Stock Screener</a></li> 
                 <li><a href="{% url 'highlights' %}">Individual Stock Highlights</a></li>
                 <li><a href="{% url 'compare' %}">Compare Stock Highlights</a></li>
+                {% comment %}
                 <!-- <li><a href="{% url 'sr' %}">Sector Rankings</a></li>  -->
+                {% endcomment %}
                 <li><a href="{% url 'val' %}">Dividend Stock Valuation</a></li>
             </ul>
         </div>
@@ -46,7 +48,9 @@
                 <div class="container">
                     <ul class="navigation">                       
                         <li><a href="{% url 'tips' %}">Help Support Us</a></li>
-                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        {% comment %}
+                        <!-- <li><a href="{% url 'contact' %}">Contact Us</a></li> -->
+                        {% endcomment %}
                         <li><a href="{% url 'info' %}">About this Site</a></li>
                         <li><a href="{% url 'technical' %}">Technical Details of Site</a></li>
                     </ul>
