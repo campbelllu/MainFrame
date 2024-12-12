@@ -7,4 +7,5 @@ mainframe/investor_center/__pycache__/**
 mainframe/mainframe/__pycache__/**
 mainframe/helloThere/__pycache__/**
 mainframe/helloThere/migrations/__pycache__/**
+mainframe/investor_centor/migrations/*
 *.pyc

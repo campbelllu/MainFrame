@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0owy4u$f=_w+zl8h%$p320c(v$4$skq2_%xpdre&m-gmddjxdl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mf.io','mf.io/jenkins', '172.30.162.208']
 
@@ -115,9 +115,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'investor_center/static/' #os.path.join(BASE_DIR, 'investor_center/templates/investor_center/')
+STATIC_URL = '/static/' #os.path.join(BASE_DIR, 'investor_center/templates/investor_center/')
 
-STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
