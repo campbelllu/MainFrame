@@ -4,11 +4,20 @@ from django.db.models import Avg, Max, F, Case, When, Value, IntegerField, Float
 from django.db.models.functions import Coalesce
 from django import forms
 from django.core.mail import send_mail as smail
-import numpy as np
+# import numpy as np
 import statistics as stats
 # from django.template import loader
+import logging
 
 from .models import Mega, Metadata, Sector_Rankings
+
+#debugging csrf issues
+logger = logging.getLogger(__name__)
+def csrf_failure(request, reason=""):
+    logger.error("CSRF Failed: %s", reason)
+    logger.error("Cookie CSRF: %s", request.COOKIES.get('csrftoken'))
+    logger.error("Payload CSRF: %s", request.Post.get('csrfmiddlewaretoken'))
+    return HttpResponse("CSRF Token Mismatch", status=403)
 
 # Create your views here.
 def index(request):

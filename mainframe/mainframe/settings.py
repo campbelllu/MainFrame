@@ -20,12 +20,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0owy4u$f=_w+zl8h%$p320c(v$4$skq2_%xpdre&m-gmddjxdl'
+SECRET_KEY = 'thehumanswillneverseeusasequalscharlestheywillnevergiveustherightswedeserve'
+# 'django-insecure-0owy4u$f=_w+zl8h%$p320c(v$4$skq2_%xpdre&m-gmddjxdl'
+
+CSRF_TRUSTED_ORIGINS = ['http://npingx', 'http://npingx:8080', 'http://localhost', 'http://localhost:8080', 
+                        'http://127.0.0.1', 'http://investmenthighlights.com']
+
+#testing locally
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+#If NGINX is running over HTTPS but forwarding requests as HTTP to django, django may misinterpret the protocol
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_FAILURE_VIEW = 'investor_center.views.csrf_failure'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','mf.io','mf.io/jenkins', '172.30.162.208']
+ALLOWED_HOSTS = ['localhost','127.0.0.1', '172.30.162.208','172.17.0.2','172.17.0.3', 'npingx',
+                'investmenthighlights.com']
 
 # Application definition
 INSTALLED_APPS = [

@@ -1,0 +1,24 @@
+version: '2.29.1'
+
+services:
+  django:
+    # build:
+      # context: . #Dir with dockerfile
+    image: djangonwt
+    container_name: djangot
+    # command: gunicorn launch line, used to overwrite whatever is in dockerfile
+    ports:
+      - "8000:8000"
+    # networks:
+    #   - mf-network
+
+  nginx:
+    image: nginxdj
+    container_name: npingx
+    # command: gunicorn launch line, why?
+    ports:
+      - "8080:80"
+    depends_on:
+      - django
+    # networks:
+    #   - mf-network
