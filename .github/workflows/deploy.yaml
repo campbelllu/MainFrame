@@ -21,7 +21,7 @@ jobs:
       - name: Set up SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "$LS_SSH_KEY" > ~/.ssh/id_rsa
+          echo "${{ secrets.LS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
 
