@@ -1,0 +1,47 @@
+name: Deploy to Lightsail
+
+env:
+  ACTIONS_STEP_DEBUG: true
+
+on:
+  push:
+    branches:
+      - prod #Only push updates when prod branch merged/updated
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      #Checkout
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      #Setup SSH
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$LS_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      
+      #Build Docker Image
+      - name: Build Docker Image
+        run: docker build -t djangonwt:latest ../../
+
+      #Roll that image into a tarball!
+      - name: Create Docker Image tarball
+        run: docker save djangonwt:latest > django.tar
+
+      # SCP Tarball to Lightsail
+      - name: SCP Docker Image Tarball
+        run: scp -i ~/.ssh/id_rsa django.tar ubuntu@54.186.31.9:/home/ubuntu/
+
+      #SSH into Lightsail, Manage Docker
+      - name: SSH into Lightsail
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@54.186.31.9 << EOF
+            sudo docker rmi djangonwt:latest || true
+            sudo docker load < django.tar
+            sudo docker-compose down
+            sudo docker-compose up -d
+          EOF

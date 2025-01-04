@@ -1,12 +1,13 @@
-version: '2.29.1'
+#version: '2.29.1'
 
 services:
   django:
     # build:
       # context: . #Dir with dockerfile
-    image: djangonwt
+    image: djangonwt #your-account-id.dkr.ecr.us-east-2.amazonaws.com/yourAppRepo:latest
     container_name: djangot
     # command: gunicorn launch line, used to overwrite whatever is in dockerfile
+
     ports:
       - "8000:8000"
     # networks:
@@ -17,7 +18,7 @@ services:
     container_name: npingx
     # command: gunicorn launch line, why?
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - django
     # networks:

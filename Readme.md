@@ -1,3 +1,8 @@
+Welcome!
+
+When all of this is done, you should be seeing custom securities analysis tools at investmenthighlights.com.
+Until then, and until I get an actual Readme written up, here is the old legacy To-Do list I wrote myself a year ago before starting this whole thing:
+
 To-Do & Tracking for later documentation
 The following helps me to keep track of all this project needs/needed.
 Goal achieved: K8's up and running, better understood, moved onto cloud work where this project will move from local to cloud-based. Updates to come, late 2023, early 2024!

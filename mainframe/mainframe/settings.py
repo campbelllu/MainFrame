@@ -24,7 +24,7 @@ SECRET_KEY = 'thehumanswillneverseeusasequalscharlestheywillnevergiveustherights
 # 'django-insecure-0owy4u$f=_w+zl8h%$p320c(v$4$skq2_%xpdre&m-gmddjxdl'
 
 CSRF_TRUSTED_ORIGINS = ['http://npingx', 'http://npingx:8080', 'http://localhost', 'http://localhost:8080', 
-                        'http://127.0.0.1', 'http://investmenthighlights.com']
+                        'http://127.0.0.1', 'http://investmenthighlights.com', 'https://investmenthighlights.com', 'http://54.186.31.9/']
 
 #testing locally
 CSRF_COOKIE_SECURE = False
@@ -40,7 +40,7 @@ CSRF_FAILURE_VIEW = 'investor_center.views.csrf_failure'
 DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1', '172.30.162.208','172.17.0.2','172.17.0.3', 'npingx',
-                'investmenthighlights.com']
+                    'investmenthighlights.com', 'www.investmenthighlights.com', '54.186.31.9']
 
 # Application definition
 INSTALLED_APPS = [
