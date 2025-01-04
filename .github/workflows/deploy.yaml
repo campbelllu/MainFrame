@@ -25,6 +25,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
 
+      #Debug Key File
+      - name: Debug Key File
+        run: |
+          head -n 5 ~/.ssh/id_rsa
+          tail -n 5 ~/.ssh/id_rsa
+          
       #Update Known Hosts
       - name: Add Server to Known Hosts
         run: ssh-keyscan -H 54.186.31.9 >> ~/.ssh/known_hosts
