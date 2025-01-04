@@ -25,11 +25,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
 
-      #Debug Key File
-      - name: Debug Key File
-        run: |
-          head -n 5 ~/.ssh/id_rsa
-          tail -n 5 ~/.ssh/id_rsa
+      # #Debug Key File; deprecated after successfully debugged
+      # - name: Debug Key File
+      #   run: |
+      #     head -n 5 ~/.ssh/id_rsa
+      #     tail -n 5 ~/.ssh/id_rsa
           
       #Update Known Hosts
       - name: Add Server to Known Hosts
@@ -43,20 +43,20 @@ jobs:
       - name: Create Docker Image tarball
         run: docker save djangonwt:latest > django.tar
 
-      #Test Connection to Lightsail
-      - name: Test SSH Connection
-        run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
+      #Test Connection to Lightsail; deprecated after successfully debugged
+      # - name: Test SSH Connection
+      #   run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
 
       # SCP Tarball to Lightsail
       - name: SCP Docker Image Tarball
         run: scp -i ~/.ssh/id_rsa django.tar ubuntu@54.186.31.9:/home/ubuntu/
 
       #SSH into Lightsail, Manage Docker
-      - name: SSH into Lightsail
+      - name: SSH into Lightsail, restart new app
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@54.186.31.9 << EOF
+            sudo docker-compose down
             sudo docker rmi djangonwt:latest || true
             sudo docker load < django.tar
-            sudo docker-compose down
             sudo docker-compose up -d
           EOF
