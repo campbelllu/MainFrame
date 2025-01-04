@@ -23,6 +23,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "$LS_SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+      #Update Known Hosts
+      - name: Add Server to Known Hosts
+        run: ssh-keyscan -H 54.186.31.9 >> ~/.ssh/known_hosts
       
       #Build Docker Image
       - name: Build Docker Image
