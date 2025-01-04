@@ -23,6 +23,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$LS_SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          chmod 700 ~/.ssh
 
       #Update Known Hosts
       - name: Add Server to Known Hosts
@@ -35,6 +36,10 @@ jobs:
       #Roll that image into a tarball!
       - name: Create Docker Image tarball
         run: docker save djangonwt:latest > django.tar
+
+      #Test Connection to Lightsail
+      - name: Test SSH Connection
+        run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
 
       # SCP Tarball to Lightsail
       - name: SCP Docker Image Tarball
