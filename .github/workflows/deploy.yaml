@@ -39,7 +39,7 @@ jobs:
       - name: Build Docker Images
         run: |
           docker build -t djangonwt:latest ./
-          docker build -t nginxdj:latest ./nginx/
+          docker build -t nginxdj:latest ./mainframe/nginx/
 
       #Roll images into tarballs!
       - name: Create Docker Image tarballs
