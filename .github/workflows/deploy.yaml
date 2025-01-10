@@ -60,10 +60,11 @@ jobs:
       #   run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
 
       # SCP Tarballs to Lightsail
-      - name: SCP Docker Image Tarballs
+      - name: SCP Docker Image Tarballs and DC.yaml
         run: |
           scp -i ~/.ssh/id_rsa django.tar ubuntu@investmenthighlights.com:/home/ubuntu/
           scp -i ~/.ssh/id_rsa nginx.tar ubuntu@investmenthighlights.com:/home/ubuntu/
+          scp -i ~/.ssh/id_rsa ./docker-compose.yaml ubuntu@investmenthighlights.com:/home/ubuntu/
 
       #SSH into Lightsail, Manage Docker
       - name: SSH into Lightsail, Restart App
