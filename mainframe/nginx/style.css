@@ -1,0 +1,392 @@
+body {
+    background: #ffffff;
+    color: #000000;
+    margin: 0;
+    font-size: 14px;
+    line-height: 18px;
+    min-width: 600px;
+    /* display: grid; */
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+    text-align: center;
+    /* padding-top: 10px; */
+    /* padding-bottom: 5px; */
+    
+}
+
+p {
+    font-size: 18px;
+    text-align: center;
+    /* padding-top: 1px; */
+}
+
+details {
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /* margin: 20px; */
+    /* opacity: 1; */
+    /* list-style: none; */
+    /* border: dotted black; */
+    /* border-width: 1rem; */
+    /* width: fit-content;
+    border-radius: 15px; */
+    /* justify-self: center;
+    justify-content: center;
+    justify-items: center;
+    align-self: center;
+    align-items: center;
+    align-content: center; */
+    /* position: absolute; */
+}
+details summary {
+    list-style: none;
+    text-decoration: underline;
+    font-size: 18px;
+    /* cursor: none; */
+}
+details summary:before{
+    content: "";
+}
+details summary:after{
+    content: "";
+}
+
+#emaillist {
+    font-size: 18px;
+    color: #000000;
+}
+
+table {
+    border: 2px solid;
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.45),
+		2px 2px 2px -2px rgba(0, 0, 0, 0.45);
+    margin-right: 10px;
+}
+
+tr {
+
+}
+tr:hover {
+    background-color: orange;
+}
+th {
+    border: 2px solid;
+    font-size: 16px;
+    padding: 4px;
+}
+td {
+    border: 1px solid;
+    font-size: 16px;
+    text-align: center;
+    padding: 6px;
+}
+td:empty {
+    background-color: #5f5f5f;
+}
+
+
+input#tickerid {
+    /* display: table-cell;
+    text-align: center;
+    overflow: auto; */
+    height: 18px;
+    width: 200px;
+    font-size: 12px;
+    text-align: center;
+    color: #000000;
+    background-color: white;
+    /* margin-left: 50%; */
+    
+}
+
+input#valueMin {
+    font-size: 12px;
+    text-align: center;
+    color: #000000;
+    background-color: white;
+    width: 35px;
+    border: solid thin black;
+}
+::placeholder{
+    /* opacity: 1; */
+    color: #000000;
+}
+
+#contactInput, textarea {
+    background: #ffffff;
+    border: thick double #000000 ;
+     /* #008000; */
+     /* above is stock market green; */
+     /* rgb(27, 165, 57); */
+    color: #000000;
+    font-size: 20px;
+
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 5px 7px 5px 7px;
+
+    text-decoration: none;
+    text-align: center;
+
+    border-radius: 10px;
+}
+
+input {
+    background: #439ded;
+    border: thick double #000000 ;
+     /* #008000; */
+     /* above is stock market green; */
+     /* rgb(27, 165, 57); */
+    color: #000000;
+    font-size: 20px;
+
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 5px 7px 5px 7px;
+
+    text-decoration: none;
+    
+    border-radius: 10px;
+}
+
+input:hover{
+    background: #5f5f5f;
+     /* #898989; */
+    color: #f7f7f7;
+    border: thick double #ededed ;
+}
+
+a#contactp {
+    color: #0026ff;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 14px;
+    padding: 0px 0px 0px 0px;
+    /* luke figure out spacing bro */
+}
+a#shoutout {
+    color: #0026ff;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 20px;
+    padding: 0px 0px 0px 0px;
+    /* luke figure out spacing bro */
+}
+/* a#contactp:hover {
+    color: #5eaaed;
+    text-decoration: underline;
+    border: none;
+    background: inherit;
+    font-size: 20px;
+    padding: 1px;
+} */
+
+a {
+    background: #ededed;
+    border: thick double #000000 ;
+     /* #008000; */
+     /* above is stock market green; */
+     /* rgb(27, 165, 57); */
+    color: #ffffff; 
+
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 5px 5px 5px 5px;
+
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 10px;
+}
+a#high {
+    background: #5eaaed;
+    border: thick double #000000 ;
+     /* #008000; */
+     /* above is stock market green; */
+     /* rgb(27, 165, 57); */
+    color: #000000;
+    font-size: 20px;
+
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 5px 5px 5px 5px;
+
+    text-decoration: none;
+    
+    border-radius: 10px;
+}
+a#srTicker {
+    font-size: 16px;
+    border: none;
+    color: black;
+    background: inherit;
+    text-decoration: underline ;
+}
+
+a:hover, 
+a#high:hover {
+    background: #5f5f5f;
+     /* #898989; */
+    color: #f7f7f7;
+    border: thick double #ededed ;
+}
+
+#headbar {
+    position: relative;
+    top: 0px;
+    /* padding-top: 0; */
+    width: 100%;
+    background: #5eaaed;
+    height: 40px;
+    /* display: grid ; */
+}
+
+/* just added below irrelevant basically wtf */
+.navigation li{
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin: 0px 3px 0px 3px;
+    
+}
+
+.navigation li a {
+    background-color: inherit;
+    background: #5eaaed;
+	color: #000000;
+    font-size: 20px;
+	text-decoration: none;
+	padding: 6px 10px 6px 10px;
+    /* margin: 0px 10px 0px 10px; */
+	
+}
+
+.navigation li a:hover {
+	background-color: #5f5f5f;
+	color: #ffffff;
+}
+
+/* all replaced */
+
+
+
+/* was imported above */
+
+
+/***************************************************************************/
+
+/***************************************************************************/
+
+.container {
+    display: flex;
+    /* align-self: center; */
+    align-items: center;
+    justify-content: center;
+    /* border: #000000;
+    border-style: double; */
+    margin: 10px;
+    padding-bottom: 10px;
+}
+
+footer {
+    margin-top: auto;
+    /* display: grid; */
+    /* align-items: center; */
+    /* align-self: center; */
+    /* align-content: center; */
+    /* padding-bottom: 5px; */
+    /* margin-top: 0; */
+    /* margin-bottom: -10px; */
+    /* height: auto; */
+
+    /* position: relative;
+    left: 0%;
+    right: 0%;
+    bottom: 0; */
+}
+
+
+
+/* deprecated */
+/* button {
+    background: #ededed;
+    border: thick double #000000 ;
+     /* #008000; */
+     /* above is stock market green; */
+     /* rgb(27, 165, 57); */
+    /* color: #000000; */
+
+    /* margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 5px 5px 5px 5px; */
+
+    /* text-decoration: none;
+    font-size: 14px;
+    border-radius: 10px; */
+/* } */
+
+/* button:hover{
+    background: #5f5f5f;
+     /* #898989; */
+    /* color: #f7f7f7; */
+    /* border: thick double #ededed ; */
+/* } */ 
+
+
+/* from the guide */
+/* li {
+    display: table-cell;
+    transition-duration: 0.5s;
+   
+}
+
+li:hover,
+li:focus-within {
+    cursor: pointer;
+}
+
+li:focus-within a{
+    outline: none;
+}
+
+ul li ul {
+    visibility: hidden;
+    opacity: 0;
+    position: relative;
+    transition: all 0.5s ease;
+    margin-top: 1rem;
+    /* left: 0; 
+    display: list-item;
+}
+
+ul li:hover > ul,
+ul li:focus-within > ul,
+ul li ul:hover {
+    visibility: visible;
+    opacity: 1;
+    display: list-item;
+}
+
+ul li ul li {
+    clear: both;
+    width: 10;
+    text-decoration: none;
+} */

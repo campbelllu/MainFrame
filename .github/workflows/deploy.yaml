@@ -33,30 +33,46 @@ jobs:
           
       #Update Known Hosts
       - name: Add Server to Known Hosts
-        run: ssh-keyscan -H 54.186.31.9 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H investmenthighlights.com >> ~/.ssh/known_hosts #54.186.31.9
       
-      #Build Docker Image
-      - name: Build Docker Image
-        run: docker build -t djangonwt:latest ./
+      #Build Docker & NGINX Images
+      - name: Build Docker Images
+        run: |
+          docker build -t djangonwt:latest ./
+          docker build -t nginxdj:latest ./nginx/
+
+      #Roll images into tarballs!
+      - name: Create Docker Image tarballs
+        run: |
+          docker save djangonwt:latest > django.tar
+          docker save nginxdj:latest > nginx.tar
+
+      #Build NGINX Image
+      # - name: Build NGINX Image
+      #   run: docker build -t nginxdj:latest ./nginx/
 
       #Roll that image into a tarball!
-      - name: Create Docker Image tarball
-        run: docker save djangonwt:latest > django.tar
+      # - name: Create NGINX Image tarball
+      #   run: docker save nginxdj:latest > nginx.tar
 
       #Test Connection to Lightsail; deprecated after successfully debugged
       # - name: Test SSH Connection
       #   run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
 
-      # SCP Tarball to Lightsail
-      - name: SCP Docker Image Tarball
-        run: scp -i ~/.ssh/id_rsa django.tar ubuntu@54.186.31.9:/home/ubuntu/
+      # SCP Tarballs to Lightsail
+      - name: SCP Docker Image Tarballs
+        run: |
+          scp -i ~/.ssh/id_rsa django.tar ubuntu@investmenthighlights.com:/home/ubuntu/
+          scp -i ~/.ssh/id_rsa nginx.tar ubuntu@investmenthighlights.com:/home/ubuntu/
 
       #SSH into Lightsail, Manage Docker
-      - name: SSH into Lightsail, restart new app
+      - name: SSH into Lightsail, Restart App
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@54.186.31.9 << EOF
+          ssh -i ~/.ssh/id_rsa ubuntu@investmenthighlights.com << EOF
             sudo docker-compose down
             sudo docker rmi djangonwt:latest || true
+            sudo docker rmi nginxdj:latest || true
             sudo docker load < django.tar
+            sudo docker load < nginx.tar
             sudo docker-compose up -d
           EOF
