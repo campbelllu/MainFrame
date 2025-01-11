@@ -64,7 +64,7 @@
             </tr>
             {% endfor %}
             {% for i in lt %}
-            <tr>
+            <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
                 <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
@@ -121,7 +121,7 @@
             </tr>
             {% endfor %}
             {% for i in lt %}
-            <tr>
+            <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
                 <td>${{i.capEx|floatformat:"0"}}</td>
