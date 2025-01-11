@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - prod #Only push updates when prod branch merged/updated
+      - prod
 
 jobs:
   deploy:
@@ -25,15 +25,15 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
 
-      # #Debug Key File; deprecated after successfully debugged
-      # - name: Debug Key File
-      #   run: |
-      #     head -n 5 ~/.ssh/id_rsa
-      #     tail -n 5 ~/.ssh/id_rsa
+      #Suggested Industry Standard Edits to the above
+      # - name: Set up SSH Key
+      #   uses: webfactory/ssh-agent@v0.5.3
+      #   with:
+      #     ssh-private-key: ${{ secrets.LS_SSH_KEY }}
           
       #Update Known Hosts
       - name: Add Server to Known Hosts
-        run: ssh-keyscan -H investmenthighlights.com >> ~/.ssh/known_hosts #54.186.31.9
+        run: ssh-keyscan -H investmenthighlights.com >> ~/.ssh/known_hosts
       
       #Build Docker & NGINX Images
       - name: Build Docker Images
@@ -41,23 +41,19 @@ jobs:
           docker build -t djangonwt:latest ./
           docker build -t nginxdj:latest ./mainframe/nginx/
 
+      #Suggested Industry Standard Edits to the above
+      # - name: Build Docker Images
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: ./
+      #     tags: djangonwt:latest
+          #repeat for NGINX
+
       #Roll images into tarballs!
       - name: Create Docker Image tarballs
         run: |
           docker save djangonwt:latest > django.tar
           docker save nginxdj:latest > nginx.tar
-
-      #Build NGINX Image
-      # - name: Build NGINX Image
-      #   run: docker build -t nginxdj:latest ./nginx/
-
-      #Roll that image into a tarball!
-      # - name: Create NGINX Image tarball
-      #   run: docker save nginxdj:latest > nginx.tar
-
-      #Test Connection to Lightsail; deprecated after successfully debugged
-      # - name: Test SSH Connection
-      #   run: ssh -v -i ~/.ssh/id_rsa ubuntu@54.186.31.9 'echo Connection Successful!'
 
       # SCP Tarballs to Lightsail
       - name: SCP Docker Image Tarballs and DC.yaml
