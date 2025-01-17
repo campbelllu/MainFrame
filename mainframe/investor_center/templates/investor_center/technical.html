@@ -31,31 +31,33 @@
     </br>Both Django and NGINX are running in their own <strong>Docker</strong> containers, orchestrated by <strong>Docker-Compose</strong> on...
     </br><strong>AWS Lightsail</strong> for hosting. Cheap hosting option until migration due to scaling reasons becomes necessary. 
     </br>Vanilla HTML and CSS is the only 'secret sauce' running the front end at this point. 
-    </br>NGINX serves the static files, Django populates them with data, all built using Django Templating
+    </br>NGINX serves the static files, Django populates them with data, all built using Django Templating.
 </p>
 
 </br>
-<h1>Flaws, Learning Opportunities, Vulnerabilities, Site-Self-Reflection</h1>
+<h1>Flaws, Learning Opportunities, Vulnerabilities, Site Self-Reflection</h1>
     <p>
         The Django admin page is completely disabled. 
-        A version of the Django secret key is in earlier repo versions, making Django Forms a security compromised Python tool until revisions 
-        are made that store said key in a secrets vault at a later date. However, there is no sensitive data in the database and data tampering is nearly impossible. 
-        Even if the data were able to be accessed nefariously, we have backups, no sensitive data is present, and for much less of a hacking headache the data therein
-        is already much more easily accessible via the EDGAR API link above. The juice is most definitely not worth the squeeze unless Django has a bug bounty out, 
+        </br>A version of the Django secret key is in earlier repo versions, making Django Forms a security compromised Python tool until revisions 
+        are made that store said key in a secrets vault at a later date.
+        </br>However, there is no sensitive data in the database and data tampering is nearly impossible. 
+        </br>Even if the data were able to be accessed nefariously, we have backups, no sensitive data is present, and for much less of a hacking headache the data therein
+        is already much more easily accessible via the EDGAR API link above.
+        </br>The juice is most definitely not worth the squeeze unless Django has a bug bounty out, 
         in which case you're legally required to split the cash prize with us, the victim. :-p
     </p>
     <p>
         If future versions of the website require login authentication, or the storing of any sensitive data like names, addresses, payment info, user passwords, 
         anything at all, a complete overhaul of this app's security would be necessary. 
-        Django secret keys would be stored in a secrets vault, or in a .env file to be deployed and 'installed' as environment variables, properly securing the whole thing.
+        </br>Django secret keys would be stored in a secrets vault, or in a .env file to be deployed and 'installed' as environment variables, properly securing the whole thing.
     </p>
     <p>
         The UI consists solely of Django Templating: HTML + CSS + unholy amounts of time for our data analysts and backend engineers to figure out how frontend stuff works.
     </p>
     <p>
         Future versions of the site, if a UI revamp is necessary due to increased traffic attention, will include the building of an API with 
-        <strong>Django Rest Framework</strong>, and most likely a proper <strong>React or Angular</strong> frontend built out. 
-        This was avoided at first to cut down production time for version 0.1.0.
+        <strong>Django Rest Framework</strong>, and most likely a proper <strong>React or Angular</strong> frontend built out.
+        </br>This was avoided at first to cut down production time for version 0.1.0.
     </p>
 
 </br>

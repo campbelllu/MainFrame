@@ -104,22 +104,22 @@
                     <th>Select Minimum-></th>
                     <th>{{ lt|length }} Found</th> 
                     
-                    <th><input type="text" name="vfroce" value="{{dv.roce|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfroic" value="{{dv.roic|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfrev" value="{{dv.rev|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfni" value="{{dv.ni|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfffo" value="{{dv.ffo|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vffcf" value="{{dv.fcf|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vffcfm" value="{{dv.fcfm|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfcf" value="{{dv.cf|safe}}" id="valueMin"></th>
-                    <!-- <th><input type="text" name="vfdp" placeholder="{{dv.dp|safe}}" id="valueMin"></th> -->
-                    <th><input type="text" name="vfdivgr" value="{{dv.divgr|safe}}" id="valueMin"></th>
-                    <!-- <th><input type="text" name="vfpo" placeholder="{{dv.po|safe}}" id="valueMin"></th> -->
-                    <!-- <th><input type="text" name="vfffopo" placeholder="{{dv.ffopo|safe}}" id="valueMin"></th> -->
+                    <th><input type="text" name="vfroce" value="{{dv.roce|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfroic" value="{{dv.roic|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfrev" value="{{dv.rev|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfni" value="{{dv.ni|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfffo" value="{{dv.ffo|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vffcf" value="{{dv.fcf|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vffcfm" value="{{dv.fcfm|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfcf" value="{{dv.cf|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <!-- <th><input type="text" name="vfdp" value="{{dv.dp|safe}}" id="valueMin"></th> -->
+                    <th><input type="text" name="vfdivgr" value="{{dv.divgr|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <!-- <th><input type="text" name="vfpo" value="{{dv.po|safe}}" id="valueMin"></th> -->
+                    <!-- <th><input type="text" name="vfffopo" value="{{dv.ffopo|safe}}" id="valueMin"></th> -->
                     <!-- <th><input type="text" name="vfdebt" value="{{dv.debt|safe}}" id="valueMin"></th> -->
-                    <th><input type="text" name="vfeq" value="{{dv.eq|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfshares" value="{{dv.shares|safe}}" id="valueMin"></th>
-                    <th><input type="text" name="vfbv" value="{{dv.bv|safe}}" id="valueMin"></th>
+                    <th><input type="text" name="vfeq" value="{{dv.eq|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfshares" value="{{dv.shares|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
+                    <th><input type="text" name="vfbv" value="{{dv.bv|safe|floatformat:2}}" id="valueMin" onclick="this.select();"></th>
                     <!-- <th><input type="text" name="vfroc" value="{{dv.roc|safe}}" id="valueMin"></th> -->
                     <!-- <th><input type="text" name="vfreitroce" value="{{dv.reitroce|safe}}" id="valueMin"></th> -->
                     <th><-Select Minimum</th>
@@ -129,22 +129,22 @@
                     <td></td>
                     <td><a href="{% url 'overh' ticker=i.Ticker %}" id="srTicker">{{i.Ticker}}</a></td>
                     
-                    <td>{{i.roce|floatformat:3}}%</td>
-                    <td>{{i.roic|floatformat:3}}%</td>
-                    <td>{{i.revGrowthAVGnz|floatformat:3}}%</td>
-                    <td>{{i.netIncomeGrowthAVGnz|floatformat:3}}%</td>
-                    <td>{{i.ffoGrowthAVGnz|floatformat:3}}%</td>
-                    <td>{{i.fcfGrowthAVGnz|floatformat:3}}%</td>
-                    <td>{{i.fcfMarginGrowthAVGnz|floatformat:3}}%</td>
-                    <td>{{i.netCashFlowGrowthAVGnz|floatformat:3}}%</td>
+                    <td>{{i.roce|floatformat:2}}%</td>
+                    <td>{{i.roic|floatformat:2}}%</td>
+                    <td>{{i.revGrowthAVGnz|floatformat:2}}%</td>
+                    <td>{{i.netIncomeGrowthAVGnz|floatformat:2}}%</td>
+                    <td>{{i.ffoGrowthAVGnz|floatformat:2}}%</td>
+                    <td>{{i.fcfGrowthAVGnz|floatformat:2}}%</td>
+                    <td>{{i.fcfMarginGrowthAVGnz|floatformat:2}}%</td>
+                    <td>{{i.netCashFlowGrowthAVGnz|floatformat:2}}%</td>
                     <!-- <td>{{i.divpay}}</td> -->
-                    <td>{{i.divgr|floatformat:3}}%</td>
+                    <td>{{i.divgr|floatformat:2}}%</td>
                     <!-- <td>{{i.payoutRatioAVGnz|floatformat:3}}</td> -->
                     <!-- <td>{{i.ffoPayoutRatioAVGnz|floatformat:3}}</td> -->
                     <!-- <td>{{i.debtGrowthAVG|floatformat:3}}</td> -->
-                    <td>{{i.equity|floatformat:3}}%</td>
-                    <td>{{i.sharesGrowthAVG|floatformat:3}}%</td>
-                    <td>{{i.bv|floatformat:3}}%</td>
+                    <td>{{i.equity|floatformat:2}}%</td>
+                    <td>{{i.sharesGrowthAVG|floatformat:2}}%</td>
+                    <td>{{i.bv|floatformat:2}}%</td>
                     <!-- <td>{{i.roc}}</td> -->
                     <!-- <td>{{i.reitroce}}</td> -->
                     <td>{{i.Sector}}</td>
