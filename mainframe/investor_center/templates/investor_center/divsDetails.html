@@ -1,4 +1,5 @@
 {% extends 'investor_center/base.html' %}
+{% load humanize %}
 
 {% block content %}
     
@@ -32,6 +33,7 @@
             </br>Reported versus Calculated growth rate percentages that have large variance could point to either a flaw in our data collection techniques, or in fradulent reporting to the SEC.
             </br>Such discrepencies could also point to a company having split payments between preferred and common shares, and our data collection techniques not yet being advanced enough to display 
             the difference.
+            </br>Values not found in SEC records have had null values replaced with zero (0, $0, depending). So zero is either a reported zero dividends paid, or missing data.
         </p>
     </details> </br>
 
@@ -63,7 +65,7 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.totalDivsPaid|floatformat:"0"}}</td>
+                <td>${{i.totalDivsPaid|floatformat:"0"|intcomma}}</td>
                 <td>{{i.divGrowthRateBOT|floatformat:3}}%</td>
                 <td>${{i.calcDivsPerShare|floatformat:3}}/share</td>
                 <td>{{i.divGrowthRateBOCPS|floatformat:3}}%</td>
@@ -114,9 +116,9 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>{{i.por100|floatformat:3}}%</td>
-                <td>{{i.fcfpor100|floatformat:3}}%</td>
-                <td>{{i.ffopor100|floatformat:3}}%</td>
+                <td>{{i.payoutRatio|floatformat:3}}%</td>
+                <td>{{i.fcfPayoutRatio|floatformat:3}}%</td>
+                <td>{{i.ffoPayoutRatio|floatformat:3}}%</td>
             </tr>
             {% endfor %}
         </table>

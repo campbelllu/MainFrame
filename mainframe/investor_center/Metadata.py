@@ -36,7 +36,7 @@ db_path = settings.DATABASES['default']['NAME']
 
 #From fellow files
 import csv_modules as csv
-import Mega as mega
+# import Mega as mega
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
@@ -72,28 +72,28 @@ def uploadToDB(upload,table):
         query.close()
         conn.close()
 
-def IQR_Mean(list):
+def IQR_Mean(list1):
     try:
         nonechecker = 0
         infchecker = 0
-        for x in list:
+        for x in list1:
             if x is None:
                 nonechecker += 1
             if x == np.inf:
                 infchecker += 1
 
-        if nonechecker == len(list):
+        if nonechecker == len(list1):
             ar_Mean = np.nan
             return ar_Mean
-        if infchecker == len(list):
+        if infchecker == len(list1):
             ar_Mean = np.nan
             return ar_Mean
 
-        if isinstance(list[0],float) or isinstance(list[0],int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
+        if isinstance(list1[0],float) or isinstance(list1[0],int):
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
             cleaned_list = [x for x in cleaned_list if not np.isinf(x)]
-        elif isinstance(list[0],str):
-            cleaned_list = [eval(i) for i in list]
+        elif isinstance(list1[0],str):
+            cleaned_list = [eval(i) for i in list1]
         else:
             print('IQR_Mean type was not string or float')
 
@@ -119,32 +119,32 @@ def IQR_Mean(list):
         print("IQR Mean error: ")
         print(err)
 
-def IQR_MeanNZ(list):
+def IQR_MeanNZ(list1):
     try:
         nonechecker = 0
         infchecker = 0
-        for x in list:
+        for x in list1:
             if x is None:
                 nonechecker += 1
             if x == np.inf:
                 infchecker += 1      
-        if nonechecker == len(list):
+        if nonechecker == len(list1):
             ar_Mean = np.nan
             return ar_Mean
-        if infchecker == len(list):
+        if infchecker == len(list1):
             ar_Mean = np.nan
             return ar_Mean
        
-        if isinstance(list[0], float) or isinstance(list[0], int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
+        if isinstance(list1[0], float) or isinstance(list1[0], int):
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
             cleaned_list = [x for x in cleaned_list if not np.isinf(x)]
             cleaned_list = [x for x in cleaned_list if x != 0]
 
             if len(cleaned_list) == 0:
                 return np.nan
           
-        elif isinstance(list[0], str):
-            cleaned_list = [eval(i) for i in list]
+        elif isinstance(list1[0], str):
+            cleaned_list = [eval(i) for i in list1]
         else:
             print('IQR_Mean nz type was not string or float')
 
@@ -170,16 +170,16 @@ def IQR_MeanNZ(list):
         print("IQR Mean nz error: ")
         print(err)
 
-def nan_strip_min(list):
+def nan_strip_min(list1):
     try:
         cleaned_list = []
-        if isinstance(list[0],float) or isinstance(list[0],int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
+        if isinstance(list1[0],float) or isinstance(list1[0],int):
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
             ar_Min = np.min(cleaned_list)
-        elif isinstance(list[0], str):
-            cleaned_list = [eval(i) for i in list]
+        elif isinstance(list1[0], str):
+            cleaned_list = [eval(i) for i in list1]
             ar_Min = np.min(cleaned_list)
-        elif list[0] is None:
+        elif list1[0] is None:
             ar_Min = np.nan
         else:
             print('strip Min type was not int, float or none')
@@ -190,16 +190,16 @@ def nan_strip_min(list):
     finally:
         return ar_Min
 
-def nan_strip_max(list):
+def nan_strip_max(list1):
     try:
         cleaned_list = []
-        if isinstance(list[0],float) or isinstance(list[0],int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
+        if isinstance(list1[0],float) or isinstance(list1[0],int):
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
             ar_Max = np.max(cleaned_list)
-        elif isinstance(list[0],str):
-            cleaned_list = [eval(i) for i in list]
+        elif isinstance(list1[0],str):
+            cleaned_list = [eval(i) for i in list1]
             ar_Max = np.max(cleaned_list)
-        elif list[0] is None:
+        elif list1[0] is None:
             ar_Max = np.nan
         else:
             print('strip Max type was not int or float')
@@ -210,13 +210,13 @@ def nan_strip_max(list):
     finally:
         return ar_Max
 
-def nan_strip_count(list):
+def nan_strip_count(list1):
     try:
         cleaned_list = []
-        if isinstance(list[0],float) or isinstance(list[0],int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
-        elif isinstance(list[0],str):
-            cleaned_list = [eval(i) for i in list]
+        if isinstance(list1[0],float) or isinstance(list1[0],int):
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
+        elif isinstance(list1[0],str):
+            cleaned_list = [eval(i) for i in list1]
         else:
             print('strip count type was not int or float')
 
@@ -227,25 +227,25 @@ def nan_strip_count(list):
     finally:
         return ar_count
 
-def nan_strip_list(list):
+def nan_strip_list(list1):
     try:
         cleaned_list = []
         if isinstance(list[0],float) or isinstance(list[0],int):
-            cleaned_list = [x for x in list if not np.isnan(x)]
-        elif isinstance(list[0],str):
-            cleaned_list = [eval(i) for i in list]
+            cleaned_list = [x for x in list1 if not np.isnan(x)]
+        elif isinstance(list1[0],str):
+            cleaned_list = [eval(i) for i in list1]
         else:
             print('strip count type was not int or float')
 
     except Exception as err:
-        print("strip list error: ")
+        print("strip list1 error: ")
         print(err)
     finally:
         return cleaned_list
 
-def count_nonzeroes(list):
+def count_nonzeroes(list1):
     try:
-        cleaned_list = [n for n in list if n != 0]
+        cleaned_list = [n for n in list1 if n != 0]
         ar_count = len(cleaned_list)
     except Exception as err:
         print("nonzero count error: ")
@@ -254,6 +254,7 @@ def count_nonzeroes(list):
         return ar_count
 
 def zeroIntegrity(list1):
+    #deprecated, ended up not being used
     try:
         #first check zeroes
         numzeroes = list1.count(0)
@@ -270,7 +271,7 @@ def zeroIntegrity(list1):
         elif check < 0.05:
             integrityFlag = 'good'
 
-        #now solve empty/nan list returning 'good'
+        #now solve empty/nan list1 returning 'good'
         newlistdf = pd.DataFrame()
         newlistdf['test'] = list1
         newlistdf = newlistdf.replace([np.inf, -np.inf], np.nan)
@@ -288,14 +289,16 @@ def income_reading(ticker):
     try:
         conn = sql.connect(db_path)
         query = conn.cursor()
-        thequery = 'SELECT Ticker, Sector, Industry, Year, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, netIncomeNCI, netIncomeNCIGrowthRate, ffo, ffoGrowthRate, \
+        thequery = 'SELECT Ticker, Sector, Industry, Year, revenue, revenueGrowthRate, netIncome, netIncomeGrowthRate, \
+                        ffo, ffoGrowthRate, \
                         reportedEPS, reportedEPSGrowthRate, calculatedEPS, calculatedEPSGrowthRate, reitEPS, reitEPSGrowthRate, \
-                        fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, \
-                        price, priceGrowthRAte \
+                        fcf, fcfGrowthRate, fcfMargin, fcfMarginGrowthRate, profitMargin, profitMarginGrowthRate, \
+                        price, priceGrowthRate \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
                     ORDER BY Year  \
                     ;'
+                    # netIncomeNCI, netIncomeNCIGrowthRate,
         df1 = pd.read_sql(thequery,conn)
         query.close()
         conn.close()
@@ -351,13 +354,14 @@ def dividend_reading(ticker):
     try:
         conn = sql.connect(db_path)
         query = conn.cursor()
-        thequery = 'SELECT Ticker, Sector, Industry, Year, shares, sharesGrowthRate, dilutedShares, dilutedSharesGrowthRate, totalDivsPaid, \
+        thequery = 'SELECT Ticker, Sector, Industry, Year, shares, sharesGrowthRate, totalDivsPaid, \
                         divsPaidPerShare, calcDivsPerShare, divGrowthRateBOT, divGrowthRateBORPS, divGrowthRateBOCPS, payoutRatio, \
-                        fcfPayoutRatio, ffoPayoutRatio, ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate \
+                        fcfPayoutRatio, ffoPayoutRatio \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
                     ORDER BY Year  \
                     ;'
+                    # dilutedShares, dilutedSharesGrowthRate, ROCTotal, ROCperShare, ROCperShareGrowthRate, ROCTotalGrowthRate
         df1 = pd.read_sql(thequery,conn)
         query.close()
         conn.close()
@@ -372,8 +376,8 @@ def efficiency_reading(ticker):
         conn = sql.connect(db_path)
         query = conn.cursor()
         thequery = 'SELECT Ticker, Sector, Industry, Year, operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
-                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, calcBookValue, calcBookValueGrowthRate, \
-                        reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate \
+                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, rReitROE, rReitROEGrowthRate, cReitROE, cReitROEGrowthRate, \
+                        calcBookValue, calcBookValueGrowthRate, reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
                     ORDER BY Year  \
@@ -386,6 +390,37 @@ def efficiency_reading(ticker):
         print(Err)
     finally:
         return df1
+
+#luke gotta add this in somewhere, edit models and templates, win. and views!
+# @property  #LUKE this isn't actually used, but is calculated in views, line 84 roughly. gotta just do it in mega-no-metadata. <3
+    # def profit_margin_avg(self):
+    #     if self.revenue is None or self.revenue == 0:
+    #         return None
+    #     elif self.netIncome is None:
+    #         return None
+    #     else:
+    #         return self.netIncome / self.revenue * 100
+
+    # @property
+    # def poravg100(self):
+    #     if self.payoutRatioAVG is None:
+    #         return None
+    #     else:
+    #         return self.payoutRatioAVG * 100
+
+    # @property
+    # def fcfporavg100(self):
+    #     if self.fcfPayoutRatioAVG is None:
+    #         return None
+    #     else:
+    #         return self.fcfPayoutRatioAVG * 100
+        
+    # @property
+    # def ffoporavg100(self):
+    #     if self.ffoPayoutRatioAVG is None:
+    #         return None
+    #     else:
+    #         return self.ffoPayoutRatioAVG * 100
 
 def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     try:
@@ -408,12 +443,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         revlist = incomedf['revenueGrowthRate'].tolist()
         # revmin = nan_strip_min(revlist)
         # revmax = nan_strip_max(revlist)
-        revavg = IQR_Mean(revlist)
+        # revavg = IQR_Mean(revlist)
         revavgnz = IQR_MeanNZ(revlist)
-        revavginteg = zeroIntegrity(revlist)
+        # revavginteg = zeroIntegrity(revlist)
 
-        metadata['revGrowthAVG'] = revavg
-        metadata['revGrowthAVGintegrity'] = revavginteg
+        # metadata['revGrowthAVG'] = revavg
+        # metadata['revGrowthAVGintegrity'] = revavginteg
         metadata['revGrowthAVGnz'] = revavgnz
 
         #netincome x2, gr's min, max, avg
@@ -425,29 +460,29 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         netincgrlist = incomedf['netIncomeGrowthRate'].tolist()
         # nigrmin = nan_strip_min(netincgrlist)
         # nigrmax = nan_strip_max(netincgrlist)
-        nigravg = IQR_Mean(netincgrlist)
+        # nigravg = IQR_Mean(netincgrlist)
         nigravgnz = IQR_MeanNZ(netincgrlist)
-        nigravgint = zeroIntegrity(netincgrlist)
+        # nigravgint = zeroIntegrity(netincgrlist)
 
-        netincNCIlist = incomedf['netIncomeNCI'].tolist()
-        nincimin = nan_strip_min(netincNCIlist)
+        # netincNCIlist = incomedf['netIncomeNCI'].tolist()
+        # nincimin = nan_strip_min(netincNCIlist)
 
-        netincNCIgrlist = incomedf['netIncomeNCIGrowthRate'].tolist()
+        # netincNCIgrlist = incomedf['netIncomeNCIGrowthRate'].tolist()
         # nincigrmin = nan_strip_min(netincNCIgrlist)
         # nincigrmax = nan_strip_max(netincNCIgrlist)
-        nincigravg = IQR_Mean(netincNCIgrlist)
-        nincigravgnz = IQR_MeanNZ(netincNCIgrlist)
-        nincigrint = zeroIntegrity(netincNCIgrlist)
+        # nincigravg = IQR_Mean(netincNCIgrlist)
+        # nincigravgnz = IQR_MeanNZ(netincNCIgrlist)
+        # nincigrint = zeroIntegrity(netincNCIgrlist)
 
         metadata['netIncomeLow'] = nimin
-        metadata['netIncomeGrowthAVG'] = nigravg
-        metadata['netIncomeGrowthAVGintegrity'] = nigravgint
+        # metadata['netIncomeGrowthAVG'] = nigravg
+        # metadata['netIncomeGrowthAVGintegrity'] = nigravgint
         metadata['netIncomeGrowthAVGnz'] = nigravgnz
 
-        metadata['netIncomeNCILow'] = nincimin
-        metadata['netIncomeNCIGrowthAVG'] = nincigravg
-        metadata['netIncomeNCIGrowthAVGintegrity'] = nincigrint
-        metadata['netIncomeNCIGrowthAVGnz'] = nincigravgnz
+        # metadata['netIncomeNCILow'] = nincimin
+        # metadata['netIncomeNCIGrowthAVG'] = nincigravg
+        # metadata['netIncomeNCIGrowthAVGintegrity'] = nincigrint
+        # metadata['netIncomeNCIGrowthAVGnz'] = nincigravgnz
 
         #ffo gr's min, max, avg
         ffolist = incomedf['ffo'].tolist()
@@ -458,36 +493,36 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         ffogrlist = incomedf['ffoGrowthRate'].tolist()
         # ffogrmin = nan_strip_min(ffogrlist)
         # ffogrmax = nan_strip_max(ffogrlist)
-        ffogravg = IQR_Mean(ffogrlist)
+        # ffogravg = IQR_Mean(ffogrlist)
         ffogravgnz = IQR_MeanNZ(ffogrlist)
-        ffogravgint = zeroIntegrity(ffogrlist)
+        # ffogravgint = zeroIntegrity(ffogrlist)
 
         metadata['ffoLow'] = ffomin
-        metadata['ffoGrowthAVG'] = ffogravg
-        metadata['ffoGrowthAVGintegrity'] = ffogravgint
+        # metadata['ffoGrowthAVG'] = ffogravg
+        # metadata['ffoGrowthAVGintegrity'] = ffogravgint
         metadata['ffoGrowthAVGnz'] = ffogravgnz
 
         # reportedEPS, 
         repslist = incomedf['reportedEPS'].tolist()
         repsmin = nan_strip_min(repslist)
-        repsavg = IQR_Mean(repslist)
-        repsavgint = zeroIntegrity(repslist)
+        # repsavg = IQR_Mean(repslist)
+        # repsavgint = zeroIntegrity(repslist)
         repsavgnz = IQR_MeanNZ(repslist)
 
         metadata['repsLow'] = repsmin
-        metadata['repsAVG'] = repsavg
-        metadata['repsAVGintegrity'] = repsavgint
+        # metadata['repsAVG'] = repsavg
+        # metadata['repsAVGintegrity'] = repsavgint
         metadata['repsAVGnz'] = repsavgnz
         
         #reportedEPSGrowthRate, 
         repsgrlist = incomedf['reportedEPSGrowthRate'].tolist()
         # repsgrmin = nan_strip_min(repsgrlist)
-        repsgravg = IQR_Mean(repsgrlist)
-        repsgrint = zeroIntegrity(repsgrlist)
+        # repsgravg = IQR_Mean(repsgrlist)
+        # repsgrint = zeroIntegrity(repsgrlist)
         repsgravgnz = IQR_MeanNZ(repsgrlist)
 
-        metadata['repsGrowthAVG'] = repsgravg
-        metadata['repsGrowthAVGintegrity'] = repsgrint
+        # metadata['repsGrowthAVG'] = repsgravg
+        # metadata['repsGrowthAVGintegrity'] = repsgrint
         metadata['repsGrowthAVGnz'] = repsgravgnz
 
         #calculatedEPS, 
@@ -768,12 +803,12 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         metadata['sharesGrowthAVG'] = sharesavg
 
         #dil shares same as above
-        dshareslist = divdf['dilutedSharesGrowthRate'].tolist()
+        # dshareslist = divdf['dilutedSharesGrowthRate'].tolist()
         # dsharesmin = nan_strip_min(dshareslist)
         # dsharesmax = nan_strip_max(dshareslist)
-        dsharesavg = IQR_Mean(dshareslist)
+        # dsharesavg = IQR_Mean(dshareslist)
 
-        metadata['dilutedSharesGrowthAVG'] = dsharesavg
+        # metadata['dilutedSharesGrowthAVG'] = dsharesavg
 
         #total divs
         # tdivslist = divdf['totalDivsPaid'].tolist()
@@ -1150,3 +1185,5 @@ def copyMD():
         print(err)
 
 # copyMD()
+
+print_DB('SELECT * FROM Metadata_Backup;', 'print')

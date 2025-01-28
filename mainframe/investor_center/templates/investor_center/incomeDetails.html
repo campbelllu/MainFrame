@@ -1,4 +1,5 @@
 {% extends 'investor_center/base.html' %}
+{% load humanize %}
 
 {% block content %}
     <p>Jump to another report:</p>
@@ -62,11 +63,11 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.revenue|floatformat:"0"}}</td>
+                <td>${{i.revenue|floatformat:"0"|intcomma}}</td>
                 <td>{{i.revenueGrowthRate|floatformat:3}}%</td>
-                <td>${{i.netIncome|floatformat:"0"}}</td>
+                <td>${{i.netIncome|floatformat:"0"|intcomma}}</td>
                 <td>{{i.netIncomeGrowthRate|floatformat:3}}%</td>
-                <td>{{i.profit_margin|floatformat:3}}%</td>
+                <td>{{i.profitMargin|floatformat:3}}%</td>
                 
             </tr>
             {% endfor %}
@@ -85,7 +86,7 @@
         <p>
             Earnings per Share is just the Net Income divided by the number of Shares Outstanding. 
             </br>Some companies report EPS to the SEC and some don't, so we've included a calculated version to provide context when reported values are lacking.
-            </br>Our Full Stock Reports outline how any differences in Reported and Calculated values come about.
+            </br>If all shares data is unfound in SEC records, shares outstanding null values have been replaced with one (1), which may skew EPS calculations dramatically.
         </p>
     </details> </br>
     
@@ -118,7 +119,7 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>{{i.shares|floatformat:"0"}}</td>
+                <td>{{i.shares|floatformat:"0"|intcomma}}</td>
                 <td>{{i.sharesGrowthRate|floatformat:3}}%</td>
                 <td>${{i.reportedEPS|floatformat:2}}/share</td>
                 <td>{{i.reportedEPSGrowthRate|floatformat:3}}%</td>
@@ -144,6 +145,7 @@
             </br>We don't have the necessary data available at this time to calculate AFFO, Adjusted Funds from Operations, which is a more accurate Net Income proxy for REITS.
             </br>However, the FFO numbers here can be used as a reliable substitute in lieu of that current deficiency in our models.
             </br>If the company you're looking at isn't a REIT, this table can be ignored altogether.
+            </br>If stats on sales of property weren't found, null values were replaced with zero (0), which may skew FFO calculations.
         </p>
     </details> </br>
     
@@ -176,9 +178,9 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.ffo}}</td>
+                <td>${{i.ffo|intcomma}}</td>
                 <td>{{i.ffoGrowthRate|floatformat:3}}%</td>
-                <td>{{i.shares|floatformat:"0"}}</td>
+                <td>{{i.shares|floatformat:"0"|intcomma}}</td>
                 <td>{{i.sharesGrowthRate|floatformat:3}}%</td>            
                 <td>${{i.reitEPS|floatformat:2}}/share</td>
                 <td>{{i.reitEPSGrowthRate|floatformat:3}}%</td>

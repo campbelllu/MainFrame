@@ -1,4 +1,5 @@
 {% extends 'investor_center/base.html' %}
+{% load humanize %}
 
 {% block content %}
     <p>Jump to another report:</p>
@@ -67,13 +68,13 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.operatingCashFlow|floatformat:"0"}}</td>
+                <td>${{i.operatingCashFlow|floatformat:"0"|intcomma}}</td>
                 <td>{{i.operatingCashFlowGrowthRate|floatformat:3}}%</td>
-                <td>${{i.investingCashFlow|floatformat:"0"}}</td>
+                <td>${{i.investingCashFlow|floatformat:"0"|intcomma}}</td>
                 <td>{{i.investingCashFlowGrowthRate|floatformat:3}}%</td>
-                <td>${{i.financingCashFlow|floatformat:"0"}}</td>
+                <td>${{i.financingCashFlow|floatformat:"0"|intcomma}}</td>
                 <td>{{i.financingCashFlowGrowthRate|floatformat:3}}%</td>
-                <td>${{i.netCashFlow|floatformat:"0"}}</td>
+                <td>${{i.netCashFlow|floatformat:"0"|intcomma}}</td>
                 <td>{{i.netCashFlowGrowthRate|floatformat:3}}%</td>
             </tr>
             {% endfor %}
@@ -124,9 +125,9 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.capEx|floatformat:"0"}}</td>
+                <td>${{i.capEx|floatformat:"0"|intcomma}}</td>
                 <td>{{i.capExGrowthRate|floatformat:3}}%</td>
-                <td>${{i.fcf|floatformat:"0"}}</td>
+                <td>${{i.fcf|floatformat:"0"|intcomma}}</td>
                 <td>{{i.fcfGrowthRate|floatformat:3}}%</td>
                 <td>{{i.fcfMargin|floatformat:3}}%</td>
                 <td>{{i.fcfMarginGrowthRate|floatformat:3}}%</td>

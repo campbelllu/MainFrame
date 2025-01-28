@@ -43,7 +43,7 @@
             {% for l in mt %}
             <tr>
                 <th>Years Analyzed</th>
-                <th>Category</th>
+                <th>Category =></th>
                 <th>Revenue GR</th>
                 <th>Net Income GR</th>
                 <th>Reported EPS GR</th>
@@ -56,7 +56,7 @@
             </tr>
             <tr>
                 <th>{{ years|length }}</th>
-                <th>Average</th>
+                <th>Average =></th>
                 <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.netIncomeGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.repsGrowthAVGnz|floatformat:3}}%</th>

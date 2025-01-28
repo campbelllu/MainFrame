@@ -1,4 +1,5 @@
 from django.db import models
+# from django.db import transaction
 
 class stockList(models.Model):
     Ticker = models.CharField(max_length=10)
@@ -24,6 +25,9 @@ class Mega(models.Model):
     capExGrowthRate = models.FloatField(blank=True, null=True)
     depreNAmor = models.IntegerField(blank=True, null=True)
     gainSaleProp = models.IntegerField(blank=True, null=True)
+
+    profitMargin = models.FloatField(blank=True, null=True)
+    profitMarginGrowthRate = models.FloatField(blank=True, null=True)
 
     operatingCashFlow = models.IntegerField(blank=True, null=True)
     operatingCashFlowGrowthRate = models.FloatField(blank=True, null=True)
@@ -53,6 +57,7 @@ class Mega(models.Model):
     ReportedTotalEquity = models.IntegerField(blank=True, null=True)
     ReportedTotalEquityGrowthRate = models.FloatField(blank=True, null=True)
 
+    #luke this block; nopat and roic
     nopat = models.IntegerField(blank=True, null=True)
     investedCapital = models.IntegerField(blank=True, null=True)
     roic = models.FloatField(blank=True, null=True)
@@ -60,9 +65,14 @@ class Mega(models.Model):
     reportedAdjRoic = models.FloatField(blank=True, null=True)
     reportedRoce = models.FloatField(blank=True, null=True)
     calculatedRoce = models.FloatField(blank=True, null=True)
+    cReitROE = models.FloatField(blank=True, null=True)
+    cReitROEGrowthRate = models.FloatField(blank=True, null=True)
+    rReitROE = models.FloatField(blank=True, null=True)
+    rReitROEGrowthRate = models.FloatField(blank=True, null=True)
     
     shares = models.IntegerField(blank=True, null=True)
     sharesGrowthRate = models.FloatField(blank=True, null=True)
+    #luke all diluteds
     dilutedShares = models.IntegerField(blank=True, null=True)
     dilutedSharesGrowthRate = models.FloatField(blank=True, null=True)
     reportedEPS = models.FloatField(blank=True, null=True)
@@ -80,6 +90,7 @@ class Mega(models.Model):
     fcfPayoutRatio = models.FloatField(blank=True, null=True)
     ffoPayoutRatio = models.FloatField(blank=True, null=True)
 
+    #luke this block
     ROCTotal = models.IntegerField(blank=True, null=True)
     ROCTotalGrowthRate = models.FloatField(blank=True, null=True)
     ROCperShare = models.FloatField(blank=True, null=True)
@@ -95,6 +106,7 @@ class Mega(models.Model):
     price = models.FloatField(blank=True, null=True)
     priceGrowthRate = models.FloatField(blank=True, null=True)
 
+    #luke this block
     DIVintegrityFlag = models.CharField(max_length=10)
     INCintegrityFlag = models.CharField(max_length=10)
     ROICintegrityFlag = models.CharField(max_length=10)
@@ -106,15 +118,14 @@ class Mega(models.Model):
     Sector = models.CharField(max_length=30)
     Industry = models.CharField(max_length=50)
 
-
-    @property
-    def profit_margin(self):
-        if self.revenue is None or self.revenue == 0:
-            return None
-        elif self.netIncome is None:
-            return None
-        else:
-            return self.netIncome / self.revenue * 100
+    # @property
+    # def profit_margin(self):
+    #     if self.revenue is None or self.revenue == 0:
+    #         return None
+    #     elif self.netIncome is None:
+    #         return None
+    #     else:
+    #         return self.netIncome / self.revenue * 100
 
     # @property
     # def profit_margin_avg(self):
@@ -125,48 +136,162 @@ class Mega(models.Model):
     #     else:
     #         return self.netIncome / self.revenue * 100
 
+    # @property
+    # def creit_roce(self):
+    #     if self.TotalEquity is None or self.ReportedTotalEquity == 0:
+    #         return None
+    #     elif self.ffo is None:
+    #         return None
+    #     else:
+    #         return self.ffo / self.TotalEquity * 100
 
-    @property
-    def creit_roce(self):
-        if self.TotalEquity is None or self.ReportedTotalEquity == 0:
-            return None
-        elif self.ffo is None:
-            return None
-        else:
-            return self.ffo / self.TotalEquity * 100
+    # @property
+    # def rreit_roce(self): #luke this
+    #     if self.ReportedTotalEquity is None or self.ReportedTotalEquity == 0:
+    #         return None
+    #     elif self.ffo is None:
+    #         return None
+    #     else:
+    #         return self.ffo / self.ReportedTotalEquity * 100
 
-    @property
-    def rreit_roce(self): #luke this
-        if self.ReportedTotalEquity is None or self.ReportedTotalEquity == 0:
-            return None
-        elif self.ffo is None:
-            return None
-        else:
-            return self.ffo / self.ReportedTotalEquity * 100
+    # @property
+    # def por100(self):
+    #     if self.payoutRatio is None:
+    #         return None
+    #     else:
+    #         return self.payoutRatio * 100
 
-    @property
-    def por100(self):
-        if self.payoutRatio is None:
-            return None
-        else:
-            return self.payoutRatio * 100
+    # @property
+    # def fcfpor100(self):
+    #     if self.fcfPayoutRatio is None:
+    #         return None
+    #     else:
+    #         return self.fcfPayoutRatio * 100
 
-    @property
-    def fcfpor100(self):
-        if self.fcfPayoutRatio is None:
-            return None
-        else:
-            return self.fcfPayoutRatio * 100
-
-    @property
-    def ffopor100(self):
-        if self.ffoPayoutRatio is None:
-            return None
-        else:
-            return self.ffoPayoutRatio * 100
+    # @property
+    # def ffopor100(self):
+    #     if self.ffoPayoutRatio is None:
+    #         return None
+    #     else:
+    #         return self.ffoPayoutRatio * 100
 
     class Meta:
         db_table = 'Mega'
+
+class Mega_Backup(models.Model):
+    revenue = models.IntegerField(blank=True, null=True)
+    revenueGrowthRate = models.FloatField(blank=True, null=True)
+    netIncome = models.IntegerField(blank=True, null=True)
+    netIncomeGrowthRate = models.FloatField(blank=True, null=True)
+    netIncomeNCI = models.IntegerField(blank=True, null=True)
+    netIncomeNCIGrowthRate = models.FloatField(blank=True, null=True)
+    interestPaid = models.IntegerField(blank=True, null=True)
+    operatingIncome = models.IntegerField(blank=True, null=True)
+    operatingIncomeGrowthRate = models.FloatField(blank=True, null=True)
+    taxRate = models.FloatField(blank=True, null=True)
+    capEx = models.IntegerField(blank=True, null=True)
+    capExGrowthRate = models.FloatField(blank=True, null=True)
+    depreNAmor = models.IntegerField(blank=True, null=True)
+    gainSaleProp = models.IntegerField(blank=True, null=True)
+
+    profitMargin = models.FloatField(blank=True, null=True)
+    profitMarginGrowthRate = models.FloatField(blank=True, null=True)
+
+    operatingCashFlow = models.IntegerField(blank=True, null=True)
+    operatingCashFlowGrowthRate = models.FloatField(blank=True, null=True)
+    investingCashFlow = models.IntegerField(blank=True, null=True)
+    investingCashFlowGrowthRate = models.FloatField(blank=True, null=True)
+    financingCashFlow = models.IntegerField(blank=True, null=True)
+    financingCashFlowGrowthRate = models.FloatField(blank=True, null=True)
+    netCashFlow = models.IntegerField(blank=True, null=True)
+    netCashFlowGrowthRate = models.FloatField(blank=True, null=True)
+
+    fcf = models.IntegerField(blank=True, null=True)
+    fcfGrowthRate = models.FloatField(blank=True, null=True)
+    fcfMargin = models.FloatField(blank=True, null=True)
+    fcfMarginGrowthRate = models.FloatField(blank=True, null=True)
+    
+    ffo = models.IntegerField(blank=True, null=True)
+    ffoGrowthRate = models.FloatField(blank=True, null=True)
+    reitEPS = models.FloatField(blank=True, null=True)
+    reitEPSGrowthRate = models.FloatField(blank=True, null=True)
+
+    TotalDebt = models.IntegerField(blank=True, null=True)
+    TotalDebtGrowthRate = models.FloatField(blank=True, null=True)
+    assets = models.IntegerField(blank=True, null=True)
+    liabilities = models.IntegerField(blank=True, null=True)
+    TotalEquity = models.IntegerField(blank=True, null=True)
+    TotalEquityGrowthRate = models.FloatField(blank=True, null=True)
+    ReportedTotalEquity = models.IntegerField(blank=True, null=True)
+    ReportedTotalEquityGrowthRate = models.FloatField(blank=True, null=True)
+
+    #luke this block; nopat and roic
+    nopat = models.IntegerField(blank=True, null=True)
+    investedCapital = models.IntegerField(blank=True, null=True)
+    roic = models.FloatField(blank=True, null=True)
+    adjRoic = models.FloatField(blank=True, null=True)
+    reportedAdjRoic = models.FloatField(blank=True, null=True)
+    reportedRoce = models.FloatField(blank=True, null=True)
+    calculatedRoce = models.FloatField(blank=True, null=True)
+    cReitROE = models.FloatField(blank=True, null=True)
+    cReitROEGrowthRate = models.FloatField(blank=True, null=True)
+    rReitROE = models.FloatField(blank=True, null=True)
+    rReitROEGrowthRate = models.FloatField(blank=True, null=True)
+    
+    shares = models.IntegerField(blank=True, null=True)
+    sharesGrowthRate = models.FloatField(blank=True, null=True)
+    #luke all diluteds
+    dilutedShares = models.IntegerField(blank=True, null=True)
+    dilutedSharesGrowthRate = models.FloatField(blank=True, null=True)
+    reportedEPS = models.FloatField(blank=True, null=True)
+    reportedEPSGrowthRate = models.FloatField(blank=True, null=True)
+    calculatedEPS = models.FloatField(blank=True, null=True)
+    calculatedEPSGrowthRate = models.FloatField(blank=True, null=True)
+
+    divsPaidPerShare = models.FloatField(blank=True, null=True)
+    calcDivsPerShare = models.FloatField(blank=True, null=True)
+    totalDivsPaid = models.IntegerField(blank=True, null=True)
+    divGrowthRateBOT = models.FloatField(blank=True, null=True)
+    divGrowthRateBORPS = models.FloatField(blank=True, null=True)
+    divGrowthRateBOCPS = models.FloatField(blank=True, null=True)
+    payoutRatio = models.FloatField(blank=True, null=True)
+    fcfPayoutRatio = models.FloatField(blank=True, null=True)
+    ffoPayoutRatio = models.FloatField(blank=True, null=True)
+
+    #luke this block
+    ROCTotal = models.IntegerField(blank=True, null=True)
+    ROCTotalGrowthRate = models.FloatField(blank=True, null=True)
+    ROCperShare = models.FloatField(blank=True, null=True)
+    ROCperShareGrowthRate = models.FloatField(blank=True, null=True)
+
+    nav = models.FloatField(blank=True, null=True)
+    navGrowthRate = models.FloatField(blank=True, null=True)
+    calcBookValue = models.FloatField(blank=True, null=True)
+    calcBookValueGrowthRate = models.FloatField(blank=True, null=True)
+    reportedBookValue = models.FloatField(blank=True, null=True)
+    reportedBookValueGrowthRate = models.FloatField(blank=True, null=True)
+
+    price = models.FloatField(blank=True, null=True)
+    priceGrowthRate = models.FloatField(blank=True, null=True)
+
+    #luke this block
+    DIVintegrityFlag = models.CharField(max_length=10, blank=True, null=True)
+    INCintegrityFlag = models.CharField(max_length=10, blank=True, null=True)
+    ROICintegrityFlag = models.CharField(max_length=10, blank=True, null=True)
+
+    year = models.CharField(max_length=4, blank=True, null=True)
+    Ticker = models.CharField(max_length=10, blank=True, null=True)
+    CIK = models.CharField(max_length=10, blank=True, null=True)
+    Units = models.CharField(max_length=10,blank=True, null=True)
+    Sector = models.CharField(max_length=30, blank=True, null=True)
+    Industry = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        db_table = 'Mega_Backup'
+
+# with transaction.atomic():
+#     for obj in Mega.objects.all():
+#         Mega_Backup.objects.create(**obj.__dict__)
 
 class Metadata(models.Model):
     Ticker = models.CharField(max_length=10, blank=True, null=True)
@@ -175,29 +300,31 @@ class Metadata(models.Model):
     AveragedOverYears  = models.CharField(max_length=4, blank=True, null=True)
     Sector = models.CharField(max_length=30, blank=True, null=True)
     Industry = models.CharField(max_length=50, blank=True, null=True)
-    revGrowthAVG = models.FloatField(blank=True, null=True)
-    revGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # revGrowthAVG = models.FloatField(blank=True, null=True)
+    # revGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     revGrowthAVGnz = models.FloatField(blank=True, null=True)
+
     netIncomeLow = models.IntegerField(blank=True, null=True)
-    netIncomeGrowthAVG = models.FloatField(blank=True, null=True)
-    netIncomeGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # netIncomeGrowthAVG = models.FloatField(blank=True, null=True)
+    # netIncomeGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     netIncomeGrowthAVGnz = models.FloatField(blank=True, null=True)
-    netIncomeNCILow = models.IntegerField(blank=True, null=True)
-    netIncomeNCIGrowthAVG = models.FloatField(blank=True, null=True)
-    netIncomeNCIGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
-    netIncomeNCIGrowthAVGnz = models.FloatField(blank=True, null=True)
+    # netIncomeNCILow = models.IntegerField(blank=True, null=True)
+    # netIncomeNCIGrowthAVG = models.FloatField(blank=True, null=True)
+    # netIncomeNCIGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # netIncomeNCIGrowthAVGnz = models.FloatField(blank=True, null=True)
+
     ffoLow = models.IntegerField(blank=True, null=True)
-    ffoGrowthAVG = models.FloatField(blank=True, null=True)
-    ffoGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # ffoGrowthAVG = models.FloatField(blank=True, null=True)
+    # ffoGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     ffoGrowthAVGnz = models.FloatField(blank=True, null=True)
 
     repsLow = models.FloatField(blank=True, null=True)
-    repsAVG = models.FloatField(blank=True, null=True)
-    repsAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # repsAVG = models.FloatField(blank=True, null=True)
+    # repsAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     repsAVGnz = models.FloatField(blank=True, null=True)
         
-    repsGrowthAVG = models.FloatField(blank=True, null=True)
-    repsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
+    # repsGrowthAVG = models.FloatField(blank=True, null=True)
+    # repsGrowthAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     repsGrowthAVGnz = models.FloatField(blank=True, null=True)
 
     cepsLow = models.FloatField(blank=True, null=True)
@@ -321,8 +448,8 @@ class Metadata(models.Model):
     ffoPayoutRatioAVG = models.FloatField(blank=True, null=True)
     ffoPayoutRatioAVGintegrity = models.CharField(max_length=10, blank=True, null=True)
     ffoPayoutRatioAVGnz = models.FloatField(blank=True, null=True)
-    ROCpsAVG = models.FloatField(blank=True, null=True)
-    numYearsROCpaid = models.IntegerField(blank=True, null=True)
+    # ROCpsAVG = models.FloatField(blank=True, null=True)
+    # numYearsROCpaid = models.IntegerField(blank=True, null=True)
     roicLow = models.FloatField(blank=True, null=True)
     roicHigh = models.FloatField(blank=True, null=True)
     roicAVG = models.FloatField(blank=True, null=True)

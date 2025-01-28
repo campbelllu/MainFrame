@@ -1,4 +1,5 @@
 {% extends 'investor_center/base.html' %}
+{% load humanize %}
 
 {% block content %}
     <p>Jump to another report:</p>
@@ -59,9 +60,9 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.ReportedTotalEquity|floatformat:"0"}}</td>
+                <td>${{i.ReportedTotalEquity|floatformat:"0"|intcomma}}</td>
                 <td>{{i.ReportedTotalEquityGrowthRate|floatformat:3}}%</td>
-                <td>${{i.TotalEquity|floatformat:"0"}}</td>
+                <td>${{i.TotalEquity|floatformat:"0"|intcomma}}</td>
                 <td>{{i.TotalEquityGrowthRate|floatformat:3}}%</td>
                
             </tr>
@@ -143,6 +144,7 @@
             </br>Keep in mind that debt levels are already 'bundled into' Shareholder Equity. 
             </br>Zeroes (0) or blanks in the debt table indicate that we may have yet to be able to find debt levels reported to the SEC in the company's filings. It may not indicate that the company actually carries 
             zero debt.
+            </br>Related, if no debt amounts were found in SEC records, null values have been replaced with zero (0).
         </p>
     </details> </br>
 
@@ -166,7 +168,7 @@
             <tr id="info">
                 <td></td>
                 <td>{{i.year}}</td>
-                <td>${{i.TotalDebt|floatformat:"0"}}</td>
+                <td>${{i.TotalDebt|floatformat:"0"|intcomma}}</td>
                 <td>{{i.TotalDebtGrowthRate|floatformat:3}}%</td>
             </tr>
             {% endfor %}
