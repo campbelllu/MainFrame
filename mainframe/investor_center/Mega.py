@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import seaborn as sns
+# import seaborn as sns
 # import datetime as dt #leaving only because I'm not sure which I used.
 from datetime import date 
 import time
@@ -25,17 +25,23 @@ curConvert = CurrencyConverter(converter_address, fallback_on_missing_rate=True)
 import os
 import django
 import sys
+import random
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+# from django.db import connection
+# with connection.cursor() as cursor:
+#     cursor.execute("VACUUM;")
+#luke here this block after you migrate tables
+
 from django.conf import settings
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mainframe.settings')
 django.setup()
-
 db_path = settings.DATABASES['default']['NAME']
 
 #From fellow files
-import csv_modules as csv
+# import csv_modules as csv
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
@@ -76,58 +82,118 @@ def uploadToDB(upload,table):
         query.close()
         conn.close()
 
-#Take full ticker, cik list and append sector, industry, upload to db
-def uploadCIKs():
+###
+#EVERYTHING RELATED TO stockList TABLE
+###
+def getTickersCIKs():
+    #Talk to EDGAR, upload tickers and ciks to stocklist; fully working 1/29/25
     try:
+        conn = sql.connect(db_path)
+        query = conn.cursor()
+
+        #Get our tickers+ciks DF
         tickers_cik = requests.get('https://www.sec.gov/files/company_tickers.json', headers = header)
-        time.sleep(0.1)
+        time.sleep(0.1) #Respect the EDGAR
         tickers_cik = pd.json_normalize(pd.json_normalize(tickers_cik.json(), max_level=0).values[0])
-        tickers_cik['CIK'] = tickers_cik['cik_str'].astype(str).str.zfill(10)
+        tickers_cik['CIK'] = tickers_cik['cik_str']#.astype(str).str.zfill(10) #redacted, done later, saves DB space
         tickers_cik = tickers_cik.drop('cik_str',axis=1)
         tickers_cik = tickers_cik.drop('title',axis=1)
         tickers_cik = tickers_cik.drop_duplicates(subset='CIK', keep='first')
+        tickers_cik = tickers_cik.rename(columns={'ticker': 'Ticker'})
+        #Only insert records that aren't already there
+        insertquery = """
+                        INSERT INTO stockList (Ticker, CIK)
+                        SELECT ?, ?
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM stockList WHERE Ticker = ?
+                        );
+                    """
+        #First save how many Rows we started with
+        print('Starting upload process:')
+        orig_count = print_DB('SELECT COUNT(*) FROM stockList;', 'return')
+        #Now put them in the DB
+        for row in tickers_cik[['Ticker', 'CIK']].values.tolist():
+            query.execute(insertquery, (row[0], row[1], row[0]))
+        # query.executemany(insertquery, tickers_cik[['Ticker', 'CIK']].values.tolist())
+        conn.commit()
 
-        df2save = pd.DataFrame(columns=['Ticker','CIK','Sector', 'Industry'])
-        cikList = []
-        tickerList = []
-        sectorList = []
-        industryList = []
-        print_tracker = 0
+        #Finally tell us how many Rows we ended up with
+        print('Starting and Final Row Count in stockList:')
+        print('Starting: ' +  str(orig_count))
+        print('Final: ')
+        print_DB('SELECT COUNT(*) FROM stockList;', 'print')
 
-        for x in tickers_cik['ticker']:
-            print_tracker += 1
-            try:
-                stock = yf.Ticker(x)
-                dict1 = stock.info
-                sector = dict1['sector']
-                industry = dict1['industry']
-
-                cikList.append(tickers_cik.loc[tickers_cik['ticker'] == x, 'CIK'].iloc[0])
-                tickerList.append(x)
-                sectorList.append(sector)
-                industryList.append(industry)
-
-                time.sleep(0.1) #As a courtesy to yahoo finance, IDK if they have rate limits and will kick me, also.
-            except Exception as err:
-                print('try update tickers append lists error: ')
-                print(err)
-                continue
-
-            print(print_tracker)
-
-        df2save['Ticker'] = tickerList
-        df2save['CIK'] = cikList
-        df2save['Sector'] = sectorList
-        df2save['Industry'] = industryList
-        # csv.simple_saveDF_to_csv(fr_iC_toSEC, df3, 'badtickers',False)
-        # csv.simple_saveDF_to_csv(fr_iC_toSEC, df2save, 'full_tickersCik_sectorsInd', False)
-        uploadToDB(df2save,'stockList')
     except Exception as err:
-        print('update tickerscikssectorsindustry error: ')
+        print('getTickersCIKs error: ')
         print(err)
-# uploadCIKs()
-# print_DB('SELECT * FROM stockList;', 'print')
+    finally:
+        query.close()
+        conn.close()
 
+lock = threading.Lock()
+counter = 0
+
+#Fill Sectors and Industries
+def scrapeSnI(ticker):
+    global counter
+    try:
+        conn = sql.connect(db_path, check_same_thread=False) #Allows multithreading
+        query = conn.cursor()
+        stock = yf.Ticker(ticker)
+        # dict1 = stock.info
+        sector = stock.info.get("sector", "Unknown")#dict1['sector']
+        industry = stock.info.get("industry", "Unknown")#dict1['industry']
+
+        insertquery = """ 
+                        INSERT INTO stockList (Ticker, Sector, Industry)
+                        VALUES (?, ?, ?)
+                        ON CONFLICT(Ticker) DO UPDATE
+                        SET Sector = ?, Industry = ?;
+        """
+        query.execute(insertquery, (str(ticker), str(sector), str(industry), str(sector), str(industry)))
+        conn.commit()
+        
+        with lock:
+            counter += 1
+            print(f"[{counter}] Updated {ticker}: {sector}, {industry}")
+
+        time.sleep(random.uniform(5,10)) #Trying to repect rate limits here, kind of a black box as of 1/29/25.
+
+    except Exception as err:
+        print('scrape sni error: ')
+        print(err)
+    finally:
+        query.close()
+        conn.close()
+#ties it all together. 
+def threadSnI():
+    try:
+        needsData = print_DB('SELECT Ticker FROM stockList WHERE Sector IS NULL OR Industry IS NULL;', 'return')
+        length1 = len(needsData['Ticker'])
+        print(f"Starting Ticker, CIK, Sector, Industry Updates for {length1} tickers...")
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            executor.map(scrapeSnI, needsData['Ticker'])
+
+        print(f"Update complete!")
+    except Exception as err:
+        print('threading scrape sni error: ')
+        print(err)
+
+def fillStockListTable():
+    try:
+        getTickersCIKs()
+        #Checking for Duplicates, Test
+        # print_DB('SELECT Ticker FROM stockList GROUP BY Ticker HAVING COUNT(*) > 1;', 'print')
+        threadSnI()
+    except Exception as err:
+        print('filling stockList Wrapper error: ')
+        print(err)
+###
+#EVERYTHING RELATED TO stockList TABLE ENDS HERE
+###
+
+#Referenced by later functions
 nsd = 'SELECT Ticker, CIK, Sector, Industry FROM stockList;'
 gSdf = print_DB(nsd, 'return')
 nameSectorDict = gSdf.set_index('Ticker')['Sector'].to_dict()
@@ -1232,12 +1298,12 @@ def fillEmptyROICGrowthRates(df):
         df_filled['reportedRoce'] = df_filled['netIncome'] / df_filled['ReportedTotalEquity'] * 100
 
         df_filled['cReitROE'] = df_filled['ffo'] / df_filled['TotalEquity'] * 100
-        growthColcr = grManualCalc(df_filled['cReitROE'])
-        df_filled['cReitROEGrowthRate'] = growthColcr
+        # growthColcr = grManualCalc(df_filled['cReitROE'])
+        # df_filled['cReitROEGrowthRate'] = growthColcr
 
         df_filled['rReitROE'] = df_filled['ffo'] / df_filled['ReportedTotalEquity'] * 100
-        growthColrr = grManualCalc(df_filled['rReitROE'])
-        df_filled['rReitROEGrowthRate'] = growthColrr
+        # growthColrr = grManualCalc(df_filled['rReitROE'])
+        # df_filled['rReitROEGrowthRate'] = growthColrr
 
         df_filled['calcBookValue'] = df_filled['TotalEquity'] / df_filled['shares']
         growthCol1 = grManualCalc(df_filled['calcBookValue'])
@@ -1484,24 +1550,67 @@ def write_full_EDGAR_to_Mega(): #luke, add a print tracker for % complete from b
 def write_list_to_Mega(thelist): #luke, add a print tracker for % complete from below-updatemega function
     try:
         errorTickers = []
+        length1 = len(thelist)
+        n = 0
+        time0 = time.time()
         for i in thelist:
-            print(i)
+            print(str(round(n/length1,4)*100) + '% Complete!')
+            n += 1
             try:
+                time1 = time.time()
+
                 company_data = EDGAR_query(i, cik_dict[i], header, ultimateTagsList)
                 consol_table = mCTEDB(company_data, i)
                 uploadToDB(consol_table, 'Mega')
                 print(i + ' uploaded to DB!')
+                
+                time2 = time.time()
+                print('Time to upload: ' + str(time2-time1))
+                # print('time to complete')
+                # print(time2-time1)
                 time.sleep(0.1)
             except Exception as err1:
                 errorTickers.append(str(i))
                 print('write list to DB in for loop error for: ' + i)
                 print(err1)
                 continue
+        time4  = time.time()
     except Exception as err:
         print("write List to DB error: ")
         print(err)
     finally:
+        print('Total Time to completion: ' + str(time4-time0))
         print(errorTickers)
+
+# megalist = print_DB('SELECT Ticker FROM stockList WHERE Sector LIKE \'Basic Materials\';', 'return')
+# write_list_to_Mega(megalist['Ticker'])
+
+# megalist = print_DB('SELECT Ticker FROM Mega WHERE Sector LIKE \'Industrials\';', 'print')
+
+# guh = print_DB('DELETE FROM Mega;', 'return')
+# conn = sql.connect(db_path)
+# query = conn.cursor()
+# del_query = 'DELETE FROM Mega;'
+# query.execute(del_query)
+# conn.commit()
+# query.close()
+# conn.close()
+# print_DB('SELECT * FROM Mega ;', 'print') #LIKE \'Unknown\' ###RE:4077 rows, Y, V, U, P, K, I, F, E, C, B
+# print_DB('SELECT DISTINCT Sector FROM stockList;','print')
+# Sector
+# 0               Technology
+# 1   Communication Services
+# 2        Consumer Cyclical
+# 3       Financial Services
+# 4       Consumer Defensive
+# 5               Healthcare
+# 6                   Energy
+# 7              Industrials
+# 8          Basic Materials
+# 9                Utilities
+# 10             Real Estate
+
+# gotta test errors for: tech, bmrn, they had weird errors.
 
 #gets new tickers from stocklist, adds them to mega, embedded in updateMega()
 def addNewToMega():
@@ -1570,7 +1679,6 @@ def update_Mega(latestyear):
         print(updated)
 
 # update_Mega('2023')
-
 #ran 7/29/24
 #still needing update
 # needup = ['RNW', 'AZREF', 'ADN', 'ARAO', 'MMMW', 'GSFI', 'VENG', 'PPWLM', 'HUNGF', 'PWCO', 'CTA-PA', 'SIM', 'DRD', 'MULG', 'RMRI', 'EVA', 'GRFX', 'ZKIN', 'RETO', 'GURE', 'TLRS', 'GRMC', 'COWI', 'SRGZ', 'MNGG', 'ETCK', 'GPLDF', 'VYST', 'GYST', 'MKDTY', 'SGMD', 'NSRCF', 'AVLNF', 'ALMMF', 'ERLFF', 'SILEF', 'GIGGF', 'EXNRF', 'CGSI', 'SHVLF', 'SINC', 'SMTSF', 'JSHG', 'MXSG', 'STCC', 'HGLD', 'MPVDF', 'IIJIY', 'LDSN', 'DRCT', 'SKLZ', 'BBUZ', 'EGLXF', 'SALM', 'SPTY', 'SNPW', 'NUGL', 'COMS', 'SLDC', 'GFMH', 'SRAX', 'MDEX', 'SNWR', 'WINR', 'MLFB', 'CLIS', 'XFCI', 'FRFR', 'YVRLF', 'NTTYY', 'QBCRF', 'ILLMF', 'IDWM', 'EMWPF', 'BYOC', 'GZIC', 'PTNRF', 'PSNY', 'NWTN', 'YTRA', 'TUP', 'INTG', 'SLNA', 'SOND', 'UXIN', 'PDRO', 'PRSI', 'LTRY', 'CMOT', 'ELYS', 'EVVL', 'LQLY', 'SHMY', 'BQ', 'DREM', 'SCRH', 'FLES', 'BBIG', 'REII', 'THBD', 'BTDG', 'SFTGQ', 'CGAC', 'UFABQ', 'WESC', 'ASCK', 'TKAYF', 'ALTB', 'WCRS', 'DSHK', 'LMPX', 'FTCHF', 'FXLV', 'AMTY', 'ELRA', 'SSUNF', 'ATEYY', 'CAJPY', 'DDD', 'SPWR', 'TGAN', 'LUNA', 'WRAP', 'LTCH', 'FEIM', 'SOL', 'MOBX', 'EBIXQ', 'RAASY', 'DZSI', 'EGIO', 'DGHI', 'RCAT', 'DSWL', 'SGMA', 'SPI', 'GOLQ', 'MVLA', 'HUBC', 'VSMR', 'AIAD', 'LKCO', 'WRNT', 'NXTP', 'IMTE', 'MICS', 'WDLF', 'SRCO', 'RKFL', 'DUSYF', 'ZRFY', 'WOWI', 'XNDA', 'ONCI', 'ODII', 'TTCM', 'IGEN', 'MAPT', 'AGILQ', 'IINX', 'RDAR', 'KBNT', 'TMPOQ', 'ALFIQ', 'TMNA', 'ISGN', 'IMCI', 'DSGT', 'OGBLY', 'NIPNF', 'AUOTY', 'LCHD', 'AATC', 'CATG', 'SEAC', 'BNSOF', 'EVOL', 'FALC', 'HPTO', 'VQSSF', 'RBCN', 'TKOI', 'BDRL', 'GSPT', 'DROP', 'SPYR', 'TCCO', 'EHVVF', 'ABCE', 'BTZI', 'SMIT', 'XDSL', 'TRIRF', 'SANP', 'MAXD', 'SDVI', 'DIGAF', 'NTPIF', 'HWTR', 'MHPC', 'CRDV', 'PDNLA', 'DPWW', 'CNI', 'RYAAY', 'FLCX', 'HRBR', 'PYRGF', 'RSKIA', 'NSGP', 'TPCS', 'CACO', 'PGTK', 'GTMAY', 'AUSI', 'ALPP', 'OCLN', 'CAMG', 'GPOX', 'TBLT', 'MACE', 'TLSS', 'PTNYF', 'AETHF', 'WARM', 'NVGT', 'DRFS', 'BLIS', 'DLYT', 'BRDSQ', 'FIFG', 'COUV', 'ZEVY', 'DTII', 'GDSI', 'BBRW', 'JPEX', 'WOEN', 'PHOT', 'AFIIQ', 'MJHI', 'WLMSQ', 'RNWR', 'YAYO', 'CHEAF', 'CHKIF', 'GNGYF', 'YELLQ', 'ACMB', 'UCIX', 'PRPI', 'AMMX', 'TMRR', 'ECOX', 'RENO', 'EVO', 'TARO', 'SUPN', 'MDRX', 'CORBF', 'BLUE', 'CELU', 'TIHE', 'EGRX', 'VICP', 'PNPL', 'OKYO', 'ESLA', 'DXR', 'BIMI', 'MDNAF', 'HSTI', 'PMCB', 'CLRD', 'COSM', 'BTTX', 'EDXC', 'RADCQ', 'ACBM', 'HENC', 'ALZN', 'XTLB', 'VFRM', 'RNVA', 'REPCF', 'ARDS', 'CWBR', 'ELOX', 'NMRD', 'INQD', 'GBLX', 'AGTX', 'VRAX', 'WORX', 'DVLP', 'CMRA', 'ATHXQ', 'MJNE', 'NTRR', 'PKBO', 'BLPH', 'INQR', 'RSPI', 'SDCCQ', 'GMVDF', 'QTXB', 'SGBI', 'CSTF', 'BLMS', 'BBBT', 'VNTH', 'GLSHQ', 'RGMP', 'QBIO', 'ATRX', 'RGTPQ', 'ACUR', 'INLB', 'STAB', 'HDVY', 'RVLPQ', 'IVRN', 'RBSH', 'INFIQ', 'BIOCQ', 'ABMC', 'HTGMQ', 'USRM', 'ONCSQ', 'VRAYQ', 'HGENQ', 'PHASQ', 'BBLNF', 'NMTRQ', 'SWGHF', 'BFFTF', 'SKYI', 'FZMD', 'PMEDF', 'TMDIF', 'INND', 'UTRS', 'IGEX', 'NAVB', 'CANQF', 'MCOA', 'GPFT', 'GRNF', 'IGPK', 'IMUC', 'SQZB', 'SNNC', 'TOMDF', 'KGKG', 'WCUI', 'ENDV', 'VIVE', 'PHBI', 'CBGL', 'SCPS', 'PHCG', 'EWLL', 'NPHC', 'NBRVF', 'CLSK', 'FIHL', 'ABIT', 'FRST', 'EVE', 'CFNB', 'ATEK', 'APXI', 'NPFC', 'PSBQ', 'IMAQ', 'VHAQ', 'SWSS', 'MSSA', 'MATH', 'OWVI', 'WTMA', 'MCAG', 'GNRV', 'ARGC', 'TNBI', 'TGGI', 'SLTN', 'SIVBQ', 'FDCT', 'OOGI', 'SITS', 'ADAD', 'FRBK', 'GLAE', 'EEGI', 'VCOR', 'BFYW', 'RAHGF', 'CONC', 'BZRD', 'WWSG', 'UNAM', 'SDON', 'MMMM', 'AFHIF', 'PLYN', 'EQOSQ', 'PMPG', 'SYSX', 'LFAP', 'CILJF', 'CIXXF', 'GAMI', 'BKSC', 'ODTC', 'GWIN', 'OFED', 'UBOH', 'FFBW', 'MSVB', 'OSBK', 'FIGI', 'BQST', 'TBBA', 'WVFC', 'ERKH', 'SICP', 'FGCO', 'BOPO', 'HALL', 'IMPM', 'MGHL', 'PUGE', 'PLPL', 'APSI', 'BABL', 'CSAN', 'UNTC', 'BROG', 'WTRV', 'SMGI', 'OILY', 'GRVE', 'GSPE', 'AMNI', 'QREE', 'DBRM', 'PCCYF', 'SNPMF', 'ATGFF', 'SPTJF', 'VTDRF', 'BRLL', 'MRGE', 'NOMD', 'AQPW', 'DOLE', 'ZHYBF', 'NXMH', 'RGF', 'MALG', 'MSS', 'CTGL', 'BRSH', 'GV', 'HPCO', 'WAFU', 'MNKA', 'FAMI', 'LEAI', 'RMHB', 'WTER', 'VGFCQ', 'SMFL', 'RTON', 'MFLTY', 'NUVI', 'OGAA', 'TTCFQ', 'TDNT', 'PCNT', 'TUEMQ', 'PACV', 'UPDC', 'ICNB', 'RAYT', 'BRCNF', 'QOEG', 'ASPU', 'GLUC', 'LMDCF', 'FKST', 'SGLA', 'HVCW', 'DTEAF', 'CELJF']
@@ -1590,20 +1698,22 @@ def testEDGARdata(ticker,cik):
         print(consol_table[['Ticker','year','rReitROE', 'rReitROEGrowthRate', 'cReitROE', 'cReitROEGrowthRate']])
         # print()
 
-# time1 = time.time()
+# print_DB('SELECT Ticker, payoutRatioAVGnz as por, fcfPayoutRatioAVGnz as fcfpor, ffoPayoutRatioAVGnz as ffopor FROM Metadata WHERE Ticker LIKE \'ADC\';', 'print')
+# print_DB('SELECT * FROM Metadata;', 'print')
 
+# time1 = time.time()
 # tester = 'TSLA'
 # testEDGARdata(tester, cik_dict[tester])
-
-# print_DB('SELECT Ticker, priceGrowthAVG FROM Metadata WHERE Ticker LIKE \'PG\';', 'print')
-# print_DB('SELECT Ticker, year, price, priceGrowthRate as PGR FROM Mega_Backup WHERE Ticker LIKE \'TSLA\';', 'print')
 # time2 = time.time()
 # print('time to complete')
 # print((time2-time1)*1000)
 
-# print_DB('SELECT * FROM Mega_Backup ;', 'print')
+# print_DB('SELECT Ticker, priceGrowthAVG FROM Metadata WHERE Ticker LIKE \'PG\';', 'print')
+# print_DB('SELECT Ticker, year, price, priceGrowthRate as PGR FROM Mega_Backup WHERE Ticker LIKE \'TSLA\';', 'print')
 
 
+#check size of all tables
+# print_DB('SELECT name AS tableName, SUM(pgsize) AS bytesize FROM dbstat GROUP BY name ORDER BY bytesize DESC;', 'print')
 
 #########################################################
 ##DB EXAMPLES THAT WORK
@@ -1653,8 +1763,12 @@ def fillMega_Backup(): #Thank you ChatGPT, let's see if this can help me fix my 
 
 # print_DB('SELECT Ticker, revenue, CIK, Sector, divsPaidPerShare FROM Mega_Backup ;', 'print')
 # print_DB('SELECT Ticker, revenue, CIK, Sector, divsPaidPerShare FROM Mega ;', 'print')
-print_DB('SELECT * FROM Mega EXCEPT SELECT * FROM Mega_Backup;', 'print')
+#Test differences between tables
+# print_DB('SELECT * FROM Mega EXCEPT SELECT * FROM Mega_Backup;', 'print')
 
+# print_DB(
+#     'Drop Table Metadata;', 'print'
+# )
 
 def delete_ticker_DB(ticker):
     conn = sql.connect(db_path)
@@ -1686,13 +1800,27 @@ def find_badUnitsDB():
     # query.close()
     # conn.close()
 
+###LUKE mega function needs to be made ####
+def megaDoAll():
+    try:
+        #Deal with stockList
+        fillStockListTable()
+        #Deal with Mega
+        #Deal with Metadata
+    except Exception as err:
+        print('Mega Do All Error: ')
+        print(err)
+
+
+
+#################################################
+# 
+#         
 # def delete_DB(table):
     #only use this while testing, or suffer the consequences
     # conn = sql.connect(db_path)
     # query = conn.cursor()
-    # del_query = 'DELETE FROM Mega_Backup;'
-    # query.execute(del_query)
-    # conn.commit()
+    # del_query = 'DELETE FROM Mega;'
     # query.execute(del_query)
     # conn.commit()
     # query.close()
@@ -1757,6 +1885,19 @@ def find_badUnitsDB():
 #---------------------------------------------------------------------
 #The testing zone
 #---------------------------------------------------------------------
+
+# conn = sql.connect(db_path)
+# query = conn.cursor()
+# del_query = 'PRAGMA table_info(\'stockList\')'
+# print(query.execute(del_query))
+# conn.commit()
+# query.close()
+# conn.close()
+
+# save = print_DB('PRAGMA table_info(\'stockList\')', 'return')
+# print(save)
+
+
 # ohmylord = ['ARCC', 'BBDC', 'BCSF', 'BKCC', 'BXSL', 'CCAP', 'CGBD', 'FCRD', 'CSWC', 'GAIN', 
 #             'GBDC', 'GECC', 'GLAD', 'GSBD', 'HRZN', 'ICMB', 'LRFC', 'MFIC', 'MAIN', 'MRCC', 
 #             'MSDL', 'NCDL', 'NMFC', 'OBDC', 'OBDE', 'OCSL', 'OFS', 'OXSQ', 'PFLT', 'PFX', 
@@ -1802,266 +1943,3 @@ def find_badUnitsDB():
 # t235CON = fillPrice(makeConsolidatedTableEntry(ticker235, year235, version235, False))
 
 #################
-###Good stuff, but deprecated and rolled into other functions
-
-# Returns organized data pertaining to the tag(s) provided in form of DF
-#Deprecated
-# def consolidateSingleAttribute(ticker, year, version, tagList, indexFlag):
-#     try:
-#         #get csv to df from params
-#         filtered_data = csv.simple_get_df_from_csv(stock_data, ticker + '_Master_' + year + '_V' + version, indexFlag)
-#         held_data = pd.DataFrame()
-#         returned_data = pd.DataFrame()
-    
-#         for x in tagList:
-#             held_data = filtered_data[filtered_data['Tag'].eq(x) == True]
-#             returned_data = pd.concat([returned_data, held_data], ignore_index = True)
-#         returned_data = get_Only_10k_info(returned_data)
-#         returned_data = dropAllExceptFYRecords(returned_data)
-#         returned_data = orderAttributeDF(returned_data) #moved from above fy records. so we gather 10k, all fy, then order then drop dupes
-#         returned_data = dropDuplicatesInDF(returned_data) #added after filtering for FY only
-#         returned_data = dropUselessColumns(returned_data)
-        
-#         return returned_data
-
-#     except Exception as err:
-#         print("consolidate single attr error: ")
-#         print(err)
-
-
-#Making tables for DB insertion, left for notes, but deprecated and consolidated below
-# def makeIncomeTableEntry(ticker, year, version, index_flag):
-#     try:
-#         rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
-#         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
-#         netIncNCI_df = cleanNetIncomeNCI(consolidateSingleAttribute(ticker, year, version, netIncomeNCI, False))
-#         opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
-#         invcf_df = cleanInvestingCashFlow(consolidateSingleAttribute(ticker, year, version, investingCashFlow, False))
-#         fincf_df = cleanFinancingCashFlow(consolidateSingleAttribute(ticker, year, version, financingCashFlow, False))
-#         netcf_df = cleanNetCashFlow(consolidateSingleAttribute(ticker, year, version, netCashFlow, False))
-#         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
-#         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
-#         if depAmor_df.empty:
-#             depAmor_df = cleanDeprNAmor2(consolidateSingleAttribute(ticker, year, version, deprecAndAmor2, False),
-#                                             consolidateSingleAttribute(ticker, year, version, deprecAndAmor3, False))
-#         gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
-        
-#         revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusopcf = pd.merge(revNinc, opcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusinvcf = pd.merge(plusopcf, invcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusfincf = pd.merge(plusinvcf, fincf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusnetcf = pd.merge(plusfincf, netcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         pluscapex = pd.merge(plusnetcf, capex_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusDepAmor = pd.merge(pluscapex, depAmor_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusSaleProp = pd.merge(plusDepAmor, gainSaleProp_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         #CLEAN column empty values here before adding FFO calculations 
-#         plusSaleProp = fillEmptyIncomeGrowthRates(plusSaleProp)
-#         plusSaleProp = plusSaleProp.drop(columns=['depreNAmorGrowthRate'])
-        
-#         addfcf = cleanfcf(plusSaleProp)
-#         addfcfMargin = cleanfcfMargin(addfcf)
-#         #Clean sales of property
-#         addfcfMargin['gainSaleProp'] = addfcfMargin['gainSaleProp'].replace(np.nan,0)
-#         addfcfMargin['ffo'] = addfcfMargin['netIncome'] + addfcfMargin['depreNAmor'] - addfcfMargin['gainSaleProp']
-#         growthCol = grManualCalc(addfcfMargin['ffo'])
-#         addfcfMargin['ffoGrowthRate'] = growthCol
-
-#         return addfcfMargin
-
-#     except Exception as err:
-#         print("makeIncomeTable error: ")
-#         print(err)
-
-# def makeROICtableEntry(ticker, year, version, index_flag):
-#     try:
-#         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
-#         taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
-#         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
-#         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt3, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt4, False))
-#         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, totalLiabilities, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
-#                                     consolidateSingleAttribute(ticker, year, version, currentLiabilities, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, nonCurrentAssets, False),
-#                                     consolidateSingleAttribute(ticker, year, version, currentAssets, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, shareHolderEquity, False))
-#         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
-#         if opIncNtax['Units'].isnull().any():
-#             opIncNtax = opIncNtax.drop(columns=['Units'], axis=1)
-#             opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK'], how='outer')
-#         else:
-#             opIncNtaxNinc = pd.merge(opIncNtax, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
-#             opIncNtaxNinc = opIncNtaxNinc.drop(columns=['netIncomeGrowthRate'])
-#         opIncNtaxNinc['Units'] = opIncNtaxNinc['Units'].ffill().bfill()
-#         plustDebt = pd.merge(opIncNtaxNinc, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plustDebt['Units'] = plustDebt['Units'].ffill().bfill()
-#         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
-     
-#         plustEquity = fillEmptyROICGrowthRates(plustEquity)
-
-#         plustEquity['nopat'] = plustEquity['operatingIncome'] * (1 - plustEquity['taxRate'])
-#         plustEquity['investedCapital'] = plustEquity['TotalEquity'] + plustEquity['TotalDebt']
-#         plustEquity['roic'] = plustEquity['nopat'] / plustEquity['investedCapital'] * 100
-#         plustEquity['adjRoic'] = plustEquity['netIncome'] / plustEquity['investedCapital'] * 100
-#         plustEquity['reportedAdjRoic'] = plustEquity['netIncome'] / (plustEquity['ReportedTotalEquity'] + plustEquity['TotalDebt']) * 100
-#         plustEquity['calculatedRoce'] = plustEquity['netIncome'] / plustEquity['TotalEquity'] * 100
-#         plustEquity['reportedRoce'] = plustEquity['netIncome'] / plustEquity['ReportedTotalEquity'] * 100
-
-#         return plustEquity
-
-#     except Exception as err:
-#         print("makeROIC table error: ")
-#         print(err)
-
-# def makeDividendTableEntry(ticker, year, version, index_flag):
-#     try:
-#         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
-#         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
-#                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
-#                                     consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False),
-#                                     consolidateSingleAttribute(ticker, year, version, returnOfCapitalPerShare, False),
-#                                     consolidateSingleAttribute(ticker, year, version, totalReturnOfCapital, False))
-#         if divs_df['year'][0] == -1:
-#             df_dunce = pd.DataFrame(columns=['Ticker'])
-#             df_dunce.loc[0, 'Ticker'] = ticker
-#             csv.simple_appendTo_csv(fr_iC_toSEC, df_dunce,'z-divDataReallyNotFound', False)
-#             return 'No Good Dividend Data'
-#         else:
-#             if divs_df['Units'].isnull().any():
-#                 divs_df = divs_df.drop(columns=['Units'])
-#                 intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')#Was nested in else on row 'start', 'end',
-#             else:
-#                 intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer') 
-
-#             intNdivs = fillEmptyDivsGrowthRates(intNdivs)
-
-#             return intNdivs
-    
-#     except Exception as err:
-#         print("makeDividend table error: ")
-#         print(err)
-
-# def makeConsolidatedTableEntry(ticker, year, version, index_flag):
-#     try:
-#         ### INCOME TABLE START
-#         rev_df = cleanRevenue(consolidateSingleAttribute(ticker, year, version, revenue, False))
-#         netInc_df = cleanNetIncome(consolidateSingleAttribute(ticker, year, version, netIncome, False))
-#         netIncNCI_df = cleanNetIncomeNCI(consolidateSingleAttribute(ticker, year, version, netIncomeNCI, False))
-#         eps_df = cleanEPS(consolidateSingleAttribute(ticker, year, version, eps, False))
-#         opcf_df = cleanOperatingCashFlow(consolidateSingleAttribute(ticker, year, version, operatingCashFlow, False))
-#         invcf_df = cleanInvestingCashFlow(consolidateSingleAttribute(ticker, year, version, investingCashFlow, False))
-#         fincf_df = cleanFinancingCashFlow(consolidateSingleAttribute(ticker, year, version, financingCashFlow, False))
-#         netcf_df = cleanNetCashFlow(consolidateSingleAttribute(ticker, year, version, netCashFlow, False))
-#         capex_df = cleanCapEx(consolidateSingleAttribute(ticker, year, version, capEx, False))
-#         depAmor_df = cleanDeprNAmor(consolidateSingleAttribute(ticker, year, version, deprecAndAmor, False))
-#         if depAmor_df.empty:
-#             depAmor_df = cleanDeprNAmor2(consolidateSingleAttribute(ticker, year, version, deprecAndAmor2, False),
-#                             consolidateSingleAttribute(ticker, year, version, deprecAndAmor3, False))
-#         gainSaleProp_df = cleanGainSaleProp(consolidateSingleAttribute(ticker, year, version, gainSaleProperty, False))
-        
-#         revNinc = pd.merge(rev_df, netInc_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         revNinc = pd.merge(revNinc, netIncNCI_df, on=['year','Ticker','CIK','Units'], how='outer') 
-#         if eps_df.empty:
-#             revNinc['reportedEPS'] = np.nan
-#             revNinc['reportedEPSGrowthRate'] = np.nan
-#         else:
-#             revNinc = pd.merge(revNinc, eps_df, on=['year','Ticker','CIK'], how='outer')
-#         plusopcf = pd.merge(revNinc, opcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusinvcf = pd.merge(plusopcf, invcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusfincf = pd.merge(plusinvcf, fincf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusnetcf = pd.merge(plusfincf, netcf_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         pluscapex = pd.merge(plusnetcf, capex_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusDepAmor = pd.merge(pluscapex, depAmor_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plusSaleProp = pd.merge(plusDepAmor, gainSaleProp_df, on=['year','Ticker','CIK','Units'], how='outer')
-
-#         plusSaleProp = fillUnits(plusSaleProp)
-#         ### INCOME TABLE END
-
-#         ### DIVS TABLE START
-#         intPaid_df = cleanInterestPaid(consolidateSingleAttribute(ticker, year, version, interestPaid, False))
-#         divs_df = cleanDividends(consolidateSingleAttribute(ticker, year, version, totalCommonStockDivsPaid, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, declaredORPaidCommonStockDivsPerShare, False),
-#                                     consolidateSingleAttribute(ticker, year, version, basicSharesOutstanding, False),
-#                                     consolidateSingleAttribute(ticker, year, version, dilutedSharesOutstanding, False),
-#                                     consolidateSingleAttribute(ticker, year, version, returnOfCapitalPerShare, False),
-#                                     consolidateSingleAttribute(ticker, year, version, totalReturnOfCapital, False))
-#         if 'Units' not in divs_df:
-#             intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
-#         elif divs_df['Units'].isnull().any():
-#             divs_df = divs_df.drop(columns=['Units'])
-#             intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK'], how='outer')
-#         else:
-#             intNdivs = pd.merge(intPaid_df, divs_df, on=['year','Ticker','CIK','Units'], how='outer')
-        
-#         intNdivs = fillUnits(intNdivs)
-#         ### DIVS TABLE END
-        
-#         ### ROIC TABLE START
-#         opIncome_df = cleanOperatingIncome(consolidateSingleAttribute(ticker, year, version, operatingIncome, False))
-#         taxRate_df = cleanTaxRate(consolidateSingleAttribute(ticker, year, version, taxRate, False))
-#         totalDebt_df = cleanDebt(consolidateSingleAttribute(ticker, year, version, shortTermDebt, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt1, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt2, False),
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt3, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, longTermDebt4, False))
-#         totalEquity_df = cleanTotalEquity(consolidateSingleAttribute(ticker, year, version, totalAssets, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, totalLiabilities, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, nonCurrentLiabilities, False),
-#                                     consolidateSingleAttribute(ticker, year, version, currentLiabilities, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, nonCurrentAssets, False),
-#                                     consolidateSingleAttribute(ticker, year, version, currentAssets, False), 
-#                                     consolidateSingleAttribute(ticker, year, version, shareHolderEquity, False))
-                                    
-#         nav_df = cleanNAV(consolidateSingleAttribute(ticker, year, version, netAssetValue, False))
-
-#         opIncNtax = pd.merge(opIncome_df, taxRate_df, on=['year','Ticker','CIK'], how='outer')
-#         opIncNtax['Units'] = opIncNtax['Units'].ffill().bfill()
-#         if opIncNtax['Units'].isnull().all():
-#             opIncNtax['Units'] = 'USD'
-        
-#         plustDebt = pd.merge(opIncNtax, totalDebt_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         plustDebt['Units'] = plustDebt['Units'].ffill().bfill()
-#         plustEquity = pd.merge(plustDebt, totalEquity_df, on=['year','Ticker','CIK','Units'], how='outer')
-#         if nav_df.empty:
-#             plustEquity['nav'] = np.nan
-#             plustEquity['navGrowthRate'] = np.nan
-#         else:
-#             plustEquity = pd.merge(plustEquity, nav_df, on=['year','Ticker','CIK'], how='outer')
-        
-#         plustEquity = fillUnits(plustEquity)
-#         ### ROIC TABLE END
-        
-#         ###INCOME TABLE IS plusSaleProp
-#         ###Dividends table is intNdivs
-#         ###ROIC TABLE is plustEquity
-#         if 'Units' not in intNdivs:
-#             divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK'], how='outer')
-#         else:
-#             divsPlusROIC = pd.merge(intNdivs, plustEquity, on=['year','Ticker','CIK','Units'], how='outer')
-
-#         incDivsROIC = pd.merge(divsPlusROIC, plusSaleProp, on=['year','Ticker','CIK','Units'], how='outer')
-
-#         incDivsROIC = fillPrice(incDivsROIC)
-
-#         incDivsROIC = fillEmptyDivsGrowthRates(incDivsROIC) 
-        
-#         #Finish the Income Table Entries
-#         incDivsROIC = fillEmptyIncomeGrowthRates(incDivsROIC)
-
-#         #Finish the ROIC Table Entries
-#         incDivsROIC = fillEmptyROICGrowthRates(incDivsROIC)
-
-#         incDivsROIC['Sector'] = nameSectorDict[ticker]
-#         incDivsROIC['Industry'] = nameIndustryDict[ticker]
-#     except Exception as err:
-#         print("make consolidated table error: ")
-#         print(err)
-#     finally:
-#         return incDivsROIC
-   

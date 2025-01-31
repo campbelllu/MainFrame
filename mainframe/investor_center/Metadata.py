@@ -376,7 +376,7 @@ def efficiency_reading(ticker):
         conn = sql.connect(db_path)
         query = conn.cursor()
         thequery = 'SELECT Ticker, Sector, Industry, Year, operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
-                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, rReitROE, rReitROEGrowthRate, cReitROE, cReitROEGrowthRate, \
+                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, rReitROE, cReitROE, \
                         calcBookValue, calcBookValueGrowthRate, reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
@@ -390,37 +390,6 @@ def efficiency_reading(ticker):
         print(Err)
     finally:
         return df1
-
-#luke gotta add this in somewhere, edit models and templates, win. and views!
-# @property  #LUKE this isn't actually used, but is calculated in views, line 84 roughly. gotta just do it in mega-no-metadata. <3
-    # def profit_margin_avg(self):
-    #     if self.revenue is None or self.revenue == 0:
-    #         return None
-    #     elif self.netIncome is None:
-    #         return None
-    #     else:
-    #         return self.netIncome / self.revenue * 100
-
-    # @property
-    # def poravg100(self):
-    #     if self.payoutRatioAVG is None:
-    #         return None
-    #     else:
-    #         return self.payoutRatioAVG * 100
-
-    # @property
-    # def fcfporavg100(self):
-    #     if self.fcfPayoutRatioAVG is None:
-    #         return None
-    #     else:
-    #         return self.fcfPayoutRatioAVG * 100
-        
-    # @property
-    # def ffoporavg100(self):
-    #     if self.ffoPayoutRatioAVG is None:
-    #         return None
-    #     else:
-    #         return self.ffoPayoutRatioAVG * 100
 
 def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     try:
@@ -527,109 +496,134 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         #calculatedEPS, 
         cepslist = incomedf['calculatedEPS'].tolist()
-        cepsmin = nan_strip_min(cepslist)
-        cepsavg = IQR_Mean(cepslist)
-        cepsavgint = zeroIntegrity(cepslist)
+        # cepsmin = nan_strip_min(cepslist)
+        # cepsavg = IQR_Mean(cepslist)
+        # cepsavgint = zeroIntegrity(cepslist)
         cepsavgnz = IQR_MeanNZ(cepslist)
 
-        metadata['cepsLow'] = cepsmin
-        metadata['cepsAVG'] = cepsavg
-        metadata['cepsAVGintegrity'] = cepsavgint
+        # metadata['cepsLow'] = cepsmin
+        # metadata['cepsAVG'] = cepsavg
+        # metadata['cepsAVGintegrity'] = cepsavgint
         metadata['cepsAVGnz'] = cepsavgnz
         
         #calculatedEPSGrowthRate, 
         cepsgrlist = incomedf['calculatedEPSGrowthRate'].tolist()
         # repsgrmin = nan_strip_min(repsgrlist)
-        cepsgravg = IQR_Mean(cepsgrlist)
-        cepsgrint = zeroIntegrity(cepsgrlist)
+        # cepsgravg = IQR_Mean(cepsgrlist)
+        # cepsgrint = zeroIntegrity(cepsgrlist)
         cepsgravgnz = IQR_MeanNZ(cepsgrlist)
 
-        metadata['cepsGrowthAVG'] = cepsgravg
-        metadata['cepsGrowthAVGintegrity'] = cepsgrint
+        # metadata['cepsGrowthAVG'] = cepsgravg
+        # metadata['cepsGrowthAVGintegrity'] = cepsgrint
         metadata['cepsGrowthAVGnz'] = cepsgravgnz
         
         #reitEPS, 
         reitepslist = incomedf['reitEPS'].tolist()
-        reitepsmin = nan_strip_min(reitepslist)
-        reitepsavg = IQR_Mean(reitepslist)
-        reitepsavgint = zeroIntegrity(reitepslist)
+        # reitepsmin = nan_strip_min(reitepslist)
+        # reitepsavg = IQR_Mean(reitepslist)
+        # reitepsavgint = zeroIntegrity(reitepslist)
         reitepsavgnz = IQR_MeanNZ(reitepslist)
 
-        metadata['reitepsLow'] = reitepsmin
-        metadata['reitepsAVG'] = reitepsavg
-        metadata['reitepsAVGintegrity'] = reitepsavgint
+        # metadata['reitepsLow'] = reitepsmin
+        # metadata['reitepsAVG'] = reitepsavg
+        # metadata['reitepsAVGintegrity'] = reitepsavgint
         metadata['reitepsAVGnz'] = reitepsavgnz
         
         #reitEPSGrowthRate,
         reitepsgrlist = incomedf['reitEPSGrowthRate'].tolist()
         # repsgrmin = nan_strip_min(repsgrlist)
-        reitepsgravg = IQR_Mean(reitepsgrlist)
-        reitepsgrint = zeroIntegrity(reitepsgrlist)
+        # reitepsgravg = IQR_Mean(reitepsgrlist)
+        # reitepsgrint = zeroIntegrity(reitepsgrlist)
         reitepsgravgnz = IQR_MeanNZ(reitepsgrlist)
 
-        metadata['reitepsGrowthAVG'] = reitepsgravg
-        metadata['reitepsGrowthAVGintegrity'] = reitepsgrint
+        # metadata['reitepsGrowthAVG'] = reitepsgravg
+        # metadata['reitepsGrowthAVGintegrity'] = reitepsgrint
         metadata['reitepsGrowthAVGnz'] = reitepsgravgnz
         
+        #profit margin
+        profitmarginlist = incomedf['profitMargin'].tolist()
+        # fcfmarginmin = nan_strip_min(fcfmarginlist)
+        # fcfmarginmax = nan_strip_max(fcfmarginlist)
+        # fcfmarginavg = IQR_Mean(fcfmarginlist)
+        # fcfmarginavgint = zeroIntegrity(fcfmarginlist)
+        profitmarginavgnz = IQR_MeanNZ(profitmarginlist)
+
+        # metadata['fcfMarginLow'] = fcfmarginmin
+        # metadata['fcfMarginHigh'] = fcfmarginmax
+        # metadata['fcfMarginAVG'] = fcfmarginavg
+        # metadata['fcfMarginAVGintegrity'] = fcfmarginavgint
+        metadata['profitMarginAVGnz'] = profitmarginavgnz
+
+        #fcfmargin gr min max avg
+        profitmargingrlist = incomedf['profitMarginGrowthRate'].tolist()
+        # fcfmargingrmin = nan_strip_min(fcfmargingrlist)
+        # fcfmargingrmax = nan_strip_max(fcfmargingrlist)
+        # fcfmargingravg = IQR_Mean(fcfmargingrlist)
+        # fcfmargingravgint = zeroIntegrity(fcfmargingrlist)
+        profitmargingravgnz = IQR_MeanNZ(profitmargingrlist)
+
+        # metadata['fcfMarginGrowthAVG'] = fcfmargingravg
+        # metadata['fcfMarginGrowthAVGintegrity'] = fcfmargingravgint
+        metadata['profitMarginGrowthAVGnz'] = profitmargingravgnz
 
         #fcf: gr min max avg
         fcflist = incomedf['fcf'].tolist()
-        fcfmin = nan_strip_min(fcflist)
+        # fcfmin = nan_strip_min(fcflist)
         # fcfmax = nan_strip_max(fcflist)
-        # fcfavg = IQR_Mean(fcflist)
+        fcfavgnz = IQR_MeanNZ(fcflist)
 
         fcfgrlist = incomedf['fcfGrowthRate'].tolist()
         # fcfgrmin = nan_strip_min(fcfgrlist)
         # fcfgrmax = nan_strip_max(fcfgrlist)
-        fcfgravg = IQR_Mean(fcfgrlist)
-        fcfgravgint = zeroIntegrity(fcfgrlist)
+        # fcfgravg = IQR_Mean(fcfgrlist)
+        # fcfgravgint = zeroIntegrity(fcfgrlist)
         fcfgravgnz = IQR_MeanNZ(fcfgrlist)
 
-        metadata['fcfLow'] = fcfmin
-        metadata['fcfGrowthAVG'] = fcfgravg
-        metadata['fcfGrowthAVGintegrity'] = fcfgravgint
+        metadata['fcfAVGnz'] = fcfavgnz
+        # metadata['fcfGrowthAVG'] = fcfgravg
+        # metadata['fcfGrowthAVGintegrity'] = fcfgravgint
         metadata['fcfGrowthAVGnz'] = fcfgravgnz
 
         #fcfmargin: min max avg
         fcfmarginlist = incomedf['fcfMargin'].tolist()
-        fcfmarginmin = nan_strip_min(fcfmarginlist)
-        fcfmarginmax = nan_strip_max(fcfmarginlist)
-        fcfmarginavg = IQR_Mean(fcfmarginlist)
+        # fcfmarginmin = nan_strip_min(fcfmarginlist)
+        # fcfmarginmax = nan_strip_max(fcfmarginlist)
+        # fcfmarginavg = IQR_Mean(fcfmarginlist)
         # fcfmarginavgint = zeroIntegrity(fcfmarginlist)
-        # fcfmarginavgnz = IQR_MeanNZ(fcfmarginlist)
+        fcfmarginavgnz = IQR_MeanNZ(fcfmarginlist)
 
-        metadata['fcfMarginLow'] = fcfmarginmin
-        metadata['fcfMarginHigh'] = fcfmarginmax
-        metadata['fcfMarginAVG'] = fcfmarginavg
+        # metadata['fcfMarginLow'] = fcfmarginmin
+        # metadata['fcfMarginHigh'] = fcfmarginmax
+        # metadata['fcfMarginAVG'] = fcfmarginavg
         # metadata['fcfMarginAVGintegrity'] = fcfmarginavgint
-        # metadata['fcfMarginAVGnz'] = fcfmarginavgnz
+        metadata['fcfMarginAVGnz'] = fcfmarginavgnz
 
         #fcfmargin gr min max avg
         fcfmargingrlist = incomedf['fcfMarginGrowthRate'].tolist()
         # fcfmargingrmin = nan_strip_min(fcfmargingrlist)
         # fcfmargingrmax = nan_strip_max(fcfmargingrlist)
-        fcfmargingravg = IQR_Mean(fcfmargingrlist)
-        fcfmargingravgint = zeroIntegrity(fcfmargingrlist)
+        # fcfmargingravg = IQR_Mean(fcfmargingrlist)
+        # fcfmargingravgint = zeroIntegrity(fcfmargingrlist)
         fcfmargingravgnz = IQR_MeanNZ(fcfmargingrlist)
 
-        metadata['fcfMarginGrowthAVG'] = fcfmargingravg
-        metadata['fcfMarginGrowthAVGintegrity'] = fcfmargingravgint
+        # metadata['fcfMarginGrowthAVG'] = fcfmargingravg
+        # metadata['fcfMarginGrowthAVGintegrity'] = fcfmargingravgint
         metadata['fcfMarginGrowthAVGnz'] = fcfmargingravgnz
 
         #price min max avg, gr min max avg
         pricelist = incomedf['price'].tolist()
-        pricemin = nan_strip_min(pricelist)
-        pricemax = nan_strip_max(pricelist)
-        pricelatest = pricelist[-1]
-        priceavg = IQR_Mean(pricelist)
+        # pricemin = nan_strip_min(pricelist)
+        # pricemax = nan_strip_max(pricelist)
+        # pricelatest = pricelist[-1]
+        priceavg = IQR_MeanNZ(pricelist)
         pricegrlist = incomedf['priceGrowthRate'].tolist()
         # pricegrmin = nan_strip_min(pricegrlist)
         # pricegrmax = nan_strip_max(pricegrlist)
-        pricegravg = IQR_Mean(pricegrlist)
+        pricegravg = IQR_MeanNZ(pricegrlist)
 
-        metadata['priceLow'] = pricemin
-        metadata['priceHigh'] = pricemax
-        metadata['priceLatest'] = pricelatest
+        # metadata['priceLow'] = pricemin
+        # metadata['priceHigh'] = pricemax
+        # metadata['priceLatest'] = pricelatest
         metadata['priceAVG'] = priceavg
         metadata['priceGrowthAVG'] = pricegravg
 
@@ -637,168 +631,168 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         debtlist = balancedf['TotalDebtGrowthRate'].tolist()
         # debtmin = nan_strip_min(debtlist)
         # debtmax = nan_strip_max(debtlist)
-        debtavg = IQR_Mean(debtlist)
+        debtavg = IQR_MeanNZ(debtlist)
 
         metadata['debtGrowthAVG'] = debtavg
 
         #rep equity gr min max avg
         repeqlist = balancedf['ReportedTotalEquity'].tolist()
-        repeqmin = nan_strip_min(repeqlist)
+        # repeqmin = nan_strip_min(repeqlist)
         # repeqmax = nan_strip_max(repeqlist)
-        # repeqavg = IQR_Mean(repeqlist)
+        repeqavg = IQR_MeanNZ(repeqlist)
         repeqgrlist = balancedf['ReportedTotalEquityGrowthRate'].tolist()
         # repeqgrmin = nan_strip_min(repeqgrlist)
         # repeqgrmax = nan_strip_max(repeqgrlist)
-        repeqgravg = IQR_Mean(repeqgrlist)
-        repeqgravgint = zeroIntegrity(repeqgrlist)
+        # repeqgravg = IQR_Mean(repeqgrlist)
+        # repeqgravgint = zeroIntegrity(repeqgrlist)
         repeqgravgnz = IQR_MeanNZ(repeqgrlist)
 
-        metadata['reportedEquityLow'] = repeqmin
-        metadata['reportedEquityGrowthAVG'] = repeqgravg
-        metadata['reportedEquityGrowthAVGintegrity'] = repeqgravgint
+        metadata['reportedEquityAVG'] = repeqavg
+        # metadata['reportedEquityGrowthAVG'] = repeqgravg
+        # metadata['reportedEquityGrowthAVGintegrity'] = repeqgravgint
         metadata['reportedEquityGrowthAVGnz'] = repeqgravgnz
 
         #calcd equity gr min max avg
         calceqlist = balancedf['TotalEquity'].tolist()
-        calceqmin = nan_strip_min(calceqlist)
+        # calceqmin = nan_strip_min(calceqlist)
         # calceqmax = nan_strip_max(calceqlist)
-        # calceqavg = IQR_Mean(calceqlist)
+        calceqavg = IQR_MeanNZ(calceqlist)
         calceqgrlist = balancedf['TotalEquityGrowthRate'].tolist()
         # calceqgrmin = nan_strip_min(calceqgrlist)
         # calceqgrmax = nan_strip_max(calceqgrlist)
-        calceqgravg = IQR_Mean(calceqgrlist)
-        calceqgravgint = zeroIntegrity(calceqgrlist)
+        # calceqgravg = IQR_Mean(calceqgrlist)
+        # calceqgravgint = zeroIntegrity(calceqgrlist)
         calceqgravgnz = IQR_MeanNZ(calceqgrlist)
 
-        metadata['calculatedEquityLow'] = calceqmin
-        metadata['calculatedEquityGrowthAVG'] = calceqgravg
-        metadata['calculatedEquityGrowthAVGintegrity'] = calceqgravgint
+        metadata['calculatedEquityAVG'] = calceqavg
+        # metadata['calculatedEquityGrowthAVG'] = calceqgravg
+        # metadata['calculatedEquityGrowthAVGintegrity'] = calceqgravgint
         metadata['calculatedEquityGrowthAVGnz'] = calceqgravgnz
 
         #equity avg... avg'd
         # aggeqmin = (repeqgrmin + calceqgrmin) / 2
         # aggeqmax = (repeqgrmax + calceqgrmax) / 2
-        aggeqavg = (repeqgravg + calceqgravg) / 2
+        # aggeqavg = (repeqgravg + calceqgravg) / 2
 
-        metadata['aggEquityGrowthAVG'] = aggeqavg
+        # metadata['aggEquityGrowthAVG'] = aggeqavg
 
         #op cf min max avg
         opcflist = cfdf['operatingCashFlow'].tolist()
-        opcfmin = nan_strip_min(opcflist)
+        # opcfmin = nan_strip_min(opcflist)
         # opcfmax = nan_strip_max(opcflist)
-        opcfavg = IQR_Mean(opcflist)
-        opcfavgint = zeroIntegrity(opcflist)
+        # opcfavg = IQR_Mean(opcflist)
+        # opcfavgint = zeroIntegrity(opcflist)
         opcfavgnz = IQR_MeanNZ(opcflist)
 
-        metadata['operatingCashFlowLow'] = opcfmin
-        metadata['operatingCashFlowAVG'] = opcfavg
-        metadata['operatingCashFlowAVGintegrity'] = opcfavgint
+        # metadata['operatingCashFlowLow'] = opcfmin
+        # metadata['operatingCashFlowAVG'] = opcfavg
+        # metadata['operatingCashFlowAVGintegrity'] = opcfavgint
         metadata['operatingCashFlowAVGnz'] = opcfavgnz
 
         #op cf gr min max avg
         opcfgrlist = cfdf['operatingCashFlowGrowthRate'].tolist()
         # opcfgrmin = nan_strip_min(opcfgrlist)
         # opcfgrmax = nan_strip_max(opcfgrlist)
-        opcfgravg = IQR_Mean(opcfgrlist)
-        opcfgravgint = zeroIntegrity(opcfgrlist)
+        # opcfgravg = IQR_Mean(opcfgrlist)
+        # opcfgravgint = zeroIntegrity(opcfgrlist)
         opcfgravgnz = IQR_MeanNZ(opcfgrlist)
 
-        metadata['operatingCashFlowGrowthAVG'] = opcfgravg
-        metadata['operatingCashFlowGrowthAVGintegrity'] = opcfgravgint
+        # metadata['operatingCashFlowGrowthAVG'] = opcfgravg
+        # metadata['operatingCashFlowGrowthAVGintegrity'] = opcfgravgint
         metadata['operatingCashFlowGrowthAVGnz'] = opcfgravgnz
 
         #inv cf min max avg
         invcflist = cfdf['investingCashFlow'].tolist()
-        invcfmin = nan_strip_min(invcflist)
+        # invcfmin = nan_strip_min(invcflist)
         # invcfmax = nan_strip_max(invcflist)
-        invcfavg = IQR_Mean(invcflist)
-        invcfavgint = zeroIntegrity(invcflist)
+        # invcfavg = IQR_Mean(invcflist)
+        # invcfavgint = zeroIntegrity(invcflist)
         invcfavgnz = IQR_MeanNZ(invcflist)
 
-        metadata['investingCashFlowLow'] = invcfmin
-        metadata['investingCashFlowAVG'] = invcfavg
-        metadata['investingCashFlowAVGintegrity'] = invcfavgint
+        # metadata['investingCashFlowLow'] = invcfmin
+        # metadata['investingCashFlowAVG'] = invcfavg
+        # metadata['investingCashFlowAVGintegrity'] = invcfavgint
         metadata['investingCashFlowAVGnz'] = invcfavgnz
 
         #inv cf gr min max avg
         invcfgrlist = cfdf['investingCashFlowGrowthRate'].tolist()
         # invcfgrmin = nan_strip_min(invcfgrlist)
         # invcfgrmax = nan_strip_max(invcfgrlist)
-        invcfgravg = IQR_Mean(invcfgrlist)
-        invcfgravgint = zeroIntegrity(invcfgrlist)
+        # invcfgravg = IQR_Mean(invcfgrlist)
+        # invcfgravgint = zeroIntegrity(invcfgrlist)
         invcfgravgnz = IQR_MeanNZ(invcfgrlist)
 
-        metadata['investingCashFlowGrowthAVG'] = invcfgravg
-        metadata['investingCashFlowGrowthAVGintegrity'] = invcfgravgint
+        # metadata['investingCashFlowGrowthAVG'] = invcfgravg
+        # metadata['investingCashFlowGrowthAVGintegrity'] = invcfgravgint
         metadata['investingCashFlowGrowthAVGnz'] = invcfgravgnz
 
         #fin cf min max avg
         fincflist = cfdf['financingCashFlow'].tolist()
-        fincfmin = nan_strip_min(fincflist)
+        # fincfmin = nan_strip_min(fincflist)
         # fincfmax = nan_strip_max(fincflist)
-        fincfavg = IQR_Mean(fincflist)
-        fincfavgint = zeroIntegrity(fincflist)
+        # fincfavg = IQR_Mean(fincflist)
+        # fincfavgint = zeroIntegrity(fincflist)
         fincfavgnz = IQR_MeanNZ(fincflist)
 
-        metadata['financingCashFlowLow'] = fincfmin
-        metadata['financingCashFlowAVG'] = fincfavg
-        metadata['financingCashFlowAVGintegrity'] = fincfavgint
+        # metadata['financingCashFlowLow'] = fincfmin
+        # metadata['financingCashFlowAVG'] = fincfavg
+        # metadata['financingCashFlowAVGintegrity'] = fincfavgint
         metadata['financingCashFlowAVGnz'] = fincfavgnz
 
         #fin cf gr min max avg
         fincfgrlist = cfdf['financingCashFlowGrowthRate'].tolist()
         # fincfgrmin = nan_strip_min(fincfgrlist)
         # fincfgrmax = nan_strip_max(fincfgrlist)
-        fincfgravg = IQR_Mean(fincfgrlist)
-        fincfgravgint = zeroIntegrity(fincfgrlist) 
+        # fincfgravg = IQR_Mean(fincfgrlist)
+        # fincfgravgint = zeroIntegrity(fincfgrlist) 
         fincfgravgnz = IQR_MeanNZ(fincfgrlist)
 
-        metadata['financingCashFlowGrowthAVG'] = fincfgravg
-        metadata['financingCashFlowGrowthAVGintegrity'] = fincfgravgint
+        # metadata['financingCashFlowGrowthAVG'] = fincfgravg
+        # metadata['financingCashFlowGrowthAVGintegrity'] = fincfgravgint
         metadata['financingCashFlowGrowthAVGnz'] = fincfgravgnz
 
         #net cf min max avg
         netcflist = cfdf['netCashFlow'].tolist()
-        netcfmin = nan_strip_min(netcflist)
+        # netcfmin = nan_strip_min(netcflist)
         # netcfmax = nan_strip_max(netcflist)
-        netcfavg = IQR_Mean(netcflist)
-        netcfavgint = zeroIntegrity(netcflist)
+        # netcfavg = IQR_Mean(netcflist)
+        # netcfavgint = zeroIntegrity(netcflist)
         netcfavgnz = IQR_MeanNZ(netcflist)
 
-        metadata['netCashFlowLow'] = netcfmin
-        metadata['netCashFlowAVG'] = netcfavg
-        metadata['netCashFlowAVGintegrity'] = netcfavgint
+        # metadata['netCashFlowLow'] = netcfmin
+        # metadata['netCashFlowAVG'] = netcfavg
+        # metadata['netCashFlowAVGintegrity'] = netcfavgint
         metadata['netCashFlowAVGnz'] = netcfavgnz
 
         #net cf gr min max avg
         netcfgrlist = cfdf['netCashFlowGrowthRate'].tolist()
         # netcfgrmin = nan_strip_min(netcfgrlist)
         # netcfgrmax = nan_strip_max(netcfgrlist)
-        netcfgravg = IQR_Mean(netcfgrlist)
-        netcfgravgint = zeroIntegrity(netcfgrlist)
+        # netcfgravg = IQR_Mean(netcfgrlist)
+        # netcfgravgint = zeroIntegrity(netcfgrlist)
         netcfgravgnz = IQR_MeanNZ(netcfgrlist)
 
-        metadata['netCashFlowGrowthAVG'] = netcfgravg
-        metadata['netCashFlowGrowthAVGintegrity'] = netcfgravgint
+        # metadata['netCashFlowGrowthAVG'] = netcfgravg
+        # metadata['netCashFlowGrowthAVGintegrity'] = netcfgravgint
         metadata['netCashFlowGrowthAVGnz'] = netcfgravgnz
 
         #capex gr min max avg
         capexlist = cfdf['capExGrowthRate'].tolist()
         # capexmin = nan_strip_min(capexlist)
         # capexmax = nan_strip_max(capexlist)
-        capexavg = IQR_Mean(capexlist)
-        capexavgint = zeroIntegrity(capexlist)
+        # capexavg = IQR_Mean(capexlist)
+        # capexavgint = zeroIntegrity(capexlist)
         capexavgnz = IQR_MeanNZ(capexlist)
 
-        metadata['capexGrowthAVG'] = capexavg
-        metadata['capexGrowthAVGintegrity'] = capexavgint
+        # metadata['capexGrowthAVG'] = capexavg
+        # metadata['capexGrowthAVGintegrity'] = capexavgint
         metadata['capexGrowthAVGnz'] = capexavgnz
 
         #shares gr min max avg
         shareslist = divdf['sharesGrowthRate'].tolist()
         # sharesmin = nan_strip_min(shareslist)
         # sharesmax = nan_strip_max(shareslist)
-        sharesavg = IQR_Mean(shareslist)
+        sharesavg = IQR_MeanNZ(shareslist)
 
         metadata['sharesGrowthAVG'] = sharesavg
 
@@ -818,273 +812,283 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
 
         #total divs gr divGrowthRateBOT
         tdivsgrlist = divdf['divGrowthRateBOT'].tolist()
-        tdivsgrmin = nan_strip_min(tdivsgrlist)
-        tdivsgrmax = nan_strip_max(tdivsgrlist)
-        tdivsgravg = IQR_Mean(tdivsgrlist)
-        tdivsgravgint = zeroIntegrity(tdivsgrlist)
+        # tdivsgrmin = nan_strip_min(tdivsgrlist)
+        # tdivsgrmax = nan_strip_max(tdivsgrlist)
+        # tdivsgravg = IQR_Mean(tdivsgrlist)
+        # tdivsgravgint = zeroIntegrity(tdivsgrlist)
         tdivsgravgnz = IQR_MeanNZ(tdivsgrlist)
 
-        metadata['totalDivsPaidGrowthAVG'] = tdivsgravg
-        metadata['totalDivsPaidGrowthAVGintegrity'] = tdivsgravgint
+        # metadata['totalDivsPaidGrowthAVG'] = tdivsgravg
+        # metadata['totalDivsPaidGrowthAVGintegrity'] = tdivsgravgint
         metadata['totalDivsPaidGrowthAVGnz'] = tdivsgravgnz
 
         #calc dps
         cdpslist = divdf['calcDivsPerShare'].tolist()
-        cdpsmin = nan_strip_min(cdpslist)
-        cdpsmax = nan_strip_max(cdpslist)
-        cdpslatest = cdpslist[-1]
-        cdpsavg = IQR_Mean(cdpslist)
+        # cdpsmin = nan_strip_min(cdpslist)
+        # cdpsmax = nan_strip_max(cdpslist)
+        # cdpslatest = cdpslist[-1]
+        cdpsavg = IQR_MeanNZ(cdpslist)
 
-        metadata['calcDivsPerShareLow'] = cdpsmin
-        metadata['calcDivsPerShareHigh'] = cdpsmax
-        metadata['calcDivsPerShareLatest'] = cdpslatest
+        # metadata['calcDivsPerShareLow'] = cdpsmin
+        # metadata['calcDivsPerShareHigh'] = cdpsmax
+        # metadata['calcDivsPerShareLatest'] = cdpslatest
         metadata['calcDivsPerShareAVG'] = cdpsavg
 
         #calc dps gr divGrowthRateBOCPS
         cdpsgrlist = divdf['divGrowthRateBOCPS'].tolist()
-        cdpsgrmin = nan_strip_min(cdpsgrlist)
-        cdpsgrmax = nan_strip_max(cdpsgrlist)
-        cdpsgravg = IQR_Mean(cdpsgrlist)
-        cdpsgravgint = zeroIntegrity(cdpsgrlist)
+        # cdpsgrmin = nan_strip_min(cdpsgrlist)
+        # cdpsgrmax = nan_strip_max(cdpsgrlist)
+        # cdpsgravg = IQR_Mean(cdpsgrlist)
+        # cdpsgravgint = zeroIntegrity(cdpsgrlist)
         cdpsgravgnz = IQR_MeanNZ(cdpsgrlist)
 
-        metadata['calcDivsPerShareGrowthLow'] = cdpsgrmin
-        metadata['calcDivsPerShareGrowthHigh'] = cdpsgrmax
-        metadata['calcDivsPerShareGrowthAVG'] = cdpsgravg
-        metadata['calcDivsPerShareGrowthAVGintegrity'] = cdpsgravgint
+        # metadata['calcDivsPerShareGrowthLow'] = cdpsgrmin
+        # metadata['calcDivsPerShareGrowthHigh'] = cdpsgrmax
+        # metadata['calcDivsPerShareGrowthAVG'] = cdpsgravg
+        # metadata['calcDivsPerShareGrowthAVGintegrity'] = cdpsgravgint
         metadata['calcDivsPerShareGrowthAVGnz'] = cdpsgravgnz
 
         #dps
         dpslist = divdf['divsPaidPerShare'].tolist()
-        dpsmin = nan_strip_min(dpslist)
-        dpsmax = nan_strip_max(dpslist)
-        dpslatest = dpslist[-1]
-        dpsavg = IQR_Mean(dpslist)
+        # dpsmin = nan_strip_min(dpslist)
+        # dpsmax = nan_strip_max(dpslist)
+        # dpslatest = dpslist[-1]
+        dpsavg = IQR_MeanNZ(dpslist)
 
-        metadata['repDivsPerShareLow'] = dpsmin
-        metadata['repDivsPerShareHigh'] = dpsmax
-        metadata['repDivsPerShareLatest'] = dpslatest
+        # metadata['repDivsPerShareLow'] = dpsmin
+        # metadata['repDivsPerShareHigh'] = dpsmax
+        # metadata['repDivsPerShareLatest'] = dpslatest
         metadata['repDivsPerShareAVG'] = dpsavg
 
         #dps gr divGrowthRateBORPS
         dpsgrlist = divdf['divGrowthRateBORPS'].tolist()
-        dpsgrmin = nan_strip_min(dpsgrlist)
-        dpsgrmax = nan_strip_max(dpsgrlist)
-        dpsgravg = IQR_Mean(dpsgrlist)
-        dpsgravgint = zeroIntegrity(dpsgrlist)
+        # dpsgrmin = nan_strip_min(dpsgrlist)
+        # dpsgrmax = nan_strip_max(dpsgrlist)
+        # dpsgravg = IQR_Mean(dpsgrlist)
+        # dpsgravgint = zeroIntegrity(dpsgrlist)
         dpsgravgnz = IQR_MeanNZ(dpsgrlist)
 
-        metadata['repDivsPerShareGrowthLow'] = dpsgrmin
-        metadata['repDivsPerShareGrowthHigh'] = dpsgrmax
-        metadata['repDivsPerShareGrowthAVG'] = dpsgravg
-        metadata['repDivsPerShareGrowthAVGintegrity'] = dpsgravgint
+        # metadata['repDivsPerShareGrowthLow'] = dpsgrmin
+        # metadata['repDivsPerShareGrowthHigh'] = dpsgrmax
+        # metadata['repDivsPerShareGrowthAVG'] = dpsgravg
+        # metadata['repDivsPerShareGrowthAVGintegrity'] = dpsgravgint
         metadata['repDivsPerShareGrowthAVGnz'] = dpsgravgnz
 
         #agg ps
-        aggpsdivmin = (dpsmin + cdpsmin) / 2
-        aggpsdivmax = (dpsmax + cdpsmax) / 2
-        aggpsdivavg = (dpsavg + cdpsavg) / 2
+        # aggpsdivmin = (dpsmin + cdpsmin) / 2
+        # aggpsdivmax = (dpsmax + cdpsmax) / 2
+        # aggpsdivavg = (dpsavg + cdpsavg) / 2
 
-        metadata['aggDivsPSLow'] = aggpsdivmin
-        metadata['aggDivsPSHigh'] = aggpsdivmax
-        metadata['aggDivsPSAVG'] = aggpsdivavg
+        # metadata['aggDivsPSLow'] = aggpsdivmin
+        # metadata['aggDivsPSHigh'] = aggpsdivmax
+        # metadata['aggDivsPSAVG'] = aggpsdivavg
 
-        aggpsdivgrmin = (dpsgrmin + cdpsgrmin) / 2
-        aggpsdivgrmax = (dpsgrmax + cdpsgrmax) / 2
-        aggpsdivgravg = (dpsgravg + cdpsgravg) / 2
+        # aggpsdivgrmin = (dpsgrmin + cdpsgrmin) / 2
+        # aggpsdivgrmax = (dpsgrmax + cdpsgrmax) / 2
+        # aggpsdivgravg = (dpsgravg + cdpsgravg) / 2
 
-        metadata['aggDivsPSGrowthLow'] = aggpsdivgrmin
-        metadata['aggDivsPSGrowthHigh'] = aggpsdivgrmax
-        metadata['aggDivsPSGrowthAVG'] = aggpsdivgravg
+        # metadata['aggDivsPSGrowthLow'] = aggpsdivgrmin
+        # metadata['aggDivsPSGrowthHigh'] = aggpsdivgrmax
+        # metadata['aggDivsPSGrowthAVG'] = aggpsdivgravg
 
         #agg ps + total avg
         # aggbotnpsdivsmin = (tdivsmin + aggpsdivmin) / 2
         # aggbotnpsdivsmax = (tdivsmax + aggpsdivmax) / 2
         # aggbotnpsdivsavg = (tdivsavg + aggpsdivavg) / 2
 
-        aggbotnpsdivsgrmin = (tdivsgrmin + aggpsdivgrmin) / 2
-        aggbotnpsdivsgrmax = (tdivsgrmax + aggpsdivgrmax) / 2
-        aggbotnpsdivsgravg = (tdivsgravg + aggpsdivgravg) / 2
+        # aggbotnpsdivsgrmin = (tdivsgrmin + aggpsdivgrmin) / 2
+        # aggbotnpsdivsgrmax = (tdivsgrmax + aggpsdivgrmax) / 2
+        # aggbotnpsdivsgravg = (tdivsgravg + aggpsdivgravg) / 2
 
-        metadata['aggDivsGrowthLow'] = aggbotnpsdivsgrmin
-        metadata['aggDivsGrowthHigh'] = aggbotnpsdivsgrmax
-        metadata['aggDivsGrowthAVG'] = aggbotnpsdivsgravg
+        # metadata['aggDivsGrowthLow'] = aggbotnpsdivsgrmin
+        # metadata['aggDivsGrowthHigh'] = aggbotnpsdivsgrmax
+        # metadata['aggDivsGrowthAVG'] = aggbotnpsdivsgravg
 
         #payout ratio min max avg
         prlist = divdf['payoutRatio'].tolist()
-        prmin = nan_strip_min(prlist)
-        prmax = nan_strip_max(prlist)
-        pravg = IQR_Mean(prlist)
-        pravgint = zeroIntegrity(prlist)
-        pravgnz = IQR_MeanNZ(prlist)
+        # prmin = nan_strip_min(prlist)
+        # prmax = nan_strip_max(prlist)
+        # pravg = IQR_Mean(prlist)
+        # pravgint = zeroIntegrity(prlist)
+        pravgnz = IQR_MeanNZ(prlist) * 100
 
-        metadata['payoutRatioLow'] = prmin
-        metadata['payoutRatioHigh'] = prmax
-        metadata['payoutRatioAVG'] = pravg
-        metadata['payoutRatioAVGintegrity'] = pravgint
+        # metadata['payoutRatioLow'] = prmin
+        # metadata['payoutRatioHigh'] = prmax
+        # metadata['payoutRatioAVG'] = pravg
+        # metadata['payoutRatioAVGintegrity'] = pravgint
         metadata['payoutRatioAVGnz'] = pravgnz
 
         #fcfpayratio  min max avg
         fcfprlist = divdf['fcfPayoutRatio'].tolist()
-        fcfprmin = nan_strip_min(fcfprlist)
-        fcfprmax = nan_strip_max(fcfprlist)
-        fcfpravg = IQR_Mean(fcfprlist)
-        fcfpravgint = zeroIntegrity(fcfprlist)
-        fcfpravgnz = IQR_MeanNZ(fcfprlist)
+        # fcfprmin = nan_strip_min(fcfprlist)
+        # fcfprmax = nan_strip_max(fcfprlist)
+        # fcfpravg = IQR_Mean(fcfprlist)
+        # fcfpravgint = zeroIntegrity(fcfprlist)
+        fcfpravgnz = IQR_MeanNZ(fcfprlist) * 100
 
-        metadata['fcfPayoutRatioLow'] = fcfprmin
-        metadata['fcfPayoutRatioHigh'] = fcfprmax
-        metadata['fcfPayoutRatioAVG'] = fcfpravg
-        metadata['fcfPayoutRatioAVGintegrity'] = fcfpravgint
+        # metadata['fcfPayoutRatioLow'] = fcfprmin
+        # metadata['fcfPayoutRatioHigh'] = fcfprmax
+        # metadata['fcfPayoutRatioAVG'] = fcfpravg
+        # metadata['fcfPayoutRatioAVGintegrity'] = fcfpravgint
         metadata['fcfPayoutRatioAVGnz'] = fcfpravgnz
 
         #ffo payratio  min max avg
         ffoprlist = divdf['ffoPayoutRatio'].tolist()
-        ffoprmin = nan_strip_min(ffoprlist)
-        ffoprmax = nan_strip_max(ffoprlist)
-        ffopravg = IQR_Mean(ffoprlist)
-        ffopravgint = zeroIntegrity(ffoprlist)
-        ffopravgnz = IQR_MeanNZ(ffoprlist)
+        # ffoprmin = nan_strip_min(ffoprlist)
+        # ffoprmax = nan_strip_max(ffoprlist)
+        # ffopravg = IQR_Mean(ffoprlist)
+        # ffopravgint = zeroIntegrity(ffoprlist)
+        ffopravgnz = IQR_MeanNZ(ffoprlist) * 100
 
-        metadata['ffoPayoutRatioLow'] = ffoprmin
-        metadata['ffoPayoutRatioHigh'] = ffoprmax
-        metadata['ffoPayoutRatioAVG'] = ffopravg
-        metadata['ffoPayoutRatioAVGintegrity'] = ffopravgint
+        # metadata['ffoPayoutRatioLow'] = ffoprmin
+        # metadata['ffoPayoutRatioHigh'] = ffoprmax
+        # metadata['ffoPayoutRatioAVG'] = ffopravg
+        # metadata['ffoPayoutRatioAVGintegrity'] = ffopravgint
         metadata['ffoPayoutRatioAVGnz'] = ffopravgnz
 
         #roc any payments
-        rocpscountlist = divdf['ROCperShare'].tolist()
-        rocpshowmanyyears = count_nonzeroes(rocpscountlist)
+        # rocpscountlist = divdf['ROCperShare'].tolist()
+        # rocpshowmanyyears = count_nonzeroes(rocpscountlist)
         # rocpsmin = nan_strip_min(ffoprlist)
         # ffoprmax = nan_strip_max(ffoprlist)
-        rocpsavg = IQR_Mean(rocpscountlist)
+        # rocpsavg = IQR_Mean(rocpscountlist)
 
-        metadata['ROCpsAVG'] = rocpsavg
-        metadata['numYearsROCpaid'] = rocpshowmanyyears
+        # metadata['ROCpsAVG'] = rocpsavg
+        # metadata['numYearsROCpaid'] = rocpshowmanyyears
 
         #roic min max avg
-        roiclist = effdf['roic'].tolist()
-        roicmin = nan_strip_min(roiclist)
-        roicmax = nan_strip_max(roiclist)
-        roicavg = IQR_Mean(roiclist)
+        # roiclist = effdf['roic'].tolist()
+        # roicmin = nan_strip_min(roiclist)
+        # roicmax = nan_strip_max(roiclist)
+        # roicavg = IQR_Mean(roiclist)
         
-        metadata['roicLow'] = roicmin
-        metadata['roicHigh'] = roicmax
-        metadata['roicAVG'] = roicavg
+        # metadata['roicLow'] = roicmin
+        # metadata['roicHigh'] = roicmax
+        # metadata['roicAVG'] = roicavg
 
         #adjroic min max avg
         aroiclist = effdf['adjRoic'].tolist()
-        aroicmin = nan_strip_min(aroiclist)
-        aroicmax = nan_strip_max(aroiclist)
-        aroicavg = IQR_Mean(aroiclist)
+        # aroicmin = nan_strip_min(aroiclist)
+        # aroicmax = nan_strip_max(aroiclist)
+        aroicavg = IQR_MeanNZ(aroiclist)
 
-        metadata['aroicLow'] = aroicmin
-        metadata['aroicHigh'] = aroicmax
+        # metadata['aroicLow'] = aroicmin
+        # metadata['aroicHigh'] = aroicmax
         metadata['aroicAVG'] = aroicavg
 
         #rep adj roic min max avg
         raroiclist = effdf['reportedAdjRoic'].tolist()
-        raroicmin = nan_strip_min(raroiclist)
-        raroicmax = nan_strip_max(raroiclist)
-        raroicavg = IQR_Mean(raroiclist)
+        # raroicmin = nan_strip_min(raroiclist)
+        # raroicmax = nan_strip_max(raroiclist)
+        raroicavg = IQR_MeanNZ(raroiclist)
 
-        metadata['raroicLow'] = raroicmin
-        metadata['raroicHigh'] = raroicmax
+        # metadata['raroicLow'] = raroicmin
+        # metadata['raroicHigh'] = raroicmax
         metadata['raroicAVG'] = raroicavg
 
         #agg adj roic
-        aggadjroicmin = (aroicmin + raroicmin) / 2
-        aggadjroicmax = (aroicmax + raroicmax) / 2
-        aggadjroicavg = (aroicavg + raroicavg) / 2
+        # aggadjroicmin = (aroicmin + raroicmin) / 2
+        # aggadjroicmax = (aroicmax + raroicmax) / 2
+        # aggadjroicavg = (aroicavg + raroicavg) / 2
 
-        metadata['aggaroicLow'] = aggadjroicmin
-        metadata['aggaroicHigh'] = aggadjroicmax
-        metadata['aggaroicAVG'] = aggadjroicavg
+        # metadata['aggaroicLow'] = aggadjroicmin
+        # metadata['aggaroicHigh'] = aggadjroicmax
+        # metadata['aggaroicAVG'] = aggadjroicavg
 
         #calc roce min max avg
         crocelist = effdf['calculatedRoce'].tolist()
-        crocemin = nan_strip_min(crocelist)
-        crocemax = nan_strip_max(crocelist)
-        croceavg = IQR_Mean(crocelist)
+        # crocemin = nan_strip_min(crocelist)
+        # crocemax = nan_strip_max(crocelist)
+        croceavg = IQR_MeanNZ(crocelist)
 
-        metadata['croceLow'] = crocemin
-        metadata['croceHigh'] = crocemax
+        # metadata['croceLow'] = crocemin
+        # metadata['croceHigh'] = crocemax
         metadata['croceAVG'] = croceavg
 
         #rep roce min max avg
         rrocelist = effdf['reportedRoce'].tolist()
-        rrocemin = nan_strip_min(rrocelist)
-        rrocemax = nan_strip_max(rrocelist)
-        rroceavg = IQR_Mean(rrocelist)
+        # rrocemin = nan_strip_min(rrocelist)
+        # rrocemax = nan_strip_max(rrocelist)
+        rroceavg = IQR_MeanNZ(rrocelist)
 
-        metadata['rroceLow'] = rrocemin
-        metadata['rroceHigh'] = rrocemax
+        # metadata['rroceLow'] = rrocemin
+        # metadata['rroceHigh'] = rrocemax
         metadata['rroceAVG'] = rroceavg
 
-        #agg calc rep roce
-        aggrocemin = (crocemin + rrocemin) / 2
-        aggrocemax = (crocemax + rrocemax) / 2
-        aggroceavg = (croceavg + rroceavg) / 2
+        rreitroelist = effdf['rReitROE'].tolist()
+        rreitroeavg = IQR_MeanNZ(rreitroelist)
 
-        metadata['aggroceLow'] = aggrocemin
-        metadata['aggroceHigh'] = aggrocemax
-        metadata['aggroceAVG'] = aggroceavg
+        metadata['rreitroeAVG'] = rreitroeavg
+
+        creitroelist = effdf['cReitROE'].tolist()
+        creitroeavg = IQR_MeanNZ(creitroelist)
+
+        metadata['creitroeAVG'] = creitroeavg
+
+        #agg calc rep roce
+        # aggrocemin = (crocemin + rrocemin) / 2
+        # aggrocemax = (crocemax + rrocemax) / 2
+        # aggroceavg = (croceavg + rroceavg) / 2
+
+        # metadata['aggroceLow'] = aggrocemin
+        # metadata['aggroceHigh'] = aggrocemax
+        # metadata['aggroceAVG'] = aggroceavg
 
         #calc book value min max avg
         cbvlist = effdf['calcBookValue'].tolist()
-        cbvmin = nan_strip_min(cbvlist)
+        # cbvmin = nan_strip_min(cbvlist)
         # cbvmax = nan_strip_max(cbvlist)
-        cbvavg = IQR_Mean(cbvlist)
+        cbvavg = IQR_MeanNZ(cbvlist)
 
-        metadata['calcBookValueLow'] = cbvmin
+        # metadata['calcBookValueLow'] = cbvmin
         metadata['calcBookValueAVG'] = cbvavg
 
         #calc book gr min max avg
         cbvgrlist = effdf['calcBookValueGrowthRate'].tolist()
         # cbvgrmin = nan_strip_min(cbvgrlist)
         # cbvgrmax = nan_strip_max(cbvgrlist)
-        cbvgravg = IQR_Mean(cbvgrlist)
-        cbvgravgint = zeroIntegrity(cbvgrlist)
+        # cbvgravg = IQR_Mean(cbvgrlist)
+        # cbvgravgint = zeroIntegrity(cbvgrlist)
         cbvgravgnz = IQR_MeanNZ(cbvgrlist)
 
-        metadata['calcBookValueGrowthAVG'] = cbvgravg
-        metadata['calcBookValueGrowthAVGintegrity'] = cbvgravgint
+        # metadata['calcBookValueGrowthAVG'] = cbvgravg
+        # metadata['calcBookValueGrowthAVGintegrity'] = cbvgravgint
         metadata['calcBookValueGrowthAVGnz'] = cbvgravgnz
 
         #rep bv min max avg
         rbvlist = effdf['reportedBookValue'].tolist()
-        rbvmin = nan_strip_min(rbvlist)
+        # rbvmin = nan_strip_min(rbvlist)
         # rbvmax = nan_strip_max(rbvlist)
-        rbvavg = IQR_Mean(rbvlist)
+        rbvavg = IQR_MeanNZ(rbvlist)
 
-        metadata['repBookValueLow'] = rbvmin
+        # metadata['repBookValueLow'] = rbvmin
         metadata['repBookValueAVG'] = rbvavg
 
         #rep bv gr min max avg
         rbvgrlist = effdf['reportedBookValueGrowthRate'].tolist()
         # rbvgrmin = nan_strip_min(rbvgrlist)
         # rbvgrmax = nan_strip_max(rbvgrlist)
-        rbvgravg = IQR_Mean(rbvgrlist)
-        rbvgravgint = zeroIntegrity(rbvgrlist)
+        # rbvgravg = IQR_Mean(rbvgrlist)
+        # rbvgravgint = zeroIntegrity(rbvgrlist)
         rbvgravgnz = IQR_MeanNZ(rbvgrlist)
 
-        metadata['repBookValueGrowthAVG'] = rbvgravg
-        metadata['repBookValueGrowthAVGintegrity'] = rbvgravgint
+        # metadata['repBookValueGrowthAVG'] = rbvgravg
+        # metadata['repBookValueGrowthAVGintegrity'] = rbvgravgint
         metadata['repBookValueGrowthAVGnz'] = rbvgravgnz
 
-        aggbvmin = (cbvmin + rbvmin) / 2
-        aggbvavg = (cbvavg + rbvavg) / 2
-        aggbvgravg = (cbvgravg + rbvgravg) / 2
+        # aggbvmin = (cbvmin + rbvmin) / 2
+        # aggbvavg = (cbvavg + rbvavg) / 2
+        # aggbvgravg = (cbvgravg + rbvgravg) / 2
 
-        metadata['aggBookValueLow'] = aggbvmin
-        metadata['aggBookValueAVG'] = aggbvavg
-        metadata['aggBookValueGrowthAVG'] = aggbvgravg
+        # metadata['aggBookValueLow'] = aggbvmin
+        # metadata['aggBookValueAVG'] = aggbvavg
+        # metadata['aggBookValueGrowthAVG'] = aggbvgravg
 
         #nav min max avg
         navlist = effdf['nav'].tolist()
         # navmin = nan_strip_min(navlist)
         # navmax = nan_strip_max(navlist)
-        navavg = IQR_Mean(navlist)
+        navavg = IQR_MeanNZ(navlist)
 
         metadata['navAVG'] = navavg
         
@@ -1092,29 +1096,29 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         navgrlist = effdf['navGrowthRate'].tolist()
         # navgrmin = nan_strip_min(navgrlist)
         # navgrmax = nan_strip_max(navgrlist)
-        navgravg = IQR_Mean(navgrlist)
+        navgravg = IQR_MeanNZ(navgrlist)
 
         metadata['navGrowthAVG'] = navgravg
 
-        if pd.isnull(cdpslatest):
-            metadata['calcDivYieldLatest'] = 0
-        else:
-            metadata['calcDivYieldLatest'] = cdpslatest / pricelatest * 100
+        # if pd.isnull(cdpslatest):
+        #     metadata['calcDivYieldLatest'] = 0
+        # else:
+        #     metadata['calcDivYieldLatest'] = cdpslatest / pricelatest * 100
 
-        if pd.isnull(cdpsavg):
-            metadata['calcDivYieldAVG'] = 0
-        else:
-            metadata['calcDivYieldAVG'] = cdpsavg / priceavg * 100
+        # if pd.isnull(cdpsavg):
+        #     metadata['calcDivYieldAVG'] = 0
+        # else:
+        #     metadata['calcDivYieldAVG'] = cdpsavg / priceavg * 100
         
-        if pd.isnull(dpslatest):
-            metadata['repDivYieldLatest'] = 0
-        else:
-            metadata['repDivYieldLatest'] = dpslatest / pricelatest * 100
+        # if pd.isnull(dpslatest):
+        #     metadata['repDivYieldLatest'] = 0
+        # else:
+        #     metadata['repDivYieldLatest'] = dpslatest / pricelatest * 100
         
-        if pd.isnull(dpsavg):
-            metadata['repDivYieldAVG'] = 0
-        else:
-            metadata['repDivYieldAVG'] = dpsavg / priceavg * 100
+        # if pd.isnull(dpsavg):
+        #     metadata['repDivYieldAVG'] = 0
+        # else:
+        #     metadata['repDivYieldAVG'] = dpsavg / priceavg * 100
         
     except Exception as err:
         print('full analysis error: ')
@@ -1145,6 +1149,9 @@ def sectorFillMetadata(sector):
             print('sector fill metadata err')
             print(err)
             continue
+
+# sectorFillMetadata('Real Estate')
+# print_DB('SELECT COUNT(DISTINCT TICKER) FROM Mega WHERE Sector LIKE \'Energy\'', 'print')
 
 def fullFillMetadata():
     try:
@@ -1186,4 +1193,4 @@ def copyMD():
 
 # copyMD()
 
-print_DB('SELECT * FROM Metadata_Backup;', 'print')
+# print_DB('SELECT * FROM Metadata_Backup;', 'print')
