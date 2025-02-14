@@ -54,13 +54,13 @@
             <tr>
                 <th>Average</th>
                 <th></th>
-                <th>${{l.operatingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>${{l.operatingCashFlowAVGnz|floatformat:"0"|intcomma}}</th>
                 <th>{{l.operatingCashFlowGrowthAVGnz|floatformat:3}}%</th>
-                <th>${{l.investingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>${{l.investingCashFlowAVGnz|floatformat:"0"|intcomma}}</th>
                 <th>{{l.investingCashFlowGrowthAVGnz|floatformat:3}}%</th>
-                <th>${{l.financingCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>${{l.financingCashFlowAVGnz|floatformat:"0"|intcomma}}</th>
                 <th>{{l.financingCashFlowGrowthAVGnz|floatformat:3}}%</th>
-                <th>${{l.netCashFlowAVGnz|floatformat:"0"}}</th>
+                <th>${{l.netCashFlowAVGnz|floatformat:"0"|intcomma}}</th>
                 <th>{{l.netCashFlowGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
@@ -117,7 +117,7 @@
                 <th>{{l.capexGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
                 <th>{{l.fcfGrowthAVGnz|floatformat:3}}%</th>
-                <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginAVGnz|floatformat:3}}%</th>
                 <th>{{l.fcfMarginGrowthAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}

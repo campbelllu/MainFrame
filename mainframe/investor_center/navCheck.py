@@ -28,15 +28,18 @@ import yfinance as yf
 ###################################################
 
 # Define ETFs to compare 
-etfs = ["SCHH", "RFI"] # # Example ETFs ; iwy==ymag
+etfs = ["AMZN", "YMAG"] # # Example ETFs ; iwy==ymag
 
 # Fetch historical price data for each ETF 
 etf_data = {} 
 for etf in etfs: 
-    data = yf.Ticker(etf).history(period="20y") # Fetch 1 year of data 
+    data = yf.Ticker(etf).history(period="10y") # Fetch 1 year of data 
     # for x in data:
     #     print(x)
-    # etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
+        # print(data[x])
+    # for x in data:
+    #     print(x)
+    etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
     etf_data[etf + '-AdjClose'] = data["Close"] - data["Dividends"]#.cumsum() # adjusted closing prices approximation #LUKE CUMSUM DROP IT I THINK
     etf_data[etf + '-TotalReturn'] = data['Close'] + data["Dividends"].cumsum() #everything drip'd
     etf_data[etf + '-Divs'] = data['Dividends']
@@ -62,8 +65,9 @@ percentOverOneLastTen = (df["AdjNorm_compare"].iloc[-10:] > 1).mean() * 100
 TRpercentOverOne = (df["TRNorm_compare"] > 1).mean() * 100
 TRpercentOverOneLastTen = (df["TRNorm_compare"].iloc[-10:] > 1).mean() * 100
 
-etf1gain = df[etfs[1] + '-AdjClose'].iloc[-1] - df[etfs[1] + '-AdjClose'].iloc[0]
-etf0gain = df[etfs[0] + '-AdjClose'].iloc[-1] - df[etfs[0] + '-AdjClose'].iloc[0]
+etf1gain = (df[etfs[1] + '-AdjClose'].iloc[-1] - df[etfs[1] + '-AdjClose'].iloc[0]) / df[etfs[1] + '-AdjClose'].iloc[0] * 100
+etf0gain = (df[etfs[0] + '-AdjClose'].iloc[-1] - df[etfs[0] + '-AdjClose'].iloc[0]) / df[etfs[0] + '-AdjClose'].iloc[0] * 100
+percentDifferent = (etf0gain - etf1gain) / etf1gain * 100
 
 df['PriceGrowthRate'] = df["AdjNorm_compare"].pct_change() * 100
 df['TRGrowthRate'] = df["TRNorm_compare"].pct_change() * 100
@@ -71,14 +75,7 @@ df['TRGrowthRate'] = df["TRNorm_compare"].pct_change() * 100
 # df['etf1_gr'] = df[etfs[0]].pct_change() * 100
 # df['etf2_gr'] = df[etfs[1]].pct_change() * 100
 
-# Display DataFrame 
-# print(etfs)
-# print(etfs[1])
-# print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn', 'TRNorm_compare']].tail(20).to_string())
-# print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn',  'AdjNorm_compare', 'TRNorm_compare']].to_string()) #etfs[0] + '-Divs', etfs[1] + '-Divs',
-# print(df.to_string())
-
-#LUKE
+#Terminal Data
 print('Average compare: ' + str(df['AdjNorm_compare'].mean()))
 print('Average compare, last 10: ' + str(df['AdjNorm_compare'].iloc[-10:].mean()))
 print('Percentage of beating the underlying: ' + str(percentOverOne))
@@ -90,6 +87,7 @@ print('TR GR: ' +  str(df['TRGrowthRate'].mean() * 100))
 print('Total Dividends & price gain target: ' + str(df[etfs[0] + '-Divs'].sum()) + ', ' + str(etf0gain))
 # print('Target Yield: ' + str(df[etfs[0] + '-Yield'].iloc[-1]))
 print('Total Dividends & price gain test: ' + str(df[etfs[1] + '-Divs'].sum()) + ', ' + str(etf1gain))
+print('Percentage difference in price gains: ' + str(percentDifferent))
 ####
 # print('Test Yield: ' + str(df[etfs[1] + '-Yield'].iloc[-1]))
 
@@ -101,21 +99,24 @@ print('Total Dividends & price gain test: ' + str(df[etfs[1] + '-Divs'].sum()) +
 plt.figure(figsize=(10,5))
 
 x_num = np.arange(len(df))
-# print("checking nulls:")
-# print(df['AdjNorm_compare'].isna().sum())
-# print(df['TRNorm_compare'].isna().sum())
-# print('checking uniques')
-# print(df['AdjNorm_compare'].nunique())
-# print(df['TRNorm_compare'].nunique())
 m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
 m2, b2 = np.polyfit(x_num, df['TRNorm_compare'], 1)
 
+#comparisons and trendlines
+#price trends
 plt.plot(df['Date'], df['AdjNorm_compare'], label='Price', color='blue', alpha=1)
 plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PriceTrend', color='blue', alpha=0.9)
+print('trendline: y= ' + str(m1) + ' *x + ' + str(b1))
 
-plt.plot(df['Date'], df['TRNorm_compare'], label='Total Return', color='red', alpha=1)
-plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TotalReturnTrend', color='red', alpha=0.9)
+#TR trends
+# plt.plot(df['Date'], df['TRNorm_compare'], label='Total Return', color='red', alpha=1)
+# plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TotalReturnTrend', color='red', alpha=0.9)
 
+# #prices
+# plt.plot(df['Date'], df[etfs[1] + '-Close'] / 100, label='Test Price', color='green', alpha=0.9)
+# plt.plot(df['Date'], df[etfs[0] + '-Close'] / 3000, label='Target Price', color='orange', alpha=0.9)
+
+#Graph info
 plt.title('Relationships ' + etfs[1] + '/' + etfs[0])
 plt.xlabel('Date')
 plt.ylabel('Normalized Relation Ratios')
@@ -123,5 +124,12 @@ plt.legend()
 # plt.ioff()
 plt.grid(True)
 plt.show()
-
 # plt.savefig('justagraph3.png')
+
+
+# Display DataFrame 
+# print(etfs)
+# print(etfs[1])
+# print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn', 'TRNorm_compare']].tail(200).to_string())
+# print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn',  'AdjNorm_compare', 'TRNorm_compare']].to_string()) #etfs[0] + '-Divs', etfs[1] + '-Divs',
+# print(df.to_string())

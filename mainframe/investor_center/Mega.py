@@ -1585,8 +1585,24 @@ def write_list_to_Mega(thelist): #luke, add a print tracker for % complete from 
 # megalist = print_DB('SELECT Ticker FROM stockList WHERE Sector LIKE \'Basic Materials\';', 'return')
 # write_list_to_Mega(megalist['Ticker'])
 
-# megalist = print_DB('SELECT Ticker FROM Mega WHERE Sector LIKE \'Industrials\';', 'print')
-
+# megalist = print_DB('SELECT COUNT(DISTINCT Ticker) FROM Mega;', 'print')# WHERE Sector LIKE \'Utilities\';', 'return')
+# stockList = print_DB('SELECT DISTINCT Ticker FROM stockList WHERE Sector LIKE \'Utilities\';', 'return')
+# print(len(megalist)-len(stockList))
+#unlogged, stockList to Mega
+#B: 77
+#C: 29
+#E: 38
+#F: 505
+#I: 77
+#K: 59
+#P: 29
+#RE: 14
+#U: 16
+#V: 77
+#Y: 51
+# print(megalist)
+# unstockList = print_DB('SELECT DISTINCT Ticker FROM stockList WHERE Sector LIKE \'Unknown\';', 'return')
+# print(len(unstockList))
 # guh = print_DB('DELETE FROM Mega;', 'return')
 # conn = sql.connect(db_path)
 # query = conn.cursor()

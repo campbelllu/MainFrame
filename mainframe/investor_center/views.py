@@ -73,35 +73,35 @@ def summaryHighlights(request, ticker):
             return redirect('highlights')
 
         #luke, the following can all be done away with once DB includes profit margin and avg's for it
-        profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
-        profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
-        pm = []
-        for i in range(0,len(profitMarginNI)-1):
-            try:
-                pm.append(profitMarginNI[i] / profitMarginRev[i])
-            except:
-                pm.append(0)
-        pmAVG = stats.fmean(pm) * 100
+        # profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
+        # profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
+        # pm = []
+        # for i in range(0,len(profitMarginNI)-1):
+        #     try:
+        #         pm.append(profitMarginNI[i] / profitMarginRev[i])
+        #     except:
+        #         pm.append(0)
+        # pmAVG = stats.fmean(pm) * 100
 
-        rreitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
-        rreitroedenom = list(Mega.objects.values_list('ReportedTotalEquity', flat=True).filter(Ticker=ticker.upper()))
-        pm3 = []
-        for i in range(0,len(rreitroenumer)-1):
-            try:
-                pm3.append(rreitroenumer[i] / rreitroedenom[i])
-            except:
-                pm3.append(0)
-        pmAVG3 = stats.fmean(pm3) * 100
+        # rreitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        # rreitroedenom = list(Mega.objects.values_list('ReportedTotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        # pm3 = []
+        # for i in range(0,len(rreitroenumer)-1):
+        #     try:
+        #         pm3.append(rreitroenumer[i] / rreitroedenom[i])
+        #     except:
+        #         pm3.append(0)
+        # pmAVG3 = stats.fmean(pm3) * 100
 
-        creitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
-        creitroedenom = list(Mega.objects.values_list('TotalEquity', flat=True).filter(Ticker=ticker.upper()))
-        pm2 = []
-        for i in range(0,len(creitroenumer)-1):
-            try:
-                pm2.append(creitroenumer[i] / creitroedenom[i])
-            except:
-                pm2.append(0)
-        pmAVG2 = stats.fmean(pm2) * 100
+        # creitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        # creitroedenom = list(Mega.objects.values_list('TotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        # pm2 = []
+        # for i in range(0,len(creitroenumer)-1):
+        #     try:
+        #         pm2.append(creitroenumer[i] / creitroedenom[i])
+        #     except:
+        #         pm2.append(0)
+        # pmAVG2 = stats.fmean(pm2) * 100
         #above this line and any below context
         context = {
             'sectors': sectors,
@@ -110,10 +110,10 @@ def summaryHighlights(request, ticker):
             'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
-            'pmavg': pmAVG,
+            # 'pmavg': pmAVG, #profit margin
             'years': megaDataLength,
-            'rreitroe': pmAVG3,
-            'creitroe': pmAVG2,
+            # 'rreitroe': pmAVG3,
+            # 'creitroe': pmAVG2,
         }
         return render(request, 'investor_center/overview.html', context)
     else:
@@ -127,7 +127,7 @@ def summaryHighlights(request, ticker):
 
 def incomeHighlights(request, ticker):
     sectors = Sector_Rankings.objects.values('Sector').distinct()
-    print('self.kwargs')
+    # print('self.kwargs')
     # print(kwargs)
     if ticker is not None:
         megaData = Mega.objects.filter(Ticker=ticker.upper()).order_by('-year')[:10]
@@ -136,15 +136,15 @@ def incomeHighlights(request, ticker):
             return redirect('highlights')
 
         #luke, the following can all be done away with once DB includes profit margin and avg's for it
-        profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
-        profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
-        pm = []
-        for i in range(0,len(profitMarginNI)-1):
-            try:
-                pm.append(profitMarginNI[i] / profitMarginRev[i])
-            except:
-                pm.append(0)
-        pmAVG = stats.fmean(pm) * 100
+        # profitMarginRev = list(Mega.objects.values_list('revenue', flat=True).filter(Ticker=ticker.upper()))
+        # profitMarginNI = list(Mega.objects.values_list('netIncome', flat=True).filter(Ticker=ticker.upper()))
+        # pm = []
+        # for i in range(0,len(profitMarginNI)-1):
+        #     try:
+        #         pm.append(profitMarginNI[i] / profitMarginRev[i])
+        #     except:
+        #         pm.append(0)
+        # pmAVG = stats.fmean(pm) * 100
         #above this line and any below context
         context = {
             'sectors': sectors,
@@ -153,7 +153,7 @@ def incomeHighlights(request, ticker):
             'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
-            'pmavg': pmAVG,
+            # 'pmavg': pmAVG,
         }
         return render(request, 'investor_center/incomeDetails.html', context)
     else:
@@ -225,25 +225,25 @@ def efficiencyHighlights(request, ticker):
             return redirect('highlights')
 
         #luke, the following can all be done away with once DB includes profit margin and avg's for it
-        rreitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
-        rreitroedenom = list(Mega.objects.values_list('ReportedTotalEquity', flat=True).filter(Ticker=ticker.upper()))
-        pm = []
-        for i in range(0,len(rreitroenumer)-1):
-            try:
-                pm.append(rreitroenumer[i] / rreitroedenom[i])
-            except:
-                pm.append(0)
-        pmAVG = stats.fmean(pm) * 100
+        # rreitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        # rreitroedenom = list(Mega.objects.values_list('ReportedTotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        # pm = []
+        # for i in range(0,len(rreitroenumer)-1):
+        #     try:
+        #         pm.append(rreitroenumer[i] / rreitroedenom[i])
+        #     except:
+        #         pm.append(0)
+        # pmAVG = stats.fmean(pm) * 100
 
-        creitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
-        creitroedenom = list(Mega.objects.values_list('TotalEquity', flat=True).filter(Ticker=ticker.upper()))
-        pm2 = []
-        for i in range(0,len(creitroenumer)-1):
-            try:
-                pm2.append(creitroenumer[i] / creitroedenom[i])
-            except:
-                pm2.append(0)
-        pmAVG2 = stats.fmean(pm2) * 100
+        # creitroenumer = list(Mega.objects.values_list('ffo', flat=True).filter(Ticker=ticker.upper()))
+        # creitroedenom = list(Mega.objects.values_list('TotalEquity', flat=True).filter(Ticker=ticker.upper()))
+        # pm2 = []
+        # for i in range(0,len(creitroenumer)-1):
+        #     try:
+        #         pm2.append(creitroenumer[i] / creitroedenom[i])
+        #     except:
+        #         pm2.append(0)
+        # pmAVG2 = stats.fmean(pm2) * 100
         #above this line and any below context
         context = {
             'sectors': sectors,
@@ -252,8 +252,8 @@ def efficiencyHighlights(request, ticker):
             'dt': ticker.upper(),
             'lt': megaData,
             'mt': metaData,
-            'rreitroe': pmAVG,
-            'creitroe': pmAVG2,
+            # 'rreitroe': pmAVG,
+            # 'creitroe': pmAVG2,
         }
         return render(request, 'investor_center/effDetails.html', context)
     else:

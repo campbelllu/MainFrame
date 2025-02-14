@@ -61,11 +61,14 @@
                 <th>{{l.netIncomeGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.repsGrowthAVGnz|floatformat:3}}%</th>
                 <th>{{l.cepsGrowthAVGnz|floatformat:3}}%</th>
-                <th>{% if pmavg == 0 %} Data Unavailable
+                <th>{{l.profitMarginAVGnz|floatformat:3}}%
+                    
+                    
+                    <!-- {% if pmavg == 0 %} Data Unavailable
                     {% else %} {{pmavg|floatformat:3}}%
-                    {% endif %}
+                    {% endif %} -->
                 </th>
-                <th>{{l.fcfMarginAVG|floatformat:3}}%</th>
+                <th>{{l.fcfMarginAVGnz|floatformat:3}}%</th>
                 <th>{{l.fcfMarginGrowthAVGnz|floatformat:3}}%</th>
                 <th>{% if l.netCashFlowAVGnz > 0 %} > Zero
                     {% else %} < Zero
@@ -174,14 +177,8 @@
                 <th>Average</th>
                 <th>{{l.rroceAVG|floatformat:3}}% </th>
                 <th>{{l.croceAVG|floatformat:3}}% </th>
-                <th>{% if rreitroe == 0 %} Data Unavailable
-                    {% else %} {{rreitroe|floatformat:3}}%
-                    {% endif %}
-                </th>
-                <th>{% if creitroe == 0 %} Data Unavailable
-                    {% else %} {{creitroe|floatformat:3}}%
-                    {% endif %}
-                </th>
+                <th>{{l.rreitroeAVG|floatformat:3}}%</th>
+                <th>{{l.creitroeAVG|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>
@@ -239,9 +236,9 @@
             <tr>
                 <th>{{ years|length }}</th>
                 <th>Average</th>
-                <th>{{l.poravg100|floatformat:3}}%</th>
-                <th>{{l.fcfporavg100|floatformat:3}}%</th>
-                <th>{{l.ffoporavg100|floatformat:3}}%</th>
+                <th>{{l.payoutRatioAVGnz|floatformat:3}}%</th>
+                <th>{{l.fcfPayoutRatioAVGnz|floatformat:3}}%</th>
+                <th>{{l.ffoPayoutRatioAVGnz|floatformat:3}}%</th>
             </tr>
             {% endfor %}
         </table>

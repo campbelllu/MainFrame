@@ -375,13 +375,14 @@ def efficiency_reading(ticker):
     try:
         conn = sql.connect(db_path)
         query = conn.cursor()
-        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingIncome, operatingIncomeGrowthRate, taxRate, nopat, investedCapital, \
-                        roic, adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, rReitROE, cReitROE, \
+        thequery = 'SELECT Ticker, Sector, Industry, Year, operatingIncome, operatingIncomeGrowthRate, taxRate, investedCapital, \
+                        adjRoic, reportedAdjRoic, calculatedRoce, reportedRoce, rReitROE, cReitROE, \
                         calcBookValue, calcBookValueGrowthRate, reportedBookValue, reportedBookValueGrowthRate, nav, navGrowthRate \
                     FROM Mega \
                     WHERE Ticker LIKE \'' + ticker + '\' \
                     ORDER BY Year  \
                     ;'
+                    # nopat, roic,
         df1 = pd.read_sql(thequery,conn)
         query.close()
         conn.close()
@@ -910,7 +911,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # prmax = nan_strip_max(prlist)
         # pravg = IQR_Mean(prlist)
         # pravgint = zeroIntegrity(prlist)
-        pravgnz = IQR_MeanNZ(prlist) * 100
+        pravgnz = IQR_MeanNZ(prlist)
 
         # metadata['payoutRatioLow'] = prmin
         # metadata['payoutRatioHigh'] = prmax
@@ -924,7 +925,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # fcfprmax = nan_strip_max(fcfprlist)
         # fcfpravg = IQR_Mean(fcfprlist)
         # fcfpravgint = zeroIntegrity(fcfprlist)
-        fcfpravgnz = IQR_MeanNZ(fcfprlist) * 100
+        fcfpravgnz = IQR_MeanNZ(fcfprlist)
 
         # metadata['fcfPayoutRatioLow'] = fcfprmin
         # metadata['fcfPayoutRatioHigh'] = fcfprmax
@@ -938,7 +939,7 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
         # ffoprmax = nan_strip_max(ffoprlist)
         # ffopravg = IQR_Mean(ffoprlist)
         # ffopravgint = zeroIntegrity(ffoprlist)
-        ffopravgnz = IQR_MeanNZ(ffoprlist) * 100
+        ffopravgnz = IQR_MeanNZ(ffoprlist)
 
         # metadata['ffoPayoutRatioLow'] = ffoprmin
         # metadata['ffoPayoutRatioHigh'] = ffoprmax
@@ -1126,6 +1127,14 @@ def full_analysis(incomedf, balancedf, cfdf, divdf, effdf):
     finally:
         return metadata
 
+#Tests
+# target = 'pillow'
+# print(income_reading(target))
+# print(balanceSheet_reading(target))
+# print(cashFlow_reading(target))
+# print(dividend_reading(target))
+# print(efficiency_reading(target))
+
 def sectorFillMetadata(sector):
     #Need to decide if we remove old records, or just add new records, latestyear and any stat changes will be only distinguishing between different
     #rows of data
@@ -1140,7 +1149,7 @@ def sectorFillMetadata(sector):
     for x in tickerfetch:
         # print('Working on ' + x)
         try:
-            print(str(round(n/length1,4)*100) + '% complete!')
+            print('Progress for sector: ' + str(sector) + ' ' + str(round(n/length1,4)*100) + '% Complete!')
             faTable = full_analysis(income_reading(x), balanceSheet_reading(x), cashFlow_reading(x), dividend_reading(x), efficiency_reading(x))
             print('Table made for: ' + x)
             uploadToDB(faTable,'Metadata')
@@ -1155,6 +1164,7 @@ def sectorFillMetadata(sector):
 
 def fullFillMetadata():
     try:
+        time0  = time.time()
         getsectors = 'SELECT DISTINCT Sector FROM Mega;'
         sectors = print_DB(getsectors, 'return')
         for x in sectors['Sector']:
@@ -1162,8 +1172,23 @@ def fullFillMetadata():
     except Exception as err:
         print('full fill metadata')
         print(err)
+    finally:
+        time1  = time.time()
+        print('Total Time to completion: ' + str((time1-time0) / 60))
 
 # fullFillMetadata()
+## 2/3/25 filling: just under 19 minutes to fill! 18.85, 6233 tickers. nice! ~0.18 seconds per ticker. Good job!
+# print_DB('SELECT * FROM Metadata;', 'print')
+# print_DB('SELECT COUNT(DISTINCT TICKER) FROM MEGA;', 'print')
+
+# derp = print_DB('UPDATE Metadata SET payoutRatioAVGnz = payoutRatioAVGnz / 100.0;', 'return')
+# conn = sql.connect(db_path)
+# query = conn.cursor()
+# del_query = 'UPDATE Metadata SET ffoPayoutRatioAVGnz = ffoPayoutRatioAVGnz / 100.0;'
+# query.execute(del_query)
+# conn.commit()
+# query.close()
+# conn.close()
 
 #luke to do
 # updateOrFillMetadata fills metadata now. we need a function to backup metadata, then just rewrite it from scratch

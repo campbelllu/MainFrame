@@ -59,13 +59,14 @@
                 <th>{{l.aroicAVG|floatformat:3}}% </th>
                 <th>{{l.rroceAVG|floatformat:3}}% </th>
                 <th>{{l.croceAVG|floatformat:3}}% </th>
-                <th>{% if rreitroe == 0 %} Data Unavailable
-                    {% else %} {{rreitroe|floatformat:3}}%
-                    {% endif %}
+                <th>{{l.rreitroeAVG|floatformat:3}}%
+                    
+                   
                 </th>
-                <th>{% if creitroe == 0 %} Data Unavailable
-                    {% else %} {{creitroe|floatformat:3}}%
-                    {% endif %}
+                <th>{{l.creitroeAVG|floatformat:3}}%
+                    
+                    
+                    
                 </th>
                 
             </tr>
@@ -78,8 +79,8 @@
                 <td>{{i.adjRoic|floatformat:3}}%</td>
                 <td>{{i.reportedRoce|floatformat:3}}%</td>
                 <td>{{i.calculatedRoce|floatformat:3}}%</td>
-                <td>{{i.rreit_roce|floatformat:3}}%</td>
-                <td>{{i.creit_roce|floatformat:3}}%</td>
+                <td>{{i.rReitROE|floatformat:3}}%</td>
+                <td>{{i.cReitROE|floatformat:3}}%</td>
             </tr>
             {% endfor %}
         </table>

@@ -53,9 +53,11 @@
                 <th>{{l.revGrowthAVGnz|floatformat:3}}%</th>
                 <th></th>
                 <th>{{l.netIncomeGrowthAVGnz|floatformat:3}}%</th>
-                <th>{% if pmavg == 0 %} Data Unavailable
+                <th>{{l.profitMarginAVGnz|floatformat:3}}%
+                    
+                    <!-- {% if pmavg == 0 %} Data Unavailable
                     {% else %} {{pmavg|floatformat:3}}%
-                    {% endif %}
+                    {% endif %} -->
                 </th>
             </tr>
             {% endfor %}
