@@ -28,19 +28,19 @@ import yfinance as yf
 ###################################################
 
 # Define ETFs to compare 
-etfs = ["AMZN", "YMAG"] # # Example ETFs ; iwy==ymag
+etfs = ['IYR', "IYRI"] # # Example ETFs ; iwy==ymag
 
 # Fetch historical price data for each ETF 
 etf_data = {} 
 for etf in etfs: 
-    data = yf.Ticker(etf).history(period="10y") # Fetch 1 year of data 
+    data = yf.Ticker(etf).history(period="6mo") # Fetch 1 year of data 
     # for x in data:
     #     print(x)
         # print(data[x])
     # for x in data:
     #     print(x)
     etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
-    etf_data[etf + '-AdjClose'] = data["Close"] - data["Dividends"]#.cumsum() # adjusted closing prices approximation #LUKE CUMSUM DROP IT I THINK
+    etf_data[etf + '-AdjClose'] = data['Close'] * (1 - (data['Dividends'].cumsum() / data['Close'].iloc[0]))#data["Close"] - data["Dividends"]# # adjusted closing prices approximation #LUKE CUMSUM DROP IT I THINK
     etf_data[etf + '-TotalReturn'] = data['Close'] + data["Dividends"].cumsum() #everything drip'd
     etf_data[etf + '-Divs'] = data['Dividends']
     # etf_data[etf + '-Yield'] = etf_data[etf + '-Divs'] / etf_data[etf + '-AdjClose']
@@ -54,40 +54,54 @@ df.columns = ["Date"] + list(etf_data.keys())
 
 # df['CloseComparison'] = df[etfs[1] + '-Close'] / df[etfs[0] + '-Close']
 # df['CloseNorm_compare'] = df['CloseComparison'] / df['CloseComparison'].iloc[0]
+df['CloseComparison'] = df[etfs[1] + '-Close'] / df[etfs[0] + '-Close']
+df['CloseNorm_compare'] = df['CloseComparison'] / df['CloseComparison'].iloc[0]
 df['AdjComparison'] = df[etfs[1] + '-AdjClose'] / df[etfs[0] + '-AdjClose']
 df['AdjNorm_compare'] = df['AdjComparison'] / df['AdjComparison'].iloc[0]
-df['TRComparison'] = df[etfs[1] + '-TotalReturn'] / df[etfs[0] + '-TotalReturn']
-df['TRNorm_compare'] = df['TRComparison'] / df['TRComparison'].iloc[0]
+# df['TRComparison'] = df[etfs[1] + '-TotalReturn'] / df[etfs[0] + '-TotalReturn']
+# df['TRNorm_compare'] = df['TRComparison'] / df['TRComparison'].iloc[0]
 
 # countOverOne = (df["AdjNorm_compare"] > 1).sum() 
-percentOverOne = (df["AdjNorm_compare"] > 1).mean() * 100
-percentOverOneLastTen = (df["AdjNorm_compare"].iloc[-10:] > 1).mean() * 100
-TRpercentOverOne = (df["TRNorm_compare"] > 1).mean() * 100
-TRpercentOverOneLastTen = (df["TRNorm_compare"].iloc[-10:] > 1).mean() * 100
+# percentOverOne = (df["AdjNorm_compare"] > 1).mean() * 100
+# percentOverOneLastTen = (df["AdjNorm_compare"].iloc[-10:] > 1).mean() * 100
+percentOverOne = (df["CloseNorm_compare"] > 1).mean() * 100
+percentOverOneLastTen = (df["CloseNorm_compare"].iloc[-10:] > 1).mean() * 100
+# TRpercentOverOne = (df["TRNorm_compare"] > 1).mean() * 100
+# TRpercentOverOneLastTen = (df["TRNorm_compare"].iloc[-10:] > 1).mean() * 100
 
-etf1gain = (df[etfs[1] + '-AdjClose'].iloc[-1] - df[etfs[1] + '-AdjClose'].iloc[0]) / df[etfs[1] + '-AdjClose'].iloc[0] * 100
-etf0gain = (df[etfs[0] + '-AdjClose'].iloc[-1] - df[etfs[0] + '-AdjClose'].iloc[0]) / df[etfs[0] + '-AdjClose'].iloc[0] * 100
-percentDifferent = (etf0gain - etf1gain) / etf1gain * 100
+# etf1gain = (df[etfs[1] + '-AdjClose'].iloc[-1] - df[etfs[1] + '-AdjClose'].iloc[0]) / df[etfs[1] + '-AdjClose'].iloc[0] * 100
+# etf0gain = (df[etfs[0] + '-AdjClose'].iloc[-1] - df[etfs[0] + '-AdjClose'].iloc[0]) / df[etfs[0] + '-AdjClose'].iloc[0] * 100
+# percentDifferent = (etf0gain - etf1gain) / etf1gain * 100
 
-df['PriceGrowthRate'] = df["AdjNorm_compare"].pct_change() * 100
-df['TRGrowthRate'] = df["TRNorm_compare"].pct_change() * 100
+# df['PriceGrowthRate'] = df["AdjNorm_compare"].pct_change() * 100
+df['PriceGrowthRate'] = df["CloseNorm_compare"].pct_change() * 100
+# df['TRGrowthRate'] = df["TRNorm_compare"].pct_change() * 100
 
 # df['etf1_gr'] = df[etfs[0]].pct_change() * 100
 # df['etf2_gr'] = df[etfs[1]].pct_change() * 100
 
 #Terminal Data
-print('Average compare: ' + str(df['AdjNorm_compare'].mean()))
-print('Average compare, last 10: ' + str(df['AdjNorm_compare'].iloc[-10:].mean()))
+# print('Average compare: ' + str(df['AdjNorm_compare'].mean()))
+# print('Average compare, last 10: ' + str(df['AdjNorm_compare'].iloc[-10:].mean()))
+print('Average compare: ' + str(df['CloseNorm_compare'].mean()))
+print('Average compare, last 10: ' + str(df['CloseNorm_compare'].iloc[-10:].mean()))
+
 print('Percentage of beating the underlying: ' + str(percentOverOne))
 print('Percentage of beating the underlying, last 10: ' + str(percentOverOneLastTen))
-print('Price GR: ' +  str(df['PriceGrowthRate'].mean() * 100))
-print('Percentage TR beating the underlying: ' + str(TRpercentOverOne))
-print('Percentage TR beating the underlying, last 10: ' + str(TRpercentOverOneLastTen))
-print('TR GR: ' +  str(df['TRGrowthRate'].mean() * 100))
-print('Total Dividends & price gain target: ' + str(df[etfs[0] + '-Divs'].sum()) + ', ' + str(etf0gain))
-# print('Target Yield: ' + str(df[etfs[0] + '-Yield'].iloc[-1]))
-print('Total Dividends & price gain test: ' + str(df[etfs[1] + '-Divs'].sum()) + ', ' + str(etf1gain))
-print('Percentage difference in price gains: ' + str(percentDifferent))
+print('Price Ratio Change AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
+# print('Percentage TR beating the underlying: ' + str(TRpercentOverOne))
+# print('Percentage TR beating the underlying, last 10: ' + str(TRpercentOverOneLastTen))
+# print('TR Ratio Change AVG: ' +  str(df['TRGrowthRate'].mean() * 100))
+# print('Total Dividends & price gain target: ' + str(df[etfs[0] + '-Divs'].sum()) + ', ' + str(etf0gain))
+# print('Total Dividends & price gain test: ' + str(df[etfs[1] + '-Divs'].sum()) + ', ' + str(etf1gain))
+# print('Percentage difference in price gains: ' + str(percentDifferent))
+
+# firstPR = df[etfs[1] + '-AdjClose'].iloc[0] / df[etfs[0] + '-AdjClose'].iloc[0]
+# lastPR = df[etfs[1] + '-AdjClose'].iloc[-1] / df[etfs[0] + '-AdjClose'].iloc[-1]
+# print('1st price ratio: ' + str(firstPR))
+# print('last price ratio: ' + str(lastPR))
+
+# df[etfs[1] + '-AdjClose'].iloc[0] / df[etfs[0] + '-AdjClose'].iloc[0]
 ####
 # print('Test Yield: ' + str(df[etfs[1] + '-Yield'].iloc[-1]))
 
@@ -99,12 +113,14 @@ print('Percentage difference in price gains: ' + str(percentDifferent))
 plt.figure(figsize=(10,5))
 
 x_num = np.arange(len(df))
-m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
-m2, b2 = np.polyfit(x_num, df['TRNorm_compare'], 1)
+# m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
+m1, b1 = np.polyfit(x_num, df['CloseNorm_compare'], 1)
+# m2, b2 = np.polyfit(x_num, df['TRNorm_compare'], 1)
 
 #comparisons and trendlines
 #price trends
-plt.plot(df['Date'], df['AdjNorm_compare'], label='Price', color='blue', alpha=1)
+plt.plot(df['Date'], df['AdjNorm_compare'], label='Price', color='red', alpha=1)
+plt.plot(df['Date'], df['CloseNorm_compare'], label='Price', color='blue', alpha=1)
 plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PriceTrend', color='blue', alpha=0.9)
 print('trendline: y= ' + str(m1) + ' *x + ' + str(b1))
 

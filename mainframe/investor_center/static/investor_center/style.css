@@ -71,9 +71,9 @@ table {
     margin-right: 10px;
 }
 
-tr {
+/* tr {
 
-}
+} */
 tr#info:hover {
     background-color: #2ab178;
 }

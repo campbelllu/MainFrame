@@ -528,43 +528,43 @@ def stockScreen(request):
         try:
             dropdownValues['roce'] = float(filterROCE)
         except:
-            dropdownValues['roce'] = filterROCE = -50
+            dropdownValues['roce'] = filterROCE = ''
 
         filterROIC = request.POST.get('vfroic')
         try:
             dropdownValues['roic'] = float(filterROIC)
         except:
-            dropdownValues['roic'] = filterROIC = -50
+            dropdownValues['roic'] = filterROIC = ''#-50
     
         filterREV = request.POST.get('vfrev')
         try:
             dropdownValues['rev'] = float(filterREV)
         except:
-            dropdownValues['rev'] = filterREV = -50
+            dropdownValues['rev'] = filterREV = ''#-50
 
         filterNI = request.POST.get('vfni')
         try:
             dropdownValues['ni'] = float(filterNI)
         except:
-            dropdownValues['ni'] = filterNI = -50
+            dropdownValues['ni'] = filterNI = ''#-50
 
         filterFCF = request.POST.get('vffcf')
         try:
             dropdownValues['fcf'] = float(filterFCF)
         except:
-            dropdownValues['fcf'] = filterFCF = -50
+            dropdownValues['fcf'] = filterFCF = ''#-50
 
         filterFCFM = request.POST.get('vffcfm')
         try:
             dropdownValues['fcfm'] = float(filterFCFM)
         except:
-            dropdownValues['fcfm'] = filterFCFM = -50
+            dropdownValues['fcfm'] = filterFCFM = ''#-50
        
         filterCF = request.POST.get('vfcf')
         try:
             dropdownValues['cf'] = float(filterCF)
         except:
-            dropdownValues['cf'] = filterCF = -50
+            dropdownValues['cf'] = filterCF = ''#-50
 
         # filterDP = request.POST.get('vfdp')
         # try:
@@ -576,7 +576,7 @@ def stockScreen(request):
         try:
             dropdownValues['divgr'] = float(filterDIVGR)
         except:
-            dropdownValues['divgr'] = filterDIVGR = -50
+            dropdownValues['divgr'] = filterDIVGR = ''#-50
 
         # filterPO = request.POST.get('vfpo')
         # try:
@@ -588,7 +588,7 @@ def stockScreen(request):
         try:
             dropdownValues['shares'] = float(filterSHARES)
         except:
-            dropdownValues['shares'] = filterSHARES = 100
+            dropdownValues['shares'] = filterSHARES = ''#100
 
         # filterDEBT = request.POST.get('vfdebt')
         # try:
@@ -600,13 +600,13 @@ def stockScreen(request):
         try:
             dropdownValues['bv'] = float(filterBV)
         except:
-            dropdownValues['bv'] = filterBV = -50
+            dropdownValues['bv'] = filterBV = ''#-50
 
         filterEQ = request.POST.get('vfeq')
         try:
             dropdownValues['eq'] = float(filterEQ)
         except:
-            dropdownValues['eq'] = filterEQ = -50
+            dropdownValues['eq'] = filterEQ = ''#-50
 
         # filterROC = request.POST.get('vfroc')
         # try:
@@ -618,7 +618,7 @@ def stockScreen(request):
         try:
             dropdownValues['ffo'] = float(filterFFO)
         except:
-            dropdownValues['ffo'] = filterFFO = -50
+            dropdownValues['ffo'] = filterFFO = ''#-50
 
         # filterREITROCE = request.POST.get('vfreitroce')
         # try:
@@ -632,17 +632,58 @@ def stockScreen(request):
         #     dropdownValues['ffopo'] = filterFFOPO = 3
 
         if filterSector == 'Select Sector':
+            
+            filters = Q()
+
+            if filterROCE != '':
+                filters &= Q(roce__gte=filterROCE)
+
+            if filterROIC != '':
+                filters &= Q(roic__gte=filterROIC)
+
+            if filterREV != '':
+                filters &= Q(revGrowthAVGnz__gte=filterREV)
+
+            if filterNI != '':
+                filters &= Q(netIncomeGrowthAVGnz__gte=filterNI)
+
+            if filterFCF != '':
+                filters &= Q(fcfGrowthAVGnz__gte=filterFCF)
+
+            if filterFCFM != '':
+                filters &= Q(fcfMarginGrowthAVGnz__gte=filterFCFM)
+
+            if filterCF != '':
+                filters &= Q(netCashFlowGrowthAVGnz__gte=filterCF)
+
+            if filterDIVGR != '':
+                filters &= Q(divgr__gte=filterDIVGR)
+
+            if filterSHARES != '':
+                filters &= Q(sharesGrowthAVG__lte=filterSHARES)
+
+            if filterBV != '':
+                filters &= Q(bv__gte=filterBV)
+
+            if filterEQ != '':
+                filters &= Q(equity__gte=filterEQ)
+
+            if filterFFO != '':
+                filters &= Q(ffoGrowthAVGnz__gte=filterFFO)
+
             searchFilter = Metadata.objects.annotate(
                         roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
                         roic=Max(Coalesce(F('raroicAVG'), Value(0)), Coalesce(F('aroicAVG'), Value(0)), output_field=FloatField()), 
                         divgr=Max(Coalesce(F('calcDivsPerShareGrowthAVGnz'), Value(0)), Coalesce(F('repDivsPerShareGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         bv=Max(Coalesce(F('calcBookValueGrowthAVGnz'), Value(0)), Coalesce(F('repBookValueGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(
-                            Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
-                            Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
-                            Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
-                            Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
-                            Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
+                            filters)
+
+                            # Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
+                            # Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
+                            # Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
+                            # Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
+                            # Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
             context = {
                 'sectors': sectors,
                 'dv': dropdownValues,
@@ -662,6 +703,43 @@ def stockScreen(request):
             #                 roce__gte=filterROCE, roic__gte=filterROIC, revGrowthAVGnz__gte=filterREV, netIncomeGrowthAVGnz__gte=filterNI, fcfGrowthAVGnz__gte=filterFCF, 
             #                 fcfMarginGrowthAVGnz__gte=filterFCFM, netCashFlowGrowthAVGnz__gte=filterCF, divgr__gte=filterDIVGR,  sharesGrowthAVG__lte=filterSHARES, 
             #                  bv__gte=filterBV, equity__gte=filterEQ, ffoGrowthAVGnz__gte=filterFFO)
+            filters = Q()
+
+            if filterROCE != '':
+                filters &= Q(roce__gte=filterROCE)
+
+            if filterROIC != '':
+                filters &= Q(roic__gte=filterROIC)
+
+            if filterREV != '':
+                filters &= Q(revGrowthAVGnz__gte=filterREV)
+
+            if filterNI != '':
+                filters &= Q(netIncomeGrowthAVGnz__gte=filterNI)
+
+            if filterFCF != '':
+                filters &= Q(fcfGrowthAVGnz__gte=filterFCF)
+
+            if filterFCFM != '':
+                filters &= Q(fcfMarginGrowthAVGnz__gte=filterFCFM)
+
+            if filterCF != '':
+                filters &= Q(netCashFlowGrowthAVGnz__gte=filterCF)
+
+            if filterDIVGR != '':
+                filters &= Q(divgr__gte=filterDIVGR)
+
+            if filterSHARES != '':
+                filters &= Q(sharesGrowthAVG__lte=filterSHARES)
+
+            if filterBV != '':
+                filters &= Q(bv__gte=filterBV)
+
+            if filterEQ != '':
+                filters &= Q(equity__gte=filterEQ)
+
+            if filterFFO != '':
+                filters &= Q(ffoGrowthAVGnz__gte=filterFFO)
 
             searchFilter = Metadata.objects.annotate(
                         roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
@@ -669,11 +747,13 @@ def stockScreen(request):
                         divgr=Max(Coalesce(F('calcDivsPerShareGrowthAVGnz'), Value(0)), Coalesce(F('repDivsPerShareGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         bv=Max(Coalesce(F('calcBookValueGrowthAVGnz'), Value(0)), Coalesce(F('repBookValueGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(
-                            Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
-                            Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
-                            Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
-                            Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
-                            Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
+                            filters)
+
+                            # Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
+                            # Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
+                            # Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
+                            # Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
+                            # Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
             
             context = {
                 'sectors': sectors,
@@ -696,17 +776,59 @@ def stockScreen(request):
             #                 fcfMarginGrowthAVGnz__gte=filterFCFM, netCashFlowGrowthAVGnz__gte=filterCF, divgr__gte=filterDIVGR,  sharesGrowthAVG__lte=filterSHARES, 
             #                  bv__gte=filterBV, equity__gte=filterEQ, ffoGrowthAVGnz__gte=filterFFO)
 
+            filters = Q()
+
+            if filterROCE != '':
+                filters &= Q(roce__gte=filterROCE)
+
+            if filterROIC != '':
+                filters &= Q(roic__gte=filterROIC)
+
+            if filterREV != '':
+                filters &= Q(revGrowthAVGnz__gte=filterREV)
+
+            if filterNI != '':
+                filters &= Q(netIncomeGrowthAVGnz__gte=filterNI)
+
+            if filterFCF != '':
+                filters &= Q(fcfGrowthAVGnz__gte=filterFCF)
+
+            if filterFCFM != '':
+                filters &= Q(fcfMarginGrowthAVGnz__gte=filterFCFM)
+
+            if filterCF != '':
+                filters &= Q(netCashFlowGrowthAVGnz__gte=filterCF)
+
+            if filterDIVGR != '':
+                filters &= Q(divgr__gte=filterDIVGR)
+
+            if filterSHARES != '':
+                filters &= Q(sharesGrowthAVG__lte=filterSHARES)
+
+            if filterBV != '':
+                filters &= Q(bv__gte=filterBV)
+
+            if filterEQ != '':
+                filters &= Q(equity__gte=filterEQ)
+
+            if filterFFO != '':
+                filters &= Q(ffoGrowthAVGnz__gte=filterFFO)
+
+            filters &= Q(Sector=filterSector)
+
             searchFilter = Metadata.objects.annotate(
                         roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
                         roic=Max(Coalesce(F('raroicAVG'), Value(0)), Coalesce(F('aroicAVG'), Value(0)), output_field=FloatField()), 
                         divgr=Max(Coalesce(F('calcDivsPerShareGrowthAVGnz'), Value(0)), Coalesce(F('repDivsPerShareGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         bv=Max(Coalesce(F('calcBookValueGrowthAVGnz'), Value(0)), Coalesce(F('repBookValueGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(
-                            Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
-                            Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
-                            Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
-                            Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
-                            Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
+                            filters)
+
+                            # Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
+                            # Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
+                            # Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
+                            # Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
+                            # Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
             
             context = {
                 'sectors': sectors,
@@ -735,7 +857,7 @@ def stockScreen(request):
                 equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(Ticker=ticker).first()
         
         if ticker != '':
-            if row is None:
+            if row is None: #This is when the put in a false ticker name
                 context = {
                     'sectors': sectors,
                     'dv': dropdownValues,
@@ -744,69 +866,109 @@ def stockScreen(request):
                 }
                 return render(request, 'investor_center/stockScreen.html', context)
 
-            else:
+            else: #When the ticker exists
                 filterSector = dropdownValues['sector'] = row.Sector
 
                 if row.roce is None:
-                    filterROCE = dropdownValues['roce'] = -10
+                    filterROCE = dropdownValues['roce'] = ''#-10
                 else:
                     filterROCE = dropdownValues['roce'] = row.roce - 10
                 
                 if row.roic is None:
-                    filterROIC = dropdownValues['roic'] = -10
+                    filterROIC = dropdownValues['roic'] = ''#-10
                 else:
                     filterROIC = dropdownValues['roic'] = row.roic - 10
                 
                 if row.revGrowthAVGnz is None:
-                    filterREV = dropdownValues['rev'] = -10
+                    filterREV = dropdownValues['rev'] = ''#-10
                 else:
                     filterREV = dropdownValues['rev'] = row.revGrowthAVGnz - 10
                 
                 if row.netIncomeGrowthAVGnz is None:
-                    filterNI = dropdownValues['ni'] = -10
+                    filterNI = dropdownValues['ni'] = ''#-10
                 else:
                     filterNI = dropdownValues['ni'] = row.netIncomeGrowthAVGnz - 10
                 
                 if row.fcfGrowthAVGnz is None:
-                    filterFCF = dropdownValues['fcf'] = -10
+                    filterFCF = dropdownValues['fcf'] = ''#-10
                 else:
                     filterFCF = dropdownValues['fcf'] = row.fcfGrowthAVGnz - 10
 
                 if row.fcfMarginGrowthAVGnz is None:
-                    filterFCFM = dropdownValues['fcfm'] = -10
+                    filterFCFM = dropdownValues['fcfm'] = ''#-10
                 else:
                     filterFCFM = dropdownValues['fcfm'] = row.fcfMarginGrowthAVGnz - 10
 
                 if row.netCashFlowGrowthAVGnz is None:
-                    filterCF = dropdownValues['cf'] = -10
+                    filterCF = dropdownValues['cf'] = ''#-10
                 else:
                     filterCF = dropdownValues['cf'] = row.netCashFlowGrowthAVGnz - 10
                 
                 if row.divgr is None:
-                    filterDIVGR = dropdownValues['divgr'] = -10
+                    filterDIVGR = dropdownValues['divgr'] = ''#-10
                 else:
                     filterDIVGR = dropdownValues['divgr'] = row.divgr - 10
                 
                 if row.sharesGrowthAVG is None:
-                    filterSHARES = dropdownValues['shares'] = -10
+                    filterSHARES = dropdownValues['shares'] = ''#-10
                 else:
                     filterSHARES = dropdownValues['shares'] = row.sharesGrowthAVG + 10
 
                 if row.bv is None:
-                    filterBV = dropdownValues['bv'] = -10
+                    filterBV = dropdownValues['bv'] = ''#-10
                 else:
                     filterBV = dropdownValues['bv'] = row.bv - 10
 
                 if row.equity is None:
-                    filterEQ = dropdownValues['eq'] = -10
+                    filterEQ = dropdownValues['eq'] = ''#-10
                 else:
                     filterEQ = dropdownValues['eq'] = row.equity - 10
 
                 if row.ffoGrowthAVGnz is None:
-                    filterFFO = dropdownValues['ffo'] = -10
+                    filterFFO = dropdownValues['ffo'] = ''#-10
                 else:
                     filterFFO = dropdownValues['ffo'] = row.ffoGrowthAVGnz - 10
                 
+
+                filters = Q()
+
+                if filterROCE != '':
+                    filters &= Q(roce__gte=filterROCE)
+
+                if filterROIC != '':
+                    filters &= Q(roic__gte=filterROIC)
+
+                if filterREV != '':
+                    filters &= Q(revGrowthAVGnz__gte=filterREV)
+
+                if filterNI != '':
+                    filters &= Q(netIncomeGrowthAVGnz__gte=filterNI)
+
+                if filterFCF != '':
+                    filters &= Q(fcfGrowthAVGnz__gte=filterFCF)
+
+                if filterFCFM != '':
+                    filters &= Q(fcfMarginGrowthAVGnz__gte=filterFCFM)
+
+                if filterCF != '':
+                    filters &= Q(netCashFlowGrowthAVGnz__gte=filterCF)
+
+                if filterDIVGR != '':
+                    filters &= Q(divgr__gte=filterDIVGR)
+
+                if filterSHARES != '':
+                    filters &= Q(sharesGrowthAVG__lte=filterSHARES)
+
+                if filterBV != '':
+                    filters &= Q(bv__gte=filterBV)
+
+                if filterEQ != '':
+                    filters &= Q(equity__gte=filterEQ)
+
+                if filterFFO != '':
+                    filters &= Q(ffoGrowthAVGnz__gte=filterFFO)
+
+                filters &= Q(Sector=filterSector)
 
                 searchFilter = Metadata.objects.annotate(
                         roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
@@ -814,11 +976,13 @@ def stockScreen(request):
                         divgr=Max(Coalesce(F('calcDivsPerShareGrowthAVGnz'), Value(0)), Coalesce(F('repDivsPerShareGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         bv=Max(Coalesce(F('calcBookValueGrowthAVGnz'), Value(0)), Coalesce(F('repBookValueGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(
-                            Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
-                            Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
-                            Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
-                            Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
-                            Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
+                            filters)
+
+                            # Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
+                            # Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
+                            # Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
+                            # Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
+                            # Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
 
                 # searchFilter = Metadata.objects.annotate(
                 #                 roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
@@ -838,80 +1002,120 @@ def stockScreen(request):
                 }
                 return render(request, 'investor_center/stockScreen.html', context)
 
-        elif row is None:
+        elif row is None: #When search is just left blank
             filterSector = request.POST.get('sectorDropDown')
 
             filterROCE = request.POST.get('vfroce')
             try:
                 dropdownValues['roce'] = float(filterROCE)
             except:
-                dropdownValues['roce'] = filterROCE = -50
+                dropdownValues['roce'] = filterROCE = ''#-50
 
             filterROIC = request.POST.get('vfroic')
             try:
                 dropdownValues['roic'] = float(filterROIC)
             except:
-                dropdownValues['roic'] = filterROIC = -50
+                dropdownValues['roic'] = filterROIC = ''#-50
         
             filterREV = request.POST.get('vfrev')
             try:
                 dropdownValues['rev'] = float(filterREV)
             except:
-                dropdownValues['rev'] = filterREV = -50
+                dropdownValues['rev'] = filterREV = ''#-50
 
             filterNI = request.POST.get('vfni')
             try:
                 dropdownValues['ni'] = float(filterNI)
             except:
-                dropdownValues['ni'] = filterNI = -50
+                dropdownValues['ni'] = filterNI = ''#-50
 
             filterFCF = request.POST.get('vffcf')
             try:
                 dropdownValues['fcf'] = float(filterFCF)
             except:
-                dropdownValues['fcf'] = filterFCF = -50
+                dropdownValues['fcf'] = filterFCF = ''#-50
 
             filterFCFM = request.POST.get('vffcfm')
             try:
                 dropdownValues['fcfm'] = float(filterFCFM)
             except:
-                dropdownValues['fcfm'] = filterFCFM = -50
+                dropdownValues['fcfm'] = filterFCFM = ''#-50
         
             filterCF = request.POST.get('vfcf')
             try:
                 dropdownValues['cf'] = float(filterCF)
             except:
-                dropdownValues['cf'] = filterCF = -50
+                dropdownValues['cf'] = filterCF = ''#-50
 
             filterDIVGR = request.POST.get('vfdivgr')
             try:
                 dropdownValues['divgr'] = float(filterDIVGR)
             except:
-                dropdownValues['divgr'] = filterDIVGR = -50
+                dropdownValues['divgr'] = filterDIVGR = ''#-50
 
             filterSHARES = request.POST.get('vfshares')
             try:
                 dropdownValues['shares'] = float(filterSHARES)
             except:
-                dropdownValues['shares'] = filterSHARES = 100
+                dropdownValues['shares'] = filterSHARES = ''# 100
 
             filterBV = request.POST.get('vfbv')
             try:
                 dropdownValues['bv'] = float(filterBV)
             except:
-                dropdownValues['bv'] = filterBV = -50
+                dropdownValues['bv'] = filterBV = ''#-50
 
             filterEQ = request.POST.get('vfeq')
             try:
                 dropdownValues['eq'] = float(filterEQ)
             except:
-                dropdownValues['eq'] = filterEQ = -50
+                dropdownValues['eq'] = filterEQ = ''#-50
 
             filterFFO = request.POST.get('vfffo')
             try:
                 dropdownValues['ffo'] = float(filterFFO)
             except:
-                dropdownValues['ffo'] = filterFFO = -50
+                dropdownValues['ffo'] = filterFFO = ''#-50
+
+            filters = Q()
+
+            if filterROCE != '':
+                filters &= Q(roce__gte=filterROCE)
+
+            if filterROIC != '':
+                filters &= Q(roic__gte=filterROIC)
+
+            if filterREV != '':
+                filters &= Q(revGrowthAVGnz__gte=filterREV)
+
+            if filterNI != '':
+                filters &= Q(netIncomeGrowthAVGnz__gte=filterNI)
+
+            if filterFCF != '':
+                filters &= Q(fcfGrowthAVGnz__gte=filterFCF)
+
+            if filterFCFM != '':
+                filters &= Q(fcfMarginGrowthAVGnz__gte=filterFCFM)
+
+            if filterCF != '':
+                filters &= Q(netCashFlowGrowthAVGnz__gte=filterCF)
+
+            if filterDIVGR != '':
+                filters &= Q(divgr__gte=filterDIVGR)
+
+            if filterSHARES != '':
+                filters &= Q(sharesGrowthAVG__lte=filterSHARES)
+
+            if filterBV != '':
+                filters &= Q(bv__gte=filterBV)
+
+            if filterEQ != '':
+                filters &= Q(equity__gte=filterEQ)
+
+            if filterFFO != '':
+                filters &= Q(ffoGrowthAVGnz__gte=filterFFO)
+
+            filters &= Q(Sector=filterSector)
 
             searchFilter = Metadata.objects.annotate(
                         roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
@@ -919,11 +1123,13 @@ def stockScreen(request):
                         divgr=Max(Coalesce(F('calcDivsPerShareGrowthAVGnz'), Value(0)), Coalesce(F('repDivsPerShareGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         bv=Max(Coalesce(F('calcBookValueGrowthAVGnz'), Value(0)), Coalesce(F('repBookValueGrowthAVGnz'), Value(0)), output_field=FloatField()), 
                         equity=Max(Coalesce(F('reportedEquityGrowthAVGnz'), Value(0)), Coalesce(F('calculatedEquityGrowthAVGnz'), Value(0)), output_field=FloatField())).filter(
-                            Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
-                            Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
-                            Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
-                            Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
-                            Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
+                            filters)
+
+                            # Q(Sector=filterSector), Q(roce__gte=filterROCE) | Q(roce__isnull=True), Q(roic__gte=filterROIC) | Q(roic__isnull=True), Q(revGrowthAVGnz__gte=filterREV) | Q(revGrowthAVGnz__isnull=True), 
+                            # Q(netIncomeGrowthAVGnz__gte=filterNI) | Q(netIncomeGrowthAVGnz__isnull=True), Q(fcfGrowthAVGnz__gte=filterFCF) | Q(fcfGrowthAVGnz__isnull=True), 
+                            # Q(fcfMarginGrowthAVGnz__gte=filterFCFM) | Q(fcfMarginGrowthAVGnz__isnull=True), Q(netCashFlowGrowthAVGnz__gte=filterCF) | Q(netCashFlowGrowthAVGnz__isnull=True), 
+                            # Q(divgr__gte=filterDIVGR) | Q(divgr__isnull=True), Q(sharesGrowthAVG__lte=filterSHARES) | Q(sharesGrowthAVG__isnull=True), 
+                            # Q(bv__gte=filterBV) | Q(bv__isnull=True), Q(equity__gte=filterEQ) | Q(equity__isnull=True), Q(ffoGrowthAVGnz__gte=filterFFO) | Q(ffoGrowthAVGnz__isnull=True))
 
             # searchFilter = Metadata.objects.annotate(
             #             roce=Max(Coalesce(F('rroceAVG'), Value(0)), Coalesce(F('croceAVG'), Value(0)), output_field=FloatField()), 
@@ -938,8 +1144,10 @@ def stockScreen(request):
             context = {
                 'sectors': sectors,
                 'dv': dropdownValues,
-                'lt': searchFilter.order_by('-roce'), #pageLandingTable,
+                'lt': pageLandingTable,
                 'tickerToBeFound': "No Such Ticker, Please Try Again",
+                # 'lt': searchFilter.order_by('-roce'), #pageLandingTable,
+                # 'tickerToBeFound': "No Such Ticker, Please Try Again",
             }
             return render(request, 'investor_center/stockScreen.html', context)
 

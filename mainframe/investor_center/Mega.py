@@ -41,7 +41,7 @@ django.setup()
 db_path = settings.DATABASES['default']['NAME']
 
 #From fellow files
-# import csv_modules as csv
+import csv_modules as csv
 
 #Header needed with each request
 header = {'User-Agent':'campbelllu3@gmail.com'}
@@ -1827,7 +1827,14 @@ def megaDoAll():
         print('Mega Do All Error: ')
         print(err)
 
+# guh = 'SELECT Ticker, year FROM Mega '
+# mega = 'SELECT * FROM Mega;'
+# megasaver = print_DB(mega, 'return')
+# csv.simple_saveDF_to_csv('./', megasaver, 'Mega_csv', False)
 
+# meta = 'SELECT * FROM Metadata;'
+# metasaver = print_DB(meta, 'return')
+# csv.simple_saveDF_to_csv('./', metasaver, 'Metadata_csv', False)
 
 #################################################
 # 
