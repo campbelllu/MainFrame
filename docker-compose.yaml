@@ -7,7 +7,6 @@ services:
     image: djangonwt #your-account-id.dkr.ecr.us-east-2.amazonaws.com/yourAppRepo:latest
     container_name: djangot
     # command: gunicorn launch line, used to overwrite whatever is in dockerfile
-
     ports:
       - "8000:8000"
     # networks:
@@ -19,7 +18,29 @@ services:
     # command: gunicorn launch line, why?
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - django
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-web:/var/www/certbot
+  
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-web:/var/www/certbot
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & 
+      wait $${!}; done"
+
+  volumes:
+    certbot-etc:
+    certbot-var: 
+    certbot-web: 
+
     # networks:
     #   - mf-network
