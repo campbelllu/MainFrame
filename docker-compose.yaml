@@ -34,8 +34,7 @@ services:
       - certbot-var:/var/lib/letsencrypt
       - certbot-web:/var/www/certbot
     entrypoint: >
-      sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & 
-      wait $${!}; done"
+      sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done"
 
 volumes:
   certbot-etc:
