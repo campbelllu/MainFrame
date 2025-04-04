@@ -37,10 +37,10 @@ services:
       sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & 
       wait $${!}; done"
 
-  volumes:
-    certbot-etc:
-    certbot-var: 
-    certbot-web: 
+volumes:
+  certbot-etc:
+  certbot-var: 
+  certbot-web: 
 
     # networks:
     #   - mf-network
