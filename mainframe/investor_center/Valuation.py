@@ -304,7 +304,7 @@ def DDM(listofstocktickers):
     finally:
         return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending=False)
 
-def ETFPD(listofstocktickers):
+def ETFPD_Quarterly(listofstocktickers):
     try:
         toupload = pd.DataFrame()
         toreturn = pd.DataFrame()
@@ -329,7 +329,7 @@ def ETFPD(listofstocktickers):
                 try:
                     divrate =  dict1['navPrice'] * dict1['yield']
                 except:
-                    divrate = divs[-1] * 12
+                    divrate = divs[-1] * 4
 
                 price = dict1['previousClose']
                 
@@ -352,6 +352,7 @@ def ETFPD(listofstocktickers):
                 toupload['twentyYearFlatValuation'] = price / twentyYearDiv
                 
                 toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+                time.sleep(0.1)
 
             except Exception as err:
                 print('PD evaulate for inner err')
@@ -364,7 +365,7 @@ def ETFPD(listofstocktickers):
     finally:
         return toreturn.sort_values("currentValuation")
 
-def ETFDDM(listofstocktickers):
+def ETFDDM_Quarterly(listofstocktickers):
     #Takes tickers to analyze, returns a 5%-50% price target, return rate fair value
     #if numbers are negative or higher than current price, buy for that return percentage
     try:
@@ -390,9 +391,14 @@ def ETFDDM(listofstocktickers):
                         change = diff / abs(divs[i])
                     growthList.append(change)
                 try:
-                    divrate =  dict1['navPrice'] * dict1['yield']
-                except:
-                    divrate = divs[-1] * 12
+                    # divrate =  dict1['navPrice'] * dict1['yield']
+                    divrate =  dict1['previousClose'] * dict1['yield']
+                    #testing between these two produced differences in rounding only.
+                except Exception as err:
+                    divrate = divs[-1] * 4
+                    print(str(x) + ' was judged as a monthly payer.')
+                    # print('Error: ' + err)
+                    # continue
                 
                 time1 = (len(divs)/4)
                 cagr = ((divs[-1]/divs[0]) ** (1/time1)) - 1
@@ -523,11 +529,12 @@ def ETFDDM(listofstocktickers):
                     lowerTracker = 50
                 elif toupload['50%TargetPrice'][0] > dict1['previousClose']:
                     lowerTracker = 50
-                
+
+
                 toupload['ExpectedMinReturnAtThisPrice'] = lowerTracker
                 toreturn = pd.concat([toreturn, toupload], ignore_index = True)
             except Exception as err:
-                print('DDM etf evaulate for inner err')
+                # print('DDM etf evaulate for inner err')
                 print(str(x) + ' does not pay a dividend, most likely.')
                 print(err)
                 continue
@@ -537,7 +544,247 @@ def ETFDDM(listofstocktickers):
     finally:
         return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending=False )
 
-def weeklyETFPD(listofstocktickers):
+def ETFPD_Monthly(listofstocktickers):
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        for x in listofstocktickers:
+            try:
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                divs = stock.dividends
+                growthList = []
+
+                toupload['Ticker'] = [x]
+
+                for i in range(len(divs) - 1):
+                    diff = abs((divs[i+1])-divs[i])
+                    if divs[i] > divs[i+1]:
+                        diff = diff * -1
+                    if abs(divs[i]) == 0:
+                        change = np.nan
+                    else:
+                        change = diff / abs(divs[i])
+                    growthList.append(change)
+                try:
+                    divrate =  dict1['navPrice'] * dict1['yield']
+                except:
+                    divrate = divs[-1] * 12
+
+                price = dict1['previousClose']
+                
+                time1 = (len(divs)/4)
+                cagr = ((divs[-1]/divs[0]) ** (1/time1)) - 1
+                iqrMean = metadata.IQR_Mean(growthList)
+                divgr = (cagr + iqrMean) / 2
+
+                tenYearDiv = divrate * ((1 + (divgr)) ** 10)
+                twentyYearDiv = divrate * ((1 + (divgr)) ** 20)
+                toupload['currentPrice'] = price
+                toupload['currentDiv'] = divrate
+                toupload['currentYield'] = divrate / price * 100
+                toupload['currentValuation'] = price / divrate
+                toupload['idealPriceCeiling'] = 25 * divrate
+                toupload['divGR'] = divgr * 100
+                toupload['tenYearDiv'] = tenYearDiv
+                toupload['tenYearFlatValuation'] = price / tenYearDiv
+                toupload['twentyYearDiv'] = twentyYearDiv
+                toupload['twentyYearFlatValuation'] = price / twentyYearDiv
+                
+                toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+                time.sleep(0.1)
+
+            except Exception as err:
+                print('PD evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('etf pd err')
+        print(err)
+    finally:
+        return toreturn.sort_values("currentValuation")
+
+def ETFDDM_Monthly(listofstocktickers):
+    #Takes tickers to analyze, returns a 5%-50% price target, return rate fair value
+    #if numbers are negative or higher than current price, buy for that return percentage
+    try:
+        toupload = pd.DataFrame()
+        toreturn = pd.DataFrame()
+        
+        for x in listofstocktickers:
+            try:
+                stock = yf.Ticker(x)
+                dict1 = stock.info
+                divs = stock.dividends
+                growthList = []
+                lowerTracker = 0
+                toupload['Ticker'] = [x]
+                
+                for i in range(len(divs) - 1):
+                    diff = abs((divs[i+1])-divs[i])
+                    if divs[i] > divs[i+1]:
+                        diff = diff * -1
+                    if abs(divs[i]) == 0:
+                        change = np.nan
+                    else:
+                        change = diff / abs(divs[i])
+                    growthList.append(change)
+                try:
+                    # divrate =  dict1['navPrice'] * dict1['yield']
+                    divrate =  dict1['previousClose'] * dict1['yield']
+                    #testing between these two produced differences in rounding only.
+                except Exception as err:
+                    divrate = divs[-1] * 12
+                    print(str(x) + ' was judged as a monthly payer.')
+                    # print('Error: ' + err)
+                    # continue
+                
+                time1 = (len(divs)/4)
+                cagr = ((divs[-1]/divs[0]) ** (1/time1)) - 1
+                iqrMean = metadata.IQR_Mean(growthList)
+                divgr = (cagr + iqrMean) / 2
+                
+                divp1 = divrate * ((1 + (divgr)) ** 2)
+                divp2 = divrate * ((1 + (divgr)) ** 3)
+                divp3 = divrate * ((1 + (divgr)) ** 4)
+                divp4 = divrate * ((1 + (divgr)) ** 5)
+                divp5 = divrate * ((1 + (divgr)) ** 6)
+
+                ror = 0.05
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['CurrentPrice'] = dict1['previousClose']
+                toupload['5%TargetPrice'] = fairvalue
+                
+                #Also return fair price for 10% returns
+                ror = 0.1
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['10%TargetPrice'] = fairvalue
+
+                #Also return fair price for 15% returns
+                ror = 0.15
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['15%TargetPrice'] = fairvalue
+
+                #Also return fair price for 20% returns
+                ror = 0.2
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['20%TargetPrice'] = fairvalue
+
+                #Also return fair price for 30% returns
+                ror = 0.3
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['30%TargetPrice'] = fairvalue
+
+                #Also return fair price for 40% returns
+                ror = 0.4
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['40%TargetPrice'] = fairvalue
+
+                #Also return fair price for 50% returns
+                ror = 0.5
+                pvd1 = divp1 / ((1 + ror) ** 1)
+                pvd2 = divp2 / ((1 + ror) ** 2)
+                pvd3 = divp3 / ((1 + ror) ** 3)
+                pvd4 = divp4 / ((1 + ror) ** 4)
+                pvd5 = divp5 / ((1 + ror) ** 5)
+                tvd5 = divp5 * ((1 + divgr) / (ror - divgr))
+                updatedpvd5 = (divp5 + tvd5) / ((1 + ror) ** 5)
+                fairvalue = pvd1 + pvd2 + pvd3 + pvd4 + updatedpvd5
+                toupload['50%TargetPrice'] = fairvalue
+
+                if toupload['5%TargetPrice'][0] < 0:
+                    lowerTracker = 5
+                elif toupload['5%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 5
+                    
+                if toupload['10%TargetPrice'][0] < 0:
+                    lowerTracker = 10
+                elif toupload['10%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 10
+
+                if toupload['15%TargetPrice'][0] < 0:
+                    lowerTracker = 15
+                elif toupload['15%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 15
+
+                if toupload['20%TargetPrice'][0] < 0:
+                    lowerTracker = 20
+                elif toupload['20%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 20
+
+                if toupload['30%TargetPrice'][0] < 0:
+                    lowerTracker = 30
+                elif toupload['30%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 30
+
+                if toupload['40%TargetPrice'][0] < 0:
+                    lowerTracker = 40
+                elif toupload['40%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 40
+
+                if toupload['50%TargetPrice'][0] < 0:
+                    lowerTracker = 50
+                elif toupload['50%TargetPrice'][0] > dict1['previousClose']:
+                    lowerTracker = 50
+
+
+                toupload['ExpectedMinReturnAtThisPrice'] = lowerTracker
+                toreturn = pd.concat([toreturn, toupload], ignore_index = True)
+            except Exception as err:
+                # print('DDM etf evaulate for inner err')
+                print(str(x) + ' does not pay a dividend, most likely.')
+                print(err)
+                continue
+    except Exception as err:
+        print('DDM etf evaulate err')
+        print(err)
+    finally:
+        return toreturn.sort_values("ExpectedMinReturnAtThisPrice", ascending=False )
+
+def ETFPD_Weekly(listofstocktickers):
     try:
         toupload = pd.DataFrame()
         toreturn = pd.DataFrame()
@@ -602,7 +849,7 @@ def weeklyETFPD(listofstocktickers):
     finally:
         return toreturn.sort_values("currentValuation")
 
-def weeklyETFDDM(listofstocktickers):
+def ETFDDM_Weekly(listofstocktickers):
     #Takes tickers to analyze, returns a 5%-50% price target, return rate fair value
     #if numbers are negative or higher than current price, buy for that return percentage
     try:
@@ -835,23 +1082,35 @@ def growthValuation(listofstocktickers):
     finally:
         return toreturn.sort_values(["Sector","valuation"])
 
-
-divetfs = ['SPYD', 'SMDV', 'SDY', 'HDV', 'GCOW', 'DVY', 'DTD', 'DON', 'DLN', 'DIVB', 
-            'DHS', 'DGRW', 'DGRS', 'DEW', 'DES', 'DGRO', 'DIVO', 'SCHD', 'VIG', 'VTV', 'IDVO', 
-            'IQDG', 'DNL', 'FNDX', 'FNDB' ]
+quarterly = ['SPYD', 'SMDV', 'SDY', 'HDV', 'GCOW', 'ICOW', 'DVY', 'DIVB', 'PBDC', 'SCHY', 'VYMI', 'SOXX', 'SOXQ', 'IETC', 'SCHG', 
+             'DEW',  'DGRO', 'SCHD', 'VIG', 'VTV', 'HERD', 'COWZ',  'QDPL', 'SCHV', 'FNDX', 'FDVV', 'IEDI', 'XLG', 'MGK', 'MGC', 'MGV',
+             'IQDG', 'DNL', 'FNDB', 'QQQX', 'ADX', 'SPY', 'SCHH', 'XLU', 'QQQ', 'XLK', 'XLI', 'IYR', 'XLE', 'XLF', 'XLP', 'XLRE', 'XLY', ]
 # print(ETFPD(divetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
 # print(ETFDDM(divetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
-hyetfs = [ 'MSFO', 'AMZY', 'CONY', 'APLY', 'GOOY', 'FBY', 'NVDY', 'TSLY', 'FEPI', 'AIPI', 'YMAX', 'SQY', 
-            'YMAG', 'MSTY', 'NFLY', 'YBIT', 'SVOL', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 
-            'GPIX',  'CRSH', 'FIAT', 'DIPS', 'GDXY', 'BITO', 'USFR', 'ULTY', 'SPYT', 'ISPY', 'GIAX', 'TLTW', 
-            'CEFS', 'EOS', 'EOI', 'GOF', 'PDI', 'PTY', 'MCI', 'CII', 'CSQ', ]
-# print(ETFPD(hyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
-# print(ETFDDM(hyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+monthly = [ 'DLN', 'DON', 'DGRS', 'DHS', 'DES', 'DGRW', 'FEPI', 'QQQI', 'IWMI', 'SPYI', 'JEPI', 'JEPQ', 'GPIQ', 'QDVO',
+            'GPIX', 'BITO', 'USFR', 'IDVO', 'DTD', 'ISPY', 'IQQQ', 'QQA', 'RSPA',
+             'EOS', 'EOI', 'CII', 'NETL', 'DIVO', 'TSPY', 'IYRI', 'BITY', 'BTCI', ]
+            # [ 
+            # 'SVOL', 'HCOW',
+            # 'USFR',  'SPYT', 'GIAX', 'TLTW', 
+            # 'CEFS', 'GOF', 'PDI', 'PTY', 'MCI', 'CSQ', ]
 
-weeklyetfs = ['XDTE', 'QDTE', 'RDTE', 'YMAX', 'YMAG']
-# print(weeklyETFPD(weeklyetfs)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
-# print(weeklyETFDDM(weeklyetfs)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+weekly = ['XDTE', 'QDTE', 'RDTE', 'YMAX', 'YMAG', 'MAGY', 'CHPY', 'YBTC', 'ULTY', 'GPTY', ]
+
+# hyetfs = ['ADX'] #for tests
+
+#quarterly
+# print(ETFPD_Quarterly(quarterly)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM_Quarterly(quarterly)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
+#monthly
+# print(ETFPD_Monthly(monthly)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM_Monthly(monthly)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
+
+#weekly
+# print(ETFPD_Weekly(weekly)[['Ticker', 'currentPrice', 'idealPriceCeiling', 'currentValuation', 'divGR', 'currentDiv', 'currentYield']].to_string())
+# print(ETFDDM_Weekly(weekly)[['Ticker', 'CurrentPrice', 'ExpectedMinReturnAtThisPrice', '5%TargetPrice', '10%TargetPrice', '15%TargetPrice', '20%TargetPrice', '30%TargetPrice', '40%TargetPrice',  '50%TargetPrice']].to_string())
 
 sectoretfs = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLRE', 'SCHH', 'XLU', 
                 'XLV', 'XLY', 'PBDC', 'SOXX', 'QQQ', 'SPY', 'IETC', 'SCHG', 'IEDI', 'RTH', 'IOO', 'XLG', 'MGV', 'MGK', 'MGC', 'RSP']
