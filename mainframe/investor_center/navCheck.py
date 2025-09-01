@@ -28,7 +28,7 @@ import yfinance as yf
 ###################################################
 
 # Define ETFs to compare 
-etfs = ['QQQ', "QQQI"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
+etfs = ['VONG', "QDVO"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
 time_period = "1y" #mo, y
 
 # Fetch historical price data for each ETF 
@@ -38,8 +38,10 @@ for etf in etfs:
   
     etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
     etf_data[etf + '-Divs'] = data['Dividends']
+    etf_data[etf + '-DivsSummed'] = data['Dividends'].cumsum()
     etf_data[etf + '-TRScuffed'] = round(data['Close'] + data['Dividends'].cumsum(), 5)
     TRAlist = []
+    TRA_pct_change_list = []
 
     for i in range(len(etf_data[etf + '-Close'])):        
         #Finding Total Return at that time, similar to the equation below this: 
@@ -49,8 +51,24 @@ for etf in etfs:
 
         TRAlist.append(round(TRA,5))
 
+        TRA_pct_change = TRA / etf_data[etf + '-Close'].iloc[0] * 100
+
+        TRA_pct_change_list.append(round(TRA_pct_change,5))
+
     etf_data[etf + '-TRActual'] = TRAlist
-    
+    etf_data[etf + '-TR_pct_change'] = TRA_pct_change_list
+
+    #add price change and percentage change columns
+    price_return = []
+    price_return_pct_change = []
+    for i in range(len(etf_data[etf + '-Close'])):
+        priceReturn = etf_data[etf + '-Close'].iloc[i] - etf_data[etf + '-Close'].iloc[0]
+        price_return.append(round(priceReturn,5))
+        PR_pct_change = priceReturn / etf_data[etf + '-Close'].iloc[0] * 100
+        price_return_pct_change.append(round(PR_pct_change,5))
+
+    etf_data[etf + '-PriceReturn'] = price_return
+    etf_data[etf + '-PR_pct_change'] = price_return_pct_change
     # etf_data[etf + '-AdjClose'] = data['Close'] * (1 - (data['Dividends'].cumsum() / data['Close'].iloc[0])) # adjusted closing prices approximation #LUKE CUMSUM DROP IT I THINK # data["Close"] - data["Dividends"]# 
     # etf_data[etf + '-PricePlusDivThatDate'] = data['Close'] + data["Dividends"]#.cumsum() #everything drip'd
 
@@ -72,7 +90,7 @@ df['CloseComparison'] = df[etfs[1] + '-Close'] / df[etfs[0] + '-Close']
 df['CloseNorm_compare'] = df['CloseComparison'] / df['CloseComparison'].iloc[0]
 # df['AdjComparison'] = df[etfs[1] + '-AdjClose'] / df[etfs[0] + '-AdjClose']
 # df['AdjNorm_compare'] = df['AdjComparison'] / df['AdjComparison'].iloc[0]
-df['TRComparison'] = df[etfs[1] + '-TRActual'] / df[etfs[0] + '-TRActual']
+df['TRComparison'] = df[etfs[1] + '-TRActual'] - df[etfs[0] + '-TRActual']
 
 # df['TRComparison'] = df['TRComparison'].fillna(0)
 # print(df['TRComparison'].to_string())
@@ -82,7 +100,12 @@ df['TRComparison'] = df[etfs[1] + '-TRActual'] / df[etfs[0] + '-TRActual']
 #     print(df['TRComparison'].iloc[i] / df['TRComparison'].iloc[0])
 df['TRNorm_compare'] = (df['TRComparison'] / df['TRComparison'].iloc[1])
 # print(df['TRNorm_compare'].to_string())
-print(df[[etfs[1]+'-TRActual',etfs[0]+'-TRActual','TRComparison','TRNorm_compare']].to_string())
+
+# print(df[['Date', etfs[1]+'-TRActual',etfs[0]+'-TRActual','TRComparison','TRNorm_compare',]].to_string()) #etfs[1]+'-DivsSummed',etfs[0]+'-DivsSummed'
+# print(df[['Date', etfs[1]+'-PriceReturn', etfs[1]+'-PR_pct_change' ,etfs[0]+'-PriceReturn', etfs[0]+'-PR_pct_change']].to_string())
+# print(df[['Date', etfs[1]+'-TRActual', etfs[1]+'-TR_pct_change', etfs[0]+'-TRActual', etfs[0]+'-TR_pct_change']].to_string())
+# print(df[['Date', etfs[1]+'-PriceReturn', etfs[1]+'-PR_pct_change', etfs[1]+'-TRActual', etfs[1]+'-TR_pct_change']].to_string())
+
 #LUKE
 #run this to see what we were seeing mid 2025
 #huge volatility, qqq goes negative, it screws up the ratio and forces it negative, even though it should be looking at absolute value changes, and that should boost rating. 
@@ -113,12 +136,20 @@ df['TRGrowthRate'] = df["TRNorm_compare"].pct_change(fill_method=None) * 100
 print('Average compare, Price: ' + str(df['CloseNorm_compare'].mean()))
 print('Percentage of Price beating the underlying: ' + str(percentOverOne))
 print('Price Ratio Change AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
+print(df[[etfs[1]+'-PriceReturn', 
+            etfs[0]+'-PriceReturn', 
+            etfs[1]+'-PR_pct_change', 
+            etfs[0]+'-PR_pct_change']].iloc[-1])
 
 print('...')
 
 print('Average compare, Total Return: ' + str(df['TRNorm_compare'].mean()))
 print('Percentage of TR beating the underlying: ' + str(TRpercentOverOne))
 print('Total Return Ratio Change AVG: ' +  str(df['TRGrowthRate'].mean() * 100))
+print(df[[etfs[1]+'-TRActual', 
+            etfs[0]+'-TRActual',
+            etfs[1]+'-TR_pct_change', 
+            etfs[0]+'-TR_pct_change']].iloc[-1])
 # print('Percentage TR beating the underlying: ' + str(TRpercentOverOne))
 # print('Percentage TR beating the underlying, last 10: ' + str(TRpercentOverOneLastTen))
 # print('TR Ratio Change AVG: ' +  str(df['TRGrowthRate'].mean() * 100))
@@ -159,7 +190,7 @@ plt.plot(df['Date'], df['CloseNorm_compare'], label='Price', color='blue', alpha
 plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PriceTrend', color='blue', alpha=0.9)
 
 plt.plot(df['Date'], df['TRNorm_compare'], label='TR', color='red', alpha=1)
-plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='TR_Trend', color='red', alpha=0.9)
+plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TR_Trend', color='red', alpha=0.9)
 
 print('...')
 print('Price trendline: y= ' + str(m1) + ' * x + ' + str(b1))
