@@ -51,9 +51,9 @@ def grManualCalc(df_col):
 
 
 # Define ETFs to compare 
-etfs = ['SPY', "SPYI"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
+etfs = ['QQQI', "GPIQ"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
 time_period = "1y" #mo, y
-start_date = "2023-01-01"
+start_date = "2024-02-01"
 end_date = "2025-12-31"
 
 # Fetch historical price data for each ETF 
@@ -61,7 +61,6 @@ etf_data = {}
 for etf in etfs: 
     # data = yf.Ticker(etf).history(period=time_period, auto_adjust=False) # Fetch data from time_period
     data = yf.Ticker(etf).history(start=start_date, end=end_date, auto_adjust=False) # Fetch data from start to end date
-
   
     etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
     etf_data[etf + '-Divs'] = data['Dividends']
@@ -93,19 +92,16 @@ for etf in etfs:
     etf_data[etf + '-TRActual'] = TRAlist
     etf_data[etf + '-TR_pct_change'] = TRA_pct_change_list
 
-#Fixing TR and PR divide by zero error
-etf_data[etfs[0]+ '-TR_pct_change'][0] = 1.00000
+#Fixing TR and PR divide by zero error; replaced fix with min values as we're now just graphing total returns directly
+etf_data[etfs[0]+ '-TR_pct_change'][0] = 0.00001 #1.00000
 etf_data[etfs[1] + '-TR_pct_change'][0] = 0.00001
-etf_data[etfs[0]+ '-PR_pct_change'][0] = 1.00000
+etf_data[etfs[0]+ '-PR_pct_change'][0] = 0.00001 #1.00000
 etf_data[etfs[1] + '-PR_pct_change'][0] = 0.00001
-# df_etfD = pd.DataFrame(etf_data)
-# print(df_etfD.to_string())
 
 #LUKE
-#TR is wrong somehow. total return isn't calculated correctly because the tested's are beating the underlying by way too much. inaccurate twice.
-#also, add CAGR to TR calcs
-
+#also, add CAGR to TR calcs, and price action of both underlying and target
 #cagr = (v_final/v_initial)^(1/t) - 1, t is  years
+#add correlations to final prints
 
 # Combine into a single DataFrame with dates aligned, drop nulls to avoid lack of data due to inception dates
 df = pd.DataFrame(etf_data).dropna(how="any")
@@ -115,108 +111,237 @@ df = df.reset_index()
 df.columns = ["Date"] + list(etf_data.keys())
 
 #correlation between prices, then total returns
-df['Price_Correlation'] = df[etfs[1] + '-PR_pct_change'].corr(df[etfs[0] + '-PR_pct_change'])
-df['TR_Correlation'] = df[etfs[1] + '-TR_pct_change'].corr(df[etfs[0] + '-TR_pct_change'])
+Price_Correlation = round(df[etfs[1] + '-PR_pct_change'].corr(df[etfs[0] + '-PR_pct_change']), 5)
+TR_Correlation = round(df[etfs[1] + '-TR_pct_change'].corr(df[etfs[0] + '-TR_pct_change']), 5)
 #Create comparisons, normalize
 df['CloseComparison'] = df[etfs[1] + '-Close'] / df[etfs[0] + '-Close']
 df['CloseNorm_compare'] = df['CloseComparison'] / df['CloseComparison'].iloc[0]
-#alt price comparison, redundant
-# df['CloseComparison_pct'] = df[etfs[1] + '-PR_pct_change'] / df[etfs[0] + '-PR_pct_change']
-# df['CloseNorm_compare_pct'] = df['CloseComparison_pct'] / df['CloseComparison_pct'].iloc[1]
+
 #TR compare
-
-#working on a fix. 
+#working on a fix. turns out unused altogether. abs vs no abs produces same shaped of graph, just different y-values. 
 df['NoAbs'] = (df[etfs[1] + '-TR_pct_change'] - df[etfs[0] + '-TR_pct_change'])
-df['NoAbs_gr'] = grManualCalc(df['NoAbs'])
-df['TRNorm_compare'] = (df[etfs[1] + '-TR_pct_change'] - df[etfs[0] + '-TR_pct_change']).abs()
-# df['TRNorm_compare'] = (df['TRComparison'] / df['TRComparison'].iloc[1])
-
-#LUKE
-#we need to get growth rate of no absolute value column. the no absolute column is the way to go honestly. gets you useful data from it, even if the graph is whatever. 
-#edit those print statements and the values therein. make it super useful. eventually we can log these into a DB and compare funds. win!
-
-# print(df[['Date', 'NoAbs', 'TRComparison', 'TRNorm_compare']].to_string())
-
-# data1 = {'Column1': (df[etfs[1] + '-TR_pct_change'] - df[etfs[0] + '-TR_pct_change']),
-#         'Column2': (df[etfs[1] + '-TR_pct_change'] - df[etfs[0] + '-TR_pct_change']).abs()}
-# guh = pd.DataFrame(data1)
-# print(guh.to_string)
+# df['NoAbs_gr'] = grManualCalc(df['NoAbs'])
+# df['TRNorm_compare'] = (df[etfs[1] + '-TR_pct_change'] - df[etfs[0] + '-TR_pct_change']).abs()
 
 ##Classic total return compare
 # df['TRComparison'] = df[etfs[1] + '-TR_pct_change'] / df[etfs[0] + '-TR_pct_change']
 # df['TRNorm_compare'] = (df['TRComparison'] / df['TRComparison'].iloc[1])
 
-# print(df[['TRComparison', 'TRNorm_compare']].to_string())
-# print(df['TRNorm_compare'].to_string())
-
-# print(df[['Date', etfs[1]+'-TRActual',etfs[0]+'-TRActual','TRComparison','TRNorm_compare',]].to_string()) #etfs[1]+'-DivsSummed',etfs[0]+'-DivsSummed'
-# print(df[['Date', etfs[1]+'-PriceReturn', etfs[1]+'-PR_pct_change' ,etfs[0]+'-PriceReturn', etfs[0]+'-PR_pct_change']].to_string())
-# print(df[['Date', etfs[1]+'-TRActual', etfs[1]+'-TR_pct_change', etfs[0]+'-TRActual', etfs[0]+'-TR_pct_change']].to_string())
-# print(df[['Date', etfs[1]+'-PriceReturn', etfs[1]+'-PR_pct_change', etfs[1]+'-TRActual', etfs[1]+'-TR_pct_change']].to_string())
-# print(df[['Date', etfs[1] + '-PR_pct_change', etfs[0] + '-PR_pct_change', 'CloseComparison_pct', 'CloseNorm_compare_pct']].to_string())
-
-#Get percentage of time that fund beat the underlying
+#Get percentage of time that fund beat the underlying; only used for price now
 percentOverOne = (df["CloseNorm_compare"] > 1).mean() * 100
-# percentOverOne_pct = (df["CloseNorm_compare_pct"] > 1).mean() * 100
 # percentOverOneLastTen = (df["CloseNorm_compare"].iloc[-10:] > 1).mean() * 100
-TRpercentOverOne = (df["TRNorm_compare"] > 1).mean() * 100
+TRpercentOverOne = (df["NoAbs"] > 1).mean() * 100 #(df["TRNorm_compare"] > 1).mean() * 100
 # TRpercentOverOneLastTen = (df["TRNorm_compare"].iloc[-10:] > 1).mean() * 100
 
-#Get Mean and Median from difference in total return percentages
-medianTRdiff = df['NoAbs'].median()
-averageTRdiff = df['NoAbs'].mean()
+#Get Mean and Median from difference in total return percentages; over time this might tend to infinity anyway
+#However, in comparing time frames for different funds, similar underlying different strategy, this might be useful!
+medianTRdiff = round(df['NoAbs'].median(), 4)
+averageTRdiff = round(df['NoAbs'].mean(), 4)
+#luke, price means and medians?
 
 #growth rates
-# df['PriceGrowthRate'] = df["AdjNorm_compare"].pct_change() * 100
-# df['PriceGrowthRate'] = df["CloseNorm_compare"].pct_change() * 100
 df['PriceGrowthRate'] = grManualCalc(df["CloseNorm_compare"])#.pct_change() * 100
-# df['PriceGrowthRate_pct'] = df["CloseNorm_compare_pct"].pct_change() * 100
-
+#TR growth rates become meaningless while measuring difference in growth rates. essentially how fast they are moving apart. 
+#it sounds useful, until looking at 2024-9/2025. 9522% returned QQQI/QQQ. essentially saying QQQI standing still in some cases. really only pointing out
+#the volatility of the underlying. not helpful here.
 # df['TRGrowthRate'] = df["TRNorm_compare"].pct_change(fill_method=None) * 100
-df['TRGrowthRate'] = grManualCalc(df["TRNorm_compare"])#.pct_change(fill_method=None) * 100
+# df['TRGrowthRate'] = grManualCalc(df["NoAbs"])#.pct_change(fill_method=None) * 100 #TRNorm_compare
 
-#LUKE do you want to do a dividend comparison tool next?
-# print('Percentage TR beating the underlying: ' + str(TRpercentOverOne))
-# print('Percentage TR beating the underlying, last 10: ' + str(TRpercentOverOneLastTen))
-# print('TR Ratio Change AVG: ' +  str(df['TRGrowthRate'].mean() * 100))
-# print('Total Dividends & price gain target: ' + str(df[etfs[0] + '-Divs'].sum()) + ', ' + str(etf0gain))
-# print('Total Dividends & price gain test: ' + str(df[etfs[1] + '-Divs'].sum()) + ', ' + str(etf1gain))
-# print('Percentage difference in price gains: ' + str(percentDifferent))
-
-# print(df[['Date', etfs[1]+'-Close']].to_string())
 ###FIGURE INFO
 
 def priceGraph():
     # plt.figure(figsize=(10,5))
-    plt.subplot(1,2,1)
+    plt.subplot(2,2,1)
 
     x_num = np.arange(len(df))
-    # m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
-    m1, b1 = np.polyfit(x_num, df['CloseNorm_compare'], 1)
-    # m2, b2 = np.polyfit(x_num, df['TRNorm_compare'], 1) 
+    m2, b2 = np.polyfit(x_num, df[etfs[0] + '-PR_pct_change'], 1) #price of underlying
+    m3, b3 = np.polyfit(x_num, df[etfs[1] + '-PR_pct_change'], 1) #price of target
 
     #comparisons and trendlines
-    plt.plot(df['Date'], df['CloseNorm_compare'], label='Price', color='blue', alpha=1)
-    plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PriceTrend', color='blue', alpha=0.9)
+    # plt.plot(df['Date'], df['CloseNorm_compare'], label='Price Ratio', color='green', alpha=1)
+    # plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PR-Trend', color='green', alpha=0.9)
+
+    plt.plot(df['Date'], df[etfs[0] + '-PR_pct_change'], label=etfs[0] +' Price', color='blue', alpha=1)
+    plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label=etfs[0] + ' Price Trend', color='blue', alpha=0.9)
+
+    plt.plot(df['Date'], df[etfs[1] + '-PR_pct_change'], label=etfs[1] + ' Price', color='red', alpha=1)
+    plt.plot(df['Date'], m3 * x_num + b3, linestyle="dashed", label=etfs[1] + ' Price Trend', color='red', alpha=0.9)
+
+    # df['Price_Correlation'] = df[etfs[1] + '-PR_pct_change'].corr(df[etfs[0] + '-PR_pct_change'])
+    print('...')    
+    print('Price Return Stats: ')
+    print('Percentage of Target Price beating the Underlying: ' + str(percentOverOne) + '%')
+    print('')
+    print('Price Return Correlation: ' + str(Price_Correlation))
+    print('')
+    print('Underlying Price trendline: y=mx+b: m = ' + str(round(m2, 5)) + '.')
+    print('Target Price trendline: y=mx+b: m = ' + str(round(m3, 5)) + '.')
+    print('')
+
+    print('Initial Closes first, then final, then price return, then in %-terms: ')
+    print(df[[etfs[1]+'-Close', 
+              etfs[0]+'-Close']].iloc[0])
+    print(df[[etfs[1]+'-Close', 
+              etfs[0]+'-Close', 
+              etfs[1]+'-PriceReturn', 
+              etfs[0]+'-PriceReturn', 
+              etfs[1]+'-PR_pct_change', 
+              etfs[0]+'-PR_pct_change']].iloc[-1])    
+    print('...')
+
+    #Graph info
+    plt.title('Price % Return Comparison of ' + etfs[1] + ' against ' + etfs[0])
+    plt.xlabel('Date')
+    plt.ylabel('Percentage Gains in Price')
+    plt.legend()
+    # plt.ioff()
+    plt.grid(True)
+    # plt.show()
+
+def TRGraph():
+    # plt.figure(figsize=(10,5))
+    plt.subplot(2,2,2)
+
+    x_num = np.arange(len(df))
+    m1, b1 = np.polyfit(x_num, df[etfs[0] + '-TR_pct_change'], 1)
+    m2, b2 = np.polyfit(x_num, df[etfs[1] + '-TR_pct_change'], 1) 
+
+    #comparisons and trendlines
+    plt.plot(df['Date'], df[etfs[0] + '-TR_pct_change'], label=etfs[0] + ' TR', color='blue', alpha=1)
+    plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label=etfs[0] + ' TR Trend', color='blue', alpha=0.9)
+
+    plt.plot(df['Date'], df[etfs[1] + '-TR_pct_change'], label=etfs[1] + ' TR', color='red', alpha=1)
+    plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label=etfs[1] + ' TR Trend', color='red', alpha=0.9)
+    #orig
+    # plt.plot(df['Date'], df['TRNorm_compare'], label='TR', color='red', alpha=1)
+    # plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TR_Trend', color='red', alpha=0.9)
+
+    print('...')
+    print('Total Return Stats: ')
+    print('Percentage of T-TR beating the Underlying: ' + str(TRpercentOverOne) + '%')
+    print('')
+    print('Total Return Correlation: ' + str(TR_Correlation))
+    print('')
+    print('Underlying TR trendline: y=mx+b: m = ' + str(round(m1, 5)) + '.')
+    print('Target TR trendline: y=mx+b: m = ' + str(round(m2, 5)) + '.')
+    print('')
+    print('Measuring Target TR - Underlying TR, the percentage difference between them: ')
+    print('Mean difference in TR\'s: ' + str(averageTRdiff) + '%')
+    print('Median difference in TR\'s: ' + str(medianTRdiff) + '%')
+    print('')
+    print(df[[  etfs[1]+'-TRActual', 
+                etfs[0]+'-TRActual',
+                etfs[1]+'-TR_pct_change', 
+                etfs[0]+'-TR_pct_change'
+                ]].iloc[-1])   #'TRNorm_compare'  'Date', etfs[1]+'-Close', etfs[1] + '-TRScuffed', etfs[0]+'-Close', etfs[0] + '-TRScuffed',
+    print('...')
+
+    #Graph info
+    plt.title('Total Return Comparison of ' + etfs[1] + ' against ' + etfs[0])
+    plt.xlabel('Date')
+    plt.ylabel('Total Return %')
+    plt.legend()
+    # plt.ioff()
+    plt.grid(True)
+    # plt.show()
+
+def priceRelationshipGraph():
+    # plt.figure(figsize=(10,5))
+    plt.subplot(2,2,3)
+
+    x_num = np.arange(len(df))
+    m1, b1 = np.polyfit(x_num, df['CloseNorm_compare'], 1)
+
+    #comparisons and trendlines
+    plt.plot(df['Date'], df['CloseNorm_compare'], label='Price Ratio', color='green', alpha=1)
+    plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PR-Trend', color='green', alpha=0.9)
+
+    print('...')
+    print('Price Ratio Stats: ')
+    print('Average Price Ratio: ' + str(round(df['CloseNorm_compare'].mean(), 5)))
+    print('Percentage of Target Price beating the Underlying: ' + str(percentOverOne) + '%')
+    print('Price Ratio %-Change, AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
+    print('')
+    print('Price Correlation: ' + str(Price_Correlation))
+    print('')
+    print('Price trendline, y=mx+b: m = ' + str(round(m1,5)) + '.')
+    print('...')
+
+    #Graph info
+    plt.title('Price Action, Normalized, for ' + etfs[1] + ' / ' + etfs[0])
+    plt.xlabel('Date')
+    plt.ylabel('Normalized Price Relation Ratio')
+    plt.legend()
+    # plt.ioff()
+    plt.grid(True)
+    # plt.show()
+
+def dividendsGraph():
+    # plt.figure(figsize=(10,5))
+    plt.subplot(2,2,4)
+    underlying_divs =  round(df[etfs[0] + '-DivsSummed'].iloc[-1], 2)
+    target_divs =  round(df[etfs[1] + '-DivsSummed'].iloc[-1], 2)
+    labels = [str(etfs[0]), str(etfs[1])]
+    values = [underlying_divs, target_divs]
+    # plt.bar(labels, values, color=['blue','red'])
+
+    plt.bar(labels[0], values[0], label=str(etfs[0]) + ' Total: ' + '$' + str(values[0]), color='blue')
+    plt.bar(labels[1], values[1], label=str(etfs[1]) + ' Total: ' + '$' + str(values[1]), color='red')
+
+    # x_num = np.arange(len(df))
+    # m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
+    # m1, b1 = np.polyfit(x_num, df['CloseNorm_compare'], 1)
+    # m2, b2 = np.polyfit(x_num, df[etfs[0] + '-PR_pct_change'], 1) #price of underlying
+    # m3, b3 = np.polyfit(x_num, df[etfs[1] + '-PR_pct_change'], 1) #price of target
+
+    #comparisons and trendlines
+    # plt.plot(df['Date'], df['CloseNorm_compare'], label='Price Ratio', color='green', alpha=1)
+    # plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PR-Trend', color='green', alpha=0.9)
+
+    # plt.plot(df['Date'], df[etfs[0] + '-PR_pct_change'], label='Underlying Price', color='blue', alpha=1)
+    # plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='U-Price Trend', color='blue', alpha=0.9)
+
+    # plt.plot(df['Date'], df[etfs[1] + '-PR_pct_change'], label='Target Price', color='red', alpha=1)
+    # plt.plot(df['Date'], m3 * x_num + b3, linestyle="dashed", label='T-Price Trend', color='red', alpha=0.9)
 
     # plt.plot(df['Date'], df['TRNorm_compare'], label='TR', color='red', alpha=1)
     # plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TR_Trend', color='red', alpha=0.9)
-    print('Average compare, Price: ' + str(df['CloseNorm_compare'].mean()))
-    print('Percentage of Price beating the underlying: ' + str(percentOverOne) + '%')
-    print('Price Ratio Change AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
-    # print('My Price Ratio Change AVG: ' +  str(df['MYPriceGrowthRate'].mean() * 100))
-    print(df[[etfs[1]+'-Close', 
-                etfs[0]+'-Close']].iloc[0] )
-    print(df[[etfs[1]+'-Close', 
-                etfs[0]+'-Close', 
-    etfs[1]+'-PriceReturn', 
-            etfs[0]+'-PriceReturn', 
-            etfs[1]+'-PR_pct_change', 
-            etfs[0]+'-PR_pct_change']].iloc[-1])
 
-    print('...')
-    print('Price trendline: y= ' + str(m1) + ' * x + ' + str(b1))
-    print('...')
+
+    # print('...')
+    # print('Price Ratio Stats: ')
+    # print('Average Price Ratio: ' + str(round(df['CloseNorm_compare'].mean(), 5)))
+    # print('Percentage of Target Price beating the Underlying: ' + str(percentOverOne) + '%')
+    # print('Price Ratio %-Change, AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
+    # print('')
+    # print('Price Return Correlation: ' + str(Price_Correlation))
+    # print('')
+    # print('Price trendline: y= ' + str(m1) + ' * x + ' + str(b1))
+    # print('...')
+
+
+    # print('Average compare, Price: ' + str(df['CloseNorm_compare'].mean()))
+    # print('Percentage of Price beating the underlying: ' + str(percentOverOne) + '%')
+    # print('Price Ratio Change AVG: ' +  str(df['PriceGrowthRate'].mean() * 100))
+    # print('My Price Ratio Change AVG: ' +  str(df['MYPriceGrowthRate'].mean() * 100))
+
+
+    # df['Price_Correlation'] = df[etfs[1] + '-PR_pct_change'].corr(df[etfs[0] + '-PR_pct_change'])
+
+
+
+    # print(df[[etfs[1]+'-Close', 
+    #             etfs[0]+'-Close']].iloc[0] )
+    # print(df[[etfs[1]+'-Close', 
+    #             etfs[0]+'-Close', 
+    # etfs[1]+'-PriceReturn', 
+    #         etfs[0]+'-PriceReturn', 
+    #         etfs[1]+'-PR_pct_change', 
+    #         etfs[0]+'-PR_pct_change']].iloc[-1])
+
+    # print('...')
+    # print('Price trendline: y= ' + str(m1) + ' * x + ' + str(b1))
+    # print('...')
     # print('TR trendline: y= ' + str(m2) + ' * x + ' + str(b2))
 
     # print(df[[  etfs[1]+'-Close', 
@@ -231,72 +356,25 @@ def priceGraph():
     # plt.plot(df['Date'], df[etfs[0] + '-Close'] / 3000, label='Target Price', color='orange', alpha=0.9)
 
     #Graph info
-    plt.title('Price Relationship of ' + etfs[1] + '/' + etfs[0])
-    plt.xlabel('Date')
-    plt.ylabel('Normalized Relation Ratios')
+    plt.title('Total Distributions for both ' + etfs[1] + ' vs ' + etfs[0])
+    plt.xlabel('Two Funds Being Compared')
+    plt.ylabel('Total Distributions in $')
     plt.legend()
     # plt.ioff()
     plt.grid(True)
     # plt.show()
 
-def TRGraph():
-    # plt.figure(figsize=(10,5))
-    plt.subplot(1,2,2)
-
-    x_num = np.arange(len(df))
-    # m1, b1 = np.polyfit(x_num, df['AdjNorm_compare'], 1)
-    # m1, b1 = np.polyfit(x_num, df['CloseNorm_compare'], 1)
-    m2, b2 = np.polyfit(x_num, df['TRNorm_compare'], 1) 
-
-    #comparisons and trendlines
-    # plt.plot(df['Date'], df['CloseNorm_compare'], label='Price', color='blue', alpha=1)
-    # plt.plot(df['Date'], m1 * x_num + b1, linestyle="dashed", label='PriceTrend', color='blue', alpha=0.9)
-
-    plt.plot(df['Date'], df['TRNorm_compare'], label='TR', color='red', alpha=1)
-    plt.plot(df['Date'], m2 * x_num + b2, linestyle="dashed", label='TR_Trend', color='red', alpha=0.9)
-
-    # print('...')
-    # print('Price trendline: y= ' + str(m1) + ' * x + ' + str(b1))
-
-    print('Average compare, Total Return: ' + str(df['TRNorm_compare'].mean()))
-    print('Percentage of TR beating the underlying: ' + str(TRpercentOverOne))
-    print('Total Return Ratio Change AVG: ' +  str(df['TRGrowthRate'].mean() * 100))
-    print('Mean difference in TR: ' + str(averageTRdiff))
-    print('Median difference in TR: ' + str(medianTRdiff))
-    print(df[[  etfs[1]+'-TRActual', 
-                etfs[0]+'-TRActual',
-                etfs[1]+'-TR_pct_change', 
-                etfs[0]+'-TR_pct_change'
-                ]].iloc[-1])   #'TRNorm_compare'  'Date', etfs[1]+'-Close', etfs[1] + '-TRScuffed', etfs[0]+'-Close', etfs[0] + '-TRScuffed',
-    print('...')
-    print('TR trendline: y= ' + str(m2) + ' * x + ' + str(b2))
-    print('...')
-
-    # print(df[[  etfs[1]+'-Close', 
-    #             etfs[0]+'-Close',
-    #             etfs[1]+'-TRActual', 
-    #             etfs[0]+'-TRActual'
-    #             ]].iloc[2]) 
+    #Alternate labels on top of bars
+    # for i, value in enumerate(values):
+    #     plt.text(i, value - 2, '$' + str(round(value,2)), ha='center', va='bottom', fontsize=12, color='black')
 
 
-    # #prices
-    # plt.plot(df['Date'], df[etfs[1] + '-Close'] / 100, label='Test Price', color='green', alpha=0.9)
-    # plt.plot(df['Date'], df[etfs[0] + '-Close'] / 3000, label='Target Price', color='orange', alpha=0.9)
-
-    #Graph info
-    plt.title('TR Relationship of ' + etfs[1] + '/' + etfs[0])
-    plt.xlabel('Date')
-    plt.ylabel('Normalized Relation Ratios')
-    plt.legend()
-    # plt.ioff()
-    plt.grid(True)
-    # plt.show()
-
-
-plt.figure(figsize=(15,7))
+plt.figure(figsize=(18,9))
 
 priceGraph()
 TRGraph()
+priceRelationshipGraph()
+dividendsGraph()
 
 plt.tight_layout()
 plt.show()
