@@ -11,6 +11,7 @@ import datetime as dt
 # import datetime as dt
 import time
 import yfinance as yf
+import math as m
 # import json
 
 #Mild Cheatsheet##################################
@@ -51,47 +52,140 @@ def grManualCalc(df_col):
 
 
 # Define ETFs to compare 
-etfs = ['QQQI', "GPIQ"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
+etfs = ['QQQ', "QQQI"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
 time_period = "1y" #mo, y
-start_date = "2024-02-01"
-end_date = "2025-12-31"
+start_date = "2025-03-01"
+end_date = "2025-04-10"
 
 # Fetch historical price data for each ETF 
 etf_data = {} 
-for etf in etfs: 
-    # data = yf.Ticker(etf).history(period=time_period, auto_adjust=False) # Fetch data from time_period
-    data = yf.Ticker(etf).history(start=start_date, end=end_date, auto_adjust=False) # Fetch data from start to end date
-  
-    etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
-    etf_data[etf + '-Divs'] = data['Dividends']
-    etf_data[etf + '-DivsSummed'] = data['Dividends'].cumsum()
-    etf_data[etf + '-TRScuffed'] = round(data['Close'] + data['Dividends'].cumsum(), 5)
-    TRAlist = []
-    TRA_pct_change_list = []
-    price_return = []
-    price_return_pct_change = []
-    first_close_price = etf_data[etf + '-Close'].iloc[0]
 
-    for i in range(len(etf_data[etf + '-Close'])):        
-        #Finding Total Return at that time, similar to the equation below this: 
-        TRA = etf_data[etf + '-TRScuffed'].iloc[i] - first_close_price
-        # ((end price - initial price) + distributions over that time) / initial price
-        #((data["Close"].iloc[i] - data["Close"].iloc[0]) + data['Dividends'].iloc[0].cumsum()) / data["Close"].iloc[0]
-        TRAlist.append(round(TRA,5))
-        TRA_pct_change = (TRA / first_close_price) * 100
-        TRA_pct_change_list.append(round(TRA_pct_change,5))
+def TTR():
+    for etf in etfs: 
+        # data = yf.Ticker(etf).history(period=time_period, auto_adjust=False) # Fetch data from time_period
+        data = yf.Ticker(etf).history(start=start_date, end=end_date, auto_adjust=False) # Fetch data from start to end date
+    
+        etf_data[etf + '-Close'] = data["Close"] # Store only closing prices 
+        etf_data[etf + '-Divs'] = data['Dividends']
+        etf_data[etf + '-DivsSummed'] = data['Dividends'].cumsum()
+        etf_data[etf + '-TRScuffed'] = round(data['Close'] + data['Dividends'].cumsum(), 5)
+        TRAlist = []
+        TRA_pct_change_list = []
+        price_return = []
+        price_return_pct_change = []
+        first_close_price = etf_data[etf + '-Close'].iloc[0]
 
-        #Finding price change data
-        priceReturn = etf_data[etf + '-Close'].iloc[i] - first_close_price
-        price_return.append(round(priceReturn,5))
-        PR_pct_change = (priceReturn / first_close_price) * 100
-        price_return_pct_change.append(round(PR_pct_change,5))
+        for i in range(len(etf_data[etf + '-Close'])):        
+            #Finding Total Return at that time, similar to the equation below this: 
+            TRA = etf_data[etf + '-TRScuffed'].iloc[i] - first_close_price
+            # ((end price - initial price) + distributions over that time) / initial price
+            #((data["Close"].iloc[i] - data["Close"].iloc[0]) + data['Dividends'].iloc[0].cumsum()) / data["Close"].iloc[0]
+            TRAlist.append(round(TRA,5))
+            TRA_pct_change = (TRA / first_close_price) * 100
+            TRA_pct_change_list.append(round(TRA_pct_change,5))
 
-    etf_data[etf + '-PriceReturn'] = price_return
-    etf_data[etf + '-PR_pct_change'] = price_return_pct_change
-    etf_data[etf + '-TRActual'] = TRAlist
-    etf_data[etf + '-TR_pct_change'] = TRA_pct_change_list
+            #Finding price change data
+            priceReturn = etf_data[etf + '-Close'].iloc[i] - first_close_price
+            price_return.append(round(priceReturn,5))
+            PR_pct_change = (priceReturn / first_close_price) * 100
+            price_return_pct_change.append(round(PR_pct_change,5))
 
+        etf_data[etf + '-PriceReturn'] = price_return
+        etf_data[etf + '-PR_pct_change'] = price_return_pct_change
+        etf_data[etf + '-TRActual'] = TRAlist
+        etf_data[etf + '-TR_pct_change'] = TRA_pct_change_list
+        
+    return etf_data
+
+def TTR_Dollar_Weight():
+    
+    for etf in etfs: 
+        # data = yf.Ticker(etf).history(period=time_period, auto_adjust=False) # Fetch data from time_period
+        data = yf.Ticker(etf).history(start=start_date, end=end_date, auto_adjust=False) # Fetch data from start to end date
+    
+        etf_data[etf + '-Close'] = data["Close"]
+        etf_data[etf + '-Divs'] = data['Dividends']
+        etf_data[etf + '-DivsSummed'] = data['Dividends'].cumsum()
+        #saved for testing
+        # etf_data[etf + '-TRScuffed'] = round(etf_data[etf + '-Close']  + etf_data[etf + '-Divs'].cumsum(), 5)
+
+        price_return = []
+        price_return_pct_change = []
+        first_close_price = etf_data[etf + '-Close'].iloc[0]
+
+        for i in range(len(etf_data[etf + '-Close'])):        
+            priceReturn = etf_data[etf + '-Close'].iloc[i] - first_close_price
+            price_return.append(round(priceReturn,5))
+            PR_pct_change = (priceReturn / first_close_price) * 100
+            price_return_pct_change.append(round(PR_pct_change,5))
+
+        etf_data[etf + '-PriceReturn'] = price_return
+        etf_data[etf + '-PR_pct_change'] = price_return_pct_change
+
+    p_underlying = etf_data[etfs[0] + '-Close'].iloc[0]
+    p_target = etf_data[etfs[1] + '-Close'].iloc[0]
+
+    ut_ratio = m.floor(p_underlying / p_target)
+    tu_ratio = m.floor(p_target / p_underlying)
+
+    #saved for testing #luke debate delete
+    # doodad = pd.DataFrame()
+    # doodad['iniTRS'] = etf_data[etfs[1] + '-TRScuffed'] 
+    # doodad['iniClose'] = etf_data[etfs[1] + '-Close'] 
+    # doodad['iniDivs'] = etf_data[etfs[1] + '-Divs']
+    # doodad['iniDivsSummed'] = etf_data[etfs[1] + '-DivsSummed'] 
+    # print(ut_ratio)
+
+    if ut_ratio > 1:
+        multiplier = ut_ratio
+        #multiply target close and dividends by multiplier
+        #underlying stays same
+        etf_data[etfs[1] + '-Close'] = multiplier * etf_data[etfs[1] + '-Close'] 
+        etf_data[etfs[1] + '-Divs'] = multiplier * etf_data[etfs[1] + '-Divs'] 
+        etf_data[etfs[1] + '-DivsSummed'] = multiplier * etf_data[etfs[1] + '-DivsSummed']
+    elif tu_ratio > 1:
+        multiplier = tu_ratio
+        etf_data[etfs[0] + '-Close'] = multiplier * etf_data[etfs[0] + '-Close'] 
+        etf_data[etfs[0] + '-Divs'] = multiplier * etf_data[etfs[0] + '-Divs'] 
+        etf_data[etfs[0] + '-DivsSummed'] = multiplier * etf_data[etfs[0] + '-DivsSummed']
+    # else:
+    #     print('else')
+    #Do nothing
+
+    #saved for testing
+    # doodad['newClose'] = etf_data[etfs[1] + '-Close'] 
+    # doodad['newDivs'] = etf_data[etfs[1] + '-Divs']
+    # doodad['newDivsSummed'] = etf_data[etfs[1] + '-DivsSummed'] 
+
+    for etf in etfs:        
+        etf_data[etf + '-TRScuffed'] = round(etf_data[etf + '-Close']  + etf_data[etf + '-Divs'].cumsum(), 5)
+
+        TRAlist = []
+        TRA_pct_change_list = []
+        first_close_price = etf_data[etf + '-Close'].iloc[0]
+        
+        for i in range(len(etf_data[etf + '-Close'])):        
+            #Finding Total Return at that time, similar to the equation below this: 
+            TRA = etf_data[etf + '-TRScuffed'].iloc[i] - first_close_price
+            # ((end price - initial price) + distributions over that time) / initial price
+            #((data["Close"].iloc[i] - data["Close"].iloc[0]) + data['Dividends'].iloc[0].cumsum()) / data["Close"].iloc[0]
+            TRAlist.append(round(TRA,5))
+            TRA_pct_change = (TRA / first_close_price) * 100
+            TRA_pct_change_list.append(round(TRA_pct_change,5))
+
+        etf_data[etf + '-TRActual'] = TRAlist
+        etf_data[etf + '-TR_pct_change'] = TRA_pct_change_list
+    
+    #saved for testing
+    # doodad['newTRS'] = etf_data[etfs[1] + '-TRScuffed'] 
+    # print(doodad[['iniClose','newClose','iniDivs','newDivs','iniDivsSummed','newDivsSummed']].to_string())
+    # print(doodad[['iniTRS','newTRS']].to_string())
+
+    return etf_data
+
+#start here    
+etf_data = TTR_Dollar_Weight()
+# print(etf_data)
 #Fixing TR and PR divide by zero error; replaced fix with min values as we're now just graphing total returns directly
 etf_data[etfs[0]+ '-TR_pct_change'][0] = 0.00001 #1.00000
 etf_data[etfs[1] + '-TR_pct_change'][0] = 0.00001
@@ -101,7 +195,15 @@ etf_data[etfs[1] + '-PR_pct_change'][0] = 0.00001
 #LUKE
 #also, add CAGR to TR calcs, and price action of both underlying and target
 #cagr = (v_final/v_initial)^(1/t) - 1, t is  years
-#add correlations to final prints
+#add correlations to final prints; reorganize correlation print outs
+#MWR calcs, org this into TWR
+
+#luke
+#you may also want to work on a DCA calculator
+#but as of now, it produces accurate numbers for u>t, and t>u!
+#it can be used to test Time weighted returns of different funds!
+#need to edit the printed outputs, make them more useful, add total dividends received, debate adding cagrs above
+#
 
 # Combine into a single DataFrame with dates aligned, drop nulls to avoid lack of data due to inception dates
 df = pd.DataFrame(etf_data).dropna(how="any")
@@ -137,15 +239,9 @@ TRpercentOverOne = (df["NoAbs"] > 1).mean() * 100 #(df["TRNorm_compare"] > 1).me
 #However, in comparing time frames for different funds, similar underlying different strategy, this might be useful!
 medianTRdiff = round(df['NoAbs'].median(), 4)
 averageTRdiff = round(df['NoAbs'].mean(), 4)
-#luke, price means and medians?
 
 #growth rates
 df['PriceGrowthRate'] = grManualCalc(df["CloseNorm_compare"])#.pct_change() * 100
-#TR growth rates become meaningless while measuring difference in growth rates. essentially how fast they are moving apart. 
-#it sounds useful, until looking at 2024-9/2025. 9522% returned QQQI/QQQ. essentially saying QQQI standing still in some cases. really only pointing out
-#the volatility of the underlying. not helpful here.
-# df['TRGrowthRate'] = df["TRNorm_compare"].pct_change(fill_method=None) * 100
-# df['TRGrowthRate'] = grManualCalc(df["NoAbs"])#.pct_change(fill_method=None) * 100 #TRNorm_compare
 
 ###FIGURE INFO
 
@@ -368,7 +464,11 @@ def dividendsGraph():
     # for i, value in enumerate(values):
     #     plt.text(i, value - 2, '$' + str(round(value,2)), ha='center', va='bottom', fontsize=12, color='black')
 
+# TTR()
+# TTR_Dollar_Weight()
 
+
+#get figure out on screen
 plt.figure(figsize=(18,9))
 
 priceGraph()
@@ -387,3 +487,14 @@ plt.show()
 # print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn', 'TRNorm_compare']].tail(200).to_string())
 # print(df[['Date', etfs[0] + '-TotalReturn', etfs[1] + '-TotalReturn',  'AdjNorm_compare', 'TRNorm_compare']].to_string()) #etfs[0] + '-Divs', etfs[1] + '-Divs',
 # print(df.to_string())
+
+
+
+
+#saved if needed
+
+#TR growth rates become meaningless while measuring difference in growth rates. essentially how fast they are moving apart. 
+    #it sounds useful, until looking at 2024-9/2025. 9522% returned QQQI/QQQ. essentially saying QQQI standing still in some cases. really only pointing out
+    #the volatility of the underlying. not helpful here.
+    # df['TRGrowthRate'] = df["TRNorm_compare"].pct_change(fill_method=None) * 100
+    # df['TRGrowthRate'] = grManualCalc(df["NoAbs"])#.pct_change(fill_method=None) * 100 #TRNorm_compare
