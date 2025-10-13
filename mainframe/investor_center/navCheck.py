@@ -52,10 +52,10 @@ def grManualCalc(df_col):
 
 
 # Define ETFs to compare 
-etfs = ['QQQ', "QQQI"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
+etfs = ['QQQI', "GPIQ"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
 time_period = "1y" #mo, y
-start_date = "2025-03-01"
-end_date = "2025-04-10"
+start_date = "2025-08-01" #2025-08-01 for state street funds, feb for iyri, 
+end_date = "2025-12-31"
 
 # Fetch historical price data for each ETF 
 etf_data = {} 
@@ -122,19 +122,21 @@ def TTR_Dollar_Weight():
         etf_data[etf + '-PriceReturn'] = price_return
         etf_data[etf + '-PR_pct_change'] = price_return_pct_change
 
-    p_underlying = etf_data[etfs[0] + '-Close'].iloc[0]
-    p_target = etf_data[etfs[1] + '-Close'].iloc[0]
+    p_underlying = m.ceil(etf_data[etfs[0] + '-Close'].iloc[0])
+    p_target = m.floor(etf_data[etfs[1] + '-Close'].iloc[0])
 
     ut_ratio = m.floor(p_underlying / p_target)
     tu_ratio = m.floor(p_target / p_underlying)
 
     #saved for testing #luke debate delete
-    # doodad = pd.DataFrame()
+    doodad = pd.DataFrame()
     # doodad['iniTRS'] = etf_data[etfs[1] + '-TRScuffed'] 
-    # doodad['iniClose'] = etf_data[etfs[1] + '-Close'] 
+    doodad['iniClose1'] = etf_data[etfs[1] + '-Close'] 
+    doodad['iniClose0'] = etf_data[etfs[0] + '-Close'] 
     # doodad['iniDivs'] = etf_data[etfs[1] + '-Divs']
     # doodad['iniDivsSummed'] = etf_data[etfs[1] + '-DivsSummed'] 
-    # print(ut_ratio)
+    print('ut ratio: ' + str(ut_ratio))
+    print('tu ratio: ' + str(tu_ratio))
 
     if ut_ratio > 1:
         multiplier = ut_ratio
@@ -153,7 +155,8 @@ def TTR_Dollar_Weight():
     #Do nothing
 
     #saved for testing
-    # doodad['newClose'] = etf_data[etfs[1] + '-Close'] 
+    doodad['newClose1'] = etf_data[etfs[1] + '-Close'] 
+    doodad['newClose0'] = etf_data[etfs[0] + '-Close'] 
     # doodad['newDivs'] = etf_data[etfs[1] + '-Divs']
     # doodad['newDivsSummed'] = etf_data[etfs[1] + '-DivsSummed'] 
 
@@ -180,6 +183,7 @@ def TTR_Dollar_Weight():
     # doodad['newTRS'] = etf_data[etfs[1] + '-TRScuffed'] 
     # print(doodad[['iniClose','newClose','iniDivs','newDivs','iniDivsSummed','newDivsSummed']].to_string())
     # print(doodad[['iniTRS','newTRS']].to_string())
+    # print(doodad[['iniClose1','newClose1','iniClose0','newClose0']].to_string())
 
     return etf_data
 
