@@ -57,4 +57,5 @@ Unused Currently: altTables.py
 
 ## Final Notes
 A lot of the code needs cleaning up. Obviously, refactoring the project to include Apache Airflow will take time, but the improvements of ETL -> ELT will vastly improve the data integrity of the project.
+Adding monitoring to the DevOps pipeline will go a long way to provide stability to the project website.
 Over time, the data analysis tools to glean financial insights won't just be a fun toy, rather becoming tools that I can use personally, or help others to educate themselves financially.
