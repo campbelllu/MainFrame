@@ -54,6 +54,8 @@ Valuation.py takes lists of tickers and then runs DDM models on them, comparing 
 
 Unused Currently: altTables.py
 
+## Other parts of Repo
+Obviously, there are CI/CD instructions, Dockerfiles, other DevOps related pieces in this repo. They help to deploy the Django server to IH.com, and served a valuable purpose of teaching more familiarity with a common DevOps stack. I am by no means a fully-fledged DevOps Engineer (yet), but am very comfortable with Docker, container orchestration, networking, CI/CD. Still a few Terraforms and Password Managers (Vault, most likely) short of proficient for employment, but I know enough to fix what I break. All PROD pushes go out on Fridays at 3pm, right?
 
 ## Final Notes
 A lot of the code needs cleaning up. Obviously, refactoring the project to include Apache Airflow will take time, but the improvements of ETL -> ELT will vastly improve the data integrity of the project.
