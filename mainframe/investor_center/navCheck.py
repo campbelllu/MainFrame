@@ -52,9 +52,9 @@ def grManualCalc(df_col):
 
 
 # Define ETFs to compare 
-etfs = ['QQQI', "GPIQ"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
+etfs = ['AMZN', "AMZY"] # # Example ETFs ; iwy==ymag ##First underlying, second the one to test against it
 time_period = "1y" #mo, y
-start_date = "2025-08-01" #2025-08-01 for state street funds, feb for iyri, 
+start_date = "2025-01-01" #2025-08-01 for state street funds, feb for iyri, 
 end_date = "2025-12-31"
 
 # Fetch historical price data for each ETF 
